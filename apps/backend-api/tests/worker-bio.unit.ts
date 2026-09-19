@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { fn } from "jest-mock";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const pdfParseModule = require("pdf-parse");
 
 const mockGetText = fn().mockResolvedValue({
