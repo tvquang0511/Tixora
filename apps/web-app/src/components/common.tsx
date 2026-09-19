@@ -477,8 +477,13 @@ export function SiteShell({
                         Thư viện vé
                       </Link>
                       {isAdmin && (
-                        <Link
-                          href="/admin/dashboard"
+                        <a
+                          href={
+                            process.env.NEXT_PUBLIC_ADMIN_URL ||
+                            "http://localhost:3002"
+                          }
+                          target="_blank"
+                          rel="noreferrer"
                           className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-on-surface-variant/90 hover:bg-slate-900 hover:text-on-surface rounded-xl transition-colors"
                         >
                           <LayoutDashboard
@@ -486,7 +491,7 @@ export function SiteShell({
                             className="text-on-surface-variant/70"
                           />{" "}
                           Quản trị hệ thống
-                        </Link>
+                        </a>
                       )}
 
                       <div className="h-px bg-slate-850 my-1.5 mx-1" />
