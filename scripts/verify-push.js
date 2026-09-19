@@ -4,16 +4,18 @@
 /**
  * verify-push.js
  *
- * Git pre-push quality gate.
- * Detects whether changed files belong to FE, BE, or both,
+ * Git pre-push quality gate for TicketBox Monorepo (pnpm).
+ * Detects whether changed files belong to Web, Admin, BE, Mobile, or shared,
  * then runs only the relevant checks.
  *
  * Usage:
- *   node scripts/verify-push.js            # manual run (diffs HEAD vs upstream)
- *   node scripts/verify-push.js --hook     # called by .githooks/pre-push (reads Git stdin)
- *   node scripts/verify-push.js --all      # force-run every check regardless of diff
- *   node scripts/verify-push.js --fe-only  # force FE checks only
- *   node scripts/verify-push.js --be-only  # force BE checks only
+ *   node scripts/verify-push.js             # manual run (diffs HEAD vs upstream)
+ *   node scripts/verify-push.js --hook      # called by .githooks/pre-push (reads Git stdin)
+ *   node scripts/verify-push.js --all       # force-run every check regardless of diff
+ *   node scripts/verify-push.js --fe-only   # force Web FE checks only
+ *   node scripts/verify-push.js --admin-only# force Admin checks only
+ *   node scripts/verify-push.js --be-only   # force BE checks only
+ *   node scripts/verify-push.js --mobile-only # force Mobile checks only
  */
 
 const { execSync, spawnSync } = require('child_process');
@@ -22,11 +24,13 @@ const path = require('path');
 // ──────────────────────────────────────────────
 // Flags
 // ──────────────────────────────────────────────
-const args     = process.argv.slice(2);
-const isHook   = args.includes('--hook');
-const runAll   = args.includes('--all');
-const feOnly   = args.includes('--fe-only');
-const beOnly   = args.includes('--be-only');
+const args       = process.argv.slice(2);
+const isHook     = args.includes('--hook');
+const runAll     = args.includes('--all');
+const feOnly     = args.includes('--fe-only');
+const adminOnly  = args.includes('--admin-only');
+const beOnly     = args.includes('--be-only');
+const mobileOnly = args.includes('--mobile-only');
 
 const ROOT = path.resolve(__dirname, '..');
 
@@ -56,13 +60,9 @@ function diffFiles(base, head) {
 function getChangedFiles() {
   const Z40 = '0'.repeat(40);
 
-  // ── Mode 1: called by the pre-push hook ──────
-  //    Git passes lines to stdin in the format:
-  //      <local-ref> <local-sha> <remote-ref> <remote-sha>
   if (isHook) {
     let stdinData = '';
     try {
-      // fd 0 = stdin; works on both Linux and Windows
       stdinData = require('fs').readFileSync(0, 'utf-8');
     } catch {
       stdinData = '';
@@ -77,13 +77,11 @@ function getChangedFiles() {
       const [, localSha, , remoteSha] = parts;
 
       if (localSha === Z40) {
-        // Branch deletion — nothing to check
         continue;
       }
 
       let base;
       if (remoteSha === Z40) {
-        // Brand-new branch — diff against merge-base with main/master, or HEAD~1
         base =
           git('git merge-base HEAD origin/main') ||
           git('git merge-base HEAD origin/master') ||
@@ -102,23 +100,17 @@ function getChangedFiles() {
       return Array.from(files);
     }
 
-    // stdin was empty or yielded nothing — fall through to Mode 2
     console.warn('⚠️  pre-push stdin yielded no refs; falling back to local diff.');
   }
 
-  // ── Mode 2: manual run or hook stdin fallback ─
-  //    Diff HEAD against upstream tracking branch, or origin/main.
-  //    Note: @{u} gives us the remote-tracking ref name (e.g. "origin/develop");
-  //    we pass it directly to git diff which accepts branch names fine.
   const upstream =
-    git('git rev-parse --abbrev-ref @{u}') ||          // e.g. "origin/develop"
+    git('git rev-parse --abbrev-ref @{u}') ||
     git('git merge-base HEAD origin/main') ||
     git('git merge-base HEAD origin/master') ||
     'HEAD~1';
 
   const files = diffFiles(upstream, 'HEAD');
 
-  // Also include staged/unstaged changes (for manual developer runs)
   if (!isHook) {
     const staged   = git('git diff --name-only --cached');
     const unstaged = git('git diff --name-only');
@@ -131,73 +123,57 @@ function getChangedFiles() {
 }
 
 // ──────────────────────────────────────────────
-// Classify files → FE / BE
+// Classify files → FE / Admin / BE / Mobile
 // ──────────────────────────────────────────────
 
-/**
- * Root-level config that belongs primarily to the Backend.
- *
- * WHY not shared:
- *   - root package.json / package-lock.json manage BE (NestJS, Prisma) deps.
- *     The web-app has its OWN package.json at apps/web-app/package.json,
- *     which is already caught by FE_PATTERNS.
- *   - root tsconfig.json is referenced by apps/backend-api/tsconfig.json.
- *   - root eslint.config.mjs lints only BE source (see the lint script).
- *   - .gitignore changes are unlikely to break either side's build.
- *
- * Adding a BE npm package updates root package.json + package-lock.json
- * → should NOT trigger FE checks.
- */
-const BE_ROOT_PATTERNS = [
+const FE_PATTERNS = [
+  /^apps\/web-app\//,
+  /^\.github\/workflows\/frontend-ci\.yml$/,
+];
+
+const ADMIN_PATTERNS = [
+  /^apps\/admin-app\//,
+  /^\.github\/workflows\/admin-ci\.yml$/,
+];
+
+const BE_PATTERNS = [
+  /^apps\/backend-api\//,
+  /^Dockerfile$/,
+  /^\.dockerignore$/,
+  /^\.github\/workflows\/ci\.yml$/,
+];
+
+const MOBILE_PATTERNS = [
+  /^apps\/mobile-app\//,
+];
+
+const SHARED_PATTERNS = [
+  /^\.githooks\//,
+  /^pnpm-workspace\.yaml$/,
   /^package\.json$/,
-  /^package-lock\.json$/,
+  /^pnpm-lock\.yaml$/,
+  /^\.npmrc$/,
   /^tsconfig\.json$/,
   /^eslint\.config\.mjs$/,
 ];
 
-/**
- * Files that belong exclusively (or primarily) to the Frontend.
- */
-const FE_PATTERNS = [
-  /^apps\/web-app\//,
-  // FE-specific workflow
-  /^\.github\/workflows\/frontend-ci\.yml$/,
-];
-
-/**
- * Files that belong exclusively (or primarily) to the Backend.
- */
-const BE_PATTERNS = [
-  /^apps\/backend-api\//,
-  /^prisma\//,
-  /^Dockerfile$/,
-  /^\.dockerignore$/,
-  // BE-specific workflow
-  /^\.github\/workflows\/ci\.yml$/,
-];
-
-/**
- * Files that are truly shared — changing them triggers BOTH FE and BE checks.
- * Keep this list small and intentional.
- */
-const SHARED_PATTERNS = [
-  // Hook scripts affect both pipelines
-  /^\.githooks\//,
-  // Any other workflow file not already matched above
-  /^\.github\/workflows\//,
-];
-
 function classify(files) {
-  const feFiles      = [];
-  const beFiles      = [];
-  const sharedFiles  = [];
-  const otherFiles   = [];
+  const feFiles     = [];
+  const adminFiles  = [];
+  const beFiles     = [];
+  const mobileFiles = [];
+  const sharedFiles = [];
+  const otherFiles  = [];
 
   for (const f of files) {
     if (FE_PATTERNS.some(p => p.test(f))) {
       feFiles.push(f);
-    } else if (BE_PATTERNS.some(p => p.test(f)) || BE_ROOT_PATTERNS.some(p => p.test(f))) {
+    } else if (ADMIN_PATTERNS.some(p => p.test(f))) {
+      adminFiles.push(f);
+    } else if (BE_PATTERNS.some(p => p.test(f))) {
       beFiles.push(f);
+    } else if (MOBILE_PATTERNS.some(p => p.test(f))) {
+      mobileFiles.push(f);
     } else if (SHARED_PATTERNS.some(p => p.test(f))) {
       sharedFiles.push(f);
     } else {
@@ -205,10 +181,12 @@ function classify(files) {
     }
   }
 
-  const hasFE = feFiles.length > 0 || sharedFiles.length > 0;
-  const hasBE = beFiles.length > 0 || sharedFiles.length > 0;
+  const hasFE     = feFiles.length > 0 || sharedFiles.length > 0;
+  const hasAdmin  = adminFiles.length > 0 || sharedFiles.length > 0;
+  const hasBE     = beFiles.length > 0 || sharedFiles.length > 0;
+  const hasMobile = mobileFiles.length > 0;
 
-  return { feFiles, beFiles, sharedFiles, otherFiles, hasFE, hasBE };
+  return { feFiles, adminFiles, beFiles, mobileFiles, sharedFiles, otherFiles, hasFE, hasAdmin, hasBE, hasMobile };
 }
 
 // ──────────────────────────────────────────────
@@ -243,63 +221,83 @@ function printSection(title) {
 // ──────────────────────────────────────────────
 // Main
 // ──────────────────────────────────────────────
-printSection('Git Push Verification Gate');
+printSection('Git Push Verification Gate (pnpm)');
 
-let activeFE, activeBE;
+let activeFE, activeAdmin, activeBE, activeMobile;
 
 if (runAll) {
   console.log('\n  ℹ  --all flag: forcing every check.');
-  activeFE = true;
-  activeBE = true;
+  activeFE     = true;
+  activeAdmin  = true;
+  activeBE     = true;
+  activeMobile = true;
 } else if (feOnly) {
-  console.log('\n  ℹ  --fe-only flag: running FE checks only.');
+  console.log('\n  ℹ  --fe-only flag: running Web FE checks only.');
   activeFE = true;
-  activeBE = false;
+} else if (adminOnly) {
+  console.log('\n  ℹ  --admin-only flag: running Admin checks only.');
+  activeAdmin = true;
 } else if (beOnly) {
   console.log('\n  ℹ  --be-only flag: running BE checks only.');
-  activeFE = false;
   activeBE = true;
+} else if (mobileOnly) {
+  console.log('\n  ℹ  --mobile-only flag: running Mobile checks only.');
+  activeMobile = true;
 } else {
   const changedFiles = getChangedFiles();
-  const { feFiles, beFiles, sharedFiles, otherFiles, hasFE, hasBE } = classify(changedFiles);
+  const { feFiles, adminFiles, beFiles, mobileFiles, sharedFiles, otherFiles, hasFE, hasAdmin, hasBE, hasMobile } = classify(changedFiles);
 
   console.log(`\n  Changed files (${changedFiles.length} total):`);
 
-  if (feFiles.length)     console.log(`    📦 FE-specific   : ${feFiles.slice(0, 5).join(', ')}${feFiles.length > 5 ? ` +${feFiles.length - 5} more` : ''}`);
-  if (beFiles.length)     console.log(`    🔧 BE-specific   : ${beFiles.slice(0, 5).join(', ')}${beFiles.length > 5 ? ` +${beFiles.length - 5} more` : ''}`);
-  if (sharedFiles.length) console.log(`    🔗 Shared (both) : ${sharedFiles.slice(0, 5).join(', ')}${sharedFiles.length > 5 ? ` +${sharedFiles.length - 5} more` : ''}`);
+  if (feFiles.length)     console.log(`    📦 Web-App       : ${feFiles.slice(0, 5).join(', ')}${feFiles.length > 5 ? ` +${feFiles.length - 5} more` : ''}`);
+  if (adminFiles.length)  console.log(`    ⚙️ Admin-App     : ${adminFiles.slice(0, 5).join(', ')}${adminFiles.length > 5 ? ` +${adminFiles.length - 5} more` : ''}`);
+  if (beFiles.length)     console.log(`    🔧 Backend-API   : ${beFiles.slice(0, 5).join(', ')}${beFiles.length > 5 ? ` +${beFiles.length - 5} more` : ''}`);
+  if (mobileFiles.length) console.log(`    📱 Mobile-App    : ${mobileFiles.slice(0, 5).join(', ')}${mobileFiles.length > 5 ? ` +${mobileFiles.length - 5} more` : ''}`);
+  if (sharedFiles.length) console.log(`    🔗 Shared        : ${sharedFiles.slice(0, 5).join(', ')}${sharedFiles.length > 5 ? ` +${sharedFiles.length - 5} more` : ''}`);
   if (otherFiles.length)  console.log(`    📄 Other/docs    : ${otherFiles.slice(0, 5).join(', ')}${otherFiles.length > 5 ? ` +${otherFiles.length - 5} more` : ''}`);
 
   if (changedFiles.length === 0) {
     console.log('    (no changes detected)');
   }
 
-  console.log(`\n  ➔ FE checks : ${hasFE ? '✅  YES' : '⬜  NO (no FE files changed)'}`);
-  console.log(`  ➔ BE checks : ${hasBE ? '✅  YES' : '⬜  NO (no BE files changed)'}`);
+  console.log(`\n  ➔ Web checks    : ${hasFE ? '✅  YES' : '⬜  NO'}`);
+  console.log(`  ➔ Admin checks  : ${hasAdmin ? '✅  YES' : '⬜  NO'}`);
+  console.log(`  ➔ BE checks     : ${hasBE ? '✅  YES' : '⬜  NO'}`);
+  console.log(`  ➔ Mobile checks : ${hasMobile ? '✅  YES' : '⬜  NO'}`);
 
-  activeFE = hasFE;
-  activeBE = hasBE;
+  activeFE     = hasFE;
+  activeAdmin  = hasAdmin;
+  activeBE     = hasBE;
+  activeMobile = hasMobile;
 }
 
 // ──────────────────────────────────────────────
-// Frontend checks
+// Web App checks
 // ──────────────────────────────────────────────
 if (activeFE) {
-  printSection('Frontend Checks');
+  printSection('Web App Checks');
   runCheck(
-    'Prettier — code style',
-    'npx', ['prettier', '--check', '.'],
-    'apps/web-app',
+    'Web: ESLint',
+    'pnpm', ['--filter', 'web-app', 'run', 'lint']
   );
   runCheck(
-    'ESLint — static analysis',
-    'npm', ['run', 'lint'],
-    'apps/web-app',
+    'Web: TypeScript',
+    'pnpm', ['--filter', 'web-app', 'run', 'type-check']
+  );
+}
+
+// ──────────────────────────────────────────────
+// Admin App checks
+// ──────────────────────────────────────────────
+if (activeAdmin) {
+  printSection('Admin App Checks');
+  runCheck(
+    'Admin: ESLint',
+    'pnpm', ['--filter', 'admin-app', 'run', 'lint']
   );
   runCheck(
-    'TypeScript — type checking',
-    'npm', ['run', 'type-check'],
-    'apps/web-app',
+    'Admin: TypeScript',
+    'pnpm', ['--filter', 'admin-app', 'run', 'type-check']
   );
 }
 
@@ -309,25 +307,40 @@ if (activeFE) {
 if (activeBE) {
   printSection('Backend Checks');
   runCheck(
-    'ESLint — static analysis',
-    'npm', ['run', 'lint'],
+    'BE: Prisma Generate',
+    'pnpm', ['--filter', 'backend-api', 'run', 'prisma:generate']
   );
   runCheck(
-    'TypeScript — type checking',
-    'npm', ['run', 'typecheck:api'],
+    'BE: ESLint',
+    'pnpm', ['--filter', 'backend-api', 'run', 'lint']
   );
   runCheck(
-    'Unit tests',
-    'npm', ['run', 'test:api:unit'],
+    'BE: TypeScript',
+    'pnpm', ['--filter', 'backend-api', 'run', 'typecheck']
+  );
+  runCheck(
+    'BE: Unit tests',
+    'pnpm', ['--filter', 'backend-api', 'run', 'test:unit']
+  );
+}
+
+// ──────────────────────────────────────────────
+// Mobile checks
+// ──────────────────────────────────────────────
+if (activeMobile) {
+  printSection('Mobile App Checks');
+  runCheck(
+    'Mobile: ESLint',
+    'pnpm', ['--filter', 'mobile-app', 'run', 'lint']
   );
 }
 
 // ──────────────────────────────────────────────
 // Summary
 // ──────────────────────────────────────────────
-if (!activeFE && !activeBE) {
+if (!activeFE && !activeAdmin && !activeBE && !activeMobile) {
   printSection('No relevant changes detected');
-  console.log('\n  ℹ  No FE or BE files were changed. Skipping all checks.');
+  console.log('\n  ℹ  No workspace app files were changed. Skipping checks.');
 }
 
 printSection('✔  All checks passed!');

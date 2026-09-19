@@ -7,9 +7,9 @@ on:
       - main
     paths:
       - 'apps/backend-api/**'
-      - 'prisma/**'
       - 'package.json'
-      - 'package-lock.json'
+      - 'pnpm-workspace.yaml'
+      - 'pnpm-lock.yaml'
       - 'tsconfig.json'
       - '.github/workflows/ci.yml'
       - 'Dockerfile'
@@ -20,9 +20,9 @@ on:
       - '**'
     paths:
       - 'apps/backend-api/**'
-      - 'prisma/**'
       - 'package.json'
-      - 'package-lock.json'
+      - 'pnpm-workspace.yaml'
+      - 'pnpm-lock.yaml'
       - 'tsconfig.json'
       - '.github/workflows/ci.yml'
       - 'Dockerfile'
@@ -41,7 +41,6 @@ jobs:
   quality:
     name: Quality Gate
     runs-on: ubuntu-latest
-
     timeout-minutes: 12
 
     env:
@@ -52,46 +51,41 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Cache npm and Prisma engine
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            ~/.cache/prisma
-          key: ${{ runner.os }}-npm-prisma-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-prisma-
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm install --prefer-offline --no-audit --fund=false
+        run: pnpm install --frozen-lockfile
 
-      - name: Lint sources
-        run: npm run lint
+      - name: Lint backend
+        run: pnpm --filter backend-api run lint
 
       - name: Generate Prisma client
-        run: npm run prisma:generate
+        run: pnpm --filter backend-api run prisma:generate
 
       - name: Validate Prisma schema
-        run: npm run prisma:validate
+        run: pnpm --filter backend-api run prisma:validate
 
       - name: Type check backend
-        run: npm run typecheck:api
+        run: pnpm --filter backend-api run typecheck
 
       - name: Run backend unit tests
-        run: npm run test:api:unit
+        run: pnpm --filter backend-api run test:unit
 
       - name: Build backend
-        run: npm run build:api
+        run: pnpm --filter backend-api run build
 
   database:
     name: Database Gate
     runs-on: ubuntu-latest
-
     timeout-minutes: 10
 
     services:
@@ -117,29 +111,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Cache npm and Prisma engine
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            ~/.cache/prisma
-          key: ${{ runner.os }}-npm-prisma-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-prisma-
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm install --prefer-offline --no-audit --fund=false
+        run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        run: npm run prisma:generate
+        run: pnpm --filter backend-api run prisma:generate
 
       - name: Validate Prisma schema
-        run: npm run prisma:validate
+        run: pnpm --filter backend-api run prisma:validate
 
       - name: Apply Prisma migrations
-        run: npm run db:migrate:deploy
+        run: pnpm --filter backend-api run db:migrate:deploy

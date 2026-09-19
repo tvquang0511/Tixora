@@ -1,4 +1,4 @@
-name: Frontend CI/CD
+name: Admin CI/CD
 
 on:
   pull_request:
@@ -6,24 +6,24 @@ on:
       - develop
       - main
     paths:
-      - "apps/web-app/**"
+      - "apps/admin-app/**"
       - "package.json"
       - "pnpm-workspace.yaml"
       - "pnpm-lock.yaml"
-      - ".github/workflows/frontend-ci.yml"
+      - ".github/workflows/admin-ci.yml"
   push:
     branches:
       - "**"
     paths:
-      - "apps/web-app/**"
+      - "apps/admin-app/**"
       - "package.json"
       - "pnpm-workspace.yaml"
       - "pnpm-lock.yaml"
-      - ".github/workflows/frontend-ci.yml"
+      - ".github/workflows/admin-ci.yml"
   workflow_dispatch:
 
 concurrency:
-  group: frontend-ci-${{ github.workflow }}-${{ github.ref }}
+  group: admin-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -31,7 +31,7 @@ permissions:
 
 jobs:
   quality:
-    name: Frontend Quality Gate
+    name: Admin Quality Gate
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -54,31 +54,15 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Code style verification (Prettier)
-        run: pnpm --filter web-app exec prettier --check .
+        run: pnpm --filter admin-app exec prettier --check .
 
       - name: Static linter audits (ESLint)
-        run: pnpm --filter web-app run lint
+        run: pnpm --filter admin-app run lint
 
       - name: Static compiler type-checking (TypeScript)
-        run: pnpm --filter web-app run type-check
+        run: pnpm --filter admin-app run type-check
 
       - name: Production compilation build test
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-        run: pnpm --filter web-app run build
-
-  deploy-staging:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: quality
-    steps:
-      - name: Trigger CD Webhook for Staging
-        run: |
-          if [ -n "${{ secrets.STAGING_DEPLOY_WEBHOOK_URL }}" ]; then
-            curl -X POST -H "Content-Type: application/json" \
-                 -d "{\"branch\":\"${{ github.ref_name }}\",\"sha\":\"${{ github.sha }}\"}" \
-                 ${{ secrets.STAGING_DEPLOY_WEBHOOK_URL }}
-            echo "Successfully triggered staging webhook"
-          else
-            echo "STAGING_DEPLOY_WEBHOOK_URL is not configured. Skipping deployment."
-          fi
+        run: pnpm --filter admin-app run build
