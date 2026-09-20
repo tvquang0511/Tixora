@@ -4,8 +4,8 @@
 
 Hệ thống đã được triển khai đầy đủ trên production. Để kiểm tra toàn bộ chức năng, đặc biệt là thanh toán PayOS và webhook phát hành e-ticket, nên ưu tiên sử dụng:
 
-- Web App: [https://web.ticketbox.retrobit.io.vn](https://web.ticketbox.retrobit.io.vn)
-- Backend Swagger: [https://api.ticketbox.retrobit.io.vn/api/docs](https://api.ticketbox.retrobit.io.vn/api/docs)
+- Web App: [https://web.yourdomain.com](https://web.yourdomain.com)
+- Backend Swagger: [https://api.yourdomain.com/api/docs](https://api.yourdomain.com/api/docs)
 
 PayOS webhook hiện được cấu hình trỏ tới Backend production. Chạy local vẫn kiểm tra được catalog, auth, giữ vé, API và giao diện, nhưng **không nên dùng để đánh giá payment end-to-end** nếu chưa cấu hình lại webhook PayOS thành public URL trỏ tới Backend local.
 
@@ -101,9 +101,9 @@ File `apps/web-app/.env` và `.env.example` hiện mặc định gọi Backend p
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=/api/proxy
-NEXT_PUBLIC_API_URL=https://api.ticketbox.retrobit.io.vn/
-REMOTE_API_URL=https://api.ticketbox.retrobit.io.vn/
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=https://api.yourdomain.com/
+REMOTE_API_URL=https://api.yourdomain.com/
+NEXT_PUBLIC_APP_URL=http://localhost:3001
 ```
 
 Nếu chỉ chạy giao diện local nhưng vẫn dùng API production, giữ nguyên các URL trên.
@@ -177,7 +177,7 @@ Mật khẩu chung: `123456`
 
 ## 7. Chạy Backend
 
-Backend production: `https://api.ticketbox.retrobit.io.vn/api/docs`.
+Backend production: `https://api.yourdomain.com/api/docs`.
 
 Source tại `apps/backend-api/src/main.ts` nạp root `.env` và dùng `process.env.PORT ?? 3000`. Vì vậy người chấm có thể đổi port bằng biến `PORT`; nếu biến này không tồn tại thì Backend chạy port `3000`.
 
@@ -205,7 +205,7 @@ Nếu muốn chạy Backend tại port `3000`, đổi thành `PORT="3000"` và �
 
 ## 8. Chạy Web App
 
-Web App production: `https://web.ticketbox.retrobit.io.vn`.
+Web App production: `https://web.yourdomain.com`.
 
 Next.js mặc định chạy port `3000`. Mở terminal khác tại root:
 

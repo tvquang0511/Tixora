@@ -14,17 +14,17 @@ const TEAM_MEMBERS = [
   {
     name: "Trần Vũ Quang",
     role: "Frontend Engineer / UI/UX Designer",
-    email: "quang.tran@ticketbox.retrobit.io.vn",
+    email: "quang.tran@ticketbox.vn",
   },
   {
     name: "Nguyễn Khắc Vượng",
     role: "Backend Engineer / DevOps",
-    email: "vuong.nguyen@ticketbox.retrobit.io.vn",
+    email: "vuong.nguyen@ticketbox.vn",
   },
   {
     name: "Trần Quốc Vỹ",
     role: "Quality Assurance / Tester",
-    email: "vy.tran@ticketbox.retrobit.io.vn",
+    email: "vy.tran@ticketbox.vn",
   },
 ];
 
@@ -142,7 +142,7 @@ export default function ContactUsPage() {
                       Hỗ trợ chung
                     </p>
                     <p className="text-xs mt-1 text-on-surface-variant/80">
-                      support@ticketbox.retrobit.io.vn
+                      support@ticketbox.vn
                     </p>
                   </div>
                 </div>
