@@ -102,7 +102,8 @@ export class RabbitMqService implements OnModuleInit, OnModuleDestroy {
 
     async publish(exchange: string, routingKey: string, content: Record<string, unknown>, headers?: Record<string, unknown>): Promise<void> {
         if (!this.publishChannel) {
-            throw new Error('RabbitMQ publish channel is not available');
+            this.logger.warn(`[RabbitMQ] Publish skipped (RabbitMQ not connected) for exchange: ${exchange}`);
+            return;
         }
 
         const buffer = Buffer.from(JSON.stringify(content));
@@ -124,7 +125,8 @@ export class RabbitMqService implements OnModuleInit, OnModuleDestroy {
         prefetch = 10,
     ): Promise<void> {
         if (!this.channelModel) {
-            throw new Error('RabbitMQ connection is not available');
+            this.logger.warn(`[RabbitMQ] Consumer skipped (RabbitMQ not connected) for queue: ${queue}`);
+            return;
         }
 
         const channel = await this.channelModel.createChannel();
