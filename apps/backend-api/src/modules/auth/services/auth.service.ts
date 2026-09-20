@@ -83,10 +83,24 @@ export class AuthService {
     // 2. Hash password
     const passwordHash = await bcrypt.hash(dto.password, BCRYPT_ROUNDS);
 
-    // 3. Find the default "Audience" role
-    const audienceRole = await this.prisma.role.findUnique({
+    // 3. Find the default "Audience" role (auto-seed if empty)
+    let audienceRole = await this.prisma.role.findUnique({
       where: { name: 'Audience' },
     });
+    if (!audienceRole) {
+      await this.prisma.role.createMany({
+        data: [
+          { name: 'Admin', description: 'System administrator' },
+          { name: 'Organizer', description: 'Concert organizer' },
+          { name: 'Checker', description: 'Gate staff' },
+          { name: 'Audience', description: 'Regular customer' },
+        ],
+        skipDuplicates: true,
+      });
+      audienceRole = await this.prisma.role.findUnique({
+        where: { name: 'Audience' },
+      });
+    }
     if (!audienceRole) {
       throw new BadRequestException('Default role "Audience" not found. Please run database seed first.');
     }
