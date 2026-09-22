@@ -13,6 +13,7 @@ Repository này được tổ chức dưới dạng **pnpm Workspaces (Monorepo)
 * **`apps/admin-app`**: Trang quản trị (Admin Portal) độc lập (chạy tại cổng **`3002`**), xây dựng bằng **Next.js 16 App Router** phục vụ quản lý sự kiện, vé, doanh thu, phân công và tác vụ nền. Sẵn sàng deploy độc lập lên domain riêng (ví dụ `admin.ticketbox.vn`).
 * **`apps/mobile-app`**: Ứng dụng di động dành riêng cho nhân viên soát vé (Checker), phát triển bằng **React Native (Expo)** hỗ trợ quét QR ngoại tuyến (Offline-first).
 * **`infrastructure/`**: Chứa file cấu hình Docker Compose để khởi động nhanh Redis và RabbitMQ dưới local.
+* **`docs/`**: Hệ thống tài liệu dự án được chuẩn hóa (Kiến trúc, Module specs, Manual Test, Playwright E2E, Upgrade Proposals và Quy trình làm việc). Tra cứu tại [docs/README.md](docs/README.md).
 * **`scripts/`**: Chứa các script k6 dùng để load test hệ thống dưới tải cao và script quality gate `verify-push.js`.
 
 ---
