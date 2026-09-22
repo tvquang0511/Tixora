@@ -26,6 +26,10 @@
     "typecheck": "pnpm -r run typecheck",
     "typecheck:api": "pnpm --filter backend-api run typecheck",
     "test:api:unit": "pnpm --filter backend-api run test:unit",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report",
     "prisma:generate": "pnpm --filter backend-api run prisma:generate",
     "prisma:validate": "pnpm --filter backend-api run prisma:validate",
     "db:migrate:deploy": "pnpm --filter backend-api run db:migrate:deploy",
@@ -33,6 +37,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.50.1",
     "@typescript-eslint/eslint-plugin": "^8.60.0",
     "@typescript-eslint/parser": "^8.60.0",
     "eslint": "^10.4.0",
