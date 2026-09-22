@@ -65,14 +65,14 @@ export class AuthController {
   }
 
   @Get('verify')
-  @Redirect('http://localhost:3000', 302)
+  @Redirect('http://localhost:3001/login?verified=1', 302)
   @ApiOperation({ summary: 'Verify user email using activation token' })
   @ApiOkResponse({ description: 'Email successfully verified and redirected' })
   @ApiBadRequestResponse({ description: 'Invalid or expired token' })
   async verifyEmail(@Query('token') token: string) {
     await this.authService.verifyEmail(token);
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    return { url: frontendUrl };
+    const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3001').replace(/\/+$/, '');
+    return { url: `${frontendUrl}/login?verified=1` };
   }
 
   @Post('resend-verification')

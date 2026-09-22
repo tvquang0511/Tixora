@@ -143,8 +143,11 @@ export class EmailService {
     fullName: string,
     token: string,
   ): Promise<boolean> {
-    const backendUrl = process.env.BACKEND_URL || "http://localhost:3000";
-    const verifyUrl = `${backendUrl}/auth/verify?token=${token}`;
+    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:3001").replace(/\/+$/, "");
+    const baseVerifyUrl = process.env.EMAIL_VERIFICATION_URL
+      ? process.env.EMAIL_VERIFICATION_URL.replace(/\/+$/, "")
+      : `${frontendUrl}/verify`;
+    const verifyUrl = `${baseVerifyUrl}?token=${encodeURIComponent(token)}`;
 
     const html = `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;">
@@ -188,8 +191,11 @@ export class EmailService {
     fullName: string,
     token: string,
   ): Promise<boolean> {
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
-    const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
+    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:3001").replace(/\/+$/, "");
+    const baseResetUrl = process.env.PASSWORD_RESET_URL
+      ? process.env.PASSWORD_RESET_URL.replace(/\/+$/, "")
+      : `${frontendUrl}/reset-password`;
+    const resetUrl = `${baseResetUrl}?token=${encodeURIComponent(token)}`;
 
     const html = `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;">
