@@ -4,6 +4,7 @@ import { StatusBadge } from "../../_components/StatusBadge";
 import { Pagination } from "../../_components/Pagination";
 
 const ROLE_CLASSES: Record<string, string> = {
+  SuperAdmin: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20",
   Admin: "bg-violet-500/10 text-violet-400 border-violet-500/20",
   Checker: "bg-amber-500/10 text-amber-400 border-amber-500/20",
   Organizer: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",

@@ -33,10 +33,13 @@ export class RolesGuard implements CanActivate {
     const normalizedUserRoles = userRoles.map((r: string) => r.toUpperCase());
     const normalizedUserPermissions = userPermissions.map((p: string) => p.toUpperCase());
 
+    const isSuperAdmin = normalizedUserRoles.includes('SUPERADMIN') || normalizedUserRoles.includes('SUPER_ADMIN');
+
     const roleOk =
-      requiredRoles && requiredRoles.length > 0
+      isSuperAdmin ||
+      (requiredRoles && requiredRoles.length > 0
         ? requiredRoles.some((r) => normalizedUserRoles.includes(r.toUpperCase()))
-        : true;
+        : true);
     const permissionOk =
       requiredPermissions && requiredPermissions.length > 0
         ? requiredPermissions.some((p) => normalizedUserPermissions.includes(p.toUpperCase()))

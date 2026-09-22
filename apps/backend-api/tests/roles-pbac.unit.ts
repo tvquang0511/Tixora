@@ -96,3 +96,21 @@ test('RolesGuard blocks Checker from endpoints requiring Admin or Organizer', ()
 
   assert.equal(guard.canActivate(context), false);
 });
+
+test('RolesGuard allows SuperAdmin through hierarchical roleOk check', () => {
+  const reflector = new Reflector();
+  reflector.getAllAndOverride = ((key: string) => {
+    if (key === ROLES_KEY) return ['ADMIN', 'ORGANIZER'];
+    if (key === PERMISSIONS_KEY) return [PermissionCode.CREATE_CONCERT];
+    return undefined;
+  }) as any;
+
+  const guard = new RolesGuard(reflector);
+  const context = createMockExecutionContext({
+    roles: ['SuperAdmin'],
+    permissions: ['CREATE_CONCERT', 'MANAGE_ADMINS', 'MANAGE_USERS'],
+  });
+
+  assert.equal(guard.canActivate(context), true);
+});
+

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fn } from 'jest-mock';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { AdminUsersService } from '../src/modules/admin-users/services/admin-users.service';
 
 function createService() {
@@ -291,4 +291,60 @@ test('updateRoles replaces user roles and returns user detail', async () => {
         { user_id: 'user-1', role_id: 'role-checker' },
     ]);
     assert.deepEqual(result.roles, ['Checker']);
+});
+
+test('createUser rejects non-SuperAdmin trying to provision Admin role', async () => {
+    const { service } = createService();
+
+    await assert.rejects(
+        () =>
+            service.createUser(
+                {
+                    email: 'newadmin@example.com',
+                    password: 'password123',
+                    full_name: 'New Admin',
+                    roles: ['Admin'],
+                },
+                { sub: 'regular-admin', roles: ['Admin'] },
+            ),
+        ForbiddenException,
+    );
+});
+
+test('updateStatus rejects non-SuperAdmin modifying SuperAdmin account', async () => {
+    const { service, mockPrisma } = createService();
+
+    mockPrisma.user.findUnique.mockResolvedValue({
+        id: 'super-user-1',
+        user_roles: [{ role: { name: 'SuperAdmin' } }],
+    });
+
+    await assert.rejects(
+        () =>
+            service.updateStatus(
+                'super-user-1',
+                { sub: 'regular-admin', roles: ['Admin'] },
+                { status: 'BANNED' },
+            ),
+        ForbiddenException,
+    );
+});
+
+test('updateRoles rejects non-SuperAdmin modifying SuperAdmin account or touching Admin roles', async () => {
+    const { service, mockPrisma } = createService();
+
+    mockPrisma.user.findUnique.mockResolvedValue({
+        id: 'super-user-1',
+        user_roles: [{ role: { name: 'SuperAdmin' } }],
+    });
+
+    await assert.rejects(
+        () =>
+            service.updateRoles(
+                'super-user-1',
+                { sub: 'regular-admin', roles: ['Admin'] },
+                { roles: ['Audience'] },
+            ),
+        ForbiddenException,
+    );
 });

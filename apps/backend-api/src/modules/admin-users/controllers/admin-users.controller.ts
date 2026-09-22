@@ -25,7 +25,7 @@ import { UpdateUserStatusDto } from '../dtos/update-user-status.dto';
 @Controller('admin/users')
 @ApiTags('Admin Users')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@Roles('SUPERADMIN', 'ADMIN')
 @Permissions(PermissionCode.MANAGE_USERS)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
@@ -42,8 +42,8 @@ export class AdminUsersController {
     @Post()
     @ApiOperation({ summary: 'Create a user from admin portal' })
     @ApiCreatedResponse({ description: 'User created by admin' })
-    createUser(@Body() dto: CreateAdminUserDto) {
-        return this.adminUsersService.createUser(dto);
+    createUser(@Req() req: any, @Body() dto: CreateAdminUserDto) {
+        return this.adminUsersService.createUser(dto, req.user);
     }
 
     @Get(':id')
@@ -61,7 +61,7 @@ export class AdminUsersController {
         @Param('id') userId: string,
         @Body() dto: UpdateUserStatusDto,
     ) {
-        return this.adminUsersService.updateStatus(userId, req.user.sub, dto);
+        return this.adminUsersService.updateStatus(userId, req.user, dto);
     }
 
     @Patch(':id/roles')
@@ -72,6 +72,6 @@ export class AdminUsersController {
         @Param('id') userId: string,
         @Body() dto: UpdateUserRolesDto,
     ) {
-        return this.adminUsersService.updateRoles(userId, req.user.sub, dto);
+        return this.adminUsersService.updateRoles(userId, req.user, dto);
     }
 }

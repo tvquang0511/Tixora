@@ -1,7 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../../../shared/prisma.service';
+
+export type ActorContext = string | { sub: string; roles?: string[]; permissions?: string[] };
 import { PaginationMetaDto } from '../../../shared/dtos/pagination-meta.dto';
 import { AdminUserQueryDto } from '../dtos/admin-user-query.dto';
 import { CreateAdminUserDto } from '../dtos/create-admin-user.dto';
@@ -107,7 +109,17 @@ export class AdminUsersService {
         };
     }
 
-    async createUser(dto: CreateAdminUserDto) {
+    async createUser(dto: CreateAdminUserDto, actor?: ActorContext) {
+        const targetRoles = dto.roles.map((r) => r.toUpperCase());
+        const touchesAdmin =
+            targetRoles.includes('ADMIN') ||
+            targetRoles.includes('SUPERADMIN') ||
+            targetRoles.includes('SUPER_ADMIN');
+
+        if (touchesAdmin && actor && !this.isSuperAdmin(actor)) {
+            throw new ForbiddenException('Only SuperAdmin can provision administrator roles');
+        }
+
         const existing = await this.prisma.user.findUnique({
             where: { email: dto.email },
             select: { id: true },
@@ -220,8 +232,29 @@ export class AdminUsersService {
         };
     }
 
-    async updateStatus(userId: string, actorId: string, dto: UpdateUserStatusDto) {
+    async updateStatus(userId: string, actor: ActorContext, dto: UpdateUserStatusDto) {
+        const actorId = typeof actor === 'string' ? actor : actor.sub;
         this.assertNotSelf(userId, actorId, 'Admin cannot update own status');
+
+        if (typeof actor === 'object' && !this.isSuperAdmin(actor)) {
+            const targetUser = await this.prisma.user.findUnique({
+                where: { id: userId },
+                include: { user_roles: { include: { role: { select: { name: true } } } } },
+            });
+
+            if (!targetUser) {
+                throw new NotFoundException('User not found');
+            }
+
+            const isTargetSuperAdmin = (targetUser.user_roles || []).some((ur) => {
+                const name = ur.role.name.toUpperCase();
+                return name === 'SUPERADMIN' || name === 'SUPER_ADMIN';
+            });
+
+            if (isTargetSuperAdmin) {
+                throw new ForbiddenException('Only SuperAdmin can modify SuperAdmin account status');
+            }
+        }
 
         const user = await this.prisma.user.update({
             where: { id: userId },
@@ -256,16 +289,39 @@ export class AdminUsersService {
         return this.mapListUser(user as AdminUserListRow);
     }
 
-    async updateRoles(userId: string, actorId: string, dto: UpdateUserRolesDto) {
+    async updateRoles(userId: string, actor: ActorContext, dto: UpdateUserRolesDto) {
+        const actorId = typeof actor === 'string' ? actor : actor.sub;
         this.assertNotSelf(userId, actorId, 'Admin cannot update own roles');
 
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
-            select: { id: true },
+            include: { user_roles: { include: { role: { select: { name: true } } } } },
         });
 
         if (!user) {
             throw new NotFoundException('User not found');
+        }
+
+        const currentRoles = (user.user_roles || []).map((ur) => ur.role?.name?.toUpperCase() || '');
+        const targetRoles = dto.roles.map((r) => r.toUpperCase());
+
+        if (typeof actor === 'object') {
+            const targetIsSuperAdmin = currentRoles.includes('SUPERADMIN') || currentRoles.includes('SUPER_ADMIN');
+            if (targetIsSuperAdmin && !this.isSuperAdmin(actor)) {
+                throw new ForbiddenException('Only SuperAdmin can modify SuperAdmin roles');
+            }
+
+            const touchesAdmin =
+                currentRoles.includes('ADMIN') ||
+                currentRoles.includes('SUPERADMIN') ||
+                currentRoles.includes('SUPER_ADMIN') ||
+                targetRoles.includes('ADMIN') ||
+                targetRoles.includes('SUPERADMIN') ||
+                targetRoles.includes('SUPER_ADMIN');
+
+            if (touchesAdmin && !this.isSuperAdmin(actor)) {
+                throw new ForbiddenException('Only SuperAdmin can modify administrator accounts or roles');
+            }
         }
 
         const roles = await this.getRolesOrThrow(dto.roles);
@@ -284,6 +340,14 @@ export class AdminUsersService {
         });
 
         return this.getUserDetail(userId);
+    }
+
+    private isSuperAdmin(actor?: ActorContext): boolean {
+        if (!actor) return true;
+        if (typeof actor === 'string') return true;
+        const roles = (actor.roles || []).map((r) => r.toUpperCase());
+        const perms = (actor.permissions || []).map((p) => p.toUpperCase());
+        return roles.includes('SUPERADMIN') || roles.includes('SUPER_ADMIN') || perms.includes('MANAGE_ADMINS');
     }
 
     private async getRolesOrThrow(roleNames: string[]) {

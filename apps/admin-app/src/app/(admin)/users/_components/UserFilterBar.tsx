@@ -66,6 +66,7 @@ export function UserFilterBar({
             className="bg-background border border-border rounded-xl px-4 py-2 text-xs font-semibold text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-full h-11 transition-all cursor-pointer"
           >
             <option value="All">Tất cả vai trò</option>
+            <option value="SuperAdmin">SuperAdmin</option>
             <option value="Audience">Audience</option>
             <option value="Admin">Admin</option>
             <option value="Checker">Checker</option>

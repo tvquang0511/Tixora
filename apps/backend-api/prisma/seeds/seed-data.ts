@@ -3,6 +3,7 @@ export const BCRYPT_SALT = "$2b$10$EixZaYVK1fsbw1ZfbX3OXe";
 export const FAKER_SEED = 9;
 
 export const roles = [
+  { name: "SuperAdmin", description: "Root system administrator" },
   { name: "Admin", description: "System administrator" },
   { name: "Organizer", description: "Concert organizer" },
   { name: "Checker", description: "Gate staff" },
@@ -16,11 +17,23 @@ export const permissions = [
   { code: "VIEW_REVENUE", description: "View revenue reports" },
   { code: "SCAN_TICKET", description: "Scan tickets at gate" },
   { code: "MANAGE_USERS", description: "Manage staff accounts and roles" },
+  { code: "MANAGE_ADMINS", description: "Manage administrator accounts and privilege levels" },
   { code: "ASSIGN_CHECKER", description: "Assign checkers to concert gates" },
   { code: "IMPORT_GUESTS", description: "Import VIP and guest lists" },
 ];
 
 export const rolePermissions: Record<string, string[]> = {
+  SuperAdmin: [
+    "CREATE_CONCERT",
+    "UPDATE_CONCERT",
+    "DELETE_CONCERT",
+    "VIEW_REVENUE",
+    "SCAN_TICKET",
+    "MANAGE_USERS",
+    "MANAGE_ADMINS",
+    "ASSIGN_CHECKER",
+    "IMPORT_GUESTS",
+  ],
   Admin: [
     "CREATE_CONCERT",
     "UPDATE_CONCERT",

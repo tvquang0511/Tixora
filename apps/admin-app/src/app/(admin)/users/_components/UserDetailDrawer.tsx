@@ -2,6 +2,7 @@
 
 import { X, ShoppingBag, CheckCircle, Ticket, DollarSign } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 import { type AdminUserDetail } from "@/services/admin-user.service";
 
 const formatVND = (value: number) =>
@@ -41,6 +42,10 @@ export function UserDetailDrawer({
   onCancelDraft,
   onSaveChanges,
 }: UserDetailDrawerProps) {
+  const { user: currentUser } = useAuth();
+  const isCurrentSuperAdmin = currentUser?.roles?.includes("SuperAdmin");
+  const isTargetSuperAdmin = detailData?.roles?.includes("SuperAdmin");
+  const canEditTarget = isCurrentSuperAdmin || !isTargetSuperAdmin;
   const statusChanged = detailData ? draftStatus !== detailData.status : false;
   const rolesChanged = detailData
     ? JSON.stringify([...draftRoles].sort()) !==
@@ -149,6 +154,11 @@ export function UserDetailDrawer({
 
                   {/* Status & Roles Editor */}
                   <div className="space-y-4 bg-background rounded-2xl border border-border p-6">
+                    {!canEditTarget && (
+                      <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-semibold">
+                        Tài khoản SuperAdmin được bảo vệ. Chỉ SuperAdmin khác mới có quyền chỉnh sửa trạng thái hoặc vai trò của tài khoản này.
+                      </div>
+                    )}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       {/* Status */}
                       <div className="space-y-3">
@@ -156,7 +166,7 @@ export function UserDetailDrawer({
                           Trạng thái tài khoản
                         </h4>
                         <select
-                          disabled={isSavingDraft}
+                          disabled={isSavingDraft || !canEditTarget}
                           value={draftStatus}
                           onChange={(e) => onDraftStatusChange(e.target.value)}
                           className="bg-surface border border-border rounded-xl px-3 py-1.5 text-xs font-semibold text-foreground focus:outline-none focus:border-primary w-full h-10 transition-all cursor-pointer disabled:opacity-50"
@@ -174,13 +184,14 @@ export function UserDetailDrawer({
                           Vai trò tài khoản
                         </h4>
                         <select
-                          disabled={isSavingDraft}
+                          disabled={isSavingDraft || !canEditTarget}
                           value={draftRoles[0] || "Audience"}
                           onChange={(e) => onDraftRolesChange([e.target.value])}
                           className="bg-surface border border-border rounded-xl px-3 py-1.5 text-xs font-semibold text-foreground focus:outline-none focus:border-primary w-full h-10 transition-all cursor-pointer disabled:opacity-50"
                         >
                           <option value="Audience">Audience</option>
-                          <option value="Admin">Admin</option>
+                          {isCurrentSuperAdmin && <option value="SuperAdmin">SuperAdmin</option>}
+                          {isCurrentSuperAdmin && <option value="Admin">Admin</option>}
                           <option value="Checker">Checker</option>
                           <option value="Organizer">Organizer</option>
                         </select>

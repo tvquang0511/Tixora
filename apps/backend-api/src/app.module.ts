@@ -13,6 +13,8 @@ import { AdminDashboardModule } from './modules/admin-dashboard/admin-dashboard.
 import { AdminRevenueModule } from './modules/admin-revenue/admin-revenue.module';
 import { AdminUsersModule } from './modules/admin-users/admin-users.module';
 import { NotificationModule } from './modules/notifications/notification.module';
+import { PrismaService } from './shared/prisma.service';
+import { RolesPermissionsSyncService } from './shared/roles-permissions-sync.service';
 
 @Module({
 	imports: [
@@ -31,5 +33,6 @@ import { NotificationModule } from './modules/notifications/notification.module'
 		AdminUsersModule,
 		NotificationModule,
 	],
+	providers: [PrismaService, RolesPermissionsSyncService],
 })
 export class AppModule { }

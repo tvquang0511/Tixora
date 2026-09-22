@@ -29,7 +29,12 @@ function AdminLoginForm() {
       const user = response.user;
 
       const userRoles = user.roles || [];
-      if (userRoles.includes("Checker") && !userRoles.includes("Admin") && !userRoles.includes("Organizer")) {
+      if (
+        userRoles.includes("Checker") &&
+        !userRoles.includes("SuperAdmin") &&
+        !userRoles.includes("Admin") &&
+        !userRoles.includes("Organizer")
+      ) {
         await logout();
         showErrorToast(
           "Truy cập bị từ chối: Tài khoản Soát vé (Checker) chỉ được sử dụng trên ứng dụng di động Mobile App."
@@ -38,7 +43,11 @@ function AdminLoginForm() {
         return;
       }
 
-      if (!userRoles.includes("Admin") && !userRoles.includes("Organizer")) {
+      if (
+        !userRoles.includes("SuperAdmin") &&
+        !userRoles.includes("Admin") &&
+        !userRoles.includes("Organizer")
+      ) {
         await logout();
         showErrorToast("Truy cập bị từ chối: Tài khoản không có quyền Quản trị viên (Admin).");
         setLoading(false);

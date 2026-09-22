@@ -11,6 +11,7 @@ dotenv.config({ path: path.resolve(process.cwd(), 'apps/backend-api/.env') });
 const prisma = new PrismaClient();
 
 const ALL_ROLES = [
+  { name: 'SuperAdmin', description: 'Root system administrator' },
   { name: 'Admin', description: 'System administrator' },
   { name: 'Organizer', description: 'Concert organizer' },
   { name: 'Checker', description: 'Gate staff' },
@@ -24,8 +25,21 @@ const ALL_PERMISSIONS = [
   { code: 'VIEW_REVENUE', description: 'View revenue reports' },
   { code: 'SCAN_TICKET', description: 'Scan tickets at gate' },
   { code: 'MANAGE_USERS', description: 'Manage staff accounts and roles' },
+  { code: 'MANAGE_ADMINS', description: 'Manage administrator accounts and privilege levels' },
   { code: 'ASSIGN_CHECKER', description: 'Assign checkers to concert gates' },
   { code: 'IMPORT_GUESTS', description: 'Import VIP and guest lists' },
+];
+
+const SUPER_ADMIN_PERMISSIONS = [
+  'CREATE_CONCERT',
+  'UPDATE_CONCERT',
+  'DELETE_CONCERT',
+  'VIEW_REVENUE',
+  'SCAN_TICKET',
+  'MANAGE_USERS',
+  'MANAGE_ADMINS',
+  'ASSIGN_CHECKER',
+  'IMPORT_GUESTS',
 ];
 
 const ADMIN_PERMISSIONS = [
@@ -74,13 +88,13 @@ async function main() {
 
   // If running interactively without flags and stdin is a TTY
   if (!email && process.stdin.isTTY) {
-    email = await prompt('Enter Admin Email', 'superadmin@ticketbox.local');
+    email = await prompt('Enter Super Admin Email', 'superadmin@ticketbox.local');
   } else if (!email) {
     email = 'superadmin@ticketbox.local';
   }
 
   if (!password && process.stdin.isTTY) {
-    password = await prompt('Enter Admin Password', 'SuperAdmin123!');
+    password = await prompt('Enter Super Admin Password', 'SuperAdmin123!');
   } else if (!password) {
     password = 'SuperAdmin123!';
   }
@@ -96,23 +110,45 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`\nProvisioning admin account for: ${email}`);
+  console.log(`\nProvisioning Super Admin account for: ${email}`);
 
   // 1. Ensure Roles & Permissions exist
   console.log('1. Verifying and synchronizing system roles & permissions...');
   await prisma.role.createMany({ data: ALL_ROLES, skipDuplicates: true });
   await prisma.permission.createMany({ data: ALL_PERMISSIONS, skipDuplicates: true });
 
+  const superAdminRole = await prisma.role.findUnique({ where: { name: 'SuperAdmin' } });
   const adminRole = await prisma.role.findUnique({ where: { name: 'Admin' } });
-  if (!adminRole) {
-    throw new Error('Could not find or create Admin role');
+
+  if (!superAdminRole || !adminRole) {
+    throw new Error('Could not find or create SuperAdmin / Admin roles');
   }
 
-  const permissions = await prisma.permission.findMany({
+  // Map permissions to SuperAdmin
+  const superAdminPerms = await prisma.permission.findMany({
+    where: { code: { in: SUPER_ADMIN_PERMISSIONS } },
+  });
+  for (const perm of superAdminPerms) {
+    await prisma.rolePermission.upsert({
+      where: {
+        role_id_permission_id: {
+          role_id: superAdminRole.id,
+          permission_id: perm.id,
+        },
+      },
+      update: {},
+      create: {
+        role_id: superAdminRole.id,
+        permission_id: perm.id,
+      },
+    });
+  }
+
+  // Map permissions to Admin
+  const adminPerms = await prisma.permission.findMany({
     where: { code: { in: ADMIN_PERMISSIONS } },
   });
-
-  for (const perm of permissions) {
+  for (const perm of adminPerms) {
     await prisma.rolePermission.upsert({
       where: {
         role_id_permission_id: {
@@ -149,18 +185,18 @@ async function main() {
     },
   });
 
-  // 4. Assign Admin Role
+  // 4. Assign SuperAdmin Role
   await prisma.userRole.upsert({
     where: {
       user_id_role_id: {
         user_id: user.id,
-        role_id: adminRole.id,
+        role_id: superAdminRole.id,
       },
     },
     update: {},
     create: {
       user_id: user.id,
-      role_id: adminRole.id,
+      role_id: superAdminRole.id,
     },
   });
 
@@ -170,7 +206,7 @@ async function main() {
   console.log(` User ID   : ${user.id}`);
   console.log(` Email     : ${user.email}`);
   console.log(` Password  : ${password}`);
-  console.log(` Role      : Admin (Full Permissions)`);
+  console.log(` Role      : SuperAdmin (All 9 Permissions + MANAGE_ADMINS)`);
   console.log(` Status    : ACTIVE`);
   console.log('====================================================\n');
 }
