@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 # ==============================================================================
 # Kịch bản test đặt vé đồng thời chống bán lố (k6 Concurrency / Oversell Check)
-# Hướng dẫn: Copy file này thành scripts/k6-oversell-check.local.ps1 để chạy local.
+# Hướng dẫn: Copy file này thành testing/load/k6-oversell-check.local.ps1 để chạy local.
 # ==============================================================================
 
 $env:BASE_URL = "http://localhost:3000"
@@ -39,4 +39,4 @@ Write-Host "CONCERT_ID=$env:CONCERT_ID"
 Write-Host "CATEGORY_ID=$env:CATEGORY_ID"
 Write-Host "EXPECTED_MAX_SUCCESS=$env:EXPECTED_MAX_SUCCESS"
 
-k6 run scripts/k6-oversell-check.js
+k6 run testing/load/k6-oversell-check.js

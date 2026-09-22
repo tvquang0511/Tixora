@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 # ==============================================================================
 # Kịch bản test luồng bán vé thông thường (k6 Ticketing Flow)
-# Hướng dẫn: Copy file này thành scripts/k6-ticketing-flow.local.ps1 để chạy local.
+# Hướng dẫn: Copy file này thành testing/load/k6-ticketing-flow.local.ps1 để chạy local.
 # ==============================================================================
 
 # Địa chỉ Backend API
@@ -51,4 +51,4 @@ Write-Host "CATEGORY_ID     : $env:CATEGORY_ID"
 Write-Host "FAKE_IPS (Rate Limit test) : $env:FAKE_IPS"
 Write-Host "========================================================"
 
-k6 run scripts/k6-ticketing-flow.js
+k6 run testing/load/k6-ticketing-flow.js

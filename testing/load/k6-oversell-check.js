@@ -196,6 +196,6 @@ ${'='.repeat(72)}
 
   return {
     stdout: summary,
-    'k6-oversell-summary.json': JSON.stringify(data, null, 2),
+    'testing/load/reports/k6-oversell-summary.json': JSON.stringify(data, null, 2),
   };
 }

@@ -263,6 +263,6 @@ ${'='.repeat(70)}
 
   return {
     stdout: summary,
-    'k6-ticketing-summary.json': JSON.stringify(data, null, 2),
+    'testing/load/reports/k6-ticketing-summary.json': JSON.stringify(data, null, 2),
   };
 }

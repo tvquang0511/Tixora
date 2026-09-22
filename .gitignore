@@ -30,11 +30,10 @@ npm-debug.log*
 
 # Test
 coverage/
-
-# Misc
-*.tmp
-scripts/k6-ticketing-flow.local.ps1
-scripts/k6-oversell-check.local.ps1
+testing/playwright-report/
+testing/test-results/
+testing/load/*.local.ps1
+scripts/*.local.ps1
 
 #cache
 .cache/

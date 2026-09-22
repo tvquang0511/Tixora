@@ -117,18 +117,24 @@ Sau khi chạy lệnh `pnpm db:seed`, bạn có thể dùng các tài khoản sa
 
 ---
 
-## ⚡ Load Test và Kiểm Tra Cơ Chế Chống Oversell (k6)
+## ⚡ Kiểm Thử Tự Động & Chịu Tải (Testing Suite)
 
-Đảm bảo backend đang chạy, sử dụng PowerShell để chạy thử nghiệm tải dưới local:
+Toàn bộ công cụ kiểm thử được gom gọn trong thư mục [`testing/`](testing/README.md):
 
-* **Mô phỏng luồng đặt vé chịu tải thường**:
+* **Kiểm thử tự động End-to-End (Playwright)**:
   ```powershell
-  .\scripts\k6-ticketing-flow.local.ps1
+  pnpm test:e2e       # Chạy kiểm thử tự động toàn hệ thống
+  pnpm test:e2e:ui    # Bật giao diện trực quan Playwright UI
+  ```
+
+* **Mô phỏng luồng đặt vé chịu tải thường (k6)**:
+  ```powershell
+  .\testing\load\k6-ticketing-flow.local.ps1
   ```
   *(Chứng minh cơ chế Rate Limit trả về lỗi `429 Too Many Requests` khi gửi quá nhiều request).*
 
-* **Mô phỏng đặt vé đồng thời kiểm tra chống Oversell**:
+* **Mô phỏng đặt vé đồng thời kiểm tra chống Oversell (k6)**:
   ```powershell
-  .\scripts\k6-oversell-check.local.ps1
+  .\testing\load\k6-oversell-check.local.ps1
   ```
   *(Chứng minh dù có 30 người đặt vé cùng lúc nhưng chỉ bán đúng số lượng vé tồn thực tế trong kho, không bán lố).*
