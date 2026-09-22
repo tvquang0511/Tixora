@@ -3,13 +3,15 @@ import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swa
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../shared/guards/roles.guard';
 import { Roles } from '../../../shared/decorators/roles.decorator';
+import { PermissionCode, Permissions } from '../../../shared/decorators/permissions.decorator';
 import { AdminDashboardService } from '../services/admin-dashboard.service';
 import { RecentOrdersQueryDto, RevenueQueryDto } from '../dtos/dashboard-query.dto';
 
 @Controller('admin/dashboard')
 @ApiTags('Admin Dashboard')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@Roles('ADMIN', 'ORGANIZER')
+@Permissions(PermissionCode.VIEW_REVENUE)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class AdminDashboardController {

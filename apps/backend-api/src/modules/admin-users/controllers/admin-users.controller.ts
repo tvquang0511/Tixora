@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../../shared/decorators/roles.decorator';
+import { PermissionCode, Permissions } from '../../../shared/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../shared/guards/roles.guard';
 import { AdminUsersService } from '../services/admin-users.service';
@@ -25,6 +26,7 @@ import { UpdateUserStatusDto } from '../dtos/update-user-status.dto';
 @ApiTags('Admin Users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')
+@Permissions(PermissionCode.MANAGE_USERS)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class AdminUsersController {

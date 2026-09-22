@@ -30,6 +30,7 @@ import { randomUUID } from 'crypto';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../shared/guards/roles.guard';
 import { Roles } from '../../../shared/decorators/roles.decorator';
+import { PermissionCode, Permissions } from '../../../shared/decorators/permissions.decorator';
 import { PrismaService } from '../../../shared/prisma.service';
 import { RabbitMqService } from '../../../shared/rabbitmq';
 import { IsUUID, IsNotEmpty, IsOptional, IsString, IsBoolean, isUUID } from 'class-validator';
@@ -99,6 +100,7 @@ export class WorkerController {
   @Post('generate-bio')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'ORGANIZER')
+  @Permissions(PermissionCode.UPDATE_CONCERT)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Generate concert AI biography from PDF press kit (Admin/Organizer)' })
@@ -158,6 +160,7 @@ export class WorkerController {
   @Post('import-csv')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'ORGANIZER')
+  @Permissions(PermissionCode.IMPORT_GUESTS)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Asynchronously import guest list from CSV (Admin/Organizer)' })
@@ -286,6 +289,7 @@ export class WorkerController {
   @Get('concert/:concertId/guests')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'ORGANIZER')
+  @Permissions(PermissionCode.IMPORT_GUESTS)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get paginated and filtered guest list for a concert' })
   async getGuestList(

@@ -294,3 +294,78 @@ API đặt lại mật khẩu bằng reset token từ email.
 - Đăng nhập bằng password mới thành công.
 - Token reset không dùng lại được.
 - Refresh token cũ không dùng được sau reset.
+
+---
+
+# Kiến trúc Phân quyền PBAC (Permission-Based Access Control) & Quản trị Nhân sự
+
+## 1. Mô hình Phân quyền Hai Lớp: Role + Permission
+
+Hệ thống TicketBox áp dụng mô hình phân quyền kép:
+- **Role-Based (RBAC):** Định danh nhóm người dùng cấp cao (`Admin`, `Organizer`, `Checker`, `Audience`).
+- **Permission-Based (PBAC):** Kiểm soát quyền hạn chi tiết tới từng hành động nghiệp vụ (Granular Permissions) thông qua bảng trung gian `role_permissions`.
+
+Các quyền (Permissions) được mã hóa trong Access Token JWT dưới dạng mảng `permissions: string[]` và được kiểm tra tự động tại tầng Controller thông qua `@Permissions(...)` và `RolesGuard`.
+
+### Ma trận Quyền hạn (Permission Matrix)
+
+| Permission Code | Ý nghĩa nghiệp vụ | Admin | Organizer | Checker | Audience |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| `MANAGE_USERS` | Tạo nhân sự, kích hoạt/khóa tài khoản, phân bổ role | ✅ | ❌ | ❌ | ❌ |
+| `CREATE_CONCERT` | Tạo sự kiện concert mới | ✅ | ✅ | ❌ | ❌ |
+| `UPDATE_CONCERT` | Chỉnh sửa thông tin concert, sơ đồ vé, AI bio | ✅ | ✅ | ❌ | ❌ |
+| `DELETE_CONCERT` | Xóa / ẩn concert | ✅ | ❌ | ❌ | ❌ |
+| `VIEW_REVENUE` | Xem báo cáo tài chính, doanh thu hệ thống / sự kiện | ✅ | ✅ | ❌ | ❌ |
+| `ASSIGN_CHECKER` | Phân công nhân viên soát vé vào từng cổng sự kiện | ✅ | ✅ | ❌ | ❌ |
+| `IMPORT_GUESTS` | Tải danh sách khách mời VIP bằng CSV vào hệ thống | ✅ | ✅ | ❌ | ❌ |
+| `SCAN_TICKET` | Quét mã QR, xác thực vé vào cổng trực tuyến & ngoại tuyến | ✅ | ❌ | ✅ | ❌ |
+
+---
+
+## 2. Quy trình Khởi tạo Tài khoản Super Admin (CLI Bootstrap)
+
+Để tránh nguy cơ rò rỉ hoặc tạo tài khoản Quản trị viên bừa bãi qua API công khai, hệ thống TicketBox chỉ cho phép khởi tạo tài khoản Super Admin ban đầu thông qua công cụ dòng lệnh (CLI).
+
+### Lệnh thực thi:
+```bash
+# Khởi tạo tương tác hoặc sử dụng tham số mặc định
+pnpm cli:create-admin
+
+# Khởi tạo với thông tin tùy chỉnh
+pnpm cli:create-admin --email admin@ticketbox.vn --password "MatKhauBaoMat123!" --name "Super Administrator"
+```
+
+### Cơ chế hoạt động của CLI:
+1. Kết nối trực tiếp cơ sở dữ liệu qua Prisma.
+2. Tự động kiểm tra và đồng bộ danh mục đầy đủ các Role (`Admin`, `Organizer`, `Checker`, `Audience`) và Permissions.
+3. Liên kết toàn bộ quyền hạn tối cao (`ADMIN_PERMISSIONS`) cho Role `Admin`.
+4. Băm mật khẩu bằng thuật toán `bcrypt` an toàn.
+5. Tạo hoặc cập nhật tài khoản với trạng thái `ACTIVE` ngay lập tức và gán Role `Admin`.
+
+---
+
+## 3. Quy trình Cấp tài khoản Nhân sự Trực tiếp (Direct Provisioning)
+
+Sau khi có tài khoản Super Admin, Quản trị viên có thể cấp tài khoản cho nhân sự mới trực tiếp tại **Admin Portal (`:3002`)**:
+
+1. **Khởi tạo nhân sự mới:**
+   - Super Admin truy cập `Quản lý Người dùng` ➔ `Tạo người dùng`.
+   - Nhập Email, Họ tên, Mật khẩu ban đầu và chọn Vai trò (`Admin`, `Organizer`, hoặc `Checker`).
+   - Tài khoản được kích hoạt `ACTIVE` ngay lập tức mà không cần xác thực email phức tạp.
+   - Super Admin bàn giao thông tin đăng nhập cho nhân sự. Nhân sự có thể đổi mật khẩu bất kỳ lúc nào tại mục hồ sơ cá nhân.
+
+2. **Nâng quyền cho người dùng sẵn có:**
+   - Tìm kiếm người dùng trong danh sách người dùng hệ thống.
+   - Chỉnh sửa vai trò (Role) trực tiếp từ `Audience` lên `Organizer` hoặc `Checker`.
+
+---
+
+## 4. Rào chắn Vai trò Soát vé (Checker Role Barrier)
+
+Theo thiết kế hệ thống và yêu cầu an ninh:
+- **Tài khoản Soát vé (`Checker`) CHỈ ĐƯỢC PHÉP hoạt động trên Mobile App (`:8081`)** với quyền quét vé `SCAN_TICKET`.
+- **Tuyệt đối ngăn chặn Checker truy cập Admin Portal (`:3002`):**
+  - **Tầng Giao diện & Đăng nhập (`apps/admin-app`):** Khi tài khoản chỉ có role `Checker` thực hiện đăng nhập, hệ thống sẽ từ chối và hiển thị thông báo: *"Truy cập bị từ chối: Tài khoản Soát vé (Checker) chỉ được sử dụng trên ứng dụng di động Mobile App."*
+  - **Tầng Guard Route:** Trang `/access-denied` chuyên biệt giải thích rõ lý do tài khoản Checker không thuộc phạm vi quản trị trên web.
+  - **Tầng Backend API Guards (`RolesGuard`):** Mọi API quản trị (`/admin/*`, `/checkin/assignments/*`) đều bắt buộc role `Admin` hoặc `Organizer` kèm permission tương ứng, trả về `403 Forbidden` nếu Checker cố tình gọi API.
+

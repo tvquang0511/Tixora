@@ -15,6 +15,9 @@ export const permissions = [
   { code: "DELETE_CONCERT", description: "Delete concerts" },
   { code: "VIEW_REVENUE", description: "View revenue reports" },
   { code: "SCAN_TICKET", description: "Scan tickets at gate" },
+  { code: "MANAGE_USERS", description: "Manage staff accounts and roles" },
+  { code: "ASSIGN_CHECKER", description: "Assign checkers to concert gates" },
+  { code: "IMPORT_GUESTS", description: "Import VIP and guest lists" },
 ];
 
 export const rolePermissions: Record<string, string[]> = {
@@ -24,8 +27,17 @@ export const rolePermissions: Record<string, string[]> = {
     "DELETE_CONCERT",
     "VIEW_REVENUE",
     "SCAN_TICKET",
+    "MANAGE_USERS",
+    "ASSIGN_CHECKER",
+    "IMPORT_GUESTS",
   ],
-  Organizer: ["CREATE_CONCERT", "UPDATE_CONCERT", "VIEW_REVENUE"],
+  Organizer: [
+    "CREATE_CONCERT",
+    "UPDATE_CONCERT",
+    "VIEW_REVENUE",
+    "ASSIGN_CHECKER",
+    "IMPORT_GUESTS",
+  ],
   Checker: ["SCAN_TICKET"],
   Audience: [],
 };

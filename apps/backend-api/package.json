@@ -13,7 +13,8 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" \"prisma/**/*.ts\""
+    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" \"prisma/**/*.ts\"",
+    "cli:create-admin": "tsx src/scripts/create-admin.cli.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.24",

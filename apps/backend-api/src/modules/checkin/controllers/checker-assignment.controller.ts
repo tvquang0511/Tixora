@@ -16,13 +16,15 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../shared/guards/roles.guard';
 import { Roles } from '../../../shared/decorators/roles.decorator';
+import { PermissionCode, Permissions } from '../../../shared/decorators/permissions.decorator';
 import { CheckerAssignmentService } from '../services/checker-assignment.service';
 import { CreateCheckerAssignmentDto, UpdateCheckerAssignmentDto, QueryCheckerAssignmentDto } from '../dtos/checker-assignment.dto';
 
 @ApiTags('Admin Checker Assignments')
 @Controller('checkin/assignments')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@Roles('ADMIN', 'ORGANIZER')
+@Permissions(PermissionCode.ASSIGN_CHECKER)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class CheckerAssignmentController {

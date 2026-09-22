@@ -1,6 +1,7 @@
 import { Controller, Get, Param, ParseUUIDPipe, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../../shared/decorators/roles.decorator';
+import { PermissionCode, Permissions } from '../../../shared/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../../../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../shared/guards/roles.guard';
 import { AdminRevenueService } from '../services/admin-revenue.service';
@@ -13,7 +14,8 @@ import {
 @Controller('admin/revenue')
 @ApiTags('Admin Revenue')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN')
+@Roles('ADMIN', 'ORGANIZER')
+@Permissions(PermissionCode.VIEW_REVENUE)
 @ApiBearerAuth()
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class AdminRevenueController {
