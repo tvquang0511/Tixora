@@ -1,6 +1,6 @@
 ﻿# 04 — KẾ HOẠCH, LỘ TRÌNH & ĐỀ XUẤT NÂNG CẤP (PLANNING & ROADMAP)
 
-Thư mục này quản lý lộ trình phát triển, kế hoạch thực thi theo Sprint và các đề xuất cải tiến kiến trúc mang tính chiến lược cho TIXORA.
+Thư mục này quản lý lộ trình phát triển, kế hoạch thực thi theo Sprint và các đề xuất cải tiến kiến trúc mang tính chiến lược cho Tixora.
 
 ## 📑 Danh Sách Tài Liệu
 

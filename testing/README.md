@@ -1,4 +1,4 @@
-# 🧪 MODULE KIỂM THỬ HỆ THỐNG TIXORA (TESTING SUITE)
+﻿# 🧪 MODULE KIỂM THỬ HỆ THỐNG Tixora (TESTING SUITE)
 
 Module này đóng gói toàn bộ công cụ, kịch bản kiểm thử tự động End-to-End (E2E Playwright) và kiểm thử chịu tải (k6 Load Testing) của hệ sinh thái Tixora.
 

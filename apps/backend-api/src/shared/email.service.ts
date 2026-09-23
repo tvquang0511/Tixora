@@ -152,7 +152,7 @@ export class EmailService {
     const html = `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;">
         <div style="text-align: center; border-bottom: 2px solid #6200ee; padding-bottom: 20px; margin-bottom: 20px;">
-          <h1 style="color: #6200ee; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.5px;">TIXORA</h1>
+          <h1 style="color: #6200ee; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.5px;">Tixora</h1>
           <p style="color: #666666; margin: 5px 0 0 0; font-size: 14px;">Hệ thống phân phối vé sự kiện hàng đầu</p>
         </div>
         
@@ -200,7 +200,7 @@ export class EmailService {
     const html = `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;">
         <div style="text-align: center; border-bottom: 2px solid #e53935; padding-bottom: 20px; margin-bottom: 20px;">
-          <h1 style="color: #e53935; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.5px;">TIXORA</h1>
+          <h1 style="color: #e53935; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.5px;">Tixora</h1>
           <p style="color: #666666; margin: 5px 0 0 0; font-size: 14px;">Khôi phục mật khẩu tài khoản</p>
         </div>
         

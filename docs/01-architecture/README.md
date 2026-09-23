@@ -1,6 +1,6 @@
 ﻿# 01 — KIẾN TRÚC & THIẾT KẾ HỆ THỐNG (ARCHITECTURE & DESIGN)
 
-Thư mục này chứa các tài liệu thiết kế kỹ thuật cấp cao, kiến trúc dữ liệu và các cơ chế phòng thủ chịu tải của hệ thống TIXORA.
+Thư mục này chứa các tài liệu thiết kế kỹ thuật cấp cao, kiến trúc dữ liệu và các cơ chế phòng thủ chịu tải của hệ thống Tixora.
 
 ## 📑 Danh Sách Tài Liệu
 

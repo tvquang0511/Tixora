@@ -301,7 +301,7 @@ API đặt lại mật khẩu bằng reset token từ email.
 
 ## 1. Mô hình Phân cấp Thứ bậc: 5 Roles + 9 Permissions
 
-Hệ thống TIXORA áp dụng mô hình phân quyền kép có thứ bậc (Hierarchical RBAC + PBAC):
+Hệ thống Tixora áp dụng mô hình phân quyền kép có thứ bậc (Hierarchical RBAC + PBAC):
 - **5 Vai trò Hệ thống (System Roles):**
   1. **`SuperAdmin`**: Tổng Quản trị Hệ thống / Chủ sở hữu nền tảng. Nắm giữ toàn bộ 9 quyền và là vai trò duy nhất có quyền quản trị, cấp phát vai trò `Admin` / `SuperAdmin`.
   2. **`Admin`**: Quản trị viên Vận hành Nghiệp vụ. Quản lý sự kiện, xem doanh thu, quản lý khách hàng `Audience`, phân công `Checker`, tạo tài khoản `Organizer` và `Checker`. Bị chặn không được tạo hoặc can thiệp tài khoản `Admin` khác hay `SuperAdmin`.
@@ -327,7 +327,7 @@ Hệ thống TIXORA áp dụng mô hình phân quyền kép có thứ bậc (Hie
 
 ## 2. Mô hình Bảo mật Máy chủ (Server-Shell Security Model)
 
-Để đảm bảo an toàn tuyệt đối, hệ thống TIXORA tuân thủ chặt chẽ nguyên tắc **Phân định quyền lực hạ tầng**:
+Để đảm bảo an toàn tuyệt đối, hệ thống Tixora tuân thủ chặt chẽ nguyên tắc **Phân định quyền lực hạ tầng**:
 
 ### Không có API tạo Super Admin:
 - Không có bất kỳ API endpoint công khai hay nội bộ nào cho phép tự do đăng ký hoặc nâng cấp lên `SuperAdmin`.

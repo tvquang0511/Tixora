@@ -303,8 +303,8 @@ Nếu checker không có assignment, mobile hiển thị trạng thái không c�
    - ticket chưa scan
 7. Backend chỉ trả mảng `qr_code_hash`, không trả thông tin cá nhân, order detail hoặc giá vé.
 8. Mobile lưu dữ liệu vào AsyncStorage:
-   - `TIXORA.staff.currentScanSession`
-   - `TIXORA.staff.prefetchedTicketSet`
+   - `Tixora.staff.currentScanSession`
+   - `Tixora.staff.prefetchedTicketSet`
 
 Trong `prefetchedTicketSet` có:
 
@@ -337,8 +337,8 @@ Nếu tất cả điều kiện hợp lệ:
 
 1. Mobile hiển thị kết quả `Offline ticket accepted`.
 2. Checker cho khách vào cổng.
-3. Mobile lưu hash vào local scanned bucket: `TIXORA.staff.localScannedBuckets`.
-4. Mobile thêm bản ghi vào pending sync queue: `TIXORA.staff.pendingSyncQueue`.
+3. Mobile lưu hash vào local scanned bucket: `Tixora.staff.localScannedBuckets`.
+4. Mobile thêm bản ghi vào pending sync queue: `Tixora.staff.pendingSyncQueue`.
 
 Pending item gồm:
 

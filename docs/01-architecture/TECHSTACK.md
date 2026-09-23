@@ -36,7 +36,7 @@ Tầng này là "khiên đỡ" cho PostgreSQL chống lại cơn bão 80.000 tru
 
 * **Phương án 1: Apache Kafka**
 * *Ưu điểm:* Khả năng xử lý luồng dữ liệu (Stream) với throughput khủng khiếp, lưu trữ dữ liệu vĩnh viễn trên đĩa cứng (Log retention).
-* *Tại sao LOẠI BỎ:* Quá cồng kềnh cho bài toán TIXORA. Kafka không hỗ trợ cơ chế hàng đợi công việc (Task Queue) linh hoạt theo mặc định. Quan trọng nhất, việc triển khai **Delay Message (hẹn giờ 10 phút hủy phiên giữ chỗ)**  trên Kafka cực kỳ phức tạp, đòi hỏi phải tạo nhiều topic phân mảnh hoặc dùng thêm công cụ phụ trợ bên ngoài.
+* *Tại sao LOẠI BỎ:* Quá cồng kềnh cho bài toán Tixora. Kafka không hỗ trợ cơ chế hàng đợi công việc (Task Queue) linh hoạt theo mặc định. Quan trọng nhất, việc triển khai **Delay Message (hẹn giờ 10 phút hủy phiên giữ chỗ)**  trên Kafka cực kỳ phức tạp, đòi hỏi phải tạo nhiều topic phân mảnh hoặc dùng thêm công cụ phụ trợ bên ngoài.
 
 **Phương án 2: RabbitMQ - ĐỀ XUẤT CHỌN** 
 * *Lý do chọn:* Là một Message Broker hướng tác vụ mẫu mực (Task-oriented). RabbitMQ hỗ trợ cơ chế **Dead Letter Exchange (DLX) / Delayed Message** một cách native. Điều này khớp hoàn chỉnh với kịch bản giữ chỗ vé trong 10 phút: nếu quá thời gian mà chưa thanh toán, message tự động kích hoạt tiến trình hủy đơn và hoàn vé.
@@ -83,7 +83,7 @@ Dùng cho ứng dụng soát vé của nhân sự tại sân vận động khi m
 
 ## TỔNG KẾT BẢNG TECH STACK ĐỀ XUẤT (SUMMARY)
 
-| Thành phần (Component) | Công nghệ lựa chọn (Tech Chosen) | Vai trò trong TIXORA (Specific Role) |
+| Thành phần (Component) | Công nghệ lựa chọn (Tech Chosen) | Vai trò trong Tixora (Specific Role) |
 | --- | --- | --- |
 | **API Gateway** | **Nginx** hoặc **Kong API Gateway** | Chặn bot, cấu hình thuật toán Token Bucket để Rate Limiting. |
 | **Backend API** | **Node.js (NestJS)** hoặc **Java (Spring Boot)** | Xử lý các luồng nghiệp vụ chính, validate dữ liệu, điều phối API.|

@@ -1,13 +1,13 @@
 ﻿# HƯỚNG DẪN THIẾT LẬP VÀ KIỂM THỬ TỰ ĐỘNG BẰNG PLAYWRIGHT (PLAYWRIGHT E2E TESTING GUIDE)
-## HỆ THỐNG TIXORA MONOREPO
+## HỆ THỐNG Tixora MONOREPO
 
-> **Tài liệu:** Hướng dẫn cài đặt, cấu hình và chạy bộ kiểm thử tự động End-to-End (E2E) với Playwright cho TIXORA  
+> **Tài liệu:** Hướng dẫn cài đặt, cấu hình và chạy bộ kiểm thử tự động End-to-End (E2E) với Playwright cho Tixora  
 > **Áp dụng cho:** `apps/web-app` (Port 3001), `apps/admin-app` (Port 3002), và `apps/backend-api` (Port 3000)
 
 ---
 
 ## MỤC LỤC
-1. [Giới Thiệu Về Playwright Trong TIXORA](#1-giới-thiệu-về-playwright-trong-TIXORA)
+1. [Giới Thiệu Về Playwright Trong Tixora](#1-giới-thiệu-về-playwright-trong-Tixora)
 2. [Cài Đặt & Khởi Tạo Playwright (Installation)](#2-cài-đặt--khởi-tạo-playwright-installation)
 3. [Cấu Trúc Thư Mục Kiểm Thử (Folder Structure)](#3-cấu-trúc-thư-mục-kiểm-thử-folder-structure)
 4. [File Cấu Hình Playwright (playwright.config.ts)](#4-file-cấu-hình-playwright-playwrightconfigts)
@@ -21,23 +21,23 @@
    - [Chạy giao diện trực quan (UI Mode & Headed)](#chạy-giao-diện-trực-quan-ui-mode--headed)
    - [Xem báo cáo HTML & Tracing (Trace Viewer)](#xem-báo-cáo-html--tracing-trace-viewer)
 7. [Tích Hợp Vào CI/CD (GitHub Actions)](#7-tích-hợp-vào-cicd-github-actions)
-8. [Best Practices Khi Viết E2E Test Cho TIXORA](#8-best-practices-khi-viết-e2e-test-cho-TIXORA)
+8. [Best Practices Khi Viết E2E Test Cho Tixora](#8-best-practices-khi-viết-e2e-test-cho-Tixora)
 
 ---
 
-## 1. Giới Thiệu Về Playwright Trong TIXORA
+## 1. Giới Thiệu Về Playwright Trong Tixora
 
 **Playwright** là framework kiểm thử tự động End-to-End (E2E) hiện đại bậc nhất hiện nay do Microsoft phát triển:
 - **Hỗ trợ đa trình duyệt:** Chromium, Firefox, WebKit (Safari) và Mobile Viewport giả lập.
 - **Tốc độ vượt trội & Ổn định:** Tự động chờ phần tử xuất hiện (Auto-waiting), loại bỏ hiện tượng test bị flaky (lỗi chập chờn).
-- **Kiểm thử đa ứng dụng đồng thời:** Với TIXORA Monorepo, Playwright có thể dễ dàng test song song cả **Web Khách Hàng (Port 3001)** và **Admin Portal (Port 3002)** trong cùng một lần chạy.
+- **Kiểm thử đa ứng dụng đồng thời:** Với Tixora Monorepo, Playwright có thể dễ dàng test song song cả **Web Khách Hàng (Port 3001)** và **Admin Portal (Port 3002)** trong cùng một lần chạy.
 - **Công cụ gỡ lỗi đỉnh cao:** Hỗ trợ Playwright UI Mode, Time-travel Debugging, chụp ảnh màn hình (Screenshots), quay video lỗi và xem file Trace chi tiết.
 
 ---
 
 ## 2. Cài Đặt & Khởi Tạo Playwright (Installation)
 
-Tại thư mục gốc của monorepo TIXORA, chạy lệnh sau để cài đặt `@playwright/test`:
+Tại thư mục gốc của monorepo Tixora, chạy lệnh sau để cài đặt `@playwright/test`:
 
 ```powershell
 pnpm add -D @playwright/test
@@ -258,7 +258,7 @@ Có thể thêm job chạy Playwright vào workflow `.github/workflows/ci.yml` �
 
 ---
 
-## 8. Best Practices Khi Viết E2E Test Cho TIXORA
+## 8. Best Practices Khi Viết E2E Test Cho Tixora
 
 1. **Sử dụng Locators theo hành vi người dùng (User-facing Locators):**
    - Ưu tiên: `page.getByRole('button', { name: 'Đăng nhập' })`, `page.getByLabel('Email')`, `page.getByPlaceholder(...)`.

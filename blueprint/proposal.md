@@ -1,9 +1,9 @@
-﻿# TIXORA — Project Proposal
+﻿# Tixora — Project Proposal
 
 ## Bối cảnh
 Các concert âm nhạc quy mô lớn tại Việt Nam đang chứng kiến nhu cầu truy cập đồng thời cực cao trong thời điểm mở bán. Hệ thống bán vé hiện tại thường là các kênh rời rạc (Zalo OA, Google Form, chuyển khoản thủ công) hoặc nền tảng cũ, không được thiết kế cho tải đột biến và xử lý đồng thời khắt khe. Điều này kéo theo các lỗi hệ thống, trạng thái giao dịch không nhất quán và rủi ro gian lận.
 
-TIXORA được đề xuất như một hệ thống bán vé tập trung, số hóa toàn bộ quy trình từ mở bán, thanh toán, phát hành e-ticket đến soát vé tại cổng. Mục tiêu là thiết kế một kiến trúc chịu tải cao, an toàn giao dịch, công bằng cho người mua và dễ mở rộng cho các nhu cầu quản trị sự kiện.
+Tixora được đề xuất như một hệ thống bán vé tập trung, số hóa toàn bộ quy trình từ mở bán, thanh toán, phát hành e-ticket đến soát vé tại cổng. Mục tiêu là thiết kế một kiến trúc chịu tải cao, an toàn giao dịch, công bằng cho người mua và dễ mở rộng cho các nhu cầu quản trị sự kiện.
 
 ## Vấn đề
 Sự bùng nổ của các concert âm nhạc quy mô lớn tại Việt Nam (như Anh Trai Say Hi, Chị Đẹp Đạp Gió Rẽ Sóng) với sức chứa hàng chục nghìn khán giả đang làm lộ rõ những điểm yếu chí mạng của các nền tảng bán vé hiện tại. Việc sử dụng các kênh bán vé rời rạc (Zalo OA, Google Form, chuyển khoản thủ công) hoặc các hệ thống monolith cũ kỹ đang gây ra những hậu quả nghiêm trọng:
@@ -15,7 +15,7 @@ Sự bùng nổ của các concert âm nhạc quy mô lớn tại Việt Nam (nh
 * **Hỗn loạn tại cổng soát vé:** Sân vận động thường xuyên mất sóng 4G/Wifi do hàng chục nghìn người tập trung. Việc phụ thuộc vào API trực tuyến khiến tiến trình soát vé bị tê liệt, tạo khe hở cho vé giả hoặc vé quét trùng lọt vào.
 
 ## Mục tiêu
-Dự án TIXORA được xây dựng nhằm số hóa toàn diện quy trình phân phối vé và quản lý sự kiện, với mục tiêu kiến tạo một hệ thống công bằng, minh bạch và có sức chống chịu tải trọng cực đoan.
+Dự án Tixora được xây dựng nhằm số hóa toàn diện quy trình phân phối vé và quản lý sự kiện, với mục tiêu kiến tạo một hệ thống công bằng, minh bạch và có sức chống chịu tải trọng cực đoan.
 
 **Mục tiêu định lượng và kỹ thuật:**
 * **Đảm bảo khả năng chống tải đột biến:** Hệ thống phải có cơ chế bảo vệ backend khi 80.000 người truy cập trong 5 phút đầu mở bán (70% dồn vào phút đầu). Trong phạm vi đồ án, nhóm chứng minh bằng rate limiting, Redis atomic reservation, hàng đợi bất đồng bộ và kịch bản stress test cục bộ; triển khai production đầy đủ cần bổ sung hạ tầng autoscaling/edge ở giai đoạn sau.

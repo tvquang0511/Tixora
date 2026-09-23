@@ -1,9 +1,9 @@
 ﻿# TÀI LIỆU HƯỚNG DẪN KIỂM THỬ THỦ CÔNG (MANUAL TEST GUIDE)
-## HỆ THỐNG ĐẶT VÉ VÀ SOÁT VÉ CONCERT TIXORA (PRODUCTION / DEPLOYED ENVIRONMENT)
+## HỆ THỐNG ĐẶT VÉ VÀ SOÁT VÉ CONCERT Tixora (PRODUCTION / DEPLOYED ENVIRONMENT)
 
 > **Phiên bản tài liệu:** 2.0.0 (Cập nhật cho Môi trường Cloud Deployed)  
-> **Dự án:** TIXORA Monorepo (NestJS + Next.js 16 + React Native Expo)  
-> **Mục đích:** Cung cấp lộ trình kiểm thử thủ công tuần tự từ A-Z để bạn nắm bắt trọn vẹn nghiệp vụ thực tế của toàn bộ hệ thống TIXORA trên môi trường đã triển khai (Render, Vercel/Cloudflare, Supabase, Upstash Redis).
+> **Dự án:** Tixora Monorepo (NestJS + Next.js 16 + React Native Expo)  
+> **Mục đích:** Cung cấp lộ trình kiểm thử thủ công tuần tự từ A-Z để bạn nắm bắt trọn vẹn nghiệp vụ thực tế của toàn bộ hệ thống Tixora trên môi trường đã triển khai (Render, Vercel/Cloudflare, Supabase, Upstash Redis).
 
 ---
 
@@ -13,10 +13,10 @@
 
 | Thành phần | Địa chỉ Truy cập (URL) | Công nghệ & Môi trường | Ghi chú tài khoản |
 | :--- | :--- | :--- | :--- |
-| **Admin Portal** | [https://TIXORA-admin.tvquang.id.vn](https://TIXORA-admin.tvquang.id.vn) | Next.js 16 App Router | Dành cho `SuperAdmin`, `Admin`, `Organizer` |
-| **Client Web App** | [https://TIXORA-web.tvquang.id.vn](https://TIXORA-web.tvquang.id.vn) | Next.js 16 App Router | Dành cho khán giả (`Audience`) mua vé |
-| **Backend Core API** | [https://TIXORA-api-gewh.onrender.com](https://TIXORA-api-gewh.onrender.com) | NestJS (Deploy trên Render) | REST API trung tâm |
-| **Swagger API Docs** | [https://TIXORA-api-gewh.onrender.com/api/docs](https://TIXORA-api-gewh.onrender.com/api/docs) | Swagger OpenAPI | Tra cứu & test API trực tiếp |
+| **Admin Portal** | [https://tixora-admin.tvquang.id.vn](https://tixora-admin.tvquang.id.vn) | Next.js 16 App Router | Dành cho `SuperAdmin`, `Admin`, `Organizer` |
+| **Client Web App** | [https://tixora.tvquang.id.vn](https://tixora.tvquang.id.vn) | Next.js 16 App Router | Dành cho khán giả (`Audience`) mua vé |
+| **Backend Core API** | [https://api.tixora.tvquang.id.vn](https://api.tixora.tvquang.id.vn) | NestJS (Deploy trên Render) | REST API trung tâm |
+| **Swagger API Docs** | [https://api.tixora.tvquang.id.vn/api/docs](https://api.tixora.tvquang.id.vn/api/docs) | Swagger OpenAPI | Tra cứu & test API trực tiếp |
 | **Database Cloud** | Supabase PostgreSQL (AWS ap-south-1) | PgBouncer + Direct URL | Lưu trữ dữ liệu quan hệ |
 | **Redis Cache & Lock**| Upstash Redis Cloud | Redis TLS (`rediss://...`) | Giữ chỗ vé chống bán lố, Cache catalog, Rate limit |
 | **Mobile Scanner App** | React Native Expo (Port `8081` / Expo Go) | Expo React Native | Dành riêng cho nhân viên `Checker` soát vé |
@@ -55,8 +55,8 @@ flowchart TD
 > **Mục tiêu:** Bắt đầu từ tài khoản `SuperAdmin` duy nhất được tạo từ máy chủ, bạn tiến hành cấp tài khoản cho các bộ phận vận hành và kiểm tra hàng rào an ninh 5 vai trò.
 
 ### Kịch bản 1.1: Đăng nhập SuperAdmin trên Admin Portal
-- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/login](https://TIXORA-admin.tvquang.id.vn/login)
-- **Tài khoản:** `superadmin@tixora.local` / `TIXORA@123`
+- **Địa chỉ:** [https://tixora-admin.tvquang.id.vn/login](https://tixora-admin.tvquang.id.vn/login)
+- **Tài khoản:** `superadmin@tixora.local` / `Tixora@123`
 - **Các bước:**
   1. Nhập email và mật khẩu SuperAdmin.
   2. Bấm **"Đăng nhập"**.
@@ -66,7 +66,7 @@ flowchart TD
   - Sidebar hiển thị đầy đủ 8 menu: Tổng quan, Đơn hàng, Sự kiện, Doanh thu, Người dùng, Phân công, Thông báo, Tác vụ nền.
 
 ### Kịch bản 1.2: Tạo tài khoản các vai trò cấp dưới
-- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/users](https://TIXORA-admin.tvquang.id.vn/users)
+- **Địa chỉ:** [https://tixora-admin.tvquang.id.vn/users](https://tixora-admin.tvquang.id.vn/users)
 - **Các bước:**
   1. Bấm nút **"+ Tạo người dùng"**.
   2. Tạo tài khoản **Ban tổ chức (Organizer)**:
@@ -116,7 +116,7 @@ flowchart TD
 
 ### Kịch bản 2.1: Khởi tạo Sự kiện Mới
 - **Người thực hiện:** Đăng nhập bằng `tuan.organizer@tixora.vn` hoặc `superadmin@tixora.local`.
-- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/events](https://TIXORA-admin.tvquang.id.vn/events) ➔ Bấm **"Tạo sự kiện"** (hoặc truy cập `/create-event`).
+- **Địa chỉ:** [https://tixora-admin.tvquang.id.vn/events](https://tixora-admin.tvquang.id.vn/events) ➔ Bấm **"Tạo sự kiện"** (hoặc truy cập `/create-event`).
 - **Nhập thông tin:**
   - **Tên sự kiện:** `Live Concert Anh Trai Vượt Ngàn Chông Gai 2026`
   - **Địa điểm:** `The Global City, TP. Thủ Đức, TP. Hồ Chí Minh`
@@ -160,7 +160,7 @@ flowchart TD
 > **Mục tiêu:** Điều phối nhân viên soát vé phụ trách từng cổng cụ thể trước giờ diễn ra sự kiện.
 
 ### Kịch bản 3.1: Phân công Checker vào Cổng sự kiện
-- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/assignments](https://TIXORA-admin.tvquang.id.vn/assignments)
+- **Địa chỉ:** [https://tixora-admin.tvquang.id.vn/assignments](https://tixora-admin.tvquang.id.vn/assignments)
 - **Các bước:**
   1. Bấm nút **"+ Phân công mới"**.
   2. Chọn Sự kiện: `Live Concert Anh Trai Vượt Ngàn Chông Gai 2026`.
@@ -187,18 +187,18 @@ flowchart TD
 > **Mục tiêu:** Mở Web khách hàng, đăng ký tài khoản khán giả, tìm kiếm concert và tiến hành giữ vé chống bán lố (Redis Atomic Lock).
 
 ### Kịch bản 4.1: Đăng ký & Đăng nhập Khán giả Mới
-- **Địa chỉ:** [https://TIXORA-web.tvquang.id.vn/register](https://TIXORA-web.tvquang.id.vn/register)
+- **Địa chỉ:** [https://tixora.tvquang.id.vn/register](https://tixora.tvquang.id.vn/register)
 - **Các bước:**
   1. Họ tên: `Khán Giả Demo`
   2. Email: `khangia.test@gmail.com`
   3. Mật khẩu: `Khangia@123`
   4. Bấm **"Đăng ký"**.
-  5. Chuyển sang trang đăng nhập [https://TIXORA-web.tvquang.id.vn/login](https://TIXORA-web.tvquang.id.vn/login) và đăng nhập bằng tài khoản này.
+  5. Chuyển sang trang đăng nhập [https://tixora.tvquang.id.vn/login](https://tixora.tvquang.id.vn/login) và đăng nhập bằng tài khoản này.
 - **Kết quả mong đợi:**
   - Đăng nhập thành công, thanh tiêu đề hiển thị tên người dùng và mục **"Vé của tôi" (`/my-tickets`)**.
 
 ### Kịch bản 4.2: Khám phá Sự kiện & Kiểm tra Cache
-- **Địa chỉ:** [https://TIXORA-web.tvquang.id.vn](https://TIXORA-web.tvquang.id.vn)
+- **Địa chỉ:** [https://tixora.tvquang.id.vn](https://tixora.tvquang.id.vn)
 - **Các bước:**
   1. Kiểm tra trang chủ: Sự kiện `Live Concert Anh Trai Vượt Ngàn Chông Gai 2026` vừa xuất bản ở Pha 2 hiển thị rõ nét với ảnh poster và mức giá từ `600,000đ`.
   2. Thử ô tìm kiếm: Gõ từ khóa `Chông Gai` ➔ Sự kiện lọc chính xác.
@@ -246,7 +246,7 @@ flowchart TD
 ### Kịch bản 5.2: Xác nhận Thanh toán Thành công (Payment Webhook)
 - **Trường hợp A (Có PayOS thật):** Quét mã QR bằng ứng dụng ngân hàng và chuyển khoản số tiền thử nghiệm ➔ PayOS bắn Webhook về backend ➔ Đơn hàng tự động đổi sang `PAID`.
 - **Trường hợp B (Test giả lập qua Swagger khi chưa có PayOS):**
-  1. Mở [https://TIXORA-api-gewh.onrender.com/api/docs](https://TIXORA-api-gewh.onrender.com/api/docs).
+  1. Mở [https://api.tixora.tvquang.id.vn/api/docs](https://api.tixora.tvquang.id.vn/api/docs).
   2. Tìm mục `POST /payments/webhook` hoặc API cập nhật trạng thái đơn hàng.
   3. Gửi payload xác nhận đơn hàng `PAID`.
 - **Kết quả sau khi Đơn hàng `PAID`:**
@@ -256,7 +256,7 @@ flowchart TD
   - Mỗi vé có 1 chuỗi `qr_code_hash` duy nhất (chuỗi băm bảo mật chống làm giả).
 
 ### Kịch bản 5.3: Kiểm tra Vé Điện Tử tại "Vé Của Tôi" (My Tickets)
-- **Địa chỉ:** [https://TIXORA-web.tvquang.id.vn/my-tickets](https://TIXORA-web.tvquang.id.vn/my-tickets)
+- **Địa chỉ:** [https://tixora.tvquang.id.vn/my-tickets](https://tixora.tvquang.id.vn/my-tickets)
 - **Các bước:**
   1. Truy cập menu **"Vé của tôi"**.
   2. Bấm vào đơn hàng vừa thanh toán.
@@ -274,7 +274,7 @@ flowchart TD
 ### Cấu hình Mobile App:
 - Đảm bảo file cấu hình mobile (`apps/mobile-app/.env` hoặc biến cấu hình) có:
   ```env
-  EXPO_PUBLIC_API_URL=https://TIXORA-api-gewh.onrender.com
+  EXPO_PUBLIC_API_URL=https://api.tixora.tvquang.id.vn
   ```
 - Chạy lệnh khởi động: `pnpm start:mobile` (quét QR qua ứng dụng Expo Go trên điện thoại thật).
 
@@ -321,7 +321,7 @@ flowchart TD
 > **Mục tiêu:** Kiểm tra các con số thống kê tài chính, số lượng vé đã bán và tỷ lệ khán giả đã check-in vào sân.
 
 ### Kịch bản 7.1: Báo cáo Doanh thu Thời gian Thực
-- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/revenue](https://TIXORA-admin.tvquang.id.vn/revenue)
+- **Địa chỉ:** [https://tixora-admin.tvquang.id.vn/revenue](https://tixora-admin.tvquang.id.vn/revenue)
 - **Người thực hiện:** Đăng nhập bằng `superadmin@tixora.local` hoặc `vy.admin@tixora.vn`.
 - **Kết quả mong đợi:**
   - Tổng doanh thu hiển thị đúng số tiền đã thanh toán: `3,000,000 VND`.
@@ -329,7 +329,7 @@ flowchart TD
   - Danh sách giao dịch hiển thị mã đơn hàng tương ứng với thời gian thanh toán chính xác.
 
 ### Kịch bản 7.2: Quản lý Đơn hàng & Chi tiết
-- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/orders](https://TIXORA-admin.tvquang.id.vn/orders)
+- **Địa chỉ:** [https://tixora-admin.tvquang.id.vn/orders](https://tixora-admin.tvquang.id.vn/orders)
 - **Kết quả mong đợi:**
   - Bảng đơn hàng hiển thị đơn hàng của `Khán Giả Demo` với trạng thái nhãn xanh **`PAID`**.
   - Bấm xem chi tiết: Hiển thị đầy đủ thông tin người mua, email, số điện thoại, danh sách 2 mã vé và lịch sử check-in tại Gate 1.
@@ -343,7 +343,7 @@ flowchart TD
 > 2. `GEMINI_API_KEY`: API Key lấy miễn phí từ [Google AI Studio](https://aistudio.google.com/).
 
 ### Kịch bản 8.1: Tạo Tác vụ Nền Tạo Tiểu Sử AI (AI Artist Bio)
-- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/events](https://TIXORA-admin.tvquang.id.vn/events)
+- **Địa chỉ:** [https://tixora-admin.tvquang.id.vn/events](https://tixora-admin.tvquang.id.vn/events)
 - **Các bước:**
   1. Tại chi tiết sự kiện, tải lên file tài liệu / press kit nghệ sĩ (file PDF/Text).
   2. Bấm nút **"Tạo tiểu sử bằng AI" (Generate Bio)**.
