@@ -78,8 +78,7 @@ function ConcertList() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const status = (searchParams?.get("status") || "PUBLISHED") as
-    | "PUBLISHED"
-    | "COMPLETED";
+    "PUBLISHED" | "COMPLETED";
   const search = searchParams?.get("q") || "";
 
   const [page, setPage] = useState(1);

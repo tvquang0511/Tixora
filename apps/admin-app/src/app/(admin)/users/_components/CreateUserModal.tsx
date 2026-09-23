@@ -220,7 +220,9 @@ export function CreateUserModal({
                     className="bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground focus:outline-none focus:border-primary w-full h-11 transition-all cursor-pointer"
                   >
                     <option value="Audience">Audience</option>
-                    {isSuperAdmin && <option value="SuperAdmin">SuperAdmin</option>}
+                    {isSuperAdmin && (
+                      <option value="SuperAdmin">SuperAdmin</option>
+                    )}
                     {isSuperAdmin && <option value="Admin">Admin</option>}
                     <option value="Checker">Checker</option>
                     <option value="Organizer">Organizer</option>

@@ -44,8 +44,8 @@ jobs:
     timeout-minutes: 12
 
     env:
-      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/ticketbox
-      DIRECT_URL: postgresql://postgres:postgres@127.0.0.1:5432/ticketbox
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/tixora
+      DIRECT_URL: postgresql://postgres:postgres@127.0.0.1:5432/tixora
 
     steps:
       - name: Checkout repository
@@ -92,18 +92,18 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: ticketbox
+          POSTGRES_DB: tixora
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres -d ticketbox"
+          --health-cmd "pg_isready -U postgres -d tixora"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/ticketbox
-      DIRECT_URL: postgresql://postgres:postgres@127.0.0.1:5432/ticketbox
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/tixora
+      DIRECT_URL: postgresql://postgres:postgres@127.0.0.1:5432/tixora
 
     steps:
       - name: Checkout repository
@@ -111,9 +111,6 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

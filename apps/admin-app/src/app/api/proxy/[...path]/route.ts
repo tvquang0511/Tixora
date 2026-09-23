@@ -4,7 +4,9 @@ function buildTargetUrl(request: NextRequest, pathSegments: string[]) {
   const remoteBase =
     process.env.REMOTE_API_URL || process.env.NEXT_PUBLIC_API_URL;
   if (!remoteBase) {
-    throw new Error("REMOTE_API_URL or NEXT_PUBLIC_API_URL not configured on server");
+    throw new Error(
+      "REMOTE_API_URL or NEXT_PUBLIC_API_URL not configured on server",
+    );
   }
 
   const cleanBase = remoteBase.replace(/\/+$/, "");

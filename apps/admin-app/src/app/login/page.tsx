@@ -37,7 +37,7 @@ function AdminLoginForm() {
       ) {
         await logout();
         showErrorToast(
-          "Truy cập bị từ chối: Tài khoản Soát vé (Checker) chỉ được sử dụng trên ứng dụng di động Mobile App."
+          "Truy cập bị từ chối: Tài khoản Soát vé (Checker) chỉ được sử dụng trên ứng dụng di động Mobile App.",
         );
         setLoading(false);
         return;
@@ -49,7 +49,9 @@ function AdminLoginForm() {
         !userRoles.includes("Organizer")
       ) {
         await logout();
-        showErrorToast("Truy cập bị từ chối: Tài khoản không có quyền Quản trị viên (Admin).");
+        showErrorToast(
+          "Truy cập bị từ chối: Tài khoản không có quyền Quản trị viên (Admin).",
+        );
         setLoading(false);
         return;
       }
@@ -59,7 +61,8 @@ function AdminLoginForm() {
       router.replace(returnUrl);
     } catch (err: unknown) {
       showErrorToast(
-        getErrorMessage(err) || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin."
+        getErrorMessage(err) ||
+          "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
       );
     } finally {
       setLoading(false);

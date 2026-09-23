@@ -230,9 +230,9 @@ export default function SupportPage() {
 
               <div className="rounded-3xl border border-slate-800 bg-[#16222f]/50 p-6 shadow-md space-y-6">
                 <p className="text-sm text-on-surface-variant/80 leading-relaxed">
-                  Đội ngũ CSKH kỹ thuật của Tixora luôn sẵn sàng túc trực
-                  24/7 để xử lý nhanh chóng mọi phản hồi và sự cố liên quan đến
-                  đặt vé & soát vé.
+                  Đội ngũ CSKH kỹ thuật của Tixora luôn sẵn sàng túc trực 24/7
+                  để xử lý nhanh chóng mọi phản hồi và sự cố liên quan đến đặt
+                  vé & soát vé.
                 </p>
 
                 {/* Email Option Card */}

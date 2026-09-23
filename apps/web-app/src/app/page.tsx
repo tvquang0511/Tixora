@@ -85,8 +85,7 @@ function ConcertsFullList() {
   const search = searchParams?.get("q") || "";
   // URL is the single source of truth — status comes from URL params
   const activeStatus = (searchParams?.get("status") || "PUBLISHED") as
-    | "PUBLISHED"
-    | "COMPLETED";
+    "PUBLISHED" | "COMPLETED";
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<ConcertCardItem[]>([]);
   const [meta, setMeta] = useState<ConcertListMeta>({
@@ -382,8 +381,7 @@ function CarouselItems({
 }) {
   const searchParams = useSearchParams();
   const statusFilter = (searchParams?.get("status") || "PUBLISHED") as
-    | "PUBLISHED"
-    | "COMPLETED";
+    "PUBLISHED" | "COMPLETED";
   const [items, setItems] = useState<ConcertCardItem[]>([]);
   const [loading, setLoading] = useState(true);
 

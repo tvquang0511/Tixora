@@ -141,9 +141,9 @@ export default function PrivacyPolicyPage() {
               Chính Sách Bảo Mật
             </h1>
             <p className="mt-4 text-base sm:text-lg text-on-surface-variant/80 max-w-2xl leading-relaxed">
-              Tixora cam kết bảo mật tuyệt đối mọi thông tin cá nhân và dữ
-              liệu giao dịch của bạn. Dưới đây là chính sách minh bạch của chúng
-              tôi về thu thập, sử dụng và bảo vệ dữ liệu.
+              Tixora cam kết bảo mật tuyệt đối mọi thông tin cá nhân và dữ liệu
+              giao dịch của bạn. Dưới đây là chính sách minh bạch của chúng tôi
+              về thu thập, sử dụng và bảo vệ dữ liệu.
             </p>
           </div>
         </div>

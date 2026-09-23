@@ -212,7 +212,10 @@ export async function getConcerts(query: ConcertQuery = {}) {
         process.env.NEXT_PUBLIC_API_URL ||
         "http://localhost:3000"
       ).replace(/\/+$/, "")
-    : (process.env.NEXT_PUBLIC_API_BASE_URL || "/api/proxy").replace(/\/+$/, "");
+    : (process.env.NEXT_PUBLIC_API_BASE_URL || "/api/proxy").replace(
+        /\/+$/,
+        "",
+      );
   const url = `${baseUrl}/concerts?${params.toString()}`;
 
   const response = await fetch(url);
@@ -246,7 +249,10 @@ export async function getConcertById(id: string) {
         process.env.NEXT_PUBLIC_API_URL ||
         "http://localhost:3000"
       ).replace(/\/+$/, "")
-    : (process.env.NEXT_PUBLIC_API_BASE_URL || "/api/proxy").replace(/\/+$/, "");
+    : (process.env.NEXT_PUBLIC_API_BASE_URL || "/api/proxy").replace(
+        /\/+$/,
+        "",
+      );
   const url = `${baseUrl}/concerts/${id}`;
 
   const response = await fetch(url);

@@ -6,7 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function AccessDeniedPage() {
   const { user, logout } = useAuth();
-  const isChecker = user?.roles?.includes("Checker") && !user?.roles?.includes("Admin");
+  const isChecker =
+    user?.roles?.includes("Checker") && !user?.roles?.includes("Admin");
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background relative overflow-hidden">
@@ -17,8 +18,10 @@ export default function AccessDeniedPage() {
           <ShieldAlert className="w-8 h-8" />
         </div>
 
-        <h1 className="text-xl font-bold text-foreground mb-2">Truy cập bị từ chối</h1>
-        
+        <h1 className="text-xl font-bold text-foreground mb-2">
+          Truy cập bị từ chối
+        </h1>
+
         {isChecker ? (
           <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm text-left mb-6 space-y-2">
             <div className="flex items-center gap-2 font-semibold text-amber-400">
@@ -26,7 +29,9 @@ export default function AccessDeniedPage() {
               <span>Tài khoản Soát vé (Checker)</span>
             </div>
             <p className="text-xs text-on-surface-variant leading-relaxed">
-              Tài khoản này chỉ được cấp quyền quét mã QR soát vé trên <strong>ứng dụng di động (Mobile App)</strong> tại cổng sự kiện, không được phép truy cập Cổng Quản trị Admin.
+              Tài khoản này chỉ được cấp quyền quét mã QR soát vé trên{" "}
+              <strong>ứng dụng di động (Mobile App)</strong> tại cổng sự kiện,
+              không được phép truy cập Cổng Quản trị Admin.
             </p>
           </div>
         ) : (

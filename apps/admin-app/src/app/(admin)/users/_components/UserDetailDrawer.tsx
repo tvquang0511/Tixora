@@ -156,7 +156,9 @@ export function UserDetailDrawer({
                   <div className="space-y-4 bg-background rounded-2xl border border-border p-6">
                     {!canEditTarget && (
                       <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-semibold">
-                        Tài khoản SuperAdmin được bảo vệ. Chỉ SuperAdmin khác mới có quyền chỉnh sửa trạng thái hoặc vai trò của tài khoản này.
+                        Tài khoản SuperAdmin được bảo vệ. Chỉ SuperAdmin khác
+                        mới có quyền chỉnh sửa trạng thái hoặc vai trò của tài
+                        khoản này.
                       </div>
                     )}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -190,8 +192,12 @@ export function UserDetailDrawer({
                           className="bg-surface border border-border rounded-xl px-3 py-1.5 text-xs font-semibold text-foreground focus:outline-none focus:border-primary w-full h-10 transition-all cursor-pointer disabled:opacity-50"
                         >
                           <option value="Audience">Audience</option>
-                          {isCurrentSuperAdmin && <option value="SuperAdmin">SuperAdmin</option>}
-                          {isCurrentSuperAdmin && <option value="Admin">Admin</option>}
+                          {isCurrentSuperAdmin && (
+                            <option value="SuperAdmin">SuperAdmin</option>
+                          )}
+                          {isCurrentSuperAdmin && (
+                            <option value="Admin">Admin</option>
+                          )}
                           <option value="Checker">Checker</option>
                           <option value="Organizer">Organizer</option>
                         </select>
