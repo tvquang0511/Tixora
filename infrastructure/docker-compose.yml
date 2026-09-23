@@ -3,7 +3,7 @@ version: "3.8"
 services:
   redis:
     image: redis:7-alpine
-    container_name: ticketbox-redis
+    container_name: tixora-redis
     ports:
       - "6379:6379"
     volumes:
@@ -12,7 +12,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: ticketbox-rabbitmq
+    container_name: tixora-rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"

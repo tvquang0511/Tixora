@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright E2E Configuration for TicketBox Monorepo.
+ * Playwright E2E Configuration for Tixora Monorepo.
  * Covers both Web App (Port 3001) and Admin Portal (Port 3002).
  */
 export default defineConfig({

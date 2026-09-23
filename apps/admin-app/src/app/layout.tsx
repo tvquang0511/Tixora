@@ -5,8 +5,8 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
 
 export const metadata: Metadata = {
-  title: "TicketBox Admin Portal",
-  description: "Bảng điều khiển và quản trị hệ thống TicketBox",
+  title: "Tixora Admin Portal",
+  description: "Bảng điều khiển và quản trị hệ sinh thái Tixora",
 };
 
 export default function RootLayout({

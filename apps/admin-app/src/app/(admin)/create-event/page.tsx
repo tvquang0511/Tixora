@@ -124,7 +124,7 @@ function EventForm() {
     description: "",
     location: "",
     start_time: "",
-    svg_map_url: "https://cdn.ticketbox.local/maps/default.svg",
+    svg_map_url: "https://cdn.tixora.local/maps/default.svg",
     poster_url: "",
     status: "DRAFT",
     performers: [] as string[],
@@ -216,7 +216,7 @@ function EventForm() {
                 : data.venue || "",
             start_time: formattedDate,
             svg_map_url:
-              data.mapUrl || "https://cdn.ticketbox.local/maps/default.svg",
+              data.mapUrl || "https://cdn.tixora.local/maps/default.svg",
             poster_url: data.posterUrl || "",
             status: data.status || "DRAFT",
             performers: data.performers || [],
@@ -613,7 +613,7 @@ function EventForm() {
                 </label>
                 {formData.svg_map_url &&
                   formData.svg_map_url !==
-                    "https://cdn.ticketbox.local/maps/default.svg" && (
+                    "https://cdn.tixora.local/maps/default.svg" && (
                     <div
                       onClick={() => setLightboxUrl(formData.svg_map_url)}
                       className="mb-3 relative w-full h-64 rounded-xl overflow-hidden border border-border bg-black/40 flex items-center justify-center p-4 cursor-zoom-in hover:border-primary/50 transition-all group"

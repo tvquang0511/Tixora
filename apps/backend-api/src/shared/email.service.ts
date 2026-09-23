@@ -47,7 +47,7 @@ export class EmailService {
     const from =
       process.env.EMAIL_FROM ||
       process.env.SMTP_FROM ||
-      `"TicketBox" <no-reply@ticketbox.local>`;
+      `"Tixora" <no-reply@tixora.local>`;
     const mailOptions = { from, ...options };
 
     // 1. Resend API mode
@@ -152,14 +152,14 @@ export class EmailService {
     const html = `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;">
         <div style="text-align: center; border-bottom: 2px solid #6200ee; padding-bottom: 20px; margin-bottom: 20px;">
-          <h1 style="color: #6200ee; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.5px;">TICKETBOX</h1>
+          <h1 style="color: #6200ee; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.5px;">TIXORA</h1>
           <p style="color: #666666; margin: 5px 0 0 0; font-size: 14px;">Hệ thống phân phối vé sự kiện hàng đầu</p>
         </div>
         
         <div style="padding: 10px 0;">
           <h2 style="color: #333333; margin-top: 0; font-size: 20px;">Chào ${fullName},</h2>
           <p style="color: #555555; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
-            Cảm ơn bạn đã lựa chọn đăng ký tài khoản tại <strong>TicketBox</strong>. Để có thể truy cập hệ thống, đặt vé và nhận hóa đơn một cách an toàn nhất, vui lòng xác thực địa chỉ email của bạn bằng cách nhấp vào nút bên dưới:
+            Cảm ơn bạn đã lựa chọn đăng ký tài khoản tại <strong>Tixora</strong>. Để có thể truy cập hệ thống, đặt vé và nhận hóa đơn một cách an toàn nhất, vui lòng xác thực địa chỉ email của bạn bằng cách nhấp vào nút bên dưới:
           </p>
           
           <div style="text-align: center; margin: 30px 0;">
@@ -174,14 +174,14 @@ export class EmailService {
         
         <div style="margin-top: 30px; border-top: 1px solid #eeeeee; padding-top: 20px; text-align: center; color: #888888; font-size: 12px;">
           <p style="margin: 0 0 5px 0;">Đây là email được gửi tự động, vui lòng không phản hồi lại email này.</p>
-          <p style="margin: 0;">&copy; 2026 TicketBox. All rights reserved.</p>
+          <p style="margin: 0;">&copy; 2026 Tixora. All rights reserved.</p>
         </div>
       </div>
     `;
 
     return this.sendMail({
       to: toEmail,
-      subject: "🎫 TicketBox - Xác thực tài khoản của bạn",
+      subject: "🎫 Tixora - Xác thực tài khoản của bạn",
       html,
     });
   }
@@ -200,14 +200,14 @@ export class EmailService {
     const html = `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;">
         <div style="text-align: center; border-bottom: 2px solid #e53935; padding-bottom: 20px; margin-bottom: 20px;">
-          <h1 style="color: #e53935; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.5px;">TICKETBOX</h1>
+          <h1 style="color: #e53935; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: 0.5px;">TIXORA</h1>
           <p style="color: #666666; margin: 5px 0 0 0; font-size: 14px;">Khôi phục mật khẩu tài khoản</p>
         </div>
         
         <div style="padding: 10px 0;">
           <h2 style="color: #333333; margin-top: 0; font-size: 20px;">Chào ${fullName},</h2>
           <p style="color: #555555; font-size: 16px; line-height: 1.6; margin-bottom: 25px;">
-            Chúng tôi nhận được yêu cầu khôi phục mật khẩu cho tài khoản của bạn tại <strong>TicketBox</strong>. Vui lòng nhấp vào nút bên dưới để tiến hành đặt mật khẩu mới:
+            Chúng tôi nhận được yêu cầu khôi phục mật khẩu cho tài khoản của bạn tại <strong>Tixora</strong>. Vui lòng nhấp vào nút bên dưới để tiến hành đặt mật khẩu mới:
           </p>
           
           <div style="text-align: center; margin: 30px 0;">
@@ -227,14 +227,14 @@ export class EmailService {
         
         <div style="margin-top: 30px; border-top: 1px solid #eeeeee; padding-top: 20px; text-align: center; color: #888888; font-size: 12px;">
           <p style="margin: 0 0 5px 0;">Đây là email được gửi tự động, vui lòng không phản hồi lại email này.</p>
-          <p style="margin: 0;">&copy; 2026 TicketBox. All rights reserved.</p>
+          <p style="margin: 0;">&copy; 2026 Tixora. All rights reserved.</p>
         </div>
       </div>
     `;
 
     return this.sendMail({
       to: toEmail,
-      subject: "🎫 TicketBox - Yêu cầu khôi phục mật khẩu",
+      subject: "🎫 Tixora - Yêu cầu khôi phục mật khẩu",
       html,
     });
   }

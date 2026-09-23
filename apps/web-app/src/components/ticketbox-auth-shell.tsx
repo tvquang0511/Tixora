@@ -18,7 +18,7 @@ type ShellProps = {
 };
 
 export function TicketBoxAuthShell({
-  eyebrow = "TicketBox",
+  eyebrow = "Tixora",
   title,
   description,
   children,

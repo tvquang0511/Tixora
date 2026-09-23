@@ -17,7 +17,7 @@ export function ConcertHeroIllustration() {
       {/* Main Poster Info */}
       <div className="relative z-10 mt-auto rounded-3xl border border-white/10 bg-black/40 p-8 text-foreground backdrop-blur-lg shadow-2xl">
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary">
-          TicketBox Concerts
+          Tixora Concerts
         </p>
         <h2 className="mt-3 font-display text-3xl font-black leading-tight text-white">
           Kết nối bạn với những giai điệu bùng nổ.

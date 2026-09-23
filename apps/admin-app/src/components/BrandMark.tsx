@@ -12,7 +12,7 @@ export function BrandMark({ compact = false }: { compact?: boolean }) {
       >
         <defs>
           <linearGradient
-            id="ticketbox-brand-gradient"
+            id="tixora-brand-gradient"
             x1="0%"
             y1="0%"
             x2="100%"
@@ -24,7 +24,7 @@ export function BrandMark({ compact = false }: { compact?: boolean }) {
         </defs>
         <path
           d="M40 60Q40 50 50 50H150Q160 50 160 60V85Q150 100 160 115V140Q160 150 150 150H50Q40 150 40 140V115Q50 100 40 85Z"
-          fill="url(#ticketbox-brand-gradient)"
+          fill="url(#tixora-brand-gradient)"
         />
         <rect
           x="85"
@@ -38,7 +38,7 @@ export function BrandMark({ compact = false }: { compact?: boolean }) {
       </svg>
       <div>
         <div className="font-display text-xl font-black italic tracking-tight text-primary">
-          TicketBox Admin
+          Tixora Admin
         </div>
         {!compact ? (
           <div className="text-xs font-semibold uppercase tracking-[0.22em] text-on-surface-variant">

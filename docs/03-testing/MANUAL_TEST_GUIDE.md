@@ -1,596 +1,388 @@
 # TÀI LIỆU HƯỚNG DẪN KIỂM THỬ THỦ CÔNG (MANUAL TEST GUIDE)
-## HỆ THỐNG ĐẶT VÉ VÀ SOÁT VÉ CONCERT TICKETBOX
+## HỆ THỐNG ĐẶT VÉ VÀ SOÁT VÉ CONCERT TICKETBOX (PRODUCTION / DEPLOYED ENVIRONMENT)
 
-> **Phiên bản tài liệu:** 1.0.0  
+> **Phiên bản tài liệu:** 2.0.0 (Cập nhật cho Môi trường Cloud Deployed)  
 > **Dự án:** TicketBox Monorepo (NestJS + Next.js 16 + React Native Expo)  
-> **Mục đích:** Cung cấp bộ kịch bản kiểm thử thủ công (Manual Test Cases) toàn diện từ A-Z để rà soát, nghiệm thu và đánh giá độ ổn định của toàn bộ hệ sinh thái TicketBox trước khi tiến hành tùy biến hoặc build thêm tính năng mới.
+> **Mục đích:** Cung cấp lộ trình kiểm thử thủ công tuần tự từ A-Z để bạn nắm bắt trọn vẹn nghiệp vụ thực tế của toàn bộ hệ thống TicketBox trên môi trường đã triển khai (Render, Vercel/Cloudflare, Supabase, Upstash Redis).
 
 ---
 
-## MỤC LỤC
-1. [Tổng Quan Kiến Trúc & Môi Trường Kiểm Thử](#1-tổng-quan-kiến-trúc--môi-trường-kiểm-thử)
-2. [Thiết Lập Môi Trường Test (Pre-flight Setup)](#2-thiết-lập-môi-trường-test-pre-flight-setup)
-3. [Danh Sách Tài Khoản & Dữ Liệu Kiểm Thử Có Sẵn (Seed Data)](#3-danh-sách-tài-khoản--dữ-liệu-kiểm-thử-có-sẵn-seed-data)
-4. [Ma Trận Kịch Bản Kiểm Thử (Test Cases Matrix)](#4-ma-trận-kịch-bản-kiểm-thử-test-cases-matrix)
-   - [Suite 1: Xác thực & Phân quyền (Auth & RBAC)](#suite-1-xác-thực--phân-quyền-auth--rbac)
-   - [Suite 2: Khám Phá & Chi Tiết Sự Kiện (Catalog & Concert Detail)](#suite-2-khám-phá--chi-tiết-sự-kiện-catalog--concert-detail)
-   - [Suite 3: Luồng Giữ Chỗ & Đặt Vé (Ticketing & Reservation)](#suite-3-luồng-giữ-chỗ--đặt-vé-ticketing--reservation)
-   - [Suite 4: Thanh Toán & Phát Hành Vé (Payment & Ticket Issuance)](#suite-4-thanh-toán--phát-hành-vé-payment--ticket-issuance)
-   - [Suite 5: Quản Lý Vé Cá Nhân (Audience My Tickets & E-Ticket QR)](#suite-5-quản-lý-vé-cá-nhân-audience-my-tickets--e-ticket-qr)
-   - [Suite 6: Soát Vé Tại Cổng Mobile App (Online & Offline Gate Check-in)](#suite-6-soát-vé-tại-cổng-mobile-app-online--offline-gate-check-in)
-   - [Suite 7: Quản Trị Sự Kiện & Cấu Hình Hạng Vé (Admin/Organizer Event Management)](#suite-7-quản-trị-sự-kiện--cấu-hình-hạng-vé-adminorganizer-event-management)
-   - [Suite 8: Phân Công Cổng Soát Vé & Quản Lý Nhân Sự (Checker Assignment & Users)](#suite-8-phân-công-cổng-soát-vé--quản-lý-nhân-sự-checker-assignment--users)
-   - [Suite 9: Dashboard Quản Trị & Báo Cáo Doanh Thu (Admin Dashboard & Revenue Analytics)](#suite-9-dashboard-quản-trị--báo-cáo-doanh-thu-admin-dashboard--revenue-analytics)
-   - [Suite 10: Tác Vụ Nền & AI (Background Jobs, CSV Guest Import & AI Bio)](#suite-10-tác-vụ-nền--ai-background-jobs-csv-guest-import--ai-bio)
-   - [Suite 11: Khả Năng Phục Hồi & Chống Quá Tải (Rate Limit & Resilience)](#suite-11-khả-năng-phục-hồi--chống-quá-tải-rate-limit--resilience)
-5. [Checklist Nghiệm Thu Cuối Cùng (Sign-off Checklist)](#5-checklist-nghiệm-thu-cuối-cùng-sign-off-checklist)
+## 🌐 MỤC LỤC & ĐỊA CHỈ TRUY CẬP HỆ THỐNG
+
+### 1. Bảng Địa chỉ Dịch vụ Đã Triển Khai (Deployed Services)
+
+| Thành phần | Địa chỉ Truy cập (URL) | Công nghệ & Môi trường | Ghi chú tài khoản |
+| :--- | :--- | :--- | :--- |
+| **Admin Portal** | [https://ticketbox-admin.tvquang.id.vn](https://ticketbox-admin.tvquang.id.vn) | Next.js 16 App Router | Dành cho `SuperAdmin`, `Admin`, `Organizer` |
+| **Client Web App** | [https://ticketbox-web.tvquang.id.vn](https://ticketbox-web.tvquang.id.vn) | Next.js 16 App Router | Dành cho khán giả (`Audience`) mua vé |
+| **Backend Core API** | [https://ticketbox-api-gewh.onrender.com](https://ticketbox-api-gewh.onrender.com) | NestJS (Deploy trên Render) | REST API trung tâm |
+| **Swagger API Docs** | [https://ticketbox-api-gewh.onrender.com/api/docs](https://ticketbox-api-gewh.onrender.com/api/docs) | Swagger OpenAPI | Tra cứu & test API trực tiếp |
+| **Database Cloud** | Supabase PostgreSQL (AWS ap-south-1) | PgBouncer + Direct URL | Lưu trữ dữ liệu quan hệ |
+| **Redis Cache & Lock**| Upstash Redis Cloud | Redis TLS (`rediss://...`) | Giữ chỗ vé chống bán lố, Cache catalog, Rate limit |
+| **Mobile Scanner App** | React Native Expo (Port `8081` / Expo Go) | Expo React Native | Dành riêng cho nhân viên `Checker` soát vé |
 
 ---
 
-## 1. Tổng Quan Kiến Trúc & Môi Trường Kiểm Thử
+### 2. Trạng thái Cấu hình Tích hợp (Integration Prerequisites)
 
-TicketBox bao gồm 4 ứng dụng cốt lõi chạy trên các cổng mặc định:
+| Dịch vụ tích hợp | Trạng thái hiện tại | Ảnh hưởng kiểm thử & Hướng dẫn bổ sung |
+| :--- | :--- | :--- |
+| **Supabase Storage** | ✅ Đã cấu hình (`SUPABASE_KEY`, `SUPABASE_BUCKET`) | Upload ảnh poster sự kiện hoạt động bình thường. |
+| **Upstash Redis** | ✅ Đã cấu hình (`REDIS_URL`) | Giữ vé 15 phút, chống bán lố bằng Lua script chạy tốt. |
+| **Resend Email** | ✅ Đã cấu hình (`RESEND_API_KEY`) | Gửi email thông báo, vé điện tử hoạt động. |
+| **Cổng PayOS** | ⏳ *Chưa cấu hình (Đang dùng Dummy Key)* | Luồng thanh toán quét mã QR VietQR sẽ ở chế độ chờ. Bạn có thể test thanh toán qua giả lập webhook hoặc bổ sung Client ID/Key từ [payos.vn](https://payos.vn). |
+| **RabbitMQ Worker** | ⏳ *Chưa cấu hình* | Tính năng trích xuất tiểu sử nghệ sĩ bằng AI Gemini trong nền sẽ tạm hoãn cho đến khi bổ sung `RABBITMQ_URL` (ví dụ CloudAMQP) và `GEMINI_API_KEY`. |
+
+---
+
+## 🚀 LỘ TRÌNH 8 PHA KIỂM THỬ NGHIỆP VỤ THỰC TẾ (CHẠY TỪ A ĐẾN Z)
 
 ```mermaid
-graph TD
-    ClientWeb["Web Khách Hàng (Next.js 16)<br/>http://localhost:3001"] -->|REST API| Backend["NestJS Core API<br/>http://localhost:3000"]
-    AdminWeb["Admin Portal (Next.js 16)<br/>http://localhost:3002"] -->|REST API| Backend
-    MobileApp["Mobile Checker App (Expo)<br/>Port 8081 / Real Device"] -->|REST API (Pre-fetch & Sync)| Backend
-    Backend -->|Cache, Lua scripts, Token Bucket| Redis[("Redis Caching & Lock<br/>Port 6379")]
-    Backend -->|Event Messages, Orders Queue| RabbitMQ[("RabbitMQ Broker<br/>Port 5672 / UI 15672")]
-    Backend -->|ACID Persistence| Postgres[("PostgreSQL Database<br/>Supabase / Local")]
+flowchart TD
+    P1["Pha 1: SuperAdmin khởi tạo & Phân quyền nhân sự"] --> P2["Pha 2: Tạo Sự Kiện & Thiết lập Hạng vé"]
+    P2 --> P3["Pha 3: Phân công Cổng soát vé (Gate Assignment)"]
+    P3 --> P4["Pha 4: Khán giả Khám phá & Đặt vé (Redis Lock)"]
+    P4 --> P5["Pha 5: Thanh toán & Phát hành Vé điện tử (QR Code)"]
+    P5 --> P6["Pha 6: Soát vé tại cổng Mobile App (Check-in)"]
+    P6 --> P7["Pha 7: Báo cáo Doanh thu & Thống kê Admin"]
+    P7 --> P8["Pha 8: Tác vụ nền & AI Tiểu sử nghệ sĩ (Khi bổ sung MQ/AI)"]
 ```
 
 ---
 
-## 2. Thiết Lập Môi Trường Test (Pre-flight Setup)
+## 📌 PHA 1: THIẾT LẬP NHÂN SỰ & KIỂM TRA PHÂN QUYỀN (AUTH & RBAC)
 
-Trước khi bắt đầu thực hiện kiểm thử thủ công, hãy thực hiện lần lượt các bước chuẩn bị môi trường sau:
+> **Mục tiêu:** Bắt đầu từ tài khoản `SuperAdmin` duy nhất được tạo từ máy chủ, bạn tiến hành cấp tài khoản cho các bộ phận vận hành và kiểm tra hàng rào an ninh 5 vai trò.
 
-### Bước 2.1: Kiểm tra Biến Môi Trường (.env)
-Đảm bảo file `.env` tại thư mục gốc có đầy đủ các cấu hình quan trọng:
-```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/ticketbox?schema=public"
-DIRECT_URL="postgresql://user:password@localhost:5432/ticketbox?schema=public"
+### Kịch bản 1.1: Đăng nhập SuperAdmin trên Admin Portal
+- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/login](https://ticketbox-admin.tvquang.id.vn/login)
+- **Tài khoản:** `superadmin@ticketbox.local` / `Ticketbox@123`
+- **Các bước:**
+  1. Nhập email và mật khẩu SuperAdmin.
+  2. Bấm **"Đăng nhập"**.
+- **Kết quả mong đợi:**
+  - Đăng nhập thành công, chuyển hướng vào `/dashboard`.
+  - Góc trên hiển thị tên tài khoản kèm huy hiệu **`SuperAdmin`** (màu tím fuchsia nổi bật).
+  - Sidebar hiển thị đầy đủ 8 menu: Tổng quan, Đơn hàng, Sự kiện, Doanh thu, Người dùng, Phân công, Thông báo, Tác vụ nền.
 
-# Redis & RabbitMQ
-REDIS_HOST=localhost
-REDIS_PORT=6379
-RABBITMQ_URL="amqp://guest:guest@localhost:5672"
+### Kịch bản 1.2: Tạo tài khoản các vai trò cấp dưới
+- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/users](https://ticketbox-admin.tvquang.id.vn/users)
+- **Các bước:**
+  1. Bấm nút **"+ Tạo người dùng"**.
+  2. Tạo tài khoản **Ban tổ chức (Organizer)**:
+     - Họ tên: `Nguyễn Văn Tuấn`
+     - Email: `tuan.organizer@ticketbox.vn`
+     - Mật khẩu: `Organizer@123`
+     - Vai trò: Tích chọn **`Organizer`**.
+     - Bấm **"Tạo người dùng"**.
+  3. Tạo tài khoản **Quản trị viên vận hành (Admin)**:
+     - Họ tên: `Trần Thị Vy`
+     - Email: `vy.admin@ticketbox.vn`
+     - Mật khẩu: `Admin@123`
+     - Vai trò: Tích chọn **`Admin`**.
+  4. Tạo tài khoản **Nhân viên soát vé (Checker)**:
+     - Họ tên: `Lê Văn Quang`
+     - Email: `quang.checker@ticketbox.vn`
+     - Mật khẩu: `Checker@123`
+     - Vai trò: Tích chọn **`Checker`**.
+- **Kết quả mong đợi:**
+  - Danh sách người dùng hiển thị đầy đủ 4 tài khoản với các nhãn Role tương ứng.
+  - Không có lỗi xung đột database.
 
-# Security & JWT
-JWT_SECRET="ticketbox-super-secret-jwt-key"
-JWT_EXPIRATION="15m"
-REFRESH_TOKEN_SECRET="ticketbox-refresh-secret-key"
-REFRESH_TOKEN_EXPIRATION="7d"
+### Kịch bản 1.3: Kiểm tra Hàng rào Bảo vệ Đặc quyền (Privilege Barriers)
+- **Mục tiêu:** Chứng minh tài khoản `Admin` thường không thể leo quyền hoặc can thiệp `SuperAdmin`.
+- **Các bước:**
+  1. Đăng xuất `SuperAdmin`.
+  2. Đăng nhập bằng tài khoản `vy.admin@ticketbox.vn` / `Admin@123`.
+  3. Vào mục **"Người dùng" (`/users`)**:
+     - Bấm **"+ Tạo người dùng"**: Quan sát danh sách checkbox vai trò ➔ **Tùy chọn `SuperAdmin` và `Admin` bị ẩn hoàn toàn**, Admin thường chỉ được tạo `Organizer`, `Checker`, `Audience`.
+     - Bấm vào tài khoản `superadmin@ticketbox.local` trên bảng: Các nút "Khóa tài khoản" hoặc "Đổi vai trò" bị vô hiệu hóa (Cơ chế Bất khả xâm phạm - SuperAdmin Immunity).
 
-# PayOS (Cổng thanh toán)
-PAYOS_CLIENT_ID="your_client_id"
-PAYOS_API_KEY="your_api_key"
-PAYOS_CHECKSUM_KEY="your_checksum_key"
-```
-
-### Bước 2.2: Khởi động Hạ tầng Docker (Redis & RabbitMQ)
-Mở Terminal 1:
-```powershell
-cd infrastructure
-docker compose up -d
-cd ..
-```
-*Kiểm tra:* Truy cập `http://localhost:15672` (User: `guest` / Pass: `guest`) để xác nhận RabbitMQ Management Panel hoạt động.
-
-### Bước 2.3: Reset và Seed Dữ Liệu Sạch
-Mở Terminal 2:
-```powershell
-pnpm prisma:generate
-pnpm db:migrate:deploy
-pnpm db:seed
-```
-*Lưu ý:* Khi chạy `pnpm db:seed`, hệ thống sẽ tự động dọn sạch bảng và sinh dữ liệu concert mẫu, các hạng vé, cùng các tài khoản thử nghiệm.
-
-### Bước 2.4: Khởi động 3 Ứng Dụng Web & API
-Mở 3 terminal riêng biệt:
-- **Terminal A (Backend API):**
-  ```powershell
-  pnpm start:api:dev
-  ```
-  *(Truy cập Swagger docs: `http://localhost:3000/api/docs` để tra cứu endpoint)*
-- **Terminal B (Web Khách Hàng):**
-  ```powershell
-  pnpm start:web
-  ```
-  *(Truy cập: `http://localhost:3001`)*
-- **Terminal C (Admin Portal):**
-  ```powershell
-  pnpm start:admin
-  ```
-  *(Truy cập: `http://localhost:3002`)*
-- **Terminal D (Mobile App - Nếu test trên điện thoại/máy ảo):**
-  ```powershell
-  pnpm start:mobile
-  ```
+### Kịch bản 1.4: Kiểm tra Rào chắn Checker (Checker Block)
+- **Mục tiêu:** Đảm bảo nhân viên soát vé không thể đăng nhập vào Admin Web.
+- **Các bước:**
+  1. Đăng xuất tài khoản Admin.
+  2. Thử đăng nhập bằng tài khoản Checker: `quang.checker@ticketbox.vn` / `Checker@123`.
+- **Kết quả mong đợi:**
+  - Hệ thống từ chối đăng nhập và hiển thị thông báo rõ ràng:  
+    *"Truy cập bị từ chối: Tài khoản Soát vé (Checker) chỉ được sử dụng trên ứng dụng di động Mobile App."*
+  - Ngăn chặn hoàn toàn việc vào trang quản trị.
 
 ---
 
-## 3. Danh Sách Tài Khoản & Dữ Liệu Kiểm Thử Có Sẵn (Seed Data)
+## 📌 PHA 2: TẠO SỰ KIỆN & THIẾT LẬP HẠNG VÉ (CONCERT MANAGEMENT)
 
-| Vai Trò (Role) | Email Đăng Nhập | Mật Khẩu | Ứng Dụng Sử Dụng | Quyền Hạn Chính |
-| :--- | :--- | :--- | :--- | :--- |
-| **System Admin** | `vy.admin@ticketbox.local` | `123456` | Admin Portal (`:3002`) | Toàn quyền: Thống kê, quản lý Concert, User, Phân công Gate, Background Jobs |
-| **System Admin 2** | `vuong.admin@ticketbox.local` | `123456` | Admin Portal (`:3002`) | Toàn quyền quản trị |
-| **Concert Organizer** | `tuan.organizer@ticketbox.local` | `123456` | Admin Portal (`:3002`) | Tạo sự kiện, cấu hình vé, xem báo cáo doanh thu sự kiện của mình |
-| **Gate Checker 1** | `quang.checker@ticketbox.local` | `123456` | Mobile App (`:8081`) | Soát vé tại Cổng 1 (Gate 1 - S-VIP) |
-| **Gate Checker 2** | `checker2@ticketbox.local` | `123456` | Mobile App (`:8081`) | Soát vé tại Cổng 2 (Gate 2) |
-| **Audience Seeded** | `audience1@ticketbox.local` | `123456` | Web App (`:3001`) | Khách hàng mua vé thông thường |
-| **Audience Mới** | Đăng ký trực tiếp trên Web | Tùy chọn | Web App (`:3001`) | Luồng đăng ký tài khoản mới |
+> **Mục tiêu:** Tạo một concert âm nhạc hoàn chỉnh, cấu hình các hạng vé, giá bán, sức chứa, số cổng và xuất bản (Publish) để mở bán ra thị trường.
+
+### Kịch bản 2.1: Khởi tạo Sự kiện Mới
+- **Người thực hiện:** Đăng nhập bằng `tuan.organizer@ticketbox.vn` hoặc `superadmin@ticketbox.local`.
+- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/events](https://ticketbox-admin.tvquang.id.vn/events) ➔ Bấm **"Tạo sự kiện"** (hoặc truy cập `/create-event`).
+- **Nhập thông tin:**
+  - **Tên sự kiện:** `Live Concert Anh Trai Vượt Ngàn Chông Gai 2026`
+  - **Địa điểm:** `The Global City, TP. Thủ Đức, TP. Hồ Chí Minh`
+  - **Thời gian diễn ra:** Chọn ngày trong tương lai (ví dụ: ngày 15 tháng sau, từ 18:00 đến 23:00).
+  - **Mô tả:** `Đêm nhạc hội ngộ đỉnh cao quy tụ 33 anh tài âm nhạc Việt Nam.`
+  - **Ảnh Poster:** Tải lên một file ảnh bất kỳ (JPEG/PNG) ➔ Hệ thống tự động upload lên Supabase Storage và trả về URL ảnh.
+- **Bấm "Lưu bản nháp" (Save as Draft).**
+- **Kết quả mong đợi:** Sự kiện được tạo thành công với trạng thái **`DRAFT`**.
+
+### Kịch bản 2.2: Cấu hình các Hạng vé (Ticket Categories)
+- **Các bước:**
+  1. Tại trang chi tiết sự kiện vừa tạo, tìm mục **"Hạng vé" (Ticket Categories)** ➔ Bấm **"+ Thêm hạng vé"**.
+  2. Thêm **Hạng vé 1 (VIP)**:
+     - Tên hạng vé: `S-VIP - Trọng Điểm`
+     - Giá vé: `1,500,000` VND
+     - Tổng số lượng phát hành: `50` vé
+     - Số vé tối đa 1 người được mua: `4` vé
+     - Cổng soát vé mặc định: `Gate 1`
+  3. Thêm **Hạng vé 2 (Standard)**:
+     - Tên hạng vé: `GA - Sân Cỏ Đa Sắc`
+     - Giá vé: `600,000` VND
+     - Tổng số lượng phát hành: `100` vé
+     - Số vé tối đa 1 người được mua: `6` vé
+     - Cổng soát vé mặc định: `Gate 2`
+  4. Bấm **"Lưu hạng vé"**.
+- **Kết quả mong đợi:** 2 hạng vé xuất hiện trên danh mục với tổng số lượng là 150 vé.
+
+### Kịch bản 2.3: Xuất bản Sự kiện (Publish Event)
+- **Các bước:**
+  1. Bấm nút **"Xuất bản sự kiện" (Publish)**.
+  2. Xác nhận hộp thoại thông báo.
+- **Kết quả mong đợi:**
+  - Trạng thái sự kiện đổi thành **`PUBLISHED`**.
+  - Cache trên Upstash Redis tự động được làm mới (Invalided / Seeded).
+  - Sự kiện đã sẵn sàng mở bán trên trang web khách hàng.
 
 ---
 
-## 4. Ma Trận Kịch Bản Kiểm Thử (Test Cases Matrix)
+## 📌 PHA 3: PHÂN CÔNG CỔNG SOÁT VÉ (CHECKER ASSIGNMENT)
 
-### Suite 1: Xác thực & Phân quyền (Auth & RBAC)
+> **Mục tiêu:** Điều phối nhân viên soát vé phụ trách từng cổng cụ thể trước giờ diễn ra sự kiện.
 
-#### TC-AUTH-01: Đăng ký tài khoản Audience mới trên Web App
-- **Tiền điều kiện:** Chưa đăng nhập. Đang ở `http://localhost:3001/register`.
-- **Các bước thực hiện:**
-  1. Nhập Họ và tên: `Nguyễn Văn Test`.
-  2. Nhập Email: `user.test.manual@gmail.com`.
-  3. Nhập Mật khẩu: `Password123@`.
-  4. Nhập Xác nhận mật khẩu: `Password123@`.
-  5. Bấm nút **"Đăng ký"**.
-- **Kết quả mong đợi:**
-  - Hệ thống hiển thị thông báo đăng ký thành công.
-  - Tự động chuyển hướng sang trang Đăng nhập hoặc Trang chủ.
-  - Bảng `users` trong CSDL có thêm bản ghi mới với `status = 'ACTIVE'`, mật khẩu được băm bcrypt.
-  - Bảng `user_roles` tự động gán vai trò `Audience`.
-
-#### TC-AUTH-02: Đăng nhập Audience thành công & Lưu trữ Access Token
-- **Tiền điều kiện:** Đang ở trang `http://localhost:3001/login`.
-- **Các bước thực hiện:**
-  1. Nhập Email: `audience1@ticketbox.local`.
-  2. Nhập Mật khẩu: `123456`.
-  3. Bấm **"Đăng nhập"**.
-- **Kết quả mong đợi:**
-  - Đăng nhập thành công, chuyển hướng về Trang chủ `/`.
-  - Header thay đổi: hiển thị avatar/tên người dùng, xuất hiện menu "Vé của tôi" (`/my-tickets`) và "Đăng xuất".
-  - Kiểm tra DevTools > Application > Storage/Cookies: Có lưu `access_token` và `refresh_token`.
-
-#### TC-AUTH-03: Đăng nhập sai mật khẩu & Kiểm tra thông báo lỗi
-- **Tiền điều kiện:** Đang ở trang `http://localhost:3001/login`.
-- **Các bước thực hiện:**
-  1. Nhập Email: `audience1@ticketbox.local`.
-  2. Nhập Mật khẩu sai: `sai_mat_khau_123`.
-  3. Bấm **"Đăng nhập"**.
-- **Kết quả mong đợi:**
-  - Hệ thống báo lỗi rõ ràng: "Email hoặc mật khẩu không chính xác" (HTTP 401).
-  - Không chuyển trang, form không bị reset email.
-
-#### TC-AUTH-04: Đăng nhập Admin Portal với tài khoản thường (Kiểm tra RBAC)
-- **Tiền điều kiện:** Mở tab ẩn danh tại `http://localhost:3002/login`.
-- **Các bước thực hiện:**
-  1. Nhập Email tài khoản thường: `audience1@ticketbox.local`.
-  2. Nhập Mật khẩu: `123456`.
-  3. Bấm **"Đăng nhập"**.
-- **Kết quả mong đợi:**
-  - Hệ thống từ chối đăng nhập vào Admin Portal: thông báo "Bạn không có quyền truy cập vào trang quản trị" (HTTP 403 Forbidden).
-  - Không cho phép vào route `/dashboard`.
-
-#### TC-AUTH-05: Đăng nhập Admin Portal thành công với tài khoản Admin
-- **Tiền điều kiện:** Đang ở `http://localhost:3002/login`.
-- **Các bước thực hiện:**
-  1. Nhập Email Admin: `vy.admin@ticketbox.local`.
-  2. Nhập Mật khẩu: `123456`.
-  3. Bấm **"Đăng nhập"**.
-- **Kết quả mong đợi:**
-  - Đăng nhập thành công, chuyển thẳng vào `http://localhost:3002/dashboard`.
-  - Sidebar hiển thị đầy đủ các mục: Dashboard, Quản lý sự kiện, Quản lý đơn hàng, Doanh thu, Phân công cổng, Tác vụ nền, Quản lý tài khoản.
-
-#### TC-AUTH-06: Đăng xuất và Bảo vệ Tuyến đường (Route Guard)
-- **Tiền điều kiện:** Đang đăng nhập tài khoản Audience trên Web App.
-- **Các bước thực hiện:**
-  1. Bấm nút **"Đăng xuất"** trên thanh điều hướng.
-  2. Thử truy cập thủ công vào URL: `http://localhost:3001/my-tickets`.
-- **Kết quả mong đợi:**
-  - Phiên làm việc bị xóa (token bị clear khỏi storage/cookies).
-  - Khi gõ URL `/my-tickets`, hệ thống tự động redirect về trang `/login` hoặc hiển thị thông báo yêu cầu đăng nhập.
-
----
-
-### Suite 2: Khám Phá & Chi Tiết Sự Kiện (Catalog & Concert Detail)
-
-#### TC-CAT-01: Xem Danh Sách Sự Kiện Trang Chủ & Tối Ưu Cache
-- **Tiền điều kiện:** Đang ở `http://localhost:3001`.
-- **Các bước thực hiện:**
-  1. Lướt qua danh sách các sự kiện đang diễn ra / sắp diễn ra.
-  2. Quan sát hình ảnh poster, tên sự kiện, ngày giờ tổ chức, địa điểm, giá vé từ thấp nhất.
-  3. F5 (Refresh trang) nhiều lần.
-- **Kết quả mong đợi:**
-  - Danh sách concert tải mượt mà (< 300ms).
-  - Lần tải thứ 2 trở đi dữ liệu được trả về trực tiếp từ Redis Cache (Backend log không query lại DB).
-  - Hiển thị đúng các concert đã seed (ví dụ: Concert Anh Trai Vượt Ngàn Chông Gai, Anh Trai Say Hi,...).
-
-#### TC-CAT-02: Tìm Kiếm & Lọc Sự Kiện
-- **Tiền điều kiện:** Đang ở `http://localhost:3001`.
-- **Các bước thực hiện:**
-  1. Nhập từ khóa vào ô tìm kiếm: `Chông Gai`.
-  2. Bấm phím Enter hoặc icon tìm kiếm.
-- **Kết quả mong đợi:**
-  - Danh sách lập tức lọc chỉ còn concert khớp tên "Anh Trai Vượt Ngàn Chông Gai".
-  - Nhập từ khóa không tồn tại (vd: `xyz999`): Hiển thị thông báo "Không tìm thấy sự kiện phù hợp".
-
-#### TC-CAT-03: Xem Chi Tiết Concert, Tiểu Sử Nghệ Sĩ & Sơ Đồ Ghế SVG
-- **Tiền điều kiện:** Đang ở trang chủ `http://localhost:3001`.
-- **Các bước thực hiện:**
-  1. Bấm vào card concert "[CONCERT ENCORE] ANH TRAI VƯỢT NGÀN CHÔNG GAI".
-  2. Quan sát nội dung trang chi tiết (`/concerts/:id`):
-     - Thông tin chi tiết, địa điểm (The Global City...).
-     - Phần trích xuất AI Bio / Dàn nghệ sĩ tham gia.
-     - Sơ đồ chỗ ngồi sân khấu (Seatmap SVG/Image).
-     - Bảng danh sách các hạng vé (S-VIP, Xương Rồng, Sao Sáng, Đa Sắc...) kèm giá tiền, số lượng còn lại, số vé tối đa được mua (`max_per_user`).
-- **Kết quả mong đợi:**
-  - Toàn bộ thông tin hiển thị chính xác, hình ảnh và sơ đồ tải đúng định dạng.
-  - Các hạng vé hết chỗ hiển thị badge `Hết vé` (Sold Out) và disable nút chọn.
-
----
-
-### Suite 3: Luồng Giữ Chỗ & Đặt Vé (Ticketing & Reservation)
-
-#### TC-TICK-01: Chọn Số Lượng Vé và Kiểm Tra Hạn Mức Tối Đa (Max Per User)
-- **Tiền điều kiện:** Đã đăng nhập tài khoản Audience. Đang ở trang chi tiết concert còn vé mở bán.
-- **Các bước thực hiện:**
-  1. Chọn hạng vé có cấu hình `max_per_user = 4`.
-  2. Thử tăng số lượng vé lên 5 hoặc 6.
-- **Kết quả mong đợi:**
-  - Nút `+` bị vô hiệu hóa hoặc hệ thống cảnh báo: "Bạn chỉ được mua tối đa 4 vé cho hạng vé này".
-  - Không thể đặt số lượng vượt quá `max_per_user`.
-
-#### TC-TICK-02: Giữ Chỗ Thành Công Qua Redis Lua Script (Atomic Reservation)
-- **Tiền điều kiện:** Concert có hạng vé còn tồn kho.
-- **Các bước thực hiện:**
-  1. Chọn hạng vé còn 10 vé, số lượng: `2`.
-  2. Bấm nút **"Đặt vé ngay"** / **"Mua vé"**.
-- **Kết quả mong đợi:**
-  - Backend thực thi Redis Lua script nguyên tử:
-    1. Kiểm tra tồn kho > 2.
-    2. Kiểm tra số lượng vé user đã mua chưa vượt giới hạn.
-    3. Giảm biến counter tồn kho trong Redis.
-    4. Bắn event vào hàng đợi RabbitMQ `orders.created`.
-  - Frontend chuyển sang trang Thanh toán (`/checkout` hoặc `/orders/:id`), hiển thị:
-    - Mã đơn hàng.
-    - Danh sách vé đang giữ.
-    - Tổng số tiền cần thanh toán.
-    - Bộ đếm ngược thời gian giữ chỗ (Countdown Timer: ví dụ 10:00, 09:59...).
-
-#### TC-TICK-03: Hết Hạn Giữ Chỗ Tự Động Nhả Vé (Order Expiry & Ticket Release)
-- **Tiền điều kiện:** Tạo một đơn hàng giữ vé nhưng không tiến hành thanh toán.
-- **Các bước thực hiện:**
-  1. Quan sát bộ đếm ngược thời gian giữ chỗ.
-  2. Chờ đến khi hết thời gian giữ chỗ (hoặc test nhanh bằng cách chỉnh sửa expires_at trong DB hoặc chạy task worker cleanup).
-- **Kết quả mong đợi:**
-  - Khi hết hạn: Trạng thái đơn hàng chuyển thành `CANCELLED`.
-  - Số lượng vé trong Redis được tự động hoàn lại (rollback counter).
-  - Người dùng khác có thể vào đặt lại số vé vừa được nhả ra.
-  - Trên màn hình hiện thông báo: "Đơn hàng đã hết hạn giữ chỗ. Vui lòng đặt lại".
-
----
-
-### Suite 4: Thanh Toán & Phát Hành Vé (Payment & Ticket Issuance)
-
-#### TC-PAY-01: Tạo Giao Dịch Thanh Toán & Kiểm Tra Idempotency Key
-- **Tiền điều kiện:** Đang ở trang checkout đơn hàng hợp lệ.
-- **Các bước thực hiện:**
-  1. Mở DevTools > Network tab.
-  2. Bấm nút **"Thanh toán ngay"** liên tiếp 2 lần thật nhanh (Double-click).
-  3. Kiểm tra các request gửi lên endpoint `/payments/process` (hoặc tương đương).
-- **Kết quả mong đợi:**
-  - Request có header `Idempotency-Key` (UUID).
-  - Lần bấm thứ nhất: Backend ghi nhận key vào Redis (`SETNX`), tạo giao dịch thanh toán thành công.
-  - Lần bấm thứ hai: Bị chặn ngay lập tức, trả về kết quả của giao dịch cũ, **tuyệt đối không tạo 2 giao dịch thanh toán trùng lặp** cho cùng một đơn hàng.
-
-#### TC-PAY-02: Hoàn Tất Thanh Toán PayOS (Sandbox/Webhook)
-- **Tiền điều kiện:** Chuyển hướng sang giao diện PayOS hoặc Sandbox QR.
-- **Các bước thực hiện:**
-  1. Quét mã VietQR thanh toán trong môi trường thử nghiệm PayOS hoặc kích hoạt giả lập Webhook thành công từ PayOS.
-  2. Quan sát phản hồi từ hệ thống Backend Webhook `/payments/webhook`.
-- **Kết quả mong đợi:**
-  - Backend xác thực checksum chữ ký webhook hợp lệ.
-  - Cập nhật trạng thái `PaymentTransaction` thành `PAID` / `SUCCESS`.
-  - Cập nhật trạng thái `Order` thành `PAID`.
-  - Hệ thống tự động kích hoạt tiến trình phát hành vé (`TicketIssued`):
-    - Sinh ra bản ghi `Ticket` tương ứng trong PostgreSQL.
-    - Mỗi vé có mã `qr_code_hash` duy nhất (được băm và gán salt bảo mật).
-    - `is_scanned = false`.
-  - Frontend tự động nhận được thông báo hoặc chuyển hướng đến trang "Thanh toán thành công" (`/payment/success`).
-
-#### TC-PAY-03: Kiểm Tra Circuit Breaker Khi Cổng Thanh Toán Gặp Sự Cố
-- **Tiền điều kiện:** Cấu hình mock cổng thanh toán trả về lỗi 500 hoặc Timeout liên tục.
-- **Các bước thực hiện:**
-  1. Thực hiện gửi 10 request thanh toán liên tục trong tình trạng cổng ngoài bị lỗi.
-- **Kết quả mong đợi:**
-  - Trong các lần gọi đầu: Circuit breaker ở trạng thái `CLOSED` và đếm tỷ lệ lỗi.
-  - Khi tỷ lệ lỗi vượt ngưỡng: Mạch chuyển sang `OPEN`.
-  - Các request tiếp theo bị từ chối tức thì (Fast-fail) mà không phải treo đợi timeout 30s.
-  - Thông báo trả về người dùng: "Cổng thanh toán tạm thời gián đoạn. Vui lòng thử lại sau giây lát".
-
----
-
-### Suite 5: Quản Lý Vé Cá Nhân (Audience My Tickets & E-Ticket QR)
-
-#### TC-MYTICK-01: Xem Danh Sách Vé Đã Mua
-- **Tiền điều kiện:** Tài khoản đã thanh toán thành công ít nhất 1 đơn hàng.
-- **Các bước thực hiện:**
-  1. Trên menu Header, bấm vào **"Vé của tôi"** (`/my-tickets`).
-  2. Quan sát danh sách vé hiển thị.
-- **Kết quả mong đợi:**
-  - Hiển thị danh sách vé tương ứng với đơn hàng vừa mua.
-  - Mỗi vé hiển thị đầy đủ:
-    - Tên Concert.
-    - Hạng vé & Vị trí cổng vào (Gate Number).
-    - Thời gian tổ chức & Địa điểm.
-    - Giá tiền.
-    - Trạng thái vé: `Chưa soát` (Unscanned) màu xanh lá.
-
-#### TC-MYTICK-02: Hiển Thị & Kiểm Tra Mã QR Soát Vé
-- **Tiền điều kiện:** Đang ở trang danh sách vé `/my-tickets`.
-- **Các bước thực hiện:**
-  1. Bấm vào vé để mở modal hoặc trang chi tiết vé điện tử.
-  2. Quan sát mã QR code được sinh ra trên màn hình.
-  3. Dùng ứng dụng quét QR bất kỳ (hoặc camera điện thoại) quét thử mã QR này.
-- **Kết quả mong đợi:**
-  - Mã QR hiển thị rõ ràng, sắc nét.
-  - Nội dung chứa chuỗi hash bảo mật đã được băm (`qr_code_hash`), không để lộ thông tin nhạy cảm ở dạng plain-text thô.
-
----
-
-### Suite 6: Soát Vé Tại Cổng Mobile App (Online & Offline Gate Check-in)
-
-#### TC-CHK-01: Đăng Nhập Nhân Viên Soát Vé & Tải Dữ Liệu Ngoại Tuyến (Pre-fetch)
-- **Tiền điều kiện:** Chạy Mobile App Expo (`apps/mobile-app`). Đảm bảo kết nối tới backend.
-- **Các bước thực hiện:**
-  1. Mở App, đăng nhập tài khoản Checker: `quang.checker@ticketbox.local` / `123456`.
-  2. Chọn ca làm việc / sự kiện được phân công.
-  3. Quan sát quá trình tải trước dữ liệu vé (Pre-fetch).
-- **Kết quả mong đợi:**
-  - Ứng dụng tải về danh sách các `qr_code_hash` của các vé thuộc **Cổng 1 (Gate 1)** mà nhân viên Quang được phân công.
-  - Dữ liệu được lưu trữ an toàn vào bộ nhớ cục bộ của máy (Local Storage / SQLite / AsyncStorage).
-  - Giao diện báo: "Đã đồng bộ sẵn sàng X vé cho Cổng 1".
-
-#### TC-CHK-02: Quét Vé Hợp Lệ Lần Đầu (Chế độ Trực Tuyến - Online)
-- **Tiền điều kiện:** Mobile App đang online kết nối mạng. Có sẵn mã QR của vé hợp lệ thuộc Cổng 1.
-- **Các bước thực hiện:**
-  1. Bật camera quét mã trên Mobile App.
-  2. Hướng camera vào mã QR vé hợp lệ (thuộc Gate 1).
-- **Kết quả mong đợi:**
-  - App nhận diện tức thì trong vòng < 0.5s.
-  - Màn hình chuyển màu xanh lá rực rỡ, phát âm thanh thành công (Ding), hiển thị:
-    - "VÉ HỢP LỆ (VALID)".
-    - Tên khách hàng, Hạng vé (S-VIP 1), Cổng 1.
-  - Backend cập nhật `tickets.is_scanned = true`, ghi nhận `scanned_at` và `scanned_by`.
-
-#### TC-CHK-03: Chống Quét Trùng (Duplicate Scan / Chống Vé Giả 2 Lần)
-- **Tiền điều kiện:** Giữ nguyên vé vừa quét thành công ở TC-CHK-02.
-- **Các bước thực hiện:**
-  1. Dùng camera quét lại chính xác mã QR đó lần thứ 2.
-- **Kết quả mong đợi:**
-  - Màn hình lập tức đổi sang màu đỏ cảnh báo (Alert).
-  - Hiển thị thông báo lớn: "CẢNH BÁO: VÉ ĐÃ ĐƯỢC QUÉT TRƯỚC ĐÓ!".
-  - Hiển thị rõ thời gian quét lần đầu và nhân viên đã thực hiện quét.
-  - Chặn đứng hành vi gian lận dùng 1 vé cho 2 người vào cửa.
-
-#### TC-CHK-04: Kiểm Tra Phân Luồng Cổng (Gate Segregation)
-- **Tiền điều kiện:** Nhân viên đang trực tại Cổng 1 (Gate 1). Có mã QR của vé thuộc Cổng 2 (Gate 2 - Hạng vé Xương Rồng).
-- **Các bước thực hiện:**
-  1. Dùng camera Cổng 1 quét mã QR của vé Cổng 2.
-- **Kết quả mong đợi:**
-  - Hệ thống từ chối cho vào.
-  - Hiển thị cảnh báo màu vàng/cam: "SAI CỔNG SOÁT VÉ! Vé này thuộc CỔNG 2, vui lòng hướng dẫn khách hàng di chuyển đến Cổng 2".
-  - Vé không bị đánh dấu là đã quét.
-
-#### TC-CHK-05: Soát Vé Ngoại Tuyến (Offline Mode) & Đồng Bộ Khi Có Mạng (Bulk Sync)
-- **Tiền điều kiện:** Đã pre-fetch dữ liệu vé Cổng 1 trên Mobile App.
-- **Các bước thực hiện:**
-  1. Bật chế độ Máy bay (Airplane Mode) trên điện thoại (ngắt hoàn toàn Wi-Fi và 4G).
-  2. Tiến hành quét 3 vé mới chưa từng quét thuộc Cổng 1.
-  3. Thử quét lại 1 vé trong số 3 vé đó ngay khi đang offline.
-  4. Tắt chế độ Máy bay (bật lại Wi-Fi/4G kết nối internet).
-  5. Bấm nút **"Đồng bộ vé"** (hoặc đợi app tự động kích hoạt auto-sync).
-- **Kết quả mong đợi:**
-  - Khi offline: App vẫn kiểm tra được vé hợp lệ từ bộ nhớ local, báo xanh thành công cho 3 vé mới; và vẫn phát hiện được vé quét trùng ở bước 3.
-  - Các lượt quét offline được ghi vào hàng đợi offline queue trên máy.
-  - Khi có mạng lại: App tự động gọi API `POST /checkin/sync` (Bulk Sync) đẩy danh sách lên backend.
-  - Kiểm tra Database PostgreSQL: Toàn bộ 3 vé trên được cập nhật `is_scanned = true` với timestamp chính xác lúc quét offline.
-
----
-
-### Suite 7: Quản Trị Sự Kiện & Cấu Hình Hạng Vé (Admin/Organizer Event Management)
-
-#### TC-ADM-EVT-01: Tạo Concert Mới và Cấu Hình Các Hạng Vé
-- **Tiền điều kiện:** Đăng nhập tài khoản Admin (`vy.admin@ticketbox.local`) trên `http://localhost:3002`.
-- **Các bước thực hiện:**
-  1. Vào menu **"Quản lý sự kiện"** > Bấm nút **"Tạo sự kiện mới"** (`/create-event`).
-  2. Điền thông tin:
-     - Tên concert: `LIVESHOW TRI ÂM - MỸ TÂM 2026`.
-     - Địa điểm: `Sân vận động Mỹ Đình, Hà Nội`.
-     - Ngày giờ bắt đầu: Chọn ngày trong tương lai.
-     - Mô tả sự kiện: `Đêm nhạc hoành tráng kỷ niệm...`.
-  3. Thêm Hạng vé 1:
-     - Tên hạng: `SUPER VIP`.
-     - Giá vé: `5.000.000 đ`.
-     - Tổng số lượng: `500`.
-     - Giới hạn mỗi người: `2`.
-     - Cổng soát vé: `1`.
-  4. Thêm Hạng vé 2:
-     - Tên hạng: `GA KHÁN ĐÀI`.
-     - Giá vé: `1.200.000 đ`.
-     - Tổng số lượng: `5000`.
-     - Giới hạn mỗi người: `4`.
-     - Cổng soát vé: `2`.
-  5. Bấm **"Lưu và Công bố sự kiện"**.
-- **Kết quả mong đợi:**
-  - Sự kiện được lưu thành công vào PostgreSQL (`concerts` và `ticket_categories`).
-  - Redis cache danh mục sự kiện được làm mới (Cache Invalidation).
-  - Sang Web Khách hàng (`:3001`): Sự kiện mới lập tức xuất hiện trên trang chủ.
-
-#### TC-ADM-EVT-02: Cập Nhật Trạng Thái & Thông Tin Concert
-- **Tiền điều kiện:** Đang ở danh sách sự kiện trên Admin Portal.
-- **Các bước thực hiện:**
-  1. Chọn sự kiện vừa tạo > Bấm **"Chỉnh sửa"**.
-  2. Đổi trạng thái từ `UPCOMING` sang `ON_SALE` hoặc `POSTPONED`.
-  3. Bấm **"Cập nhật"**.
-- **Kết quả mong đợi:**
-  - Trạng thái được cập nhật thành công.
-  - Giao diện Admin và Web phản ánh ngay trạng thái mới.
-
----
-
-### Suite 8: Phân Công Cổng Soát Vé & Quản Lý Nhân Sự (Checker Assignment & Users)
-
-#### TC-ADM-CHK-01: Phân Công Nhân Viên Vào Cổng Soát Vé
-- **Tiền điều kiện:** Đang đăng nhập Admin trên `http://localhost:3002`.
-- **Các bước thực hiện:**
-  1. Vào mục **"Phân công soát vé"** (`/assignments`).
-  2. Chọn sự kiện: `LIVESHOW TRI ÂM - MỸ TÂM 2026`.
-  3. Chọn nhân viên: `Quang Checker` (`quang.checker@ticketbox.local`).
-  4. Chọn Cổng phụ trách: `Cổng 1`.
+### Kịch bản 3.1: Phân công Checker vào Cổng sự kiện
+- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/assignments](https://ticketbox-admin.tvquang.id.vn/assignments)
+- **Các bước:**
+  1. Bấm nút **"+ Phân công mới"**.
+  2. Chọn Sự kiện: `Live Concert Anh Trai Vượt Ngàn Chông Gai 2026`.
+  3. Chọn Nhân viên: `Lê Văn Quang (quang.checker@ticketbox.vn)`.
+  4. Chọn Cổng soát vé: Chọn `Gate 1`.
   5. Bấm **"Xác nhận phân công"**.
 - **Kết quả mong đợi:**
-  - Bản ghi mới được tạo trong bảng `checker_assignments`.
-  - Khi nhân viên Quang mở Mobile App, sự kiện và Cổng 1 tự động xuất hiện trong danh sách ca trực.
-  - Hệ thống ngăn chặn việc phân công trùng 1 nhân viên cho 2 cổng khác nhau trong cùng 1 sự kiện.
+  - Bản ghi phân công xuất hiện trong bảng: Nhân viên `Lê Văn Quang` ➔ Trực `Gate 1` ➔ Sự kiện `Anh Trai Vượt Ngàn Chông Gai`.
 
-#### TC-ADM-USR-01: Xem Danh Sách & Khóa Tài Khoản Vi Phạm
-- **Tiền điều kiện:** Đang ở mục **"Quản lý người dùng"** (`/users`).
-- **Các bước thực hiện:**
-  1. Tìm kiếm một user theo email.
-  2. Bấm đổi trạng thái từ `ACTIVE` sang `LOCKED` (Khóa).
-  3. Thử dùng tài khoản đó đăng nhập trên Web App `:3001`.
+### Kịch bản 3.2: Kiểm tra Quy tắc Chống Phân công Xung đột (Conflict Prevention)
+- **Các bước:**
+  1. Bấm **"+ Phân công mới"** lần nữa.
+  2. Chọn cùng Sự kiện: `Anh Trai Vượt Ngàn Chông Gai`.
+  3. Chọn cùng Nhân viên: `Lê Văn Quang`.
+  4. Thử chọn `Gate 2`.
+  5. Bấm **"Xác nhận phân công"**.
 - **Kết quả mong đợi:**
-  - Trạng thái user đổi thành `LOCKED` trong DB.
-  - Khi đăng nhập trên Web: Báo lỗi "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên".
+  - Hệ thống báo lỗi và từ chối: *"Nhân viên này đã được phân công trực tại Cổng 1 trong cùng sự kiện. Không thể phân công 2 cổng khác nhau."*
 
 ---
 
-### Suite 9: Dashboard Quản Trị & Báo Cáo Doanh Thu (Admin Dashboard & Revenue Analytics)
+## 📌 PHA 4: KHÁN GIẢ KHÁM PHÁ & ĐẶT VÉ (AUDIENCE WEB FLOW)
 
-#### TC-ADM-DASH-01: Kiểm Tra Số Liệu KPI Tổng Quan Trên Dashboard
-- **Tiền điều kiện:** Đăng nhập Admin vào `http://localhost:3002/dashboard`.
-- **Các bước thực hiện:**
-  1. Quan sát các thẻ thống kê tổng quan:
-     - Tổng doanh thu (Total Revenue).
-     - Tổng số vé đã bán (Tickets Sold).
-     - Tổng số đơn hàng (Orders).
-     - Tỷ lệ check-in thành công tại cổng.
-  2. Đối chiếu số liệu với số lượng đơn hàng `PAID` thực tế trong CSDL.
-- **Kết quả mong đợi:**
-  - Các con số thống kê khớp với dữ liệu thực tế, định dạng tiền tệ rõ ràng (ví dụ: `15.450.000.000 ₫`).
-  - Biểu đồ doanh thu theo thời gian và tỷ lệ lấp đầy sân khấu hiển thị trực quan, mượt mà.
+> **Mục tiêu:** Mở Web khách hàng, đăng ký tài khoản khán giả, tìm kiếm concert và tiến hành giữ vé chống bán lố (Redis Atomic Lock).
 
-#### TC-ADM-REV-01: Báo Cáo Doanh Thu Chi Tiết Theo Từng Sự Kiện
-- **Tiền điều kiện:** Vào menu **"Doanh thu"** (`/revenue`).
-- **Các bước thực hiện:**
-  1. Lọc báo cáo theo sự kiện cụ thể.
-  2. Xem bảng phân tích doanh thu theo từng hạng vé (S-VIP bán được bao nhiêu, GA bán được bao nhiêu).
-  3. Thử bấm nút **"Xuất báo cáo Excel / CSV"** (nếu có).
+### Kịch bản 4.1: Đăng ký & Đăng nhập Khán giả Mới
+- **Địa chỉ:** [https://ticketbox-web.tvquang.id.vn/register](https://ticketbox-web.tvquang.id.vn/register)
+- **Các bước:**
+  1. Họ tên: `Khán Giả Demo`
+  2. Email: `khangia.test@gmail.com`
+  3. Mật khẩu: `Khangia@123`
+  4. Bấm **"Đăng ký"**.
+  5. Chuyển sang trang đăng nhập [https://ticketbox-web.tvquang.id.vn/login](https://ticketbox-web.tvquang.id.vn/login) và đăng nhập bằng tài khoản này.
 - **Kết quả mong đợi:**
-  - Bảng thống kê hiển thị chi tiết: Tên hạng vé, Đơn giá, Số vé đã bán, Tỷ lệ %, Doanh thu thành tiền.
-  - Số liệu chính xác và trực quan.
+  - Đăng nhập thành công, thanh tiêu đề hiển thị tên người dùng và mục **"Vé của tôi" (`/my-tickets`)**.
+
+### Kịch bản 4.2: Khám phá Sự kiện & Kiểm tra Cache
+- **Địa chỉ:** [https://ticketbox-web.tvquang.id.vn](https://ticketbox-web.tvquang.id.vn)
+- **Các bước:**
+  1. Kiểm tra trang chủ: Sự kiện `Live Concert Anh Trai Vượt Ngàn Chông Gai 2026` vừa xuất bản ở Pha 2 hiển thị rõ nét với ảnh poster và mức giá từ `600,000đ`.
+  2. Thử ô tìm kiếm: Gõ từ khóa `Chông Gai` ➔ Sự kiện lọc chính xác.
+  3. Bấm vào card sự kiện để mở trang Chi tiết sự kiện (`/concerts/:id`).
+- **Kết quả mong đợi:**
+  - Trang chi tiết tải nhanh (dữ liệu được cache qua Upstash Redis).
+  - Hiển thị đầy đủ thông tin: Địa điểm, ngày giờ, mô tả, và danh sách 2 hạng vé (`S-VIP` 1.500.000đ và `GA` 600.000đ).
+
+### Kịch bản 4.3: Đặt vé & Cơ chế Giữ vé Chống Bán Lố (Hold Inventory)
+- **Các bước:**
+  1. Tại hạng vé `S-VIP`, chọn số lượng: `2` vé.
+  2. Thử bấm tăng số lượng vượt quá 4 vé (giới hạn `max_per_user`) ➔ Nút cộng bị vô hiệu hóa hoặc cảnh báo giới hạn.
+  3. Giữ nguyên số lượng `2` vé, bấm nút **"Đặt vé ngay"** (hoặc "Mua vé").
+- **Kết quả mong đợi:**
+  - Backend thực thi **Redis Lua Script nguyên tử** trên Upstash:
+    1. Kiểm tra tồn kho của hạng vé `S-VIP` (50 vé > 2 vé).
+    2. Trừ tồn kho tạm thời (50 ➔ 48 vé).
+    3. Tạo khóa giữ chỗ tạm thời (TTL = 15 phút).
+  - Trình duyệt tự động chuyển hướng sang màn hình Thanh toán Đơn hàng (`/checkout` hoặc `/orders/:id`).
+  - Màn hình hiển thị:
+    - **Mã đơn hàng** (Order Code)
+    - **Thời gian giữ vé đếm ngược:** `14:59`, `14:58`...
+    - Tổng tiền: `3,000,000` VND (2 x 1,500,000đ).
 
 ---
 
-### Suite 10: Tác Vụ Nền & AI (Background Jobs, CSV Guest Import & AI Bio)
+## 📌 PHA 5: THANH TOÁN & PHÁT HÀNH VÉ ĐIỆN TỬ (PAYMENT & ISSUANCE)
 
-#### TC-WORK-01: Import Danh Sách Khách Mời (Guest List) Bằng File CSV
-- **Tiền điều kiện:** Đang ở mục **"Tác vụ nền"** (`/jobs`) trên Admin Portal. Chuẩn bị 1 file `guests.csv` gồm các cột: `email,full_name,ticket_category`.
-- **Các bước thực hiện:**
-  1. Chọn sự kiện cần import khách mời.
-  2. Tải lên file `guests.csv` (chứa 100 - 1000 dòng).
-  3. Bấm **"Bắt đầu xử lý nền"**.
-  4. Quan sát thanh tiến độ (Progress Bar 0% -> 50% -> 100%).
-- **Kết quả mong đợi:**
-  - Hệ thống tạo `BackgroundJob` với trạng thái `PROCESSING`.
-  - Quá trình xử lý chạy ngầm (chunking), không gây đơ hay nghẽn server.
-  - Khi hoàn tất: Chuyển sang `COMPLETED`, hiển thị số dòng thành công / số dòng lỗi.
-  - Dữ liệu khách mời được ghi đầy đủ vào bảng `guest_lists`.
+> **Mục tiêu:** Hoàn tất đơn hàng và phát hành vé điện tử kèm mã QR soát vé.
 
-#### TC-WORK-02: Tự Động Trích Xuất Tiểu Sử Nghệ Sĩ Bằng AI (AI Bio Generation)
-- **Tiền điều kiện:** Mở form tạo/sửa concert.
-- **Các bước thực hiện:**
-  1. Nhập danh sách nghệ sĩ biểu diễn: `Soobin, Binz, Jun Phạm, Rhymastic`.
-  2. Bấm nút **"Tạo tiểu sử nghệ sĩ bằng AI"** (Generate Artist Bio with AI).
+### ⚠️ Lưu ý Trạng thái Cổng PayOS:
+- Trong file `.env` trên Render, các biến PayOS hiện đang là dummy (`PAYOS_CLIENT_ID=dummy-payos-client-id`).
+- **Khi chưa gắn Key PayOS thật:** Trang thanh toán có thể báo lỗi hoặc hiển thị thông tin chuyển khoản mẫu.
+- **Khi bạn bổ sung Key PayOS thật:**
+  1. Đăng ký tài khoản miễn phí tại [payos.vn](https://payos.vn).
+  2. Lấy 3 thông số: `PAYOS_CLIENT_ID`, `PAYOS_API_KEY`, `PAYOS_CHECKSUM_KEY`.
+  3. Dán vào mục Environment trên Render ➔ Render tự động redeploy trong 1 phút.
+
+### Kịch bản 5.1: Hiển thị Mã QR Chuyển khoản (VietQR)
+- **Tiền điều kiện:** Đơn hàng đang ở trạng thái `PENDING` kèm thời gian giữ chỗ.
 - **Kết quả mong đợi:**
-  - Backend gọi service tích hợp LLM (OpenAI API / fallback service).
-  - Tự động sinh ra đoạn văn giới thiệu súc tích, chuyên nghiệp về phong cách âm nhạc và dấu ấn của dàn nghệ sĩ.
-  - Nội dung được điền tự động vào trường `ai_bio`.
+  - Giao diện thanh toán hiển thị mã QR VietQR chuẩn NAPAS 24/7.
+  - Có đầy đủ: Tên ngân hàng nhận, Số tài khoản, Số tiền chính xác (`3,000,000đ`), Nội dung chuyển khoản duy nhất (ví dụ: `TBX12345`).
+
+### Kịch bản 5.2: Xác nhận Thanh toán Thành công (Payment Webhook)
+- **Trường hợp A (Có PayOS thật):** Quét mã QR bằng ứng dụng ngân hàng và chuyển khoản số tiền thử nghiệm ➔ PayOS bắn Webhook về backend ➔ Đơn hàng tự động đổi sang `PAID`.
+- **Trường hợp B (Test giả lập qua Swagger khi chưa có PayOS):**
+  1. Mở [https://ticketbox-api-gewh.onrender.com/api/docs](https://ticketbox-api-gewh.onrender.com/api/docs).
+  2. Tìm mục `POST /payments/webhook` hoặc API cập nhật trạng thái đơn hàng.
+  3. Gửi payload xác nhận đơn hàng `PAID`.
+- **Kết quả sau khi Đơn hàng `PAID`:**
+  - Trạng thái đơn hàng chuyển thành **`PAID` (Đã thanh toán)**.
+  - Tồn kho Redis chính thức được chốt thành công.
+  - Hệ thống tạo ra **2 Vé điện tử** (Tickets) tương ứng với 2 vé vừa mua trong CSDL Supabase.
+  - Mỗi vé có 1 chuỗi `qr_code_hash` duy nhất (chuỗi băm bảo mật chống làm giả).
+
+### Kịch bản 5.3: Kiểm tra Vé Điện Tử tại "Vé Của Tôi" (My Tickets)
+- **Địa chỉ:** [https://ticketbox-web.tvquang.id.vn/my-tickets](https://ticketbox-web.tvquang.id.vn/my-tickets)
+- **Các bước:**
+  1. Truy cập menu **"Vé của tôi"**.
+  2. Bấm vào đơn hàng vừa thanh toán.
+- **Kết quả mong đợi:**
+  - Hiển thị danh sách vé: Hạng vé `S-VIP`, Cổng vào: `Gate 1`.
+  - Mỗi vé hiển thị **Mã QR code sắc nét** để phục vụ soát vé tại cổng.
+  - Trạng thái vé: **`VALID` (Hợp lệ / Chưa sử dụng)**.
 
 ---
 
-### Suite 11: Khả Năng Phục Hồi & Chống Quá Tải (Rate Limit & Resilience)
+## 📌 PHA 6: SOÁT VÉ TẠI CỔNG MOBILE APP (CHECK-IN FLOW)
 
-#### TC-RES-01: Kiểm Tra Cơ Chế Chặn Spam Token Bucket (HTTP 429 Too Many Requests)
-- **Tiền điều kiện:** Backend đang chạy.
-- **Các bước thực hiện:**
-  1. Mở PowerShell tại thư mục gốc của dự án.
-  2. Chạy script mô phỏng bắn liên tục 50 request trong 2 giây vào endpoint `/concerts` hoặc `/tickets/reserve`:
-     ```powershell
-     1..50 | ForEach-Object {
-       Invoke-RestMethod -Uri "http://localhost:3000/concerts" -Method Get -SkipHttpErrorCheck
-     }
-     ```
-- **Kết quả mong đợi:**
-  - Các request đầu tiên vượt qua bình thường (HTTP 200).
-  - Khi hết token trong bucket, các request tiếp theo lập tức nhận mã HTTP `429 Too Many Requests`.
-  - Header trả về có thông tin `Retry-After`.
-  - Server vẫn hoạt động ổn định, RAM và CPU không bị tràn.
+> **Mục tiêu:** Nhân viên soát vé sử dụng Mobile App để kiểm tra tính hợp lệ của mã QR vé khi khán giả đến cổng.
 
-#### TC-RES-02: Chạy Script K6 Kiểm Tra Chống Bán Quá Số Lượng (Oversell Resistance)
-- **Tiền điều kiện:** Đã cài đặt công cụ `k6`. Hạng vé test chỉ còn đúng **10 vé**.
-- **Các bước thực hiện:**
-  1. Mở PowerShell tại thư mục gốc.
-  2. Chạy k6 test:
-     ```powershell
-     .\scripts\k6-oversell-check.local.ps1
-     ```
-  3. Mô phỏng 30-50 người dùng ảo (VUs) đồng thời bấm mua vé cùng một tích tắc.
+### Cấu hình Mobile App:
+- Đảm bảo file cấu hình mobile (`apps/mobile-app/.env` hoặc biến cấu hình) có:
+  ```env
+  EXPO_PUBLIC_API_URL=https://ticketbox-api-gewh.onrender.com
+  ```
+- Chạy lệnh khởi động: `pnpm start:mobile` (quét QR qua ứng dụng Expo Go trên điện thoại thật).
+
+### Kịch bản 6.1: Checker Đăng nhập & Tải dữ liệu vé về máy (Prefetch)
+- **Các bước:**
+  1. Mở Mobile App.
+  2. Đăng nhập bằng tài khoản: `quang.checker@ticketbox.vn` / `Checker@123`.
 - **Kết quả mong đợi:**
-  - Kiểm tra kết quả tổng kết trong console hoặc file `k6-oversell-summary.json`.
-  - **Chỉ có chính xác 10 đơn hàng đặt vé thành công**.
-  - Các request còn lại nhận thông báo hết vé.
-  - Số lượng vé phát hành trong DB sau test bằng đúng 10, **tuyệt đối không bị âm vé hay bán vượt số lượng (Zero Oversell)**.
+  - Đăng nhập thành công.
+  - Màn hình hiển thị đúng ca trực được phân công ở Pha 3:
+    - Sự kiện: `Live Concert Anh Trai Vượt Ngàn Chông Gai 2026`
+    - Cổng soát vé: **`Gate 1`**.
+  - Ứng dụng tự động tải trước (Prefetch) danh sách hash vé hợp lệ của Gate 1 về bộ nhớ điện thoại (hỗ trợ soát vé siêu tốc và quét offline khi mất mạng).
+
+### Kịch bản 6.2: Quét vé Hợp lệ (Check-in Thành công)
+- **Các bước:**
+  1. Trên Mobile App, bấm nút **"Bắt đầu quét vé"** (Camera scanner bật lên).
+  2. Hướng camera vào Mã QR của vé `S-VIP` (Gate 1) của khán giả ở Pha 5.
+- **Kết quả mong đợi:**
+  - Màn hình mobile chuyển màu **Xanh lá (Success)**:  
+    *"VÉ HỢP LỆ - Chào mừng quý khách vào Gate 1"*.
+  - Trạng thái vé trên hệ thống được cập nhật thành **`USED`** kèm thời gian check-in.
+
+### Kịch bản 6.3: Quét lại Vé Đã Sử Dụng (Chống vé gian lận / Quay vòng)
+- **Các bước:**
+  1. Giữ nguyên màn hình camera, quét lại chính mã QR vừa quét ở Bước 6.2.
+- **Kết quả mong đợi:**
+  - Màn hình mobile lập tức chuyển màu **Đỏ (Warning / Error)**:  
+    *"CẢNH BÁO: Vé đã được sử dụng lúc [giờ:phút]"*.
+  - Từ chối cho khán giả vào cổng lần 2.
+
+### Kịch bản 6.4: Quét Vé Sai Cổng (Wrong Gate Barrier)
+- **Mục tiêu:** Khán giả cầm vé Hạng GA (Gate 2) nhưng đi nhầm vào Cổng VIP (Gate 1).
+- **Các bước:**
+  1. Dùng một mã QR của vé Gate 2 quét vào camera của Checker Gate 1.
+- **Kết quả mong đợi:**
+  - Màn hình mobile báo màu **Vàng / Đỏ**:  
+    *"SAI CỔNG: Vé này thuộc Cổng 2 (Gate 2). Vui lòng hướng dẫn khách sang đúng cổng!"*.
 
 ---
 
-## 5. Checklist Nghiệm Thu Cuối Cùng (Sign-off Checklist)
+## 📌 PHA 7: BÁO CÁO DOANH THU & QUẢN TRỊ ADMIN (REVENUE & ANALYTICS)
 
-Người kiểm thử đánh dấu `[x]` vào các hạng mục sau khi đã chạy thực tế:
+> **Mục tiêu:** Kiểm tra các con số thống kê tài chính, số lượng vé đã bán và tỷ lệ khán giả đã check-in vào sân.
 
-- [ ] **1. Môi trường & Khởi động:**
-  - [ ] Redis & RabbitMQ container khởi động ổn định.
-  - [ ] Prisma migration và seed data hoàn tất không lỗi.
-  - [ ] Cả 3 ứng dụng (API 3000, Web 3001, Admin 3002) chạy đồng thời không xung đột cổng.
-- [ ] **2. Luồng Khách Hàng (Audience Flow):**
-  - [ ] Đăng ký, đăng nhập, đăng xuất mượt mà.
-  - [ ] Xem danh sách, tìm kiếm và xem chi tiết sự kiện tải nhanh.
-  - [ ] Giữ chỗ chính xác, countdown hoạt động, chặn vượt hạn mức `max_per_user`.
-  - [ ] Nhả vé tự động khi hết hạn thanh toán.
-  - [ ] Thanh toán PayOS và cấp phát vé QR salted hash thành công.
-  - [ ] Trang "Vé của tôi" hiển thị đầy đủ vé và QR sắc nét.
-- [ ] **3. Luồng Soát Vé (Checker Flow):**
-  - [ ] Pre-fetch dữ liệu theo phân luồng Gate chính xác.
-  - [ ] Quét vé hợp lệ báo xanh (Ding).
-  - [ ] Quét vé trùng báo đỏ cảnh báo gian lận.
-  - [ ] Quét sai Gate từ chối vào cổng.
-  - [ ] Quét ngoại tuyến (Offline) hoạt động tốt, tự động bulk-sync khi có mạng.
-- [ ] **4. Luồng Quản Trị (Admin/Organizer Flow):**
-  - [ ] Bảo vệ truy cập Admin bằng RBAC chặt chẽ.
-  - [ ] Tạo sự kiện mới, cấu hình hạng vé và sơ đồ SVG thành công.
-  - [ ] Phân công nhân viên vào cổng soát vé chính xác.
-  - [ ] Dashboard và Báo cáo doanh thu hiển thị đúng số liệu thực tế.
-  - [ ] Background job import CSV và AI bio hoạt động không treo server.
-- [ ] **5. Khả Năng Chịu Tải & Phòng Vệ:**
-  - [ ] Rate limit trả về HTTP 429 khi bị spam.
-  - [ ] Không xảy ra oversell dưới k6 concurrency test.
-  - [ ] Idempotency key ngăn chặn thành công double-charge.
+### Kịch bản 7.1: Báo cáo Doanh thu Thời gian Thực
+- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/revenue](https://ticketbox-admin.tvquang.id.vn/revenue)
+- **Người thực hiện:** Đăng nhập bằng `superadmin@ticketbox.local` hoặc `vy.admin@ticketbox.vn`.
+- **Kết quả mong đợi:**
+  - Tổng doanh thu hiển thị đúng số tiền đã thanh toán: `3,000,000 VND`.
+  - Biểu đồ phân bổ theo hạng vé hiển thị tỷ lệ: `S-VIP` chiếm 100% doanh thu đợt này.
+  - Danh sách giao dịch hiển thị mã đơn hàng tương ứng với thời gian thanh toán chính xác.
+
+### Kịch bản 7.2: Quản lý Đơn hàng & Chi tiết
+- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/orders](https://ticketbox-admin.tvquang.id.vn/orders)
+- **Kết quả mong đợi:**
+  - Bảng đơn hàng hiển thị đơn hàng của `Khán Giả Demo` với trạng thái nhãn xanh **`PAID`**.
+  - Bấm xem chi tiết: Hiển thị đầy đủ thông tin người mua, email, số điện thoại, danh sách 2 mã vé và lịch sử check-in tại Gate 1.
 
 ---
-*Tài liệu hoàn thành phục vụ kiểm thử nghiệm thu toàn diện hệ thống TicketBox.*
+
+## 📌 PHA 8: TÁC VỤ NỀN & AI TIỂU SỬ NGHỆ SĨ (BACKGROUND JOBS & GEMINI)
+
+> **Lưu ý:** Phần này dành cho khi bạn đã thiết lập thêm 2 biến môi trường trên Render:
+> 1. `RABBITMQ_URL`: URL kết nối hàng đợi (ví dụ: tạo tài khoản miễn phí trên CloudAMQP `amqps://...`).
+> 2. `GEMINI_API_KEY`: API Key lấy miễn phí từ [Google AI Studio](https://aistudio.google.com/).
+
+### Kịch bản 8.1: Tạo Tác vụ Nền Tạo Tiểu Sử AI (AI Artist Bio)
+- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/events](https://ticketbox-admin.tvquang.id.vn/events)
+- **Các bước:**
+  1. Tại chi tiết sự kiện, tải lên file tài liệu / press kit nghệ sĩ (file PDF/Text).
+  2. Bấm nút **"Tạo tiểu sử bằng AI" (Generate Bio)**.
+- **Kết quả mong đợi:**
+  - Backend bắn một thông điệp vào hàng đợi RabbitMQ `ai.bio.queue`.
+  - Người dùng không phải chờ đơ màn hình (thao tác bất đồng bộ).
+  - Vào mục **"Tác vụ nền" (`/jobs`)**: Trạng thái job hiển thị `PENDING` ➔ `PROCESSING` ➔ `COMPLETED`.
+  - Worker tiêu thụ message, gọi Gemini 3.5 Flash để tổng hợp tiểu sử nghệ sĩ và tự động lưu vào trường `artist_biography` của Concert trong CSDL Supabase.
+
+---
+
+## 📊 BẢNG CHECKLIST NGHIỆM THU MANUAL (SIGN-OFF MATRIX)
+
+Bạn có thể đánh dấu tick `[x]` vào bảng dưới đây khi hoàn tất kiểm tra từng kịch bản:
+
+- [ ] **Pha 1: Auth & RBAC**
+  - [ ] Đăng nhập thành công tài khoản SuperAdmin (`superadmin@ticketbox.local`).
+  - [ ] Tạo đủ 3 tài khoản Admin, Organizer, Checker.
+  - [ ] Xác nhận Admin thường không thể tạo SuperAdmin (403 Forbidden).
+  - [ ] Xác nhận Checker bị chặn hoàn toàn khỏi Admin Portal.
+- [ ] **Pha 2: Quản lý Sự kiện**
+  - [ ] Tạo sự kiện mới tải ảnh poster thành công lên Supabase Storage.
+  - [ ] Cấu hình đủ các hạng vé VIP và Standard kèm giá tiền.
+  - [ ] Chuyển trạng thái sang `PUBLISHED` thành công.
+- [ ] **Pha 3: Phân công Cổng**
+  - [ ] Phân công Checker vào Cổng 1 thành công.
+  - [ ] Xác nhận hệ thống chặn phân công trùng 1 người vào 2 cổng.
+- [ ] **Pha 4: Khách hàng & Đặt vé**
+  - [ ] Khán giả đăng ký và đăng nhập trên Web App thành công.
+  - [ ] Sự kiện hiển thị đẹp mắt trên trang chủ và tìm kiếm chính xác.
+  - [ ] Bấm đặt vé kích hoạt Redis Lua script giữ tồn kho và đếm ngược 15 phút.
+- [ ] **Pha 5: Thanh toán**
+  - [ ] Màn hình thanh toán hiển thị đúng thông tin đơn hàng và mã giữ chỗ.
+  - [ ] Chuyển trạng thái đơn hàng sang `PAID` phát hành vé kèm mã QR.
+  - [ ] Khán giả xem được vé điện tử trong mục "Vé của tôi".
+- [ ] **Pha 6: Soát vé Mobile**
+  - [ ] Checker đăng nhập mobile thấy đúng ca trực Cổng 1.
+  - [ ] Quét mã QR vé hợp lệ báo thành công và chuyển trạng thái vé sang `USED`.
+  - [ ] Quét lại vé đã dùng báo cảnh báo trùng vé.
+  - [ ] Quét vé sai cổng báo cảnh báo sai cổng.
+- [ ] **Pha 7: Báo cáo Doanh thu**
+  - [ ] Doanh thu và số lượng vé bán hiển thị chính xác trên Dashboard Admin.

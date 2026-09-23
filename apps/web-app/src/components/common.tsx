@@ -279,7 +279,7 @@ export function BrandMark({ compact = false }: { compact?: boolean }) {
       >
         <defs>
           <linearGradient
-            id="ticketbox-brand-gradient"
+            id="tixora-brand-gradient"
             x1="0%"
             y1="0%"
             x2="100%"
@@ -291,7 +291,7 @@ export function BrandMark({ compact = false }: { compact?: boolean }) {
         </defs>
         <path
           d="M40 60Q40 50 50 50H150Q160 50 160 60V85Q150 100 160 115V140Q160 150 150 150H50Q40 150 40 140V115Q50 100 40 85Z"
-          fill="url(#ticketbox-brand-gradient)"
+          fill="url(#tixora-brand-gradient)"
         />
         <rect
           x="85"
@@ -540,7 +540,7 @@ export function SiteShell({
               >
                 <defs>
                   <linearGradient
-                    id="ticketbox-brand-gradient-footer"
+                    id="tixora-brand-gradient-footer"
                     x1="0%"
                     y1="0%"
                     x2="100%"
@@ -552,7 +552,7 @@ export function SiteShell({
                 </defs>
                 <path
                   d="M40 60Q40 50 50 50H150Q160 50 160 60V85Q150 100 160 115V140Q160 150 150 150H50Q40 150 40 140V115Q50 100 40 85Z"
-                  fill="url(#ticketbox-brand-gradient-footer)"
+                  fill="url(#tixora-brand-gradient-footer)"
                 />
                 <rect
                   x="85"
@@ -572,7 +572,7 @@ export function SiteShell({
                 />
               </svg>
               <span className="font-display text-3xl font-black italic tracking-tight text-white drop-shadow-sm">
-                TicketBox
+                Tixora
               </span>
             </Link>
             <div className="flex items-center gap-4 text-white/50">
@@ -635,7 +635,7 @@ export function SiteShell({
               </Link>
             </div>
             <p className="text-xs font-semibold text-white/40 tracking-wide mt-2">
-              © 2026 TicketBox. Bản quyền được bảo lưu.
+              © 2026 Tixora. Bản quyền được bảo lưu.
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-start sm:justify-end gap-x-8 gap-y-4 text-sm font-bold text-white/70">

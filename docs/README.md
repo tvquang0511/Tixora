@@ -1,7 +1,7 @@
-﻿# 📚 HỆ THỐNG TÀI LIỆU DỰ ÁN TICKETBOX (DOCUMENTATION PORTAL)
+# 📚 HỆ THỐNG TÀI LIỆU DỰ ÁN TIXORA (DOCUMENTATION PORTAL)
 
-> **Chào mừng bạn đến với trung tâm tài liệu chính thức của TicketBox!**  
-> Toàn bộ tài liệu được chuẩn hóa theo phân tầng nghiệp vụ, giúp đội ngũ kỹ thuật, kiểm thử và quản lý dự án dễ dàng tra cứu, vận hành và phát triển tính năng mới.
+> **Chào mừng bạn đến với trung tâm tài liệu chính thức của Tixora!**  
+> Toàn bộ tài liệu được chuẩn hóa theo phân tầng nghiệp vụ, giúp đội ngũ kỹ thuật, kiểm thử và quản trị dễ dàng tra cứu, vận hành và phát triển tính năng mới.
 
 ---
 

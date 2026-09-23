@@ -73,7 +73,7 @@ export default function RegisterPage() {
   return (
     <TicketBoxAuthShell
       title="Đăng ký tài khoản"
-      description="Tham gia TicketBox để khám phá và sở hữu vé tham gia những sự kiện âm nhạc đỉnh cao."
+      description="Tham gia Tixora để khám phá và sở hữu vé tham gia những sự kiện âm nhạc đỉnh cao."
       sidebar={<ConcertHeroIllustration />}
       footerLinks={[
         { label: "Đã có tài khoản? Đăng nhập ngay", href: "/login" },

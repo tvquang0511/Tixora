@@ -92,7 +92,7 @@ function AdminLoginForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@ticketbox.vn"
+                placeholder="admin@tixora.local"
                 className="w-full bg-surface-low border border-outline-variant rounded-xl pl-11 pr-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               />
             </div>

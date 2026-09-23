@@ -1,6 +1,6 @@
-# AGENTS.md - TicketBox Architecture & Agent Guidelines
+# AGENTS.md - Tixora Architecture & Agent Guidelines
 
-Tài liệu này là kim chỉ nam bắt buộc cho AI Agent (Antigravity) khi làm việc trên kho mã nguồn TicketBox.
+Tài liệu này là kim chỉ nam bắt buộc cho AI Agent (Antigravity) khi làm việc trên kho mã nguồn Tixora.
 
 ---
 

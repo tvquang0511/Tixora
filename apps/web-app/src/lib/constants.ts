@@ -1,4 +1,4 @@
-export const siteName = "TicketBox";
+export const siteName = "Tixora";
 
 export const siteNavigation = [
   { label: "Explore", href: "/" },

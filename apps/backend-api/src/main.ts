@@ -16,8 +16,8 @@ async function bootstrap() {
 	);
 
 	const config = new DocumentBuilder()
-		.setTitle('Ticket Box API')
-		.setDescription('Ticket Box backend API')
+		.setTitle('Tixora API')
+		.setDescription('Tixora backend ticketing and gate check-in API')
 		.setVersion('1.0')
 		.addBearerAuth()
 		.build();

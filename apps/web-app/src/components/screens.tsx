@@ -1922,7 +1922,7 @@ export function ProfileHeader() {
           </div>
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-white/70">
-              TicketBox member
+              Tixora member
             </p>
             <h1 className="mt-2 font-display text-3xl font-black">Alex Chen</h1>
           </div>
@@ -2114,7 +2114,7 @@ export function SeatMapViewer({ mapUrl }: { mapUrl?: string }) {
   }, []);
 
   const effectiveUrl =
-    mapUrl && mapUrl !== "https://cdn.ticketbox.local/maps/default.svg"
+    mapUrl && mapUrl !== "https://cdn.tixora.local/maps/default.svg"
       ? mapUrl
       : "/mock/seat_map.svg";
 
