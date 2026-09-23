@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { TicketBoxAuthShell } from "@/components/ticketbox-auth-shell";
-import { ConcertHeroIllustration } from "@/components/ticketbox-illustrations";
+import { TixoraAuthShell } from "@/components/tixora-auth-shell";
+import { ConcertHeroIllustration } from "@/components/tixora-illustrations";
 import { authService } from "@/services/auth.service";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
@@ -75,7 +75,7 @@ function LoginForm() {
   };
 
   return (
-    <TicketBoxAuthShell
+    <TixoraAuthShell
       title="Chào mừng quay lại"
       description="Đăng nhập tài khoản của bạn để quản lý vé, xem sự kiện và thông tin cá nhân."
       sidebar={<ConcertHeroIllustration />}
@@ -86,7 +86,7 @@ function LoginForm() {
       <form className="space-y-5" onSubmit={onSubmit}>
         <div className="space-y-1">
           <label
-            className="ticketbox-label text-on-surface-variant/90"
+            className="tixora-label text-on-surface-variant/90"
             htmlFor="email"
           >
             Địa chỉ Email
@@ -105,7 +105,7 @@ function LoginForm() {
         <div className="space-y-1">
           <div className="flex items-center justify-between">
             <label
-              className="ticketbox-label text-on-surface-variant/90 mb-0"
+              className="tixora-label text-on-surface-variant/90 mb-0"
               htmlFor="password"
             >
               Mật khẩu
@@ -132,7 +132,7 @@ function LoginForm() {
           Đăng nhập
         </Button>
       </form>
-    </TicketBoxAuthShell>
+    </TixoraAuthShell>
   );
 }
 
@@ -141,9 +141,9 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center">
-          <div className="ticketbox-panel flex items-center gap-4 px-6 py-5">
+          <div className="tixora-panel flex items-center gap-4 px-6 py-5">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            <p className="ticketbox-muted">Loading sign in...</p>
+            <p className="tixora-muted">Loading sign in...</p>
           </div>
         </div>
       }

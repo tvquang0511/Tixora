@@ -1,9 +1,9 @@
-# TÀI LIỆU HƯỚNG DẪN KIỂM THỬ THỦ CÔNG (MANUAL TEST GUIDE)
-## HỆ THỐNG ĐẶT VÉ VÀ SOÁT VÉ CONCERT TICKETBOX (PRODUCTION / DEPLOYED ENVIRONMENT)
+﻿# TÀI LIỆU HƯỚNG DẪN KIỂM THỬ THỦ CÔNG (MANUAL TEST GUIDE)
+## HỆ THỐNG ĐẶT VÉ VÀ SOÁT VÉ CONCERT TIXORA (PRODUCTION / DEPLOYED ENVIRONMENT)
 
 > **Phiên bản tài liệu:** 2.0.0 (Cập nhật cho Môi trường Cloud Deployed)  
-> **Dự án:** TicketBox Monorepo (NestJS + Next.js 16 + React Native Expo)  
-> **Mục đích:** Cung cấp lộ trình kiểm thử thủ công tuần tự từ A-Z để bạn nắm bắt trọn vẹn nghiệp vụ thực tế của toàn bộ hệ thống TicketBox trên môi trường đã triển khai (Render, Vercel/Cloudflare, Supabase, Upstash Redis).
+> **Dự án:** TIXORA Monorepo (NestJS + Next.js 16 + React Native Expo)  
+> **Mục đích:** Cung cấp lộ trình kiểm thử thủ công tuần tự từ A-Z để bạn nắm bắt trọn vẹn nghiệp vụ thực tế của toàn bộ hệ thống TIXORA trên môi trường đã triển khai (Render, Vercel/Cloudflare, Supabase, Upstash Redis).
 
 ---
 
@@ -13,10 +13,10 @@
 
 | Thành phần | Địa chỉ Truy cập (URL) | Công nghệ & Môi trường | Ghi chú tài khoản |
 | :--- | :--- | :--- | :--- |
-| **Admin Portal** | [https://ticketbox-admin.tvquang.id.vn](https://ticketbox-admin.tvquang.id.vn) | Next.js 16 App Router | Dành cho `SuperAdmin`, `Admin`, `Organizer` |
-| **Client Web App** | [https://ticketbox-web.tvquang.id.vn](https://ticketbox-web.tvquang.id.vn) | Next.js 16 App Router | Dành cho khán giả (`Audience`) mua vé |
-| **Backend Core API** | [https://ticketbox-api-gewh.onrender.com](https://ticketbox-api-gewh.onrender.com) | NestJS (Deploy trên Render) | REST API trung tâm |
-| **Swagger API Docs** | [https://ticketbox-api-gewh.onrender.com/api/docs](https://ticketbox-api-gewh.onrender.com/api/docs) | Swagger OpenAPI | Tra cứu & test API trực tiếp |
+| **Admin Portal** | [https://TIXORA-admin.tvquang.id.vn](https://TIXORA-admin.tvquang.id.vn) | Next.js 16 App Router | Dành cho `SuperAdmin`, `Admin`, `Organizer` |
+| **Client Web App** | [https://TIXORA-web.tvquang.id.vn](https://TIXORA-web.tvquang.id.vn) | Next.js 16 App Router | Dành cho khán giả (`Audience`) mua vé |
+| **Backend Core API** | [https://TIXORA-api-gewh.onrender.com](https://TIXORA-api-gewh.onrender.com) | NestJS (Deploy trên Render) | REST API trung tâm |
+| **Swagger API Docs** | [https://TIXORA-api-gewh.onrender.com/api/docs](https://TIXORA-api-gewh.onrender.com/api/docs) | Swagger OpenAPI | Tra cứu & test API trực tiếp |
 | **Database Cloud** | Supabase PostgreSQL (AWS ap-south-1) | PgBouncer + Direct URL | Lưu trữ dữ liệu quan hệ |
 | **Redis Cache & Lock**| Upstash Redis Cloud | Redis TLS (`rediss://...`) | Giữ chỗ vé chống bán lố, Cache catalog, Rate limit |
 | **Mobile Scanner App** | React Native Expo (Port `8081` / Expo Go) | Expo React Native | Dành riêng cho nhân viên `Checker` soát vé |
@@ -55,8 +55,8 @@ flowchart TD
 > **Mục tiêu:** Bắt đầu từ tài khoản `SuperAdmin` duy nhất được tạo từ máy chủ, bạn tiến hành cấp tài khoản cho các bộ phận vận hành và kiểm tra hàng rào an ninh 5 vai trò.
 
 ### Kịch bản 1.1: Đăng nhập SuperAdmin trên Admin Portal
-- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/login](https://ticketbox-admin.tvquang.id.vn/login)
-- **Tài khoản:** `superadmin@ticketbox.local` / `Ticketbox@123`
+- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/login](https://TIXORA-admin.tvquang.id.vn/login)
+- **Tài khoản:** `superadmin@tixora.local` / `TIXORA@123`
 - **Các bước:**
   1. Nhập email và mật khẩu SuperAdmin.
   2. Bấm **"Đăng nhập"**.
@@ -66,23 +66,23 @@ flowchart TD
   - Sidebar hiển thị đầy đủ 8 menu: Tổng quan, Đơn hàng, Sự kiện, Doanh thu, Người dùng, Phân công, Thông báo, Tác vụ nền.
 
 ### Kịch bản 1.2: Tạo tài khoản các vai trò cấp dưới
-- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/users](https://ticketbox-admin.tvquang.id.vn/users)
+- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/users](https://TIXORA-admin.tvquang.id.vn/users)
 - **Các bước:**
   1. Bấm nút **"+ Tạo người dùng"**.
   2. Tạo tài khoản **Ban tổ chức (Organizer)**:
      - Họ tên: `Nguyễn Văn Tuấn`
-     - Email: `tuan.organizer@ticketbox.vn`
+     - Email: `tuan.organizer@tixora.vn`
      - Mật khẩu: `Organizer@123`
      - Vai trò: Tích chọn **`Organizer`**.
      - Bấm **"Tạo người dùng"**.
   3. Tạo tài khoản **Quản trị viên vận hành (Admin)**:
      - Họ tên: `Trần Thị Vy`
-     - Email: `vy.admin@ticketbox.vn`
+     - Email: `vy.admin@tixora.vn`
      - Mật khẩu: `Admin@123`
      - Vai trò: Tích chọn **`Admin`**.
   4. Tạo tài khoản **Nhân viên soát vé (Checker)**:
      - Họ tên: `Lê Văn Quang`
-     - Email: `quang.checker@ticketbox.vn`
+     - Email: `quang.checker@tixora.vn`
      - Mật khẩu: `Checker@123`
      - Vai trò: Tích chọn **`Checker`**.
 - **Kết quả mong đợi:**
@@ -93,16 +93,16 @@ flowchart TD
 - **Mục tiêu:** Chứng minh tài khoản `Admin` thường không thể leo quyền hoặc can thiệp `SuperAdmin`.
 - **Các bước:**
   1. Đăng xuất `SuperAdmin`.
-  2. Đăng nhập bằng tài khoản `vy.admin@ticketbox.vn` / `Admin@123`.
+  2. Đăng nhập bằng tài khoản `vy.admin@tixora.vn` / `Admin@123`.
   3. Vào mục **"Người dùng" (`/users`)**:
      - Bấm **"+ Tạo người dùng"**: Quan sát danh sách checkbox vai trò ➔ **Tùy chọn `SuperAdmin` và `Admin` bị ẩn hoàn toàn**, Admin thường chỉ được tạo `Organizer`, `Checker`, `Audience`.
-     - Bấm vào tài khoản `superadmin@ticketbox.local` trên bảng: Các nút "Khóa tài khoản" hoặc "Đổi vai trò" bị vô hiệu hóa (Cơ chế Bất khả xâm phạm - SuperAdmin Immunity).
+     - Bấm vào tài khoản `superadmin@tixora.local` trên bảng: Các nút "Khóa tài khoản" hoặc "Đổi vai trò" bị vô hiệu hóa (Cơ chế Bất khả xâm phạm - SuperAdmin Immunity).
 
 ### Kịch bản 1.4: Kiểm tra Rào chắn Checker (Checker Block)
 - **Mục tiêu:** Đảm bảo nhân viên soát vé không thể đăng nhập vào Admin Web.
 - **Các bước:**
   1. Đăng xuất tài khoản Admin.
-  2. Thử đăng nhập bằng tài khoản Checker: `quang.checker@ticketbox.vn` / `Checker@123`.
+  2. Thử đăng nhập bằng tài khoản Checker: `quang.checker@tixora.vn` / `Checker@123`.
 - **Kết quả mong đợi:**
   - Hệ thống từ chối đăng nhập và hiển thị thông báo rõ ràng:  
     *"Truy cập bị từ chối: Tài khoản Soát vé (Checker) chỉ được sử dụng trên ứng dụng di động Mobile App."*
@@ -115,8 +115,8 @@ flowchart TD
 > **Mục tiêu:** Tạo một concert âm nhạc hoàn chỉnh, cấu hình các hạng vé, giá bán, sức chứa, số cổng và xuất bản (Publish) để mở bán ra thị trường.
 
 ### Kịch bản 2.1: Khởi tạo Sự kiện Mới
-- **Người thực hiện:** Đăng nhập bằng `tuan.organizer@ticketbox.vn` hoặc `superadmin@ticketbox.local`.
-- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/events](https://ticketbox-admin.tvquang.id.vn/events) ➔ Bấm **"Tạo sự kiện"** (hoặc truy cập `/create-event`).
+- **Người thực hiện:** Đăng nhập bằng `tuan.organizer@tixora.vn` hoặc `superadmin@tixora.local`.
+- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/events](https://TIXORA-admin.tvquang.id.vn/events) ➔ Bấm **"Tạo sự kiện"** (hoặc truy cập `/create-event`).
 - **Nhập thông tin:**
   - **Tên sự kiện:** `Live Concert Anh Trai Vượt Ngàn Chông Gai 2026`
   - **Địa điểm:** `The Global City, TP. Thủ Đức, TP. Hồ Chí Minh`
@@ -160,11 +160,11 @@ flowchart TD
 > **Mục tiêu:** Điều phối nhân viên soát vé phụ trách từng cổng cụ thể trước giờ diễn ra sự kiện.
 
 ### Kịch bản 3.1: Phân công Checker vào Cổng sự kiện
-- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/assignments](https://ticketbox-admin.tvquang.id.vn/assignments)
+- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/assignments](https://TIXORA-admin.tvquang.id.vn/assignments)
 - **Các bước:**
   1. Bấm nút **"+ Phân công mới"**.
   2. Chọn Sự kiện: `Live Concert Anh Trai Vượt Ngàn Chông Gai 2026`.
-  3. Chọn Nhân viên: `Lê Văn Quang (quang.checker@ticketbox.vn)`.
+  3. Chọn Nhân viên: `Lê Văn Quang (quang.checker@tixora.vn)`.
   4. Chọn Cổng soát vé: Chọn `Gate 1`.
   5. Bấm **"Xác nhận phân công"**.
 - **Kết quả mong đợi:**
@@ -187,18 +187,18 @@ flowchart TD
 > **Mục tiêu:** Mở Web khách hàng, đăng ký tài khoản khán giả, tìm kiếm concert và tiến hành giữ vé chống bán lố (Redis Atomic Lock).
 
 ### Kịch bản 4.1: Đăng ký & Đăng nhập Khán giả Mới
-- **Địa chỉ:** [https://ticketbox-web.tvquang.id.vn/register](https://ticketbox-web.tvquang.id.vn/register)
+- **Địa chỉ:** [https://TIXORA-web.tvquang.id.vn/register](https://TIXORA-web.tvquang.id.vn/register)
 - **Các bước:**
   1. Họ tên: `Khán Giả Demo`
   2. Email: `khangia.test@gmail.com`
   3. Mật khẩu: `Khangia@123`
   4. Bấm **"Đăng ký"**.
-  5. Chuyển sang trang đăng nhập [https://ticketbox-web.tvquang.id.vn/login](https://ticketbox-web.tvquang.id.vn/login) và đăng nhập bằng tài khoản này.
+  5. Chuyển sang trang đăng nhập [https://TIXORA-web.tvquang.id.vn/login](https://TIXORA-web.tvquang.id.vn/login) và đăng nhập bằng tài khoản này.
 - **Kết quả mong đợi:**
   - Đăng nhập thành công, thanh tiêu đề hiển thị tên người dùng và mục **"Vé của tôi" (`/my-tickets`)**.
 
 ### Kịch bản 4.2: Khám phá Sự kiện & Kiểm tra Cache
-- **Địa chỉ:** [https://ticketbox-web.tvquang.id.vn](https://ticketbox-web.tvquang.id.vn)
+- **Địa chỉ:** [https://TIXORA-web.tvquang.id.vn](https://TIXORA-web.tvquang.id.vn)
 - **Các bước:**
   1. Kiểm tra trang chủ: Sự kiện `Live Concert Anh Trai Vượt Ngàn Chông Gai 2026` vừa xuất bản ở Pha 2 hiển thị rõ nét với ảnh poster và mức giá từ `600,000đ`.
   2. Thử ô tìm kiếm: Gõ từ khóa `Chông Gai` ➔ Sự kiện lọc chính xác.
@@ -246,7 +246,7 @@ flowchart TD
 ### Kịch bản 5.2: Xác nhận Thanh toán Thành công (Payment Webhook)
 - **Trường hợp A (Có PayOS thật):** Quét mã QR bằng ứng dụng ngân hàng và chuyển khoản số tiền thử nghiệm ➔ PayOS bắn Webhook về backend ➔ Đơn hàng tự động đổi sang `PAID`.
 - **Trường hợp B (Test giả lập qua Swagger khi chưa có PayOS):**
-  1. Mở [https://ticketbox-api-gewh.onrender.com/api/docs](https://ticketbox-api-gewh.onrender.com/api/docs).
+  1. Mở [https://TIXORA-api-gewh.onrender.com/api/docs](https://TIXORA-api-gewh.onrender.com/api/docs).
   2. Tìm mục `POST /payments/webhook` hoặc API cập nhật trạng thái đơn hàng.
   3. Gửi payload xác nhận đơn hàng `PAID`.
 - **Kết quả sau khi Đơn hàng `PAID`:**
@@ -256,7 +256,7 @@ flowchart TD
   - Mỗi vé có 1 chuỗi `qr_code_hash` duy nhất (chuỗi băm bảo mật chống làm giả).
 
 ### Kịch bản 5.3: Kiểm tra Vé Điện Tử tại "Vé Của Tôi" (My Tickets)
-- **Địa chỉ:** [https://ticketbox-web.tvquang.id.vn/my-tickets](https://ticketbox-web.tvquang.id.vn/my-tickets)
+- **Địa chỉ:** [https://TIXORA-web.tvquang.id.vn/my-tickets](https://TIXORA-web.tvquang.id.vn/my-tickets)
 - **Các bước:**
   1. Truy cập menu **"Vé của tôi"**.
   2. Bấm vào đơn hàng vừa thanh toán.
@@ -274,14 +274,14 @@ flowchart TD
 ### Cấu hình Mobile App:
 - Đảm bảo file cấu hình mobile (`apps/mobile-app/.env` hoặc biến cấu hình) có:
   ```env
-  EXPO_PUBLIC_API_URL=https://ticketbox-api-gewh.onrender.com
+  EXPO_PUBLIC_API_URL=https://TIXORA-api-gewh.onrender.com
   ```
 - Chạy lệnh khởi động: `pnpm start:mobile` (quét QR qua ứng dụng Expo Go trên điện thoại thật).
 
 ### Kịch bản 6.1: Checker Đăng nhập & Tải dữ liệu vé về máy (Prefetch)
 - **Các bước:**
   1. Mở Mobile App.
-  2. Đăng nhập bằng tài khoản: `quang.checker@ticketbox.vn` / `Checker@123`.
+  2. Đăng nhập bằng tài khoản: `quang.checker@tixora.vn` / `Checker@123`.
 - **Kết quả mong đợi:**
   - Đăng nhập thành công.
   - Màn hình hiển thị đúng ca trực được phân công ở Pha 3:
@@ -321,15 +321,15 @@ flowchart TD
 > **Mục tiêu:** Kiểm tra các con số thống kê tài chính, số lượng vé đã bán và tỷ lệ khán giả đã check-in vào sân.
 
 ### Kịch bản 7.1: Báo cáo Doanh thu Thời gian Thực
-- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/revenue](https://ticketbox-admin.tvquang.id.vn/revenue)
-- **Người thực hiện:** Đăng nhập bằng `superadmin@ticketbox.local` hoặc `vy.admin@ticketbox.vn`.
+- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/revenue](https://TIXORA-admin.tvquang.id.vn/revenue)
+- **Người thực hiện:** Đăng nhập bằng `superadmin@tixora.local` hoặc `vy.admin@tixora.vn`.
 - **Kết quả mong đợi:**
   - Tổng doanh thu hiển thị đúng số tiền đã thanh toán: `3,000,000 VND`.
   - Biểu đồ phân bổ theo hạng vé hiển thị tỷ lệ: `S-VIP` chiếm 100% doanh thu đợt này.
   - Danh sách giao dịch hiển thị mã đơn hàng tương ứng với thời gian thanh toán chính xác.
 
 ### Kịch bản 7.2: Quản lý Đơn hàng & Chi tiết
-- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/orders](https://ticketbox-admin.tvquang.id.vn/orders)
+- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/orders](https://TIXORA-admin.tvquang.id.vn/orders)
 - **Kết quả mong đợi:**
   - Bảng đơn hàng hiển thị đơn hàng của `Khán Giả Demo` với trạng thái nhãn xanh **`PAID`**.
   - Bấm xem chi tiết: Hiển thị đầy đủ thông tin người mua, email, số điện thoại, danh sách 2 mã vé và lịch sử check-in tại Gate 1.
@@ -343,7 +343,7 @@ flowchart TD
 > 2. `GEMINI_API_KEY`: API Key lấy miễn phí từ [Google AI Studio](https://aistudio.google.com/).
 
 ### Kịch bản 8.1: Tạo Tác vụ Nền Tạo Tiểu Sử AI (AI Artist Bio)
-- **Địa chỉ:** [https://ticketbox-admin.tvquang.id.vn/events](https://ticketbox-admin.tvquang.id.vn/events)
+- **Địa chỉ:** [https://TIXORA-admin.tvquang.id.vn/events](https://TIXORA-admin.tvquang.id.vn/events)
 - **Các bước:**
   1. Tại chi tiết sự kiện, tải lên file tài liệu / press kit nghệ sĩ (file PDF/Text).
   2. Bấm nút **"Tạo tiểu sử bằng AI" (Generate Bio)**.
@@ -360,7 +360,7 @@ flowchart TD
 Bạn có thể đánh dấu tick `[x]` vào bảng dưới đây khi hoàn tất kiểm tra từng kịch bản:
 
 - [ ] **Pha 1: Auth & RBAC**
-  - [ ] Đăng nhập thành công tài khoản SuperAdmin (`superadmin@ticketbox.local`).
+  - [ ] Đăng nhập thành công tài khoản SuperAdmin (`superadmin@tixora.local`).
   - [ ] Tạo đủ 3 tài khoản Admin, Organizer, Checker.
   - [ ] Xác nhận Admin thường không thể tạo SuperAdmin (403 Forbidden).
   - [ ] Xác nhận Checker bị chặn hoàn toàn khỏi Admin Portal.

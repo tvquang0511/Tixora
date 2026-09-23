@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useState } from "react";
-import { TicketBoxAuthShell } from "@/components/ticketbox-auth-shell";
-import { ConcertHeroIllustration } from "@/components/ticketbox-illustrations";
+import { TixoraAuthShell } from "@/components/tixora-auth-shell";
+import { ConcertHeroIllustration } from "@/components/tixora-illustrations";
 import { authService } from "@/services/auth.service";
 import { getAuthErrorMessage } from "@/utils/error.utils";
 import { useToast } from "@/context/ToastContext";
@@ -42,7 +42,7 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <TicketBoxAuthShell
+      <TixoraAuthShell
         title="Kiểm tra email của bạn"
         description="Chúng tôi đã gửi một liên kết xác nhận đến địa chỉ email của bạn. Vui lòng xác thực tài khoản để tiếp tục."
         sidebar={<ConcertHeroIllustration />}
@@ -66,12 +66,12 @@ export default function RegisterPage() {
             Gửi lại email xác thực
           </Link>
         </div>
-      </TicketBoxAuthShell>
+      </TixoraAuthShell>
     );
   }
 
   return (
-    <TicketBoxAuthShell
+    <TixoraAuthShell
       title="Đăng ký tài khoản"
       description="Tham gia Tixora để khám phá và sở hữu vé tham gia những sự kiện âm nhạc đỉnh cao."
       sidebar={<ConcertHeroIllustration />}
@@ -82,7 +82,7 @@ export default function RegisterPage() {
       <form className="space-y-5" onSubmit={onSubmit}>
         <div className="space-y-1">
           <label
-            className="ticketbox-label text-on-surface-variant/90"
+            className="tixora-label text-on-surface-variant/90"
             htmlFor="fullName"
           >
             Họ và tên
@@ -100,7 +100,7 @@ export default function RegisterPage() {
 
         <div className="space-y-1">
           <label
-            className="ticketbox-label text-on-surface-variant/90"
+            className="tixora-label text-on-surface-variant/90"
             htmlFor="email"
           >
             Địa chỉ Email
@@ -118,7 +118,7 @@ export default function RegisterPage() {
 
         <div className="space-y-1">
           <label
-            className="ticketbox-label text-on-surface-variant/90"
+            className="tixora-label text-on-surface-variant/90"
             htmlFor="password"
           >
             Mật khẩu
@@ -140,7 +140,7 @@ export default function RegisterPage() {
 
         <div className="space-y-1">
           <label
-            className="ticketbox-label text-on-surface-variant/90"
+            className="tixora-label text-on-surface-variant/90"
             htmlFor="confirmPassword"
           >
             Nhập lại mật khẩu
@@ -161,6 +161,6 @@ export default function RegisterPage() {
           Đăng ký tài khoản
         </Button>
       </form>
-    </TicketBoxAuthShell>
+    </TixoraAuthShell>
   );
 }

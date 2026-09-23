@@ -31,7 +31,7 @@ $env:MAX_DURATION = "30s"
 # Keep true for this test so IP rate limit does not hide inventory contention.
 $env:FAKE_IPS = "true"
 
-Write-Host "Running TicketBox k6 oversell/concurrency check..."
+Write-Host "Running Tixora k6 oversell/concurrency check..."
 Write-Host "BASE_URL=$env:BASE_URL"
 Write-Host "SEED_USER_COUNT=$env:SEED_USER_COUNT"
 Write-Host "VUS=$env:VUS ITERATIONS=$env:ITERATIONS"

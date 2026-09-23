@@ -31,7 +31,7 @@ const systemAvailable = new Rate('system_available');
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:3000';
 const SEED_USER_COUNT = Number(__ENV.SEED_USER_COUNT || VUS);
 const SEED_EMAIL_PREFIX = __ENV.SEED_EMAIL_PREFIX || 'audience';
-const SEED_EMAIL_DOMAIN = __ENV.SEED_EMAIL_DOMAIN || 'ticketbox.local';
+const SEED_EMAIL_DOMAIN = __ENV.SEED_EMAIL_DOMAIN || 'tixora.local';
 const SEED_PASSWORD = __ENV.SEED_PASSWORD || '123456';
 const CONCERT_ID = __ENV.CONCERT_ID;
 const CATEGORY_ID = __ENV.CATEGORY_ID;
@@ -115,7 +115,7 @@ export function setup() {
 
   console.log('');
   console.log('='.repeat(72));
-  console.log('TicketBox k6 oversell/concurrency check');
+  console.log('Tixora k6 oversell/concurrency check');
   console.log(`BASE_URL            : ${BASE_URL}`);
   console.log(`Concert             : ${CONCERT_ID}`);
   console.log(`Category            : ${CATEGORY_ID}`);
@@ -176,7 +176,7 @@ export function handleSummary(data) {
 
   const summary = `
 ${'='.repeat(72)}
-TicketBox oversell/concurrency summary
+Tixora oversell/concurrency summary
 ${'='.repeat(72)}
 Total HTTP requests         : ${totalReqs}
 Reserve success             : ${success}

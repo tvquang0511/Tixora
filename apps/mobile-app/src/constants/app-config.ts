@@ -2,21 +2,21 @@ const apiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 if (!apiBaseUrl) {
   throw new Error(
-    'Missing EXPO_PUBLIC_API_BASE_URL. Set it in apps/mobile-app/ticketbox/.env before starting the app.',
+    'Missing EXPO_PUBLIC_API_BASE_URL. Set it in apps/mobile-app/.env before starting the app.',
   );
 }
 
 export const APP_CONFIG = {
-  appName: 'TicketBox Staff',
+  appName: 'Tixora Staff',
   apiBaseUrl,
 };
 
 export const STORAGE_KEYS = {
-  accessToken: 'ticketbox.staff.accessToken',
-  refreshToken: 'ticketbox.staff.refreshToken',
-  currentScanSession: 'ticketbox.staff.currentScanSession',
-  prefetchedTicketSet: 'ticketbox.staff.prefetchedTicketSet',
-  localScannedBuckets: 'ticketbox.staff.localScannedBuckets',
-  pendingSyncQueue: 'ticketbox.staff.pendingSyncQueue',
-  recentScanHistory: 'ticketbox.staff.recentScanHistory',
+  accessToken: 'tixora.staff.accessToken',
+  refreshToken: 'tixora.staff.refreshToken',
+  currentScanSession: 'tixora.staff.currentScanSession',
+  prefetchedTicketSet: 'tixora.staff.prefetchedTicketSet',
+  localScannedBuckets: 'tixora.staff.localScannedBuckets',
+  pendingSyncQueue: 'tixora.staff.pendingSyncQueue',
+  recentScanHistory: 'tixora.staff.recentScanHistory',
 } as const;

@@ -1,4 +1,4 @@
-# Hướng dẫn khởi chạy Ticket Box
+﻿# Hướng dẫn khởi chạy Ticket Box
 
 ## Khuyến nghị cho giảng viên/người chấm
 
@@ -170,10 +170,10 @@ Mật khẩu chung: `123456`
 
 | Vai trò   | Email                            |
 | --------- | -------------------------------- |
-| Audience  | `audience1@ticketbox.local`      |
-| Admin     | `vy.admin@ticketbox.local`       |
-| Organizer | `tuan.organizer@ticketbox.local` |
-| Checker   | `quang.checker@ticketbox.local`  |
+| Audience  | `audience1@tixora.local`      |
+| Admin     | `vy.admin@tixora.local`       |
+| Organizer | `tuan.organizer@tixora.local` |
+| Checker   | `quang.checker@tixora.local`  |
 
 ## 7. Chạy Backend
 

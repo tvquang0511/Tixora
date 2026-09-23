@@ -79,7 +79,7 @@ function prompt(query: string, defaultValue?: string): Promise<string> {
 
 async function main() {
   console.log('====================================================');
-  console.log('       TicketBox - Super Admin Bootstrap CLI        ');
+  console.log('        Tixora - Super Admin Bootstrap CLI          ');
   console.log('====================================================\n');
 
   let email = getArg('--email');
@@ -88,9 +88,9 @@ async function main() {
 
   // If running interactively without flags and stdin is a TTY
   if (!email && process.stdin.isTTY) {
-    email = await prompt('Enter Super Admin Email', 'superadmin@ticketbox.local');
+    email = await prompt('Enter Super Admin Email', 'superadmin@tixora.local');
   } else if (!email) {
-    email = 'superadmin@ticketbox.local';
+    email = 'superadmin@tixora.local';
   }
 
   if (!password && process.stdin.isTTY) {

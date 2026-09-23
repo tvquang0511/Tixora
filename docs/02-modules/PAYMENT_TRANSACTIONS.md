@@ -1,4 +1,4 @@
-# Đặc tả: Thanh toán, khả năng chịu lỗi và phát hành vé
+﻿# Đặc tả: Thanh toán, khả năng chịu lỗi và phát hành vé
 
 ## Mô tả
 
@@ -582,7 +582,7 @@ Do đó, request khi `OPEN` không gọi PayOS và không tạo thêm row `FAILE
 
 #### Graceful Degradation
 
-Graceful Degradation là suy giảm có kiểm soát: khi PayOS lỗi, hệ thống chỉ tạm ngừng phần thanh toán thay vì ngừng toàn bộ TicketBox.
+Graceful Degradation là suy giảm có kiểm soát: khi PayOS lỗi, hệ thống chỉ tạm ngừng phần thanh toán thay vì ngừng toàn bộ TIXORA.
 
 | Thành phần              | Khi PayOS bình thường       | Khi circuit `OPEN`            |
 | ----------------------- | --------------------------- | ----------------------------- |

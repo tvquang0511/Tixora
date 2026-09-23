@@ -17,7 +17,7 @@ export async function seedGuestLists(prisma: PrismaClient) {
       const categoryName = randomCategory ? (randomCategory as any).name : "GA";
       return {
         concert_id: concert.id,
-        email: `guest${concertIndex + 1}-${index + 1}@ticketbox.local`,
+        email: `guest${concertIndex + 1}-${index + 1}@tixora.local`,
         full_name: `${faker.person.firstName()} ${faker.person.lastName()}`,
         ticket_category: categoryName,
         is_scanned: now >= concert.start_time,

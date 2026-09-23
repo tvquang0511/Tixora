@@ -13,7 +13,7 @@ export interface CheckoutReservationState {
   expiresAt: string;
 }
 
-const CHECKOUT_STATE_KEY = "ticketbox.checkout.reservation";
+const CHECKOUT_STATE_KEY = "tixora.checkout.reservation";
 
 export function saveCheckoutReservationState(state: CheckoutReservationState) {
   if (typeof window === "undefined") {

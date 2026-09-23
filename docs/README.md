@@ -1,4 +1,4 @@
-# 📚 HỆ THỐNG TÀI LIỆU DỰ ÁN TIXORA (DOCUMENTATION PORTAL)
+﻿# 📚 HỆ THỐNG TÀI LIỆU DỰ ÁN TIXORA (DOCUMENTATION PORTAL)
 
 > **Chào mừng bạn đến với trung tâm tài liệu chính thức của Tixora!**  
 > Toàn bộ tài liệu được chuẩn hóa theo phân tầng nghiệp vụ, giúp đội ngũ kỹ thuật, kiểm thử và quản trị dễ dàng tra cứu, vận hành và phát triển tính năng mới.
@@ -127,4 +127,4 @@ pnpm test:e2e:ui     # Chạy với giao diện trực quan Playwright UI
 ```
 
 ---
-*Tài liệu được bảo trì và cập nhật liên tục cùng sự phát triển của hệ thống TicketBox.*
+*Tài liệu được bảo trì và cập nhật liên tục cùng sự phát triển của hệ thống TIXORA.*

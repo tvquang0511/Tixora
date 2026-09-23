@@ -72,7 +72,7 @@ export async function seedAuth(prisma: PrismaClient) {
 
     const audienceUsers = Array.from({ length: AUDIENCE_COUNT }, (_, index) => ({
         id: faker.string.uuid(),
-        email: `audience${index + 1}@ticketbox.local`,
+        email: `audience${index + 1}@tixora.local`,
         full_name: `${faker.person.firstName()} ${faker.person.lastName()}`,
         status: "ACTIVE",
         password_hash,

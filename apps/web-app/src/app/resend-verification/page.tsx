@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { TicketBoxAuthShell } from "@/components/ticketbox-auth-shell";
-import { ConcertHeroIllustration } from "@/components/ticketbox-illustrations";
+import { TixoraAuthShell } from "@/components/tixora-auth-shell";
+import { ConcertHeroIllustration } from "@/components/tixora-illustrations";
 import { authService } from "@/services/auth.service";
 import { Mail } from "lucide-react";
 import { getAuthErrorMessage } from "@/utils/error.utils";
@@ -35,7 +35,7 @@ function ResendVerificationForm() {
 
   if (success) {
     return (
-      <TicketBoxAuthShell
+      <TixoraAuthShell
         title="Đã gửi email thành công"
         description="Chúng tôi đã gửi một liên kết xác minh mới tới địa chỉ email của bạn."
         sidebar={<ConcertHeroIllustration />}
@@ -47,12 +47,12 @@ function ResendVerificationForm() {
             khoản của bạn.
           </p>
         </div>
-      </TicketBoxAuthShell>
+      </TixoraAuthShell>
     );
   }
 
   return (
-    <TicketBoxAuthShell
+    <TixoraAuthShell
       title="Gửi lại email xác thực"
       description="Nhập địa chỉ email của bạn và chúng tôi sẽ gửi một liên kết mới để kích hoạt tài khoản."
       sidebar={<ConcertHeroIllustration />}
@@ -61,7 +61,7 @@ function ResendVerificationForm() {
       <form className="space-y-5" onSubmit={onSubmit}>
         <div className="space-y-1">
           <label
-            className="ticketbox-label text-on-surface-variant/90"
+            className="tixora-label text-on-surface-variant/90"
             htmlFor="email"
           >
             Địa chỉ Email
@@ -92,7 +92,7 @@ function ResendVerificationForm() {
           Gửi lại email xác thực
         </Button>
       </form>
-    </TicketBoxAuthShell>
+    </TixoraAuthShell>
   );
 }
 
@@ -101,9 +101,9 @@ export default function ResendVerificationPage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center">
-          <div className="ticketbox-panel flex items-center gap-4 px-6 py-5">
+          <div className="tixora-panel flex items-center gap-4 px-6 py-5">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            <p className="ticketbox-muted">Loading resend verification...</p>
+            <p className="tixora-muted">Loading resend verification...</p>
           </div>
         </div>
       }

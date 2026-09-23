@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# TicketBox Frontend Integration Testing Script
+# Tixora Frontend Integration Testing Script
 # This script helps verify that the Axios client and JWT interceptors are working correctly
 
 # Colors for output
@@ -9,7 +9,7 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${YELLOW}TicketBox Frontend Integration Tests${NC}\n"
+echo -e "${YELLOW}Tixora Frontend Integration Tests${NC}\n"
 
 # Test 1: Check if Node.js is installed
 echo -e "${YELLOW}Test 1: Checking Node.js installation...${NC}"

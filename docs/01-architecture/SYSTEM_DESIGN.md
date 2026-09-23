@@ -1,8 +1,8 @@
-# TicketBox — Technical Design
+﻿# TIXORA — Technical Design
 
 ## 1. Kiến trúc tổng thể
 
-Hệ thống TicketBox được thiết kế theo kiến trúc **Modular Monolith (Nguyên khối chia module)** kết hợp với **Event-Driven Architecture (Kiến trúc hướng sự kiện)**.
+Hệ thống TIXORA được thiết kế theo kiến trúc **Modular Monolith (Nguyên khối chia module)** kết hợp với **Event-Driven Architecture (Kiến trúc hướng sự kiện)**.
 
 * **Kiến trúc Modular Monolith:** Toàn bộ logic nghiệp vụ (Core Logic) được đóng gói và triển khai trên một ứng dụng Backend (Node.js/NestJS) duy nhất. Tuy nhiên, mã nguồn bên trong được phân tách ranh giới (strict boundaries) thành các module độc lập (Auth, Ticketing, Payment, Catalog). Điều này giúp tối ưu tốc độ phát triển, loại bỏ độ trễ mạng (network latency) giữa các service, nhưng vẫn giữ được khả năng bóc tách thành Microservices trong tương lai.
 * **Kiến trúc Event-Driven:** Để giải quyết bài toán tải trọng cực đoan (80.000 users/5 phút), hệ thống không xử lý đồng bộ mọi thao tác ghi (Write). Thay vào đó, API Core chỉ tiếp nhận, "chốt đơn" nguyên tử trên RAM (Redis) và ném thông điệp (Event/Message) vào hệ thống Message Broker (RabbitMQ). Các Background Worker sẽ tiêu thụ hàng đợi này một cách tuần tự để ghi xuống Database vật lý.
@@ -25,7 +25,7 @@ Các module giao tiếp bằng event nội bộ (in-process) và message qua Rab
 
 ### 2.1. Level 1 — System Context
 
-Sơ đồ ngữ cảnh cấp 1 định vị TicketBox trong bức tranh toàn cảnh: các tác nhân (Actors) sử dụng hệ thống và các hệ thống ngoại vi (External Systems) mà TicketBox phụ thuộc.
+Sơ đồ ngữ cảnh cấp 1 định vị TIXORA trong bức tranh toàn cảnh: các tác nhân (Actors) sử dụng hệ thống và các hệ thống ngoại vi (External Systems) mà TIXORA phụ thuộc.
 
 ![System Context Diagram](./diagram/SystemContext.drawio.svg)
 
@@ -33,7 +33,7 @@ Sơ đồ ngữ cảnh cấp 1 định vị TicketBox trong bức tranh toàn c�
 
 ### 2.2. Level 2 — Container
 
-Sơ đồ cấp 2 "mở hộp" hệ thống TicketBox, thể hiện sự phân rã thành các khối hạ tầng (Containers) và Tech Stack cốt lõi được lựa chọn.
+Sơ đồ cấp 2 "mở hộp" hệ thống TIXORA, thể hiện sự phân rã thành các khối hạ tầng (Containers) và Tech Stack cốt lõi được lựa chọn.
 ![Container Diagram](./diagram/Container.drawio.svg)
 
 ---
@@ -182,7 +182,7 @@ Hệ thống áp dụng mô hình **RBAC (Role-Based Access Control)** kết h�
 
 * **Vấn đề:** Chọn hệ thống điều phối thông điệp bất đồng bộ.
 * **Quyết định:** Chọn **RabbitMQ**.
-* **Lý do và đánh đổi:** Kafka chịu tải throughput cao hơn, nhưng overhead lớn và không cần thiết cho phạm vi đồ án. RabbitMQ phù hợp hơn với bài toán command/job queue của TicketBox: tạo order bất đồng bộ, import CSV, xử lý tác vụ nền và dễ vận hành trong môi trường nhóm. Riêng yêu cầu "nếu khán giả không thanh toán sau thời gian giữ chỗ thì tự động nhả vé" hiện được xử lý bằng cron cleanup định kỳ trên order PENDING; nếu production cần độ chính xác thời gian cao hơn, có thể mở rộng sang delay queue/DLX sau.
+* **Lý do và đánh đổi:** Kafka chịu tải throughput cao hơn, nhưng overhead lớn và không cần thiết cho phạm vi đồ án. RabbitMQ phù hợp hơn với bài toán command/job queue của TIXORA: tạo order bất đồng bộ, import CSV, xử lý tác vụ nền và dễ vận hành trong môi trường nhóm. Riêng yêu cầu "nếu khán giả không thanh toán sau thời gian giữ chỗ thì tự động nhả vé" hiện được xử lý bằng cron cleanup định kỳ trên order PENDING; nếu production cần độ chính xác thời gian cao hơn, có thể mở rộng sang delay queue/DLX sau.
 
 ---
 

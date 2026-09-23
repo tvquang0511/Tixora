@@ -121,47 +121,47 @@ body {
     @apply min-h-screen;
   }
 
-  .ticketbox-shell {
+  .tixora-shell {
     @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 
-  .ticketbox-nav {
+  .tixora-nav {
     @apply rounded-[28px] border border-outline-variant/80 bg-surface shadow-[0_12px_40px_rgba(15,23,42,0.06)];
   }
 
-  .ticketbox-card {
+  .tixora-card {
     @apply rounded-[28px] border border-outline-variant/80 bg-surface shadow-[0_12px_40px_rgba(15,23,42,0.06)];
   }
 
-  .ticketbox-panel {
+  .tixora-panel {
     @apply rounded-[28px] border border-outline-variant/70 bg-surface-low shadow-[0_12px_40px_rgba(15,23,42,0.06)];
   }
 
-  .ticketbox-badge {
+  .tixora-badge {
     @apply inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary;
   }
 
-  .ticketbox-muted {
+  .tixora-muted {
     @apply text-sm leading-6 text-muted-foreground;
   }
 
-  .ticketbox-button-primary {
+  .tixora-button-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-on-primary shadow transition-colors hover:bg-primary-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
   }
 
-  .ticketbox-button-secondary {
+  .tixora-button-secondary {
     @apply inline-flex items-center justify-center gap-2 rounded-xl border border-input bg-muted px-6 py-3 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
   }
 
-  .ticketbox-button-outline {
+  .tixora-button-outline {
     @apply inline-flex items-center justify-center gap-2 rounded-xl border border-input bg-transparent px-6 py-3 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
   }
 
-  .ticketbox-input {
+  .tixora-input {
     @apply flex h-12 w-full rounded-xl border border-input bg-surface px-4 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
-  .ticketbox-label {
+  .tixora-label {
     @apply mb-2 block text-sm font-semibold text-foreground;
   }
 }

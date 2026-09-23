@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -288,7 +288,7 @@ function ConcertsSectionInner() {
       id="upcoming-concerts"
       className="mx-auto w-full max-w-7xl px-4 pt-8 pb-16 sm:px-6 lg:px-8"
     >
-      <div className="ticketbox-panel p-6 sm:p-8">
+      <div className="tixora-panel p-6 sm:p-8">
         {/* Header row */}
         <div className="flex items-center justify-between mb-6">
           <SectionHeading eyebrow="Khám phá" title="Sự kiện nổi bật" />
@@ -470,9 +470,9 @@ function ConcertsSection() {
 function LoadingState() {
   return (
     <main className="auth-page flex items-center justify-center px-4">
-      <div className="ticketbox-panel flex items-center gap-4 px-6 py-5">
+      <div className="tixora-panel flex items-center gap-4 px-6 py-5">
         <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        <p className="ticketbox-muted">Đang khôi phục phiên...</p>
+        <p className="tixora-muted">Đang khôi phục phiên...</p>
       </div>
     </main>
   );
@@ -484,12 +484,12 @@ function GuestLanding() {
       active="/"
       action={
         <div className="flex items-center gap-3">
-          <Link href="/login" className="ticketbox-button-primary px-5 py-2.5">
+          <Link href="/login" className="tixora-button-primary px-5 py-2.5">
             Đăng nhập
           </Link>
           <Link
             href="/register"
-            className="ticketbox-button-secondary px-5 py-2.5"
+            className="tixora-button-secondary px-5 py-2.5"
           >
             Đăng ký
           </Link>
@@ -518,7 +518,7 @@ function AuthenticatedHome() {
         <button
           type="button"
           onClick={handleLogout}
-          className="ticketbox-button-primary px-4 py-2 text-sm"
+          className="tixora-button-primary px-4 py-2 text-sm"
         >
           Đăng xuất
         </button>

@@ -31,7 +31,7 @@ export function PendingApprovalScreen() {
         <SurfaceCard variant="danger">
           <AppText variant="subtitle">What happens next</AppText>
           <AppText tone="muted">
-            Your current account can authenticate successfully, but it is not allowed to operate gate scanning tools. Ask TicketBox to assign the correct staff role before signing in again.
+            Your current account can authenticate successfully, but it is not allowed to operate gate scanning tools. Ask Tixora to assign the correct staff role before signing in again.
           </AppText>
           <AppText tone="muted">Current roles: {(user?.roles ?? []).join(', ') || 'Audience'}</AppText>
         </SurfaceCard>

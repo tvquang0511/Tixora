@@ -42,19 +42,19 @@
 }
 
 @layer components {
-  .ticketbox-input {
+  .tixora-input {
     @apply flex h-12 w-full rounded-xl border border-input bg-transparent px-4 py-2 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
   }
 
-  .ticketbox-label {
+  .tixora-label {
     @apply mb-2 block text-sm font-semibold text-foreground;
   }
 
-  .ticketbox-button-primary {
+  .tixora-button-primary {
     @apply inline-flex h-12 items-center justify-center rounded-xl bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
   }
 
-  .ticketbox-button-outline {
+  .tixora-button-outline {
     @apply inline-flex h-12 items-center justify-center rounded-xl border border-input bg-transparent px-6 py-2 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
   }
 }

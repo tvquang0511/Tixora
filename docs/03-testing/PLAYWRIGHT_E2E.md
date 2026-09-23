@@ -1,13 +1,13 @@
-# HƯỚNG DẪN THIẾT LẬP VÀ KIỂM THỬ TỰ ĐỘNG BẰNG PLAYWRIGHT (PLAYWRIGHT E2E TESTING GUIDE)
-## HỆ THỐNG TICKETBOX MONOREPO
+﻿# HƯỚNG DẪN THIẾT LẬP VÀ KIỂM THỬ TỰ ĐỘNG BẰNG PLAYWRIGHT (PLAYWRIGHT E2E TESTING GUIDE)
+## HỆ THỐNG TIXORA MONOREPO
 
-> **Tài liệu:** Hướng dẫn cài đặt, cấu hình và chạy bộ kiểm thử tự động End-to-End (E2E) với Playwright cho TicketBox  
+> **Tài liệu:** Hướng dẫn cài đặt, cấu hình và chạy bộ kiểm thử tự động End-to-End (E2E) với Playwright cho TIXORA  
 > **Áp dụng cho:** `apps/web-app` (Port 3001), `apps/admin-app` (Port 3002), và `apps/backend-api` (Port 3000)
 
 ---
 
 ## MỤC LỤC
-1. [Giới Thiệu Về Playwright Trong TicketBox](#1-giới-thiệu-về-playwright-trong-ticketbox)
+1. [Giới Thiệu Về Playwright Trong TIXORA](#1-giới-thiệu-về-playwright-trong-TIXORA)
 2. [Cài Đặt & Khởi Tạo Playwright (Installation)](#2-cài-đặt--khởi-tạo-playwright-installation)
 3. [Cấu Trúc Thư Mục Kiểm Thử (Folder Structure)](#3-cấu-trúc-thư-mục-kiểm-thử-folder-structure)
 4. [File Cấu Hình Playwright (playwright.config.ts)](#4-file-cấu-hình-playwright-playwrightconfigts)
@@ -21,23 +21,23 @@
    - [Chạy giao diện trực quan (UI Mode & Headed)](#chạy-giao-diện-trực-quan-ui-mode--headed)
    - [Xem báo cáo HTML & Tracing (Trace Viewer)](#xem-báo-cáo-html--tracing-trace-viewer)
 7. [Tích Hợp Vào CI/CD (GitHub Actions)](#7-tích-hợp-vào-cicd-github-actions)
-8. [Best Practices Khi Viết E2E Test Cho TicketBox](#8-best-practices-khi-viết-e2e-test-cho-ticketbox)
+8. [Best Practices Khi Viết E2E Test Cho TIXORA](#8-best-practices-khi-viết-e2e-test-cho-TIXORA)
 
 ---
 
-## 1. Giới Thiệu Về Playwright Trong TicketBox
+## 1. Giới Thiệu Về Playwright Trong TIXORA
 
 **Playwright** là framework kiểm thử tự động End-to-End (E2E) hiện đại bậc nhất hiện nay do Microsoft phát triển:
 - **Hỗ trợ đa trình duyệt:** Chromium, Firefox, WebKit (Safari) và Mobile Viewport giả lập.
 - **Tốc độ vượt trội & Ổn định:** Tự động chờ phần tử xuất hiện (Auto-waiting), loại bỏ hiện tượng test bị flaky (lỗi chập chờn).
-- **Kiểm thử đa ứng dụng đồng thời:** Với TicketBox Monorepo, Playwright có thể dễ dàng test song song cả **Web Khách Hàng (Port 3001)** và **Admin Portal (Port 3002)** trong cùng một lần chạy.
+- **Kiểm thử đa ứng dụng đồng thời:** Với TIXORA Monorepo, Playwright có thể dễ dàng test song song cả **Web Khách Hàng (Port 3001)** và **Admin Portal (Port 3002)** trong cùng một lần chạy.
 - **Công cụ gỡ lỗi đỉnh cao:** Hỗ trợ Playwright UI Mode, Time-travel Debugging, chụp ảnh màn hình (Screenshots), quay video lỗi và xem file Trace chi tiết.
 
 ---
 
 ## 2. Cài Đặt & Khởi Tạo Playwright (Installation)
 
-Tại thư mục gốc của monorepo TicketBox, chạy lệnh sau để cài đặt `@playwright/test`:
+Tại thư mục gốc của monorepo TIXORA, chạy lệnh sau để cài đặt `@playwright/test`:
 
 ```powershell
 pnpm add -D @playwright/test
@@ -56,7 +56,7 @@ pnpm exec playwright install --with-deps chromium
 Toàn bộ mã nguồn kiểm thử E2E được tổ chức tại thư mục `e2e/` ở gốc dự án:
 
 ```
-ticketbox-monorepo/
+tixora-monorepo/
 ├── e2e/
 │   ├── fixtures/
 │   │   └── test-data.ts           # Dữ liệu tài khoản seed & concert IDs mẫu
@@ -139,7 +139,7 @@ export default defineConfig({
 
 ### Suite 1: Xác Thực & Điều Hướng Web App (web-auth.spec.ts)
 Bao phủ các ca kiểm thử:
-1. **Đăng nhập thành công:** Kiểm tra người dùng nhập đúng thông tin tài khoản seed (`audience1@ticketbox.local` / `123456`), chuyển hướng về trang chủ và hiển thị trạng thái đã đăng nhập.
+1. **Đăng nhập thành công:** Kiểm tra người dùng nhập đúng thông tin tài khoản seed (`audience1@tixora.local` / `123456`), chuyển hướng về trang chủ và hiển thị trạng thái đã đăng nhập.
 2. **Đăng nhập sai mật khẩu:** Kiểm tra hiển thị thông báo lỗi phù hợp khi mật khẩu không đúng, không lưu token rác.
 3. **Bảo vệ route cá nhân:** Kiểm tra khi chưa đăng nhập mà truy cập trực tiếp vào `/my-tickets`, hệ thống sẽ chặn và chuyển hướng về `/login`.
 4. **Đăng xuất:** Kiểm tra sau khi đăng xuất, các thông tin định danh bị xóa sạch khỏi bộ nhớ trình duyệt.
@@ -161,8 +161,8 @@ Bao phủ các ca kiểm thử:
 
 ### Suite 4: Quản Trị Hệ Thống Admin Portal (admin-portal.spec.ts)
 Bao phủ các ca kiểm thử:
-1. **Chặn tài khoản thường vào Admin Portal:** Sử dụng tài khoản `audience1@ticketbox.local` đăng nhập vào `http://localhost:3002`, hệ thống phải từ chối truy cập (HTTP 403 / Access Denied).
-2. **Đăng nhập tài khoản Quản trị viên:** Sử dụng `vy.admin@ticketbox.local`, đăng nhập thành công vào trang `/dashboard`.
+1. **Chặn tài khoản thường vào Admin Portal:** Sử dụng tài khoản `audience1@tixora.local` đăng nhập vào `http://localhost:3002`, hệ thống phải từ chối truy cập (HTTP 403 / Access Denied).
+2. **Đăng nhập tài khoản Quản trị viên:** Sử dụng `vy.admin@tixora.local`, đăng nhập thành công vào trang `/dashboard`.
 3. **Kiểm tra số liệu Dashboard:** Các thẻ KPI (Doanh thu, Vé đã bán, Đơn hàng) hiển thị đầy đủ số liệu.
 4. **Điều hướng các phân hệ quản trị:** Kiểm tra truy cập mượt mà vào Quản lý sự kiện (`/events`), Phân công soát vé (`/assignments`), Báo cáo doanh thu (`/revenue`), và Quản lý người dùng (`/users`).
 
@@ -258,7 +258,7 @@ Có thể thêm job chạy Playwright vào workflow `.github/workflows/ci.yml` �
 
 ---
 
-## 8. Best Practices Khi Viết E2E Test Cho TicketBox
+## 8. Best Practices Khi Viết E2E Test Cho TIXORA
 
 1. **Sử dụng Locators theo hành vi người dùng (User-facing Locators):**
    - Ưu tiên: `page.getByRole('button', { name: 'Đăng nhập' })`, `page.getByLabel('Email')`, `page.getByPlaceholder(...)`.

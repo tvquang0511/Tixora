@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+﻿import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class PaymentProcessResponseDto {
     @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
@@ -16,7 +16,7 @@ export class PaymentProcessResponseDto {
     @ApiProperty({ example: 'SUCCESS' })
     gateway_status!: string;
 
-    @ApiPropertyOptional({ example: 'https://payments.ticketbox.local/checkout/...' })
+    @ApiPropertyOptional({ example: 'https://payments.tixora.local/checkout/...' })
     checkout_url?: string | null;
 
     @ApiPropertyOptional({ example: '00020101021238580010A000000727012800069704070114...6304D1B5' })

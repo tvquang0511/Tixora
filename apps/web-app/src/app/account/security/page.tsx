@@ -1,10 +1,10 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { TicketBoxAuthShell } from "@/components/ticketbox-auth-shell";
-import { SecurityIllustration } from "@/components/ticketbox-illustrations";
+import { TixoraAuthShell } from "@/components/tixora-auth-shell";
+import { SecurityIllustration } from "@/components/tixora-illustrations";
 import { authService } from "@/services/auth.service";
 import { getErrorMessage } from "@/utils/error.utils";
 import { useToast } from "@/context/ToastContext";
@@ -66,7 +66,7 @@ export default function AccountSecurityPage() {
 
   return (
     <ProtectedRoute>
-      <TicketBoxAuthShell
+      <TixoraAuthShell
         eyebrow="Tài khoản"
         title="Trung tâm Bảo mật"
         description="Quản lý mật khẩu và phiên đăng nhập của bạn."
@@ -84,7 +84,7 @@ export default function AccountSecurityPage() {
             <form onSubmit={onChangePassword} className="space-y-4">
               <div className="space-y-1">
                 <label
-                  className="ticketbox-label text-on-surface-variant/80"
+                  className="tixora-label text-on-surface-variant/80"
                   htmlFor="currentPassword"
                 >
                   Mật khẩu hiện tại
@@ -102,7 +102,7 @@ export default function AccountSecurityPage() {
 
               <div className="space-y-1">
                 <label
-                  className="ticketbox-label text-on-surface-variant/80"
+                  className="tixora-label text-on-surface-variant/80"
                   htmlFor="newPassword"
                 >
                   Mật khẩu mới
@@ -123,7 +123,7 @@ export default function AccountSecurityPage() {
 
               <div className="space-y-1">
                 <label
-                  className="ticketbox-label text-on-surface-variant/80"
+                  className="tixora-label text-on-surface-variant/80"
                   htmlFor="confirmPassword"
                 >
                   Xác nhận mật khẩu mới
@@ -168,7 +168,7 @@ export default function AccountSecurityPage() {
             </Button>
           </section>
         </div>
-      </TicketBoxAuthShell>
+      </TixoraAuthShell>
     </ProtectedRoute>
   );
 }

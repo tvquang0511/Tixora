@@ -113,7 +113,7 @@ export function ProfileScreen() {
         <SurfaceCard variant="default">
           <AppText variant="subtitle">Account policy</AppText>
           <AppText tone="muted">
-            Checker and admin accounts are issued by TicketBox. If you need a password reset or role update, contact the system administrator.
+            Checker and admin accounts are issued by Tixora. If you need a password reset or role update, contact the system administrator.
           </AppText>
           {pendingSyncCount > 0 ? (
             <AppText tone="danger">

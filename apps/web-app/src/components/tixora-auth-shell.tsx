@@ -17,7 +17,7 @@ type ShellProps = {
   compact?: boolean;
 };
 
-export function TicketBoxAuthShell({
+export function TixoraAuthShell({
   eyebrow = "Tixora",
   title,
   description,

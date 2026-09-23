@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { TicketBoxAuthShell } from "@/components/ticketbox-auth-shell";
-import { ConcertHeroIllustration } from "@/components/ticketbox-illustrations";
+import { TixoraAuthShell } from "@/components/tixora-auth-shell";
+import { ConcertHeroIllustration } from "@/components/tixora-illustrations";
 import { authService } from "@/services/auth.service";
 import { Lock } from "lucide-react";
 import { getAuthErrorMessage } from "@/utils/error.utils";
@@ -67,7 +67,7 @@ export default function ResetPasswordClient() {
 
   if (success) {
     return (
-      <TicketBoxAuthShell
+      <TixoraAuthShell
         title="Đã cập nhật mật khẩu"
         description="Mật khẩu của bạn đã được đặt lại thành công."
         sidebar={<ConcertHeroIllustration />}
@@ -82,13 +82,13 @@ export default function ResetPasswordClient() {
             Đăng nhập ngay
           </Button>
         </div>
-      </TicketBoxAuthShell>
+      </TixoraAuthShell>
     );
   }
 
   if (!token) {
     return (
-      <TicketBoxAuthShell
+      <TixoraAuthShell
         title="Liên kết không khả dụng"
         description="Đường dẫn đặt lại mật khẩu đã hết hạn hoặc không tồn tại."
         sidebar={<ConcertHeroIllustration />}
@@ -102,12 +102,12 @@ export default function ResetPasswordClient() {
             Yêu cầu liên kết mới
           </Button>
         </div>
-      </TicketBoxAuthShell>
+      </TixoraAuthShell>
     );
   }
 
   return (
-    <TicketBoxAuthShell
+    <TixoraAuthShell
       title="Tạo mật khẩu mới"
       description="Thiết lập mật khẩu mới cho tài khoản của bạn để tiếp tục."
       sidebar={<ConcertHeroIllustration />}
@@ -116,7 +116,7 @@ export default function ResetPasswordClient() {
       <form className="space-y-5" onSubmit={onSubmit}>
         <div className="space-y-1">
           <label
-            className="ticketbox-label text-on-surface-variant/90"
+            className="tixora-label text-on-surface-variant/90"
             htmlFor="password"
           >
             Mật khẩu mới
@@ -143,7 +143,7 @@ export default function ResetPasswordClient() {
 
         <div className="space-y-1">
           <label
-            className="ticketbox-label text-on-surface-variant/90"
+            className="tixora-label text-on-surface-variant/90"
             htmlFor="confirmPassword"
           >
             Xác nhận mật khẩu
@@ -169,6 +169,6 @@ export default function ResetPasswordClient() {
           Đặt lại mật khẩu
         </Button>
       </form>
-    </TicketBoxAuthShell>
+    </TixoraAuthShell>
   );
 }

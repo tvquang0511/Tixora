@@ -93,7 +93,7 @@ export function ScannerScreen() {
             </View>
             <AppText variant="hero">Camera access required</AppText>
             <AppText tone="muted">
-              TicketBox Staff needs camera permission to scan ticket QR codes at the gate for {session.concertTitle}.
+              Tixora Staff needs camera permission to scan ticket QR codes at the gate for {session.concertTitle}.
             </AppText>
             <Button icon="camera-outline" label="Allow camera access" onPress={() => void requestPermission()} />
             <Button icon="arrow-left" label="Back to session" onPress={() => router.push(routes.staffSessionSetup)} variant="ghost" />

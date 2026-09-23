@@ -1,8 +1,8 @@
-# TicketBox Mobile App
+# Tixora Mobile App
 
 ## Mục tiêu của app
 
-Đây là mobile app dành cho nhân sự soát vé của hệ thống TicketBox.
+Đây là mobile app dành cho nhân sự soát vé của hệ thống Tixora.
 
 Mục tiêu chính của app:
 
@@ -24,9 +24,9 @@ Trong phạm vi đồ án hiện tại, mobile app không ưu tiên làm audienc
 Các tài liệu đã có sẵn trong app:
 
 - Phân tích backend và kế hoạch mobile tổng thể:
-  [mobile-backend-analysis-and-plan.md](/D:/document/study/projects/Ticket_Box/apps/mobile-app/ticketbox/mobile-backend-analysis-and-plan.md:1)
+  [mobile-backend-analysis-and-plan.md](mobile-backend-analysis-and-plan.md)
 - Báo cáo chi tiết về module check-in backend:
-  [checkin-backend-detailed-report.md](/D:/document/study/projects/Ticket_Box/apps/mobile-app/ticketbox/checkin-backend-detailed-report.md:1)
+  [checkin-backend-detailed-report.md](checkin-backend-detailed-report.md)
 
 Khi bắt đầu làm feature check-in, nên đọc 2 file trên trước.
 

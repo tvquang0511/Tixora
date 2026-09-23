@@ -21,7 +21,7 @@ const sections = [
     description:
       "Các loại dữ liệu cá nhân chúng tôi thu thập khi bạn sử dụng dịch vụ.",
     content:
-      "Khi bạn đăng ký tài khoản, thực hiện giao dịch mua vé hoặc tương tác trên TicketBox, chúng tôi có thể thu thập các thông tin cá nhân bao gồm: Họ tên, địa chỉ email, số điện thoại, và lịch sử giao dịch. Chúng tôi cũng tự động thu thập một số dữ liệu kỹ thuật như địa chỉ IP, loại thiết bị và hành vi sử dụng trang web nhằm cải thiện chất lượng dịch vụ tốt hơn.",
+      "Khi bạn đăng ký tài khoản, thực hiện giao dịch mua vé hoặc tương tác trên Tixora, chúng tôi có thể thu thập các thông tin cá nhân bao gồm: Họ tên, địa chỉ email, số điện thoại, và lịch sử giao dịch. Chúng tôi cũng tự động thu thập một số dữ liệu kỹ thuật như địa chỉ IP, loại thiết bị và hành vi sử dụng trang web nhằm cải thiện chất lượng dịch vụ tốt hơn.",
     icon: Eye,
     iconColor: "text-blue-400",
     bgColor: "bg-blue-500/10 border-blue-500/20",
@@ -45,7 +45,7 @@ const sections = [
     description:
       "Chính sách cam kết bảo vệ thông tin cá nhân của bạn an toàn tuyệt đối.",
     content:
-      "TicketBox cam kết không bán, cho thuê hoặc chia sẻ trái phép dữ liệu cá nhân của bạn với bên thứ ba. Chúng tôi chỉ chia sẻ dữ liệu cần thiết với Ban Tổ Chức sự kiện (để soát vé) và đối tác Cổng thanh toán bảo mật (PayOS) nhằm thực hiện giao dịch. Mọi dữ liệu truyền tải đều được mã hóa bằng giao thức HTTPS chuẩn công nghiệp.",
+      "Tixora cam kết không bán, cho thuê hoặc chia sẻ trái phép dữ liệu cá nhân của bạn với bên thứ ba. Chúng tôi chỉ chia sẻ dữ liệu cần thiết với Ban Tổ Chức sự kiện (để soát vé) và đối tác Cổng thanh toán bảo mật (PayOS) nhằm thực hiện giao dịch. Mọi dữ liệu truyền tải đều được mã hóa bằng giao thức HTTPS chuẩn công nghiệp.",
     icon: Lock,
     iconColor: "text-emerald-400",
     bgColor: "bg-emerald-500/10 border-emerald-500/20",
@@ -56,7 +56,7 @@ const sections = [
     title: "Quyền hạn của bạn",
     description: "Các quyền lợi kiểm soát dữ liệu cá nhân mà bạn sở hữu.",
     content:
-      "Bạn có toàn quyền truy cập, chỉnh sửa hoặc yêu cầu hủy bỏ thông tin cá nhân của mình trong trang cài đặt tài khoản bất kỳ lúc nào. Bạn cũng có quyền từ chối nhận các email quảng cáo từ TicketBox bằng cách sử dụng liên kết hủy đăng ký ở cuối mỗi thư. Đối với yêu cầu xóa tài khoản vĩnh viễn, bạn có thể liên hệ trực tiếp với bộ phận hỗ trợ kỹ thuật.",
+      "Bạn có toàn quyền truy cập, chỉnh sửa hoặc yêu cầu hủy bỏ thông tin cá nhân của mình trong trang cài đặt tài khoản bất kỳ lúc nào. Bạn cũng có quyền từ chối nhận các email quảng cáo từ Tixora bằng cách sử dụng liên kết hủy đăng ký ở cuối mỗi thư. Đối với yêu cầu xóa tài khoản vĩnh viễn, bạn có thể liên hệ trực tiếp với bộ phận hỗ trợ kỹ thuật.",
     icon: UserCheck,
     iconColor: "text-amber-400",
     bgColor: "bg-amber-500/10 border-amber-500/20",
@@ -141,7 +141,7 @@ export default function PrivacyPolicyPage() {
               Chính Sách Bảo Mật
             </h1>
             <p className="mt-4 text-base sm:text-lg text-on-surface-variant/80 max-w-2xl leading-relaxed">
-              TicketBox cam kết bảo mật tuyệt đối mọi thông tin cá nhân và dữ
+              Tixora cam kết bảo mật tuyệt đối mọi thông tin cá nhân và dữ
               liệu giao dịch của bạn. Dưới đây là chính sách minh bạch của chúng
               tôi về thu thập, sử dụng và bảo vệ dữ liệu.
             </p>
@@ -245,7 +245,7 @@ export default function PrivacyPolicyPage() {
                         Nếu bạn có bất kỳ câu hỏi nào liên quan đến Chính sách
                         bảo mật hoặc muốn thực hiện quyền hạn bảo vệ dữ liệu cá
                         nhân của mình, vui lòng kết nối với đội ngũ phát triển
-                        TicketBox qua các hòm thư điện tử dưới đây:
+                        Tixora qua các hòm thư điện tử dưới đây:
                       </p>
                     </div>
                   </div>

@@ -14,17 +14,17 @@ const TEAM_MEMBERS = [
   {
     name: "Trần Vũ Quang",
     role: "Frontend Engineer / UI/UX Designer",
-    email: "quang.tran@ticketbox.vn",
+    email: "quang.tran@tixora.vn",
   },
   {
     name: "Nguyễn Khắc Vượng",
     role: "Backend Engineer / DevOps",
-    email: "vuong.nguyen@ticketbox.vn",
+    email: "vuong.nguyen@tixora.vn",
   },
   {
     name: "Trần Quốc Vỹ",
     role: "Quality Assurance / Tester",
-    email: "vy.tran@ticketbox.vn",
+    email: "vy.tran@tixora.vn",
   },
 ];
 
@@ -58,9 +58,9 @@ export default function ContactUsPage() {
         <div className="mb-16 text-center">
           <SectionHeading title="Liên hệ với chúng tôi" />
           <p className="mx-auto mt-4 max-w-2xl text-base text-on-surface-variant/80 leading-relaxed">
-            Chào mừng bạn đến với TicketBox, nền tảng đặt vé ca nhạc an toàn và
+            Chào mừng bạn đến với Tixora, nền tảng đặt vé ca nhạc an toàn và
             nhanh chóng. Chúng tôi tận tâm mang đến cho bạn những trải nghiệm
-            giải trí trực tiếp tuyệt vời nhất. Gặp gỡ đội ngũ đứng sau TicketBox
+            giải trí trực tiếp tuyệt vời nhất. Gặp gỡ đội ngũ đứng sau Tixora
             dưới đây.
           </p>
         </div>
@@ -142,7 +142,7 @@ export default function ContactUsPage() {
                       Hỗ trợ chung
                     </p>
                     <p className="text-xs mt-1 text-on-surface-variant/80">
-                      support@ticketbox.vn
+                      support@tixora.vn
                     </p>
                   </div>
                 </div>

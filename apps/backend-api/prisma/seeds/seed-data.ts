@@ -57,25 +57,25 @@ export const rolePermissions: Record<string, string[]> = {
 
 export const staticUsers = [
   {
-    email: "vy.admin@ticketbox.local",
+    email: "vy.admin@tixora.local",
     full_name: "Vy Admin",
     status: "ACTIVE",
     roles: ["Admin"],
   },
   {
-    email: "vuong.admin@ticketbox.local",
+    email: "vuong.admin@tixora.local",
     full_name: "Vuong Admin",
     status: "ACTIVE",
     roles: ["Admin"],
   },
   {
-    email: "tuan.organizer@ticketbox.local",
+    email: "tuan.organizer@tixora.local",
     full_name: "Tuan Organizer",
     status: "ACTIVE",
     roles: ["Organizer"],
   },
   {
-    email: "quang.checker@ticketbox.local",
+    email: "quang.checker@tixora.local",
     full_name: "Quang Checker",
     status: "ACTIVE",
     roles: ["Checker"],
@@ -91,7 +91,7 @@ export const staticUsers = [
     "Đỗ Khánh Linh",
     "Hoàng Gia Bảo",
   ].map((full_name, index) => ({
-    email: `checker${index + 2}@ticketbox.local`,
+    email: `checker${index + 2}@tixora.local`,
     full_name,
     status: "ACTIVE",
     roles: ["Checker"],

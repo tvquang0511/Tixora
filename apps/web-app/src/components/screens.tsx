@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -803,7 +803,7 @@ export function InteractiveTicketSelector({
             <button
               onClick={() => void handleConfirm()}
               disabled={isReserving || maxQty < 1}
-              className="ticketbox-button-primary w-full justify-center py-4 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+              className="tixora-button-primary w-full justify-center py-4 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isReserving
                 ? "Đang đặt giữ vé..."

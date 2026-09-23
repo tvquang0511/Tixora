@@ -8,7 +8,7 @@ $ErrorActionPreference = "Stop"
 # Địa chỉ Backend API
 $env:BASE_URL = "http://localhost:3000"
 
-# Chế độ sử dụng danh sách tài khoản seeding sẵn: audience1@ticketbox.local ... N
+# Chế độ sử dụng danh sách tài khoản seeding sẵn: audience1@tixora.local ... N
 $env:USE_SEED_USERS = "true"
 $env:SEED_USER_COUNT = "80"
 $env:SEED_PASSWORD = "123456"

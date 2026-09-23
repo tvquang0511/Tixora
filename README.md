@@ -115,9 +115,9 @@ Sau khi chạy lệnh `pnpm db:seed`, bạn có thể dùng các tài khoản sa
 
 | Vai trò (Role) | Email | Mật khẩu | Ứng dụng & Quyền hạn |
 | :--- | :--- | :--- | :--- |
-| **Admin** | `vy.admin@ticketbox.local` | `123456` | Dashboard, báo cáo doanh thu, quản trị tài khoản & phân quyền (Đăng nhập tại Admin Portal - Port 3002). |
-| **Organizer** | `tuan.organizer@ticketbox.local` | `123456` | Quản lý concert, tạo concert mới, theo dõi doanh thu sự kiện. |
-| **Checker** | `quang.checker@ticketbox.local` | `123456` | Quét mã QR soát vé cổng (Đăng nhập trên Mobile App). |
+| **Admin** | `vy.admin@tixora.local` | `123456` | Dashboard, báo cáo doanh thu, quản trị tài khoản & phân quyền (Đăng nhập tại Admin Portal - Port 3002). |
+| **Organizer** | `tuan.organizer@tixora.local` | `123456` | Quản lý concert, tạo concert mới, theo dõi doanh thu sự kiện. |
+| **Checker** | `quang.checker@tixora.local` | `123456` | Quét mã QR soát vé cổng (Đăng nhập trên Mobile App). |
 | **Audience** | Đăng ký trực tiếp trên Web | Tùy chọn | Xem danh sách sự kiện, giữ chỗ thời gian thực, thanh toán và xem vé cá nhân (Web App - Port 3001). |
 
 ---

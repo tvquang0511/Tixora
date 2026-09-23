@@ -1,4 +1,4 @@
-import {
+﻿import {
   IsDateString,
   IsNotEmpty,
   IsOptional,
@@ -50,13 +50,13 @@ export class CreateConcertDto {
   @IsFutureDate()
   start_time!: string;
 
-  @ApiPropertyOptional({ example: 'https://cdn.ticketbox.local/maps/anh-trai-say-hi.svg' })
+  @ApiPropertyOptional({ example: 'https://cdn.tixora.local/maps/anh-trai-say-hi.svg' })
   @IsOptional()
   @IsString()
   @IsUrl()
   svg_map_url?: string;
 
-  @ApiPropertyOptional({ example: 'https://cdn.ticketbox.local/posters/anh-trai-say-hi.png' })
+  @ApiPropertyOptional({ example: 'https://cdn.tixora.local/posters/anh-trai-say-hi.png' })
   @IsOptional()
   @IsString()
   @IsUrl()

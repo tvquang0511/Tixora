@@ -1,8 +1,8 @@
-# Báo Cáo Chi Tiết Về Module Check-in Của Backend TicketBox
+﻿# Báo Cáo Chi Tiết Về Module Check-in Của Backend Tixora
 
 ## 1. Mục đích của tài liệu
 
-Tài liệu này giải thích chi tiết module `checkin` của backend TicketBox để phục vụ 3 mục tiêu:
+Tài liệu này giải thích chi tiết module `checkin` của backend Tixora để phục vụ 3 mục tiêu:
 
 - Hiểu module này đang giải quyết bài toán gì trong hệ thống.
 - Hiểu rõ từng API, từng bước xử lý, và các chiến thuật kỹ thuật đang được dùng.
@@ -728,7 +728,7 @@ Nói cách khác, backend đã vạch sẵn kiến trúc mà mobile nên đi the
 
 ## 16. Kết luận
 
-Module `checkin` của backend TicketBox là một thiết kế khá tốt cho bài toán soát vé trong môi trường có mạng không ổn định.
+Module `checkin` của backend Tixora là một thiết kế khá tốt cho bài toán soát vé trong môi trường có mạng không ổn định.
 
 Điểm mạnh nhất của nó không chỉ nằm ở việc “có API scan”, mà nằm ở việc nó đang kết hợp nhiều chiến thuật khá chín:
 

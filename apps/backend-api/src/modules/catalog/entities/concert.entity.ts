@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+﻿import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ConcertEntity {
   @ApiProperty({ example: '0edb0b61-8c91-4d2c-9b7c-9b6e2e3e7cf1' })
@@ -22,10 +22,10 @@ export class ConcertEntity {
   @ApiProperty({ format: 'date-time', example: '2026-06-10T19:30:00+07:00' })
   start_time!: Date;
 
-  @ApiPropertyOptional({ example: 'https://cdn.ticketbox.local/maps/anh-trai-say-hi.svg' })
+  @ApiPropertyOptional({ example: 'https://cdn.tixora.local/maps/anh-trai-say-hi.svg' })
   svg_map_url?: string | null;
 
-  @ApiPropertyOptional({ example: 'https://cdn.ticketbox.local/posters/anh-trai-say-hi.jpg' })
+  @ApiPropertyOptional({ example: 'https://cdn.tixora.local/posters/anh-trai-say-hi.jpg' })
   poster_url?: string | null;
 
   @ApiProperty({ example: 'PUBLISHED' })

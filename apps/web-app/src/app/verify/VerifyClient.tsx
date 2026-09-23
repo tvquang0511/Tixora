@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { TicketBoxAuthShell } from "@/components/ticketbox-auth-shell";
-import { ConcertHeroIllustration } from "@/components/ticketbox-illustrations";
+import { TixoraAuthShell } from "@/components/tixora-auth-shell";
+import { ConcertHeroIllustration } from "@/components/tixora-illustrations";
 import { getAuthErrorMessage } from "@/utils/error.utils";
 import { useToast } from "@/context/ToastContext";
 import { Button } from "@/components/common";
@@ -84,7 +84,7 @@ export default function VerifyClient() {
   }, [router, token, message, showErrorToast, showSuccessToast]);
 
   return (
-    <TicketBoxAuthShell
+    <TixoraAuthShell
       title={
         status === "loading"
           ? "Đang xác thực tài khoản"
@@ -166,6 +166,6 @@ export default function VerifyClient() {
           </div>
         ) : null}
       </div>
-    </TicketBoxAuthShell>
+    </TixoraAuthShell>
   );
 }

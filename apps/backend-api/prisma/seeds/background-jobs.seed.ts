@@ -41,7 +41,7 @@ export async function seedBackgroundJobs(prisma: PrismaClient) {
         const targetId = faker.helpers.arrayElement(concertIds);
         const resultData = status === "COMPLETED"
             ? {
-                output_url: `https://cdn.ticketbox.local/exports/${faker.string.uuid()}.csv`,
+                output_url: `https://cdn.tixora.local/exports/${faker.string.uuid()}.csv`,
             }
             : Prisma.DbNull;
 

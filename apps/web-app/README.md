@@ -1,6 +1,6 @@
-# TicketBox Web App
+# Tixora Web App
 
-TicketBox is a Next.js frontend for the ticketing flow. The public home route acts as the entry gate:
+Tixora is a Next.js frontend for the ticketing flow. The public home route acts as the entry gate:
 
 - Guests see the auth landing and can go to `/login` or `/register`.
 - After login, `/` switches to the current ticketing experience for discovery, checkout, tickets, and profile management.

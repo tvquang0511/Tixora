@@ -1,7 +1,7 @@
-# ĐỀ XUẤT NÂNG CẤP HỆ THỐNG TICKETBOX (UPGRADE PROPOSALS)
+﻿# ĐỀ XUẤT NÂNG CẤP HỆ THỐNG TIXORA (UPGRADE PROPOSALS)
 ## KIẾN TRÚC, HIỆU NĂNG, BẢO MẬT & TRẢI NGHIỆM NGƯỜI DÙNG
 
-> **Tài liệu:** Đề xuất nâng cấp kiến trúc & tính năng TicketBox  
+> **Tài liệu:** Đề xuất nâng cấp kiến trúc & tính năng TIXORA  
 > **Tác giả:** Antigravity AI & Technical Architecture Team  
 > **Mục tiêu:** Rà soát các điểm hạn chế trong kiến trúc hiện tại, đề xuất các giải pháp kỹ thuật nâng cao và vạch ra lộ trình hiện đại hóa hệ thống để sẵn sàng chịu tải hàng trăm nghìn người dùng đồng thời (Production-grade).
 
@@ -26,7 +26,7 @@
 
 ## 1. Đánh Giá Hiện Trạng & Phân Tích Khoảng Trống (Gap Analysis)
 
-TicketBox hiện tại đã xây dựng được một nền móng rất vững chắc với kiến trúc **Modular Monolith + Event-Driven**:
+TIXORA hiện tại đã xây dựng được một nền móng rất vững chắc với kiến trúc **Modular Monolith + Event-Driven**:
 - **Điểm mạnh đã đạt được:**
   1. Sử dụng **Redis Lua Script** xử lý nguyên tử kiểm tra tồn kho & trừ vé chống Oversell cực kỳ hiệu quả dưới tải cao (được chứng minh qua script k6).
   2. Rate Limiting theo thuật toán **Token Bucket** chặn spam request ở tầng NestJS Guard.
@@ -156,7 +156,7 @@ Hiện tại, cơ chế soát vé offline dựa vào việc tải trước một
      $$\text{QR Payload} = \text{Base64Url}(\text{Data}) + "." + \text{Base64Url}(\text{Signature})$$
 3. **Xác Thực Ngoại Tuyến Siêu Tốc (Offline Verification):**
    - Mobile App khi quét QR: Dùng Public Key có sẵn để giải mã và kiểm tra chữ ký số bằng thuật toán mã hóa (chạy trong 2 mili-giây).
-   - Nếu chữ ký hợp lệ: Chắc chắn 100% vé này do TicketBox phát hành (không thể làm giả dù kẻ gian biết rõ cấu trúc).
+   - Nếu chữ ký hợp lệ: Chắc chắn 100% vé này do TIXORA phát hành (không thể làm giả dù kẻ gian biết rõ cấu trúc).
    - Sau đó app chỉ cần đối chiếu `tid` vào bảng SQLite local để kiểm tra xem vé này đã quét hay chưa.
 
 ```mermaid
@@ -197,7 +197,7 @@ Xây dựng lớp **Virtual Waiting Room** dựa trên Redis Sorted Set (`ZSET`)
    - "Thời gian ước tính: 2 phút"
    - Thanh tiến trình chuyển động thời gian thực.
 4. Một Background Worker giải phóng từng đợt (ví dụ 500 người mỗi 30 giây) bằng cách cấp một `Access-Token` có thời hạn 10 phút để người dùng chính thức bước vào màn hình chọn ghế.
-5. Giải pháp này giúp bảo vệ hoàn toàn Core Engine của TicketBox, loại bỏ hiện tượng Crash server 100%.
+5. Giải pháp này giúp bảo vệ hoàn toàn Core Engine của TIXORA, loại bỏ hiện tượng Crash server 100%.
 
 ---
 
@@ -304,4 +304,4 @@ TÁC │
 - [ ] Triển khai **Đề xuất 7**: Xuất vé vào Apple Wallet (.pkpass) và Google Wallet.
 
 ---
-*Báo cáo đề xuất nâng cấp được thiết kế đồng bộ với kiến trúc TicketBox, mang tính khả thi cao và sẵn sàng triển khai từng phần.*
+*Báo cáo đề xuất nâng cấp được thiết kế đồng bộ với kiến trúc TIXORA, mang tính khả thi cao và sẵn sàng triển khai từng phần.*

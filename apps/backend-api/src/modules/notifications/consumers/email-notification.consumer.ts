@@ -109,15 +109,15 @@ export class EmailNotificationConsumer implements OnModuleInit {
     });
     const sent = await this.email.sendMail({
       to: order.user.email,
-      subject: "Giao dịch thành công & Vé điện tử - TicketBox",
+      subject: "Giao dịch thành công & Vé điện tử - Tixora",
       html: `<!doctype html><html><body style="margin:0;padding:0;background:#eef2f7;font-family:Arial,Helvetica,sans-serif;color:#334155">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef2f7"><tr><td style="padding:36px 12px">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:680px;margin:0 auto;background:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,.08)">
-            <tr><td style="padding:32px 36px;background:#4338ca;text-align:center;color:#ffffff"><div style="font-size:28px;font-weight:900">TicketBox</div><div style="margin-top:7px;color:#e0e7ff;font-size:13px">Vé của bạn đã sẵn sàng</div></td></tr>
+            <tr><td style="padding:32px 36px;background:#4338ca;text-align:center;color:#ffffff"><div style="font-size:28px;font-weight:900">Tixora</div><div style="margin-top:7px;color:#e0e7ff;font-size:13px">Vé của bạn đã sẵn sàng</div></td></tr>
             <tr><td style="padding:34px 36px 16px"><h1 style="margin:0 0 12px;color:#0f172a;font-size:25px;line-height:1.3">Mua vé thành công</h1><p style="margin:0 0 22px;color:#475569;font-size:15px;line-height:1.7">Chào <strong style="color:#1e293b">${escapeHtml(order.user.full_name)}</strong>, giao dịch của bạn đã hoàn tất. Hãy lưu email này để xuất trình e-ticket khi check-in.</p>
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:26px;background:#eef2ff;border-radius:12px"><tr><td style="padding:17px 18px"><div style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase">Sự kiện</div><div style="margin-top:5px;color:#1e293b;font-size:16px;font-weight:800;line-height:1.45">${escapeHtml(order.concert.name)}</div><div style="margin-top:8px;color:#475569;font-size:13px;line-height:1.5">${escapeHtml(startTime)} · ${escapeHtml(order.concert.location)}</div></td><td style="padding:17px 18px;text-align:right;vertical-align:top"><div style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase">Tổng thanh toán</div><div style="margin-top:5px;color:#4338ca;font-size:17px;font-weight:900;white-space:nowrap">${escapeHtml(total)}</div></td></tr></table>
               ${tickets}</td></tr>
-            <tr><td style="padding:20px 36px 30px"><div style="padding:16px 18px;border-radius:12px;background:#fff7ed;color:#9a3412;font-size:13px;line-height:1.6"><strong>Lưu ý bảo mật:</strong> Không chia sẻ mã QR. Mỗi vé chỉ được check-in một lần.</div><p style="margin:24px 0 0;color:#64748b;font-size:11px;line-height:1.6;text-align:center">Email tự động từ TicketBox · Vui lòng không trả lời email này.</p></td></tr>
+            <tr><td style="padding:20px 36px 30px"><div style="padding:16px 18px;border-radius:12px;background:#fff7ed;color:#9a3412;font-size:13px;line-height:1.6"><strong>Lưu ý bảo mật:</strong> Không chia sẻ mã QR. Mỗi vé chỉ được check-in một lần.</div><p style="margin:24px 0 0;color:#64748b;font-size:11px;line-height:1.6;text-align:center">Email tự động từ Tixora · Vui lòng không trả lời email này.</p></td></tr>
           </table>
         </td></tr></table></body></html>`,
       attachments: qrImages.map((content, index) => ({

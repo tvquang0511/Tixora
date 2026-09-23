@@ -33,7 +33,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "TicketBox Staff needs camera access to scan ticket QR codes at the gate."
+          "cameraPermission": "Tixora Staff needs camera access to scan ticket QR codes at the gate."
         }
       ],
       [

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-const PRIMARY_CHECKER_EMAIL = "quang.checker@ticketbox.local";
+const PRIMARY_CHECKER_EMAIL = "quang.checker@tixora.local";
 
 export async function seedCheckerAssignments(prisma: PrismaClient) {
   const checkers = await prisma.user.findMany({

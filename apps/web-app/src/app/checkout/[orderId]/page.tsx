@@ -2,7 +2,7 @@ import { CountdownTimer } from "@/components/screens";
 import { CheckoutForm } from "@/components/CheckoutForm";
 
 export const metadata = {
-  title: "Secure Checkout — TicketBox",
+  title: "Secure Checkout — Tixora",
 };
 
 export default async function CheckoutPage({

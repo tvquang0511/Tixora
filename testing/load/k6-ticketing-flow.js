@@ -32,7 +32,7 @@ const TOKENS = (__ENV.TOKENS || '')
 const USE_SEED_USERS = (__ENV.USE_SEED_USERS || 'true').toLowerCase() === 'true';
 const SEED_USER_COUNT = Number(__ENV.SEED_USER_COUNT || 40);
 const SEED_EMAIL_PREFIX = __ENV.SEED_EMAIL_PREFIX || 'audience';
-const SEED_EMAIL_DOMAIN = __ENV.SEED_EMAIL_DOMAIN || 'ticketbox.local';
+const SEED_EMAIL_DOMAIN = __ENV.SEED_EMAIL_DOMAIN || 'tixora.local';
 const SEED_PASSWORD = __ENV.SEED_PASSWORD || '123456';
 const SEED_LOGIN_FAKE_IPS = (__ENV.SEED_LOGIN_FAKE_IPS || 'true').toLowerCase() === 'true';
 const CONCERT_ID = __ENV.CONCERT_ID;
@@ -171,7 +171,7 @@ export function setup() {
 
   console.log('');
   console.log('='.repeat(70));
-  console.log('TicketBox k6 ticketing flow');
+  console.log('Tixora k6 ticketing flow');
   console.log(`BASE_URL       : ${BASE_URL}`);
   console.log(`Concert        : ${concertId}`);
   console.log(`Category       : ${categoryId}`);
@@ -246,7 +246,7 @@ export function handleSummary(data) {
 
   const summary = `
 ${'='.repeat(70)}
-TicketBox k6 summary
+Tixora k6 summary
 ${'='.repeat(70)}
 Total HTTP requests      : ${totalReqs}
 Reserve success          : ${success}

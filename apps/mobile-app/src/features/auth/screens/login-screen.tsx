@@ -31,7 +31,7 @@ export function LoginScreen() {
   return (
     <AuthShell
       eyebrow="Staff portal"
-      title="TicketBox Staff"
+      title="Tixora Staff"
       description="Đăng nhập bằng tài khoản Checker hoặc Admin đã được cấp để vận hành cổng vào, quét vé và đồng bộ phiên check-in."
     >
       <View style={styles.form}>
@@ -40,7 +40,7 @@ export function LoginScreen() {
           value={email}
           onChangeText={setEmail}
           icon="badge-account-horizontal-outline"
-          placeholder="staff@ticketbox.vn"
+          placeholder="staff@tixora.vn"
           keyboardType="email-address"
           autoComplete="email"
         />
@@ -60,7 +60,7 @@ export function LoginScreen() {
             Support
           </AppText>
           <AppText tone="muted">
-            Need access help? Contact the TicketBox administrator who issued your staff account.
+            Need access help? Contact the Tixora administrator who issued your staff account.
           </AppText>
         </View>
       </View>

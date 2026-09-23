@@ -1,6 +1,6 @@
 ﻿# 02 — ĐẶC TẢ CHI TIẾT CÁC MODULE (MODULE SPECIFICATIONS)
 
-Thư mục này chứa đặc tả nghiệp vụ, API DTOs, luồng xử lý và dữ liệu của từng module độc lập trong Monolith TicketBox.
+Thư mục này chứa đặc tả nghiệp vụ, API DTOs, luồng xử lý và dữ liệu của từng module độc lập trong Monolith TIXORA.
 
 ## 📑 Danh Sách Tài Liệu
 

@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
-import { TicketBoxAuthShell } from "@/components/ticketbox-auth-shell";
-import { ConcertHeroIllustration } from "@/components/ticketbox-illustrations";
+import { TixoraAuthShell } from "@/components/tixora-auth-shell";
+import { ConcertHeroIllustration } from "@/components/tixora-illustrations";
 import { authService } from "@/services/auth.service";
 import { KeyRound } from "lucide-react";
 import { getAuthErrorMessage } from "@/utils/error.utils";
@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
 
   if (success) {
     return (
-      <TicketBoxAuthShell
+      <TixoraAuthShell
         title="Kiểm tra email của bạn"
         description="Chúng tôi đã gửi liên kết khôi phục mật khẩu đến địa chỉ email của bạn nếu địa chỉ đó tồn tại trên hệ thống."
         sidebar={<ConcertHeroIllustration />}
@@ -46,12 +46,12 @@ export default function ForgotPasswordPage() {
             mật khẩu của bạn.
           </p>
         </div>
-      </TicketBoxAuthShell>
+      </TixoraAuthShell>
     );
   }
 
   return (
-    <TicketBoxAuthShell
+    <TixoraAuthShell
       title="Khôi phục mật khẩu"
       description="Nhập địa chỉ email của bạn để chúng tôi gửi liên kết đặt lại mật khẩu mới."
       sidebar={<ConcertHeroIllustration />}
@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
       <form className="space-y-5" onSubmit={onSubmit}>
         <div className="space-y-1">
           <label
-            className="ticketbox-label text-on-surface-variant/90"
+            className="tixora-label text-on-surface-variant/90"
             htmlFor="email"
           >
             Địa chỉ Email
@@ -91,6 +91,6 @@ export default function ForgotPasswordPage() {
           Gửi liên kết đặt lại mật khẩu
         </Button>
       </form>
-    </TicketBoxAuthShell>
+    </TixoraAuthShell>
   );
 }

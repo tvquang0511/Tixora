@@ -1,42 +1,42 @@
 /**
- * Test data fixtures for TicketBox Playwright E2E tests.
+ * Test data fixtures for Tixora Playwright E2E tests.
  * Synchronized with prisma/seed.ts and prisma/seeds/seed-data.ts.
  */
 
 export const TEST_USERS = {
   admin: {
-    email: 'vy.admin@ticketbox.local',
+    email: 'vy.admin@tixora.local',
     password: 'Password123@',
     name: 'Vy Admin',
     role: 'Admin',
   },
   adminSecondary: {
-    email: 'vuong.admin@ticketbox.local',
+    email: 'vuong.admin@tixora.local',
     password: 'Password123@',
     name: 'Vuong Admin',
     role: 'Admin',
   },
   organizer: {
-    email: 'tuan.organizer@ticketbox.local',
+    email: 'tuan.organizer@tixora.local',
     password: 'Password123@',
     name: 'Tuan Organizer',
     role: 'Organizer',
   },
   checker: {
-    email: 'quang.checker@ticketbox.local',
+    email: 'quang.checker@tixora.local',
     password: 'Password123@',
     name: 'Quang Checker',
     role: 'Checker',
     assignedGate: 1,
   },
   audience: {
-    email: 'audience1@ticketbox.local',
+    email: 'audience1@tixora.local',
     password: 'Password123@',
     name: 'Audience User',
     role: 'Audience',
   },
   invalidUser: {
-    email: 'nonexistent.user@ticketbox.local',
+    email: 'nonexistent.user@tixora.local',
     password: 'WrongPassword999!',
   },
 };

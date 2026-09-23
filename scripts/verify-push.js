@@ -4,7 +4,7 @@
 /**
  * verify-push.js
  *
- * Git pre-push quality gate for TicketBox Monorepo (pnpm).
+ * Git pre-push quality gate for Tixora Monorepo (pnpm).
  * Detects whether changed files belong to Web, Admin, BE, Mobile, or shared,
  * then runs only the relevant checks.
  *
