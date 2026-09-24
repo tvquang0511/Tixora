@@ -62,7 +62,7 @@ function AdminLoginForm() {
     } catch (err: unknown) {
       showErrorToast(
         getErrorMessage(err) ||
-        "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
+          "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
       );
     } finally {
       setLoading(false);

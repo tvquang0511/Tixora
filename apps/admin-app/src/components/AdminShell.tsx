@@ -128,7 +128,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
                     href={webAppUrl}
                     className="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-slate-50 rounded-lg"
                   >
-                    <ExternalLink size={14} className="text-slate-400" /> Trang khách hàng
+                    <ExternalLink size={14} className="text-slate-400" /> Trang
+                    khách hàng
                   </a>
                   <div className="h-px bg-slate-100 my-0.5" />
                   <button

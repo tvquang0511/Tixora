@@ -228,7 +228,9 @@ export function ConcertDetailDrawer({
                             </tr>
                           ))}
                           <tr className="bg-slate-50/80 font-bold border-t border-slate-200 font-mono">
-                            <td className="p-2.5 text-slate-900 font-sans">Tổng cộng</td>
+                            <td className="p-2.5 text-slate-900 font-sans">
+                              Tổng cộng
+                            </td>
                             <td className="p-2.5 text-right text-slate-400">
                               —
                             </td>

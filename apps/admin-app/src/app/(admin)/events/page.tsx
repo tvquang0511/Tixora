@@ -361,8 +361,8 @@ export default function AdminEventsPage() {
                     <td className="px-4 py-3 text-center whitespace-nowrap">
                       {updatingStatusId === concert.id ? (
                         <span className="text-[11px] text-slate-400 flex items-center justify-center gap-1">
-                          <RotateCw className="w-3 h-3 animate-spin text-teal-600" /> Đang
-                          lưu...
+                          <RotateCw className="w-3 h-3 animate-spin text-teal-600" />{" "}
+                          Đang lưu...
                         </span>
                       ) : concert.status === "DRAFT" ? (
                         <button
@@ -395,9 +395,7 @@ export default function AdminEventsPage() {
                           <span>Tạm ngưng</span>
                         </button>
                       ) : (
-                        <span className="text-slate-400 text-[11px]">
-                          —
-                        </span>
+                        <span className="text-slate-400 text-[11px]">—</span>
                       )}
                     </td>
 

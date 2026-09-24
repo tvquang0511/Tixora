@@ -475,7 +475,9 @@ export function ConcertWorkerDrawer({
                   </div>
 
                   <div className="flex items-center justify-between text-xs text-slate-600">
-                    <span className="font-mono text-[11px]">Tiến trình: {importJob.progress_percentage}%</span>
+                    <span className="font-mono text-[11px]">
+                      Tiến trình: {importJob.progress_percentage}%
+                    </span>
                     {importJob.status === "COMPLETED" &&
                       importJob.result_data && (
                         <span className="text-emerald-700 font-semibold">
@@ -534,9 +536,7 @@ export function ConcertWorkerDrawer({
                         <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-600 select-none">
                           <th className="px-4 py-3">Khách mời</th>
                           <th className="px-4 py-3">Hạng vé</th>
-                          <th className="px-4 py-3 text-center">
-                            Trạng thái
-                          </th>
+                          <th className="px-4 py-3 text-center">Trạng thái</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 text-xs">

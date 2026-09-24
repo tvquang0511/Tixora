@@ -160,9 +160,7 @@ function StatCard({
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs flex items-center justify-between">
       <div>
-        <p className="text-xs font-medium text-slate-500">
-          {label}
-        </p>
+        <p className="text-xs font-medium text-slate-500">{label}</p>
         <p className="text-2xl font-bold text-slate-900 tracking-tight tabular-nums mt-1">
           {value.toLocaleString("vi-VN")}
         </p>
@@ -534,7 +532,8 @@ export default function AdminJobsPage() {
           <div className="px-4 py-3 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 select-none">
             <div className="flex items-center gap-4">
               <span className="text-xs text-slate-600">
-                Tổng {meta.total} tác vụ &bull; Trang {meta.page}/{meta.totalPages}
+                Tổng {meta.total} tác vụ &bull; Trang {meta.page}/
+                {meta.totalPages}
               </span>
               <div className="flex items-center gap-1.5">
                 <span className="text-[11px] text-slate-500 font-medium">

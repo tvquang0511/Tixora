@@ -292,6 +292,10 @@ if (activeFE) {
 if (activeAdmin) {
   printSection('Admin App Checks');
   runCheck(
+    'Admin: Prettier',
+    'pnpm', ['--filter', 'admin-app', 'exec', 'prettier', '--check', '.']
+  );
+  runCheck(
     'Admin: ESLint',
     'pnpm', ['--filter', 'admin-app', 'run', 'lint']
   );
