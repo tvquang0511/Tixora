@@ -25,16 +25,16 @@ import {
 import QRCode from "qrcode";
 
 const ORDER_STATUS_CLASSES: Record<string, string> = {
-  PAID: "bg-emerald-50 text-emerald-700 border-emerald-300",
-  PENDING: "bg-amber-50 text-amber-700 border-amber-300",
-  CANCELLED: "bg-rose-50 text-rose-700 border-rose-300",
+  PAID: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
+  PENDING: "bg-amber-50 text-amber-700 border-amber-200/80",
+  CANCELLED: "bg-rose-50 text-rose-700 border-rose-200/80",
 };
 
 const TX_STATUS_CLASSES: Record<string, string> = {
-  SUCCESS: "bg-emerald-50 text-emerald-700 border-emerald-300",
-  PENDING: "bg-amber-50 text-amber-700 border-amber-300",
-  FAILED: "bg-rose-50 text-rose-700 border-rose-300",
-  REFUNDED: "bg-purple-50 text-purple-700 border-purple-300",
+  SUCCESS: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
+  PENDING: "bg-amber-50 text-amber-700 border-amber-200/80",
+  FAILED: "bg-rose-50 text-rose-700 border-rose-200/80",
+  REFUNDED: "bg-teal-50 text-teal-700 border-teal-200/80",
 };
 
 interface TicketBreakdownItem {
@@ -120,7 +120,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="p-1 rounded-none hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer shrink-0"
+      className="p-1 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-800 transition-colors cursor-pointer shrink-0"
       title="Sao chép"
     >
       {copied ? (
@@ -234,8 +234,8 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-none border-4 border-slate-900 border-t-transparent" />
-          <span className="font-body text-xs text-slate-500 font-mono">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-teal-600 border-t-transparent" />
+          <span className="font-body text-xs text-slate-500">
             Đang tải chi tiết đơn hàng #{orderId}...
           </span>
         </div>
@@ -245,20 +245,20 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
 
   if (error || !order) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 bg-white border border-slate-200 p-8 rounded-none">
-        <p className="font-body text-xs text-red-600 font-semibold font-mono">
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 bg-white border border-slate-200 p-8 rounded-2xl shadow-2xs">
+        <p className="font-body text-xs text-rose-600 font-semibold">
           {error || "Đã xảy ra lỗi"}
         </p>
         <div className="flex items-center gap-3">
           <button
             onClick={() => void fetchOrder()}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-none text-xs font-semibold cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-colors"
           >
             <RotateCw size={13} /> Thử lại
           </button>
           <Link
             href="/orders"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 rounded-none text-xs font-semibold text-slate-700 transition-colors"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 transition-colors shadow-2xs"
           >
             <ChevronLeft size={14} /> Quay lại danh sách
           </Link>
@@ -314,23 +314,23 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
           <button
             onClick={() => void fetchOrder()}
             disabled={isLoading}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-none cursor-pointer transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-xs cursor-pointer transition-colors"
             title="Tải lại chi tiết"
           >
             <RotateCw size={13} className={isLoading ? "animate-spin" : ""} />
             <span>Làm mới</span>
           </button>
           <span
-            className={`inline-flex items-center px-3 py-1 rounded-none font-mono text-xs font-bold border uppercase tracking-wider ${
+            className={`inline-flex items-center px-3 py-1 rounded-full font-medium text-xs border ${
               ORDER_STATUS_CLASSES[order.status] ??
-              "bg-slate-100 text-slate-700 border-slate-300"
+              "bg-slate-100 text-slate-700 border-slate-200"
             }`}
           >
             {order.status === "PAID"
-              ? "ĐÃ THANH TOÁN"
+              ? "Đã thanh toán"
               : order.status === "PENDING"
-                ? "CHỜ THANH TOÁN"
-                : "ĐÃ HỦY"}
+                ? "Chờ thanh toán"
+                : "Đã hủy"}
           </span>
         </div>
       </div>
@@ -338,10 +338,10 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
       {/* Warning banner for late payment (Paid after expiration/cancellation) */}
       {expiredPaidTx && (
         <div
-          className={`rounded-none border p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors ${
+          className={`rounded-xl border p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-colors ${
             isRefunded
-              ? "bg-purple-50 border-purple-300 text-purple-900"
-              : "bg-rose-50 border-rose-300 text-rose-900"
+              ? "bg-purple-50 border-purple-200 text-purple-900"
+              : "bg-rose-50 border-rose-200 text-rose-900"
           }`}
         >
           <div className="flex items-start gap-3">
@@ -362,7 +362,7 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                   : "Khách hàng đã chuyển tiền thành công nhưng đơn hàng đã bị hủy do quá thời gian chờ (10 phút). Vui lòng hoàn lại tiền."}
               </p>
               {isRefunded && refundInfo && (
-                <div className="mt-2 p-3 bg-white border border-slate-200 rounded-none space-y-1 text-[10px] text-slate-600 font-mono">
+                <div className="mt-2 p-3 bg-white border border-slate-200 rounded-lg space-y-1 text-[11px] text-slate-600">
                   <p>
                     <strong className="text-slate-900">Người thực hiện:</strong>{" "}
                     {refundInfo.refunded_by}
@@ -394,7 +394,7 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
           {!isRefunded && (
             <button
               onClick={() => setIsRefundModalOpen(true)}
-              className="bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 px-4 rounded-none border border-rose-700 transition-colors cursor-pointer shrink-0 text-xs"
+              className="bg-rose-600 hover:bg-rose-700 text-white font-medium py-2 px-4 rounded-lg shadow-xs transition-colors cursor-pointer shrink-0 text-xs"
             >
               Đánh dấu đã hoàn tiền
             </button>
@@ -413,28 +413,28 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
           }
         >
           {/* Concert Info */}
-          <div className="bg-white border border-slate-200 rounded-none p-5 space-y-4 shadow-none">
-            <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
-              <Calendar className="w-4 h-4 text-slate-700" />
-              <h3 className="font-display text-sm font-bold text-slate-900 uppercase tracking-wider">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-xs">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+              <Calendar className="w-4 h-4 text-teal-600" />
+              <h3 className="font-semibold text-sm text-slate-900">
                 Thông tin Sự kiện & Hóa đơn
               </h3>
             </div>
             <div className="space-y-3">
               <div>
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block font-mono">
+                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">
                   Tên Sự kiện
                 </span>
-                <span className="font-body text-sm font-bold text-slate-900">
+                <span className="text-sm font-semibold text-slate-900">
                   {order.concert_name}
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-4 pt-1">
                 <div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block font-mono">
+                  <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">
                     Hạn thanh toán
                   </span>
-                  <span className="font-body text-xs text-slate-800 font-semibold font-mono">
+                  <span className="text-xs text-slate-800 font-medium">
                     {new Date(order.expires_at).toLocaleString("vi-VN")}
                   </span>
                 </div>
@@ -447,7 +447,7 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                   </span>
                 </div>
               </div>
-              <div className="pt-3 flex justify-between items-center bg-slate-50 border border-slate-200 rounded-none px-4 py-3">
+              <div className="pt-3 flex justify-between items-center bg-slate-50/50 border border-slate-200 rounded-lg px-4 py-3">
                 <span className="text-xs text-slate-600 font-semibold">
                   Tổng tiền thanh toán đơn hàng
                 </span>
@@ -464,10 +464,12 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
               const metadata =
                 order.ticket_metadata as unknown as TicketMetadata;
               return (
-                <div className="bg-white border border-slate-200 rounded-none p-5 space-y-4 shadow-none">
-                  <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
-                    <FileText className="w-4 h-4 text-slate-700" />
-                    <h3 className="font-display text-sm font-bold text-slate-900 uppercase tracking-wider">
+                <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-2xs">
+                  <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                    <div className="p-1 rounded-md bg-teal-50 text-teal-700 border border-teal-100">
+                      <FileText className="w-3.5 h-3.5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-900">
                       Chi tiết Hạng vé Đặt
                     </h3>
                   </div>
@@ -478,7 +480,7 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                           (item: TicketBreakdownItem, idx: number) => (
                             <div
                               key={idx}
-                              className="p-3 bg-slate-50 border border-slate-200 rounded-none flex flex-col sm:flex-row justify-between sm:items-center gap-2 text-xs"
+                              className="p-3 bg-slate-50/50 border border-slate-200 rounded-lg flex flex-col sm:flex-row justify-between sm:items-center gap-2 text-xs"
                             >
                               <div className="min-w-0">
                                 <p className="font-bold text-slate-900">
@@ -513,7 +515,7 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                         )}
                       </div>
                     ) : (
-                      <div className="p-3 bg-slate-50 border border-slate-200 rounded-none flex flex-col sm:flex-row justify-between sm:items-center gap-2 text-xs">
+                      <div className="p-3 bg-slate-50/50 border border-slate-200 rounded-lg flex flex-col sm:flex-row justify-between sm:items-center gap-2 text-xs">
                         <div className="min-w-0">
                           <p className="font-bold text-slate-900">
                             {String(
@@ -565,7 +567,7 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                           : "Xem cấu trúc JSON thô của vé"}
                       </button>
                       {openJsonTx.metadata && (
-                        <div className="mt-2 bg-slate-900 text-slate-100 border border-slate-800 rounded-none p-3 max-h-48 overflow-y-auto">
+                        <div className="mt-2 bg-slate-900 text-slate-100 border border-slate-800 rounded-lg p-3 max-h-48 overflow-y-auto">
                           <pre className="font-mono text-[10px] whitespace-pre-wrap">
                             {JSON.stringify(metadata, null, 2)}
                           </pre>
@@ -578,10 +580,12 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
             })()}
 
           {/* Detailed tickets code list */}
-          <div className="bg-white border border-slate-200 rounded-none p-5 space-y-4 shadow-none">
-            <div className="flex items-center gap-2 pb-3 border-b border-slate-200 select-none">
-              <Ticket className="w-4 h-4 text-slate-700" />
-              <h3 className="font-display text-sm font-bold text-slate-900 uppercase tracking-wider">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-2xs">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-100 select-none">
+              <div className="p-1 rounded-md bg-teal-50 text-teal-700 border border-teal-100">
+                <Ticket className="w-3.5 h-3.5" />
+              </div>
+              <h3 className="text-sm font-bold text-slate-900">
                 Danh sách Mã vé ({order.tickets.length})
               </h3>
             </div>
@@ -594,67 +598,67 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                 {order.tickets.map((t) => (
                   <div
                     key={t.id}
-                    className="p-3.5 bg-slate-50 border border-slate-200 rounded-none flex gap-3 relative overflow-hidden"
+                    className="p-3.5 bg-slate-50/50 border border-slate-200 rounded-xl flex gap-3 relative overflow-hidden shadow-2xs"
                   >
                     <div className="flex-1 min-w-0 flex flex-col justify-between gap-2">
                       <div>
-                        <span className="text-[9px] font-bold text-slate-500 block uppercase font-mono">
+                        <span className="text-[10px] font-semibold text-slate-500 block">
                           Mã vé ID
                         </span>
                         <div className="flex items-center gap-1 min-w-0">
-                          <span className="font-mono text-[11px] font-bold text-slate-900 truncate">
+                          <span className="font-mono text-xs font-bold text-slate-900 truncate">
                             #{t.id.toUpperCase()}
                           </span>
                           <CopyButton text={t.id} />
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
+                      <div className="grid grid-cols-2 gap-2 text-xs pt-1">
                         <div>
-                          <span className="text-[9px] font-bold text-slate-500 block uppercase font-mono">
+                          <span className="text-[10px] font-semibold text-slate-500 block">
                             Hạng Vé
                           </span>
-                          <span className="font-semibold text-slate-800 truncate block">
+                          <span className="font-medium text-slate-800 truncate block">
                             {t.category_name || "Mặc định"}
                           </span>
                         </div>
                         <div>
-                          <span className="text-[9px] font-bold text-slate-500 block uppercase font-mono">
+                          <span className="text-[10px] font-semibold text-slate-500 block">
                             Cửa soát
                           </span>
-                          <span className="font-semibold text-slate-800 font-mono">
+                          <span className="font-medium text-slate-800 font-mono">
                             Cửa {t.gate_number ?? "N/A"}
                           </span>
                         </div>
                       </div>
-                      <div className="pt-2 border-t border-slate-200 flex flex-col gap-1">
+                      <div className="pt-2 border-t border-slate-200/80 flex flex-col gap-1">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[9px] font-bold text-slate-500 uppercase font-mono">
+                          <span className="text-[10px] font-medium text-slate-500">
                             Trạng thái:
                           </span>
                           <span
-                            className={`inline-flex items-center px-1.5 py-0.5 rounded-none font-mono text-[9px] font-bold border uppercase ${
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border ${
                               t.is_scanned
-                                ? "bg-emerald-50 text-emerald-700 border-emerald-300"
-                                : "bg-slate-100 text-slate-700 border-slate-300"
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : "bg-slate-100 text-slate-600 border-slate-200"
                             }`}
                           >
                             {t.is_scanned ? "Đã Soát vé" : "Chưa Soát vé"}
                           </span>
                         </div>
                         {t.is_scanned && t.scanned_at && (
-                          <span className="text-[9px] text-slate-500 font-mono">
+                          <span className="text-[10px] text-slate-500">
                             Lúc:{" "}
                             {new Date(t.scanned_at).toLocaleString("vi-VN")}
                           </span>
                         )}
                       </div>
                       <div className="mt-1">
-                        <span className="text-[9px] font-bold text-slate-500 block uppercase font-mono">
+                        <span className="text-[10px] font-medium text-slate-500 block">
                           Mã hash QR
                         </span>
                         <div className="flex items-center gap-1 min-w-0">
                           <span
-                            className="font-mono text-[9px] text-slate-500 truncate"
+                            className="font-mono text-[10px] text-slate-500 truncate"
                             title={t.qr_code_hash}
                           >
                             {t.qr_code_hash}
@@ -665,7 +669,7 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                     </div>
 
                     {/* QR Code display on the right */}
-                    <div className="w-22 h-22 bg-white p-1 rounded-none flex items-center justify-center shrink-0 border border-slate-300 self-center select-none shadow-none">
+                    <div className="w-22 h-22 bg-white p-1 rounded-lg flex items-center justify-center shrink-0 border border-slate-200 self-center select-none shadow-2xs">
                       <TicketQrCode hash={t.qr_code_hash} width={88} />
                     </div>
                   </div>
@@ -675,10 +679,12 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
           </div>
 
           {/* Payment Transactions Log */}
-          <div className="bg-white border border-slate-200 rounded-none p-5 space-y-4 shadow-none">
-            <div className="flex items-center gap-2 pb-3 border-b border-slate-200 select-none">
-              <CreditCard className="w-4 h-4 text-slate-700" />
-              <h3 className="font-display text-sm font-bold text-slate-900 uppercase tracking-wider">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-2xs">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-100 select-none">
+              <div className="p-1 rounded-md bg-teal-50 text-teal-700 border border-teal-100">
+                <CreditCard className="w-3.5 h-3.5" />
+              </div>
+              <h3 className="text-sm font-bold text-slate-900">
                 Lịch sử Giao dịch Cổng thanh toán
               </h3>
             </div>
@@ -691,11 +697,11 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                 {order.payment_transactions.map((tx) => (
                   <div
                     key={tx.id}
-                    className="p-3.5 bg-slate-50 border border-slate-200 rounded-none flex flex-col gap-2.5"
+                    className="p-3.5 bg-slate-50/50 border border-slate-200 rounded-xl flex flex-col gap-2.5 shadow-2xs"
                   >
-                    <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-2 pb-2 border-b border-slate-200">
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-2 pb-2 border-b border-slate-200/80">
                       <div>
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block font-mono">
+                        <span className="text-[10px] font-medium text-slate-500 block">
                           Mã giao dịch nội bộ
                         </span>
                         <div className="flex items-center gap-1">
@@ -706,7 +712,7 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                         </div>
                       </div>
                       <span
-                        className={`self-start sm:self-center inline-flex items-center px-2 py-0.5 rounded-none font-mono text-[10px] font-bold border uppercase tracking-wider select-none ${
+                        className={`self-start sm:self-center inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium border select-none ${
                           TX_STATUS_CLASSES[tx.status ?? ""] ??
                           "bg-slate-100 text-slate-700 border-slate-300"
                         }`}
@@ -803,7 +809,7 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                             : "Xem phản hồi RAW từ Cổng thanh toán (PayOS)"}
                         </button>
                         {openJsonTx[tx.id] && (
-                          <div className="mt-2 bg-slate-900 text-slate-100 border border-slate-800 rounded-none p-3 max-h-60 overflow-y-auto">
+                          <div className="mt-2 bg-slate-900 text-slate-100 border border-slate-800 rounded-lg p-3 max-h-60 overflow-y-auto">
                             <pre className="font-mono text-[10px] whitespace-pre-wrap">
                               {JSON.stringify(tx.raw_response, null, 2)}
                             </pre>
@@ -821,23 +827,23 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
         {/* Right column (1/3) - Customer details */}
         {hasCustomerInfo && (
           <div className="space-y-6">
-            <div className="bg-white border border-slate-200 rounded-none p-5 space-y-4 shadow-none">
-              <div className="flex items-center gap-2 pb-3 border-b border-slate-200 select-none">
-                <User className="w-4 h-4 text-slate-700" />
-                <h3 className="font-display text-sm font-bold text-slate-900 uppercase tracking-wider">
+            <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-sm">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100 select-none">
+                <User className="w-4 h-4 text-teal-600" />
+                <h3 className="font-sans text-xs font-semibold text-slate-900 uppercase tracking-wider">
                   Thông tin Khách hàng
                 </h3>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-none bg-slate-900 text-white flex items-center justify-center font-bold text-sm shrink-0 select-none font-mono border border-slate-900">
+                <div className="w-10 h-10 rounded-full bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center font-bold text-sm shrink-0 select-none">
                   {order.user_name?.charAt(0).toUpperCase() || "U"}
                 </div>
                 <div className="space-y-0.5 min-w-0">
-                  <h4 className="font-body text-xs font-bold text-slate-900 truncate">
+                  <h4 className="font-sans text-xs font-semibold text-slate-900 truncate">
                     {order.user_name}
                   </h4>
                   {order.user_email && (
-                    <p className="text-slate-500 text-xs truncate font-mono">
+                    <p className="text-slate-500 text-xs truncate">
                       {order.user_email}
                     </p>
                   )}
@@ -851,9 +857,9 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
       {/* REFUND RESOLUTION MODAL */}
       {isRefundModalOpen && expiredPaidTx && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md bg-white border border-slate-300 rounded-none shadow-xl p-6 space-y-4 relative z-10 font-body text-xs">
-            <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-              <h3 className="font-display text-sm font-bold text-slate-900 uppercase tracking-wider">
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-xl p-6 space-y-4 relative z-10 font-sans text-xs">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+              <h3 className="font-sans text-sm font-semibold text-slate-900">
                 Ghi nhận thông tin hoàn tiền
               </h3>
               <button
@@ -862,28 +868,28 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                   setRefundTxId("");
                   setRefundNote("");
                 }}
-                className="text-slate-400 hover:text-slate-700 cursor-pointer rounded-none p-1"
+                className="text-slate-400 hover:text-slate-700 cursor-pointer rounded-lg p-1"
               >
                 <X size={16} />
               </button>
             </div>
 
             <form onSubmit={handleResolveRefund} className="space-y-4">
-              <div className="p-3 bg-slate-50 rounded-none border border-slate-200 space-y-1 font-mono">
-                <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">
+              <div className="p-3 bg-teal-50/50 rounded-lg border border-teal-100 space-y-1">
+                <p className="text-[10px] text-teal-800 uppercase tracking-wider font-semibold">
                   Thông tin giao dịch lỗi:
                 </p>
-                <p className="font-bold text-slate-900">
+                <p className="font-bold text-teal-900 text-sm">
                   Số tiền: {formatConcertCurrency(Number(expiredPaidTx.amount))}
                 </p>
-                <p className="text-slate-600 text-[11px]">
+                <p className="text-slate-600 text-[11px] font-mono">
                   Mã GD đối tác:{" "}
                   {expiredPaidTx.transaction_id_3rd_party || "N/A"}
                 </p>
               </div>
 
               <label className="space-y-1 block">
-                <span className="font-semibold text-slate-700 uppercase tracking-wider block text-[11px]">
+                <span className="font-semibold text-slate-700 block text-[11px]">
                   Mã giao dịch hoàn tiền (Tùy chọn)
                 </span>
                 <input
@@ -891,12 +897,12 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                   value={refundTxId}
                   onChange={(e) => setRefundTxId(e.target.value)}
                   placeholder="Nhập mã giao dịch ngân hàng (Ví dụ: FT123456)..."
-                  className="w-full rounded-none border border-slate-300 bg-white px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:border-slate-900 h-9 transition-colors"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 h-9 transition-colors"
                 />
               </label>
 
               <label className="space-y-1 block">
-                <span className="font-semibold text-slate-700 uppercase tracking-wider block text-[11px]">
+                <span className="font-semibold text-slate-700 block text-[11px]">
                   Ghi chú hoàn tiền (Tùy chọn)
                 </span>
                 <textarea
@@ -904,11 +910,11 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                   onChange={(e) => setRefundNote(e.target.value)}
                   placeholder="Nhập thông tin tài khoản đã nhận hoàn tiền hoặc lý do..."
                   rows={3}
-                  className="w-full rounded-none border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-slate-900 transition-colors resize-none"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors resize-none"
                 />
               </label>
 
-              <div className="flex gap-2.5 justify-end pt-3 border-t border-slate-200 mt-6">
+              <div className="flex gap-2.5 justify-end pt-3 border-t border-slate-100 mt-6">
                 <button
                   type="button"
                   onClick={() => {
@@ -916,14 +922,14 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                     setRefundTxId("");
                     setRefundNote("");
                   }}
-                  className="bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold py-2 px-4 rounded-none text-xs transition-colors cursor-pointer"
+                  className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-medium py-2 px-4 rounded-lg text-xs transition-colors cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingRefund}
-                  className="bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2 px-5 rounded-none border border-slate-900 text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                  className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-5 rounded-lg text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-sm"
                 >
                   {isSubmittingRefund && (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />

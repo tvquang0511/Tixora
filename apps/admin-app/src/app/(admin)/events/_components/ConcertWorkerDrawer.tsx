@@ -254,41 +254,43 @@ export function ConcertWorkerDrawer({
 
       {/* Drawer Container */}
       <div className="absolute inset-y-0 right-0 max-w-full pl-10 flex">
-        <div className="w-screen max-w-2xl bg-white border-l border-slate-300 flex flex-col shadow-xl relative rounded-none">
+        <div className="w-screen max-w-2xl bg-white border-l border-slate-200 flex flex-col shadow-2xl relative rounded-l-2xl">
           {/* Drawer Header */}
-          <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between select-none bg-white">
+          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between select-none bg-white">
             <div>
-              <h3 className="text-base font-bold font-display text-slate-900 flex items-center gap-2">
-                <Users className="w-4 h-4 text-slate-700" />
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-teal-50 text-teal-700 border border-teal-100">
+                  <Users className="w-4 h-4" />
+                </div>
                 Tác vụ sự kiện
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 mt-1">
                 Sự kiện:{" "}
                 <span className="font-semibold text-slate-800">
                   {concert.title}
                 </span>{" "}
-                • {concert.venue}
+                &bull; {concert.venue}
               </p>
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-none hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+              className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Drawer Content */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/50">
             <div className="space-y-6">
               {/* AI Bio generator */}
-              <section className="space-y-4 rounded-none border border-slate-200 bg-white p-5 shadow-none">
+              <section className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-2xs">
                 <div className="flex items-start gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-none bg-slate-100 border border-slate-300 text-slate-800">
-                    <Sparkles className="h-4 w-4" />
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 border border-teal-100 text-teal-700">
+                    <Sparkles className="h-4.5 w-4.5" />
                   </span>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    <h4 className="text-xs font-bold text-slate-900">
                       Tạo AI Bio từ Press Kit
                     </h4>
                     <p className="mt-0.5 text-xs text-slate-500 leading-normal">
@@ -298,7 +300,7 @@ export function ConcertWorkerDrawer({
                   </div>
                 </div>
                 <form onSubmit={handleBioSubmit} className="space-y-3">
-                  <label className="flex min-h-20 cursor-pointer items-center gap-3 rounded-none border border-dashed border-slate-300 bg-slate-50 px-4 transition hover:border-slate-500 hover:bg-white">
+                  <label className="flex min-h-20 cursor-pointer items-center gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50/50 px-4 transition hover:border-teal-500 hover:bg-teal-50/20">
                     <FileText className="h-5 w-5 shrink-0 text-slate-400" />
                     <span className="min-w-0 text-xs text-slate-600">
                       {pdfFile ? (
@@ -322,7 +324,7 @@ export function ConcertWorkerDrawer({
                   <button
                     type="submit"
                     disabled={!pdfFile || isGeneratingBio}
-                    className="flex w-full items-center justify-center gap-2 rounded-none bg-slate-900 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-slate-800 border border-slate-900 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 hover:bg-teal-700 px-4 py-2.5 text-xs font-semibold text-white transition shadow-2xs disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
                   >
                     {isGeneratingBio ? (
                       <>
@@ -338,26 +340,26 @@ export function ConcertWorkerDrawer({
                   </button>
                 </form>
                 {bioJob && (
-                  <div className="space-y-2 rounded-none border border-slate-200 bg-slate-50 p-3">
-                    <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="text-slate-600">
-                        Tác vụ {bioJob.id.slice(0, 8)}…
+                  <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-600 font-mono text-[11px]">
+                        Tác vụ #{bioJob.id.slice(0, 8)}
                       </span>
                       <strong
-                        className={
+                        className={`text-xs font-medium ${
                           bioJob.status === "COMPLETED"
                             ? "text-emerald-700"
                             : bioJob.status === "FAILED"
                               ? "text-rose-700"
                               : "text-amber-700"
-                        }
+                        }`}
                       >
                         {bioJob.status}
                       </strong>
                     </div>
-                    <div className="h-1.5 overflow-hidden rounded-none bg-slate-200">
+                    <div className="h-2 overflow-hidden rounded-full bg-slate-200">
                       <div
-                        className="h-full bg-slate-900 transition-[width] duration-500"
+                        className="h-full bg-teal-600 rounded-full transition-[width] duration-500"
                         style={{ width: `${bioJob.progress_percentage}%` }}
                       />
                     </div>
@@ -374,22 +376,24 @@ export function ConcertWorkerDrawer({
               </section>
 
               {/* Guest List CSV Import */}
-              <div className="bg-white rounded-none p-5 border border-slate-200 space-y-4 shadow-none">
-                <h4 className="font-bold text-xs text-slate-900 uppercase tracking-wider flex items-center gap-2 select-none">
-                  <Upload className="w-4 h-4 text-slate-700" />
+              <div className="bg-white rounded-xl p-5 border border-slate-200 space-y-4 shadow-2xs">
+                <h4 className="font-bold text-xs text-slate-900 flex items-center gap-2 select-none">
+                  <div className="p-1 rounded bg-teal-50 text-teal-700 border border-teal-100">
+                    <Upload className="w-3.5 h-3.5" />
+                  </div>
                   Nhập danh sách khách mời từ file CSV
                 </h4>
                 <p className="text-xs text-slate-500 select-none">
                   Tải lên tệp CSV chứa các cột bắt buộc:{" "}
-                  <code className="bg-slate-100 border border-slate-200 px-1 py-0.5 rounded-none font-mono text-[10px]">
+                  <code className="bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded text-[11px] font-mono text-slate-700">
                     email
                   </code>
                   ,{" "}
-                  <code className="bg-slate-100 border border-slate-200 px-1 py-0.5 rounded-none font-mono text-[10px]">
+                  <code className="bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded text-[11px] font-mono text-slate-700">
                     full_name
                   </code>
                   , và{" "}
-                  <code className="bg-slate-100 border border-slate-200 px-1 py-0.5 rounded-none font-mono text-[10px]">
+                  <code className="bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded text-[11px] font-mono text-slate-700">
                     ticket_category
                   </code>
                   .
@@ -397,7 +401,7 @@ export function ConcertWorkerDrawer({
 
                 <form onSubmit={handleCsvSubmit} className="space-y-4">
                   <div className="flex items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-300 rounded-none cursor-pointer bg-slate-50 hover:bg-white hover:border-slate-500 transition-colors relative">
+                    <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer bg-slate-50/50 hover:bg-teal-50/20 hover:border-teal-500 transition-colors relative">
                       <div className="flex flex-col items-center justify-center pt-3 pb-3">
                         <Upload className="w-6 h-6 text-slate-400 mb-1" />
                         <p className="text-xs text-slate-500 text-center px-4">
@@ -426,7 +430,7 @@ export function ConcertWorkerDrawer({
                   <button
                     type="submit"
                     disabled={!csvFile || isImporting}
-                    className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs rounded-none border border-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs rounded-lg transition-colors shadow-2xs disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {isImporting ? (
                       <>
@@ -445,33 +449,33 @@ export function ConcertWorkerDrawer({
 
               {/* Import Job Progress */}
               {importJob && (
-                <div className="p-4 rounded-none border border-slate-200 bg-white space-y-3 select-none">
+                <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-3 select-none shadow-2xs">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono text-slate-600">
-                      Mã tác vụ: {importJob.id.slice(0, 8)}...
+                      Mã tác vụ: #{importJob.id.slice(0, 8)}
                     </span>
                     <span
-                      className={`text-xs font-mono font-bold px-2 py-0.5 rounded-none border uppercase ${
+                      className={`text-[11px] font-medium px-2.5 py-0.5 rounded-full border ${
                         importJob.status === "COMPLETED"
-                          ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                           : importJob.status === "FAILED"
-                            ? "bg-rose-50 text-rose-700 border-rose-300"
-                            : "bg-amber-50 text-amber-700 border-amber-300 animate-pulse"
+                            ? "bg-rose-50 text-rose-700 border-rose-200"
+                            : "bg-amber-50 text-amber-700 border-amber-200 animate-pulse"
                       }`}
                     >
                       {importJob.status}
                     </span>
                   </div>
 
-                  <div className="w-full bg-slate-200 rounded-none h-1.5 overflow-hidden">
+                  <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                     <div
-                      className="bg-slate-900 h-full transition-all duration-500"
+                      className="bg-teal-600 h-full rounded-full transition-all duration-500"
                       style={{ width: `${importJob.progress_percentage}%` }}
                     />
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-slate-600 font-mono">
-                    <span>Tiến trình: {importJob.progress_percentage}%</span>
+                  <div className="flex items-center justify-between text-xs text-slate-600">
+                    <span className="font-mono text-[11px]">Tiến trình: {importJob.progress_percentage}%</span>
                     {importJob.status === "COMPLETED" &&
                       importJob.result_data && (
                         <span className="text-emerald-700 font-semibold">
@@ -494,7 +498,7 @@ export function ConcertWorkerDrawer({
               <div className="space-y-3">
                 <div className="flex flex-col sm:flex-row gap-2">
                   <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type="text"
                       placeholder="Tìm kiếm khách mời theo tên hoặc email..."
@@ -503,7 +507,7 @@ export function ConcertWorkerDrawer({
                         setGuestSearch(e.target.value);
                         setGuestPage(1);
                       }}
-                      className="w-full pl-9 pr-3 py-1.5 border border-slate-300 bg-white rounded-none text-xs text-slate-900 focus:border-slate-900 focus:outline-none transition-colors"
+                      className="w-full pl-9 pr-3 py-2 border border-slate-200 bg-white rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 transition-colors"
                     />
                   </div>
                   <div className="flex gap-2">
@@ -513,7 +517,7 @@ export function ConcertWorkerDrawer({
                         setGuestScanStatus(e.target.value);
                         setGuestPage(1);
                       }}
-                      className="px-3 py-1.5 border border-slate-300 bg-white rounded-none text-xs font-semibold text-slate-700 cursor-pointer focus:outline-none"
+                      className="px-3 py-2 border border-slate-200 bg-white rounded-lg text-xs font-medium text-slate-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600"
                     >
                       <option value="All">Tất cả trạng thái check-in</option>
                       <option value="SCANNED">Đã check-in</option>
@@ -523,14 +527,14 @@ export function ConcertWorkerDrawer({
                 </div>
 
                 {/* Guests Table */}
-                <div className="border border-slate-200 rounded-none overflow-hidden bg-white">
+                <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-2xs">
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="border-b border-slate-200 bg-slate-100 text-[11px] font-semibold text-slate-600 uppercase tracking-wider select-none font-mono">
-                          <th className="px-3.5 py-2.5">Khách mời</th>
-                          <th className="px-3.5 py-2.5">Hạng vé</th>
-                          <th className="px-3.5 py-2.5 text-center">
+                        <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-600 select-none">
+                          <th className="px-4 py-3">Khách mời</th>
+                          <th className="px-4 py-3">Hạng vé</th>
+                          <th className="px-4 py-3 text-center">
                             Trạng thái
                           </th>
                         </tr>
@@ -540,9 +544,9 @@ export function ConcertWorkerDrawer({
                           <tr>
                             <td
                               colSpan={3}
-                              className="p-8 text-center select-none text-slate-500 font-mono"
+                              className="p-8 text-center select-none text-slate-500"
                             >
-                              <Loader2 className="w-5 h-5 animate-spin text-slate-900 mx-auto mb-2" />
+                              <Loader2 className="w-5 h-5 animate-spin text-teal-600 mx-auto mb-2" />
                               Đang tải danh sách khách mời...
                             </td>
                           </tr>
@@ -550,7 +554,7 @@ export function ConcertWorkerDrawer({
                           <tr>
                             <td
                               colSpan={3}
-                              className="p-8 text-center text-slate-400 select-none font-mono"
+                              className="p-8 text-center text-slate-400 select-none"
                             >
                               Không tìm thấy khách mời nào.
                             </td>
@@ -559,25 +563,25 @@ export function ConcertWorkerDrawer({
                           guests.map((g) => (
                             <tr
                               key={g.id}
-                              className="hover:bg-slate-50 transition-colors"
+                              className="hover:bg-slate-50/70 transition-colors"
                             >
-                              <td className="px-3.5 py-2.5">
+                              <td className="px-4 py-3">
                                 <p className="font-semibold text-slate-900">
                                   {g.full_name}
                                 </p>
-                                <p className="text-[10px] text-slate-500 mt-0.5 select-all font-mono">
+                                <p className="text-[11px] text-slate-500 mt-0.5 select-all font-mono">
                                   {g.email}
                                 </p>
                               </td>
-                              <td className="px-3.5 py-2.5 font-mono text-[10px] font-semibold text-slate-700 select-all">
+                              <td className="px-4 py-3 text-xs font-medium text-slate-700 select-all">
                                 {g.ticket_category}
                               </td>
-                              <td className="px-3.5 py-2.5 text-center select-none">
+                              <td className="px-4 py-3 text-center select-none">
                                 <span
-                                  className={`inline-flex px-1.5 py-0.5 rounded-none font-mono text-[9px] font-bold uppercase tracking-wider border ${
+                                  className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${
                                     g.is_scanned
-                                      ? "bg-emerald-50 text-emerald-700 border-emerald-300"
-                                      : "bg-slate-100 text-slate-700 border-slate-300"
+                                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                      : "bg-slate-100 text-slate-600 border-slate-200"
                                   }`}
                                 >
                                   {g.is_scanned ? "Đã soát vé" : "Chưa soát"}
@@ -592,14 +596,14 @@ export function ConcertWorkerDrawer({
 
                   {/* Pagination Footer */}
                   {!isGuestsLoading && guests.length > 0 && (
-                    <div className="px-3.5 py-2.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs select-none">
+                    <div className="px-4 py-3 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs select-none">
                       <div className="flex items-center justify-between sm:justify-start gap-4">
-                        <span className="text-[10px] text-slate-500 font-mono">
+                        <span className="text-xs text-slate-500">
                           Tổng số: {totalGuests} khách mời
                         </span>
 
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[10px] text-slate-500 font-mono">
+                          <span className="text-[11px] text-slate-500 font-medium">
                             Hiển thị:
                           </span>
                           <select
@@ -608,7 +612,7 @@ export function ConcertWorkerDrawer({
                               setGuestLimit(Number(e.target.value));
                               setGuestPage(1);
                             }}
-                            className="px-1.5 py-0.5 border border-slate-300 bg-white rounded-none text-[10px] font-mono font-semibold cursor-pointer focus:outline-none"
+                            className="px-2 py-1 border border-slate-200 bg-white rounded-lg text-xs font-medium cursor-pointer focus:outline-none"
                           >
                             <option value={10}>10</option>
                             <option value={20}>20</option>
@@ -624,7 +628,7 @@ export function ConcertWorkerDrawer({
                           onClick={() =>
                             setGuestPage((p) => Math.max(1, p - 1))
                           }
-                          className="p-1 rounded-none border border-slate-300 bg-white hover:bg-slate-100 disabled:opacity-40 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-40 transition-colors cursor-pointer text-slate-700 shadow-2xs"
                         >
                           <ChevronLeft className="w-3.5 h-3.5" />
                         </button>
@@ -635,7 +639,7 @@ export function ConcertWorkerDrawer({
                               return (
                                 <span
                                   key={`ellipsis-${idx}`}
-                                  className="px-2 py-1 text-[10px] text-slate-400 font-bold self-center font-mono"
+                                  className="px-2 py-1 text-xs text-slate-400 font-semibold self-center"
                                 >
                                   ...
                                 </span>
@@ -645,10 +649,10 @@ export function ConcertWorkerDrawer({
                               <button
                                 key={`page-${p}`}
                                 onClick={() => setGuestPage(Number(p))}
-                                className={`px-2 py-0.5 rounded-none text-[10px] font-mono font-bold border transition-colors cursor-pointer ${
+                                className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer shadow-2xs ${
                                   guestPage === p
-                                    ? "bg-slate-900 border-slate-900 text-white"
-                                    : "border-slate-300 hover:border-slate-900 text-slate-700 bg-white"
+                                    ? "bg-teal-600 border-teal-600 text-white"
+                                    : "border-slate-200 hover:bg-slate-100 text-slate-800 bg-white"
                                 }`}
                               >
                                 {p}
@@ -664,7 +668,7 @@ export function ConcertWorkerDrawer({
                               Math.min(guestTotalPages, p + 1),
                             )
                           }
-                          className="p-1 rounded-none border border-slate-300 bg-white hover:bg-slate-100 disabled:opacity-40 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-40 transition-colors cursor-pointer text-slate-700 shadow-2xs"
                         >
                           <ChevronRight className="w-3.5 h-3.5" />
                         </button>

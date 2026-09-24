@@ -69,17 +69,17 @@ export default function AdminUsersPage() {
           <button
             onClick={() => void reloadUsers()}
             disabled={isLoading}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-none cursor-pointer transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg cursor-pointer transition-colors disabled:opacity-50 shadow-sm"
             title="Tải lại danh sách người dùng"
           >
             <RotateCw
-              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`}
+              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-teal-600" : "text-slate-500"}`}
             />
             <span>Làm mới</span>
           </button>
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs py-2 px-4 rounded-none border border-slate-900 flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs py-2 px-4 rounded-lg shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Tạo người dùng</span>

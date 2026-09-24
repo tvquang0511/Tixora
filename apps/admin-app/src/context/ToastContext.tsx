@@ -90,7 +90,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`pointer-events-auto flex items-start gap-3 rounded-none border p-3.5 text-xs font-medium transition-all duration-200 ease-out animate-in fade-in slide-in-from-top-2 ${styles[t.type]}`}
+            className={`pointer-events-auto flex items-start gap-3 rounded-xl border p-3.5 text-xs font-medium shadow-lg transition-all duration-200 ease-out animate-in fade-in slide-in-from-top-2 ${styles[t.type]}`}
           >
             {icons[t.type]}
             <div className="flex-1 pr-4 leading-relaxed text-left">
@@ -99,7 +99,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             <button
               type="button"
               onClick={() => removeToast(t.id)}
-              className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer rounded-none"
+              className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer rounded-md p-0.5"
             >
               <X size={14} />
             </button>

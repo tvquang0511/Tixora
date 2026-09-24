@@ -35,13 +35,13 @@ export function UserTable({
   onViewDetail,
 }: UserTableProps) {
   return (
-    <section className="bg-white rounded-none border border-slate-200 p-5 shadow-none space-y-4">
+    <section className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
       <div className="flex justify-between items-center pb-2">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-slate-100 rounded-none border border-slate-200 text-slate-800">
+          <div className="p-1.5 bg-teal-50 rounded-lg border border-teal-100 text-teal-700">
             <Activity className="w-4 h-4" />
           </div>
-          <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-slate-900">
+          <h3 className="font-sans text-xs font-semibold uppercase tracking-wider text-slate-900">
             Danh sách tài khoản hệ thống
           </h3>
         </div>
@@ -49,18 +49,18 @@ export function UserTable({
 
       <div className="overflow-x-auto w-full">
         {isLoading ? (
-          <div className="py-16 text-center text-slate-500 font-mono text-xs flex flex-col items-center justify-center gap-2">
-            <div className="h-4 w-4 animate-spin border-2 border-slate-900 border-t-transparent" />
+          <div className="py-16 text-center text-slate-500 font-sans text-xs flex flex-col items-center justify-center gap-2">
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
             <span>Đang tải danh sách người dùng...</span>
           </div>
         ) : users.length === 0 ? (
-          <div className="py-16 text-center text-slate-500 font-mono text-xs border border-slate-200 bg-slate-50">
+          <div className="py-16 text-center text-slate-500 font-sans text-xs border border-slate-100 rounded-lg bg-slate-50">
             Không tìm thấy người dùng nào khớp bộ lọc.
           </div>
         ) : (
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-y border-slate-200 bg-slate-100 font-mono text-[10px] font-bold text-slate-600 uppercase tracking-wider">
+              <tr className="border-y border-slate-100 bg-slate-50/70 font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider">
                 <th className="p-3">Người dùng</th>
                 <th className="p-3 text-center">Trạng thái</th>
                 <th className="p-3">Vai trò</th>
@@ -70,22 +70,22 @@ export function UserTable({
                 <th className="p-3 text-center">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 font-sans">
+            <tbody className="divide-y divide-slate-100 font-sans">
               {users.map((item) => (
                 <tr
                   key={item.id}
-                  className="hover:bg-slate-50 transition-colors"
+                  className="hover:bg-slate-50/80 transition-colors"
                 >
-                  <td className="p-3 font-semibold text-slate-900">
+                  <td className="p-3 font-medium text-slate-900">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-none bg-slate-900 text-white flex items-center justify-center font-bold font-mono text-xs shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center font-bold text-xs shrink-0">
                         {item.full_name.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <div className="text-xs font-bold text-slate-900 leading-tight">
+                        <div className="text-xs font-semibold text-slate-900 leading-tight">
                           {item.full_name}
                         </div>
-                        <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                        <div className="text-[11px] text-slate-500 mt-0.5">
                           {item.email}
                         </div>
                       </div>
@@ -101,7 +101,7 @@ export function UserTable({
                       {item.roles.map((r) => (
                         <span
                           key={r}
-                          className={`px-1.5 py-0.5 rounded-none text-[10px] font-mono font-bold border ${ROLE_CLASSES[r] ?? "bg-slate-50 text-slate-700 border-slate-300"}`}
+                          className={`px-2 py-0.5 rounded-full text-[11px] font-medium border ${ROLE_CLASSES[r] ?? "bg-slate-50 text-slate-700 border-slate-200"}`}
                         >
                           {r}
                         </span>
@@ -109,15 +109,15 @@ export function UserTable({
                     </div>
                   </td>
 
-                  <td className="p-3 text-center font-bold text-slate-900 font-mono">
+                  <td className="p-3 text-center font-medium text-slate-900 font-mono">
                     {item.order_count.toLocaleString("vi-VN")}
                   </td>
 
-                  <td className="p-3 text-center font-bold text-slate-900 font-mono">
+                  <td className="p-3 text-center font-medium text-slate-900 font-mono">
                     {item.ticket_count.toLocaleString("vi-VN")}
                   </td>
 
-                  <td className="p-3 text-slate-600 font-mono text-[11px]">
+                  <td className="p-3 text-slate-600 text-[11px]">
                     {new Date(item.created_at).toLocaleDateString("vi-VN", {
                       year: "numeric",
                       month: "short",
@@ -128,7 +128,7 @@ export function UserTable({
                   <td className="p-3 text-center">
                     <button
                       onClick={() => onViewDetail(item.id)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-slate-300 rounded-none bg-white hover:bg-slate-100 text-slate-700 font-mono text-xs font-bold transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 text-slate-700 hover:text-teal-700 font-sans text-xs font-medium transition-colors cursor-pointer shadow-xs"
                     >
                       Chi tiết
                     </button>

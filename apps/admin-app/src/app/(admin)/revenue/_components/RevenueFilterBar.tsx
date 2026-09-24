@@ -28,18 +28,18 @@ export function RevenueFilterBar({
   onReset,
 }: RevenueFilterBarProps) {
   return (
-    <section className="bg-white rounded-none border border-slate-200 p-5 shadow-none">
+    <section className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
         {/* Date Range */}
         <div className="flex flex-col gap-1.5 md:col-span-5">
-          <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+          <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider font-sans">
             Khoảng thời gian
           </span>
           <div
             onClick={() => fromDateRef.current?.showPicker()}
-            className="flex items-center justify-start gap-1 bg-white border border-slate-300 rounded-none px-3 py-2 text-xs text-slate-900 transition-colors h-10 w-full cursor-pointer"
+            className="flex items-center justify-start gap-1 bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 transition-colors h-10 w-full cursor-pointer focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-500"
           >
-            <Calendar className="w-4 h-4 text-slate-500 shrink-0" />
+            <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
             <input
               ref={fromDateRef}
               type="date"
@@ -49,9 +49,9 @@ export function RevenueFilterBar({
                 fromDateRef.current?.showPicker();
               }}
               onChange={(e) => onFromDateChange(e.target.value)}
-              className="bg-transparent text-slate-900 focus:outline-none w-[105px] min-w-0 font-mono text-xs cursor-pointer text-center px-1 font-semibold"
+              className="bg-transparent text-slate-900 focus:outline-none w-[105px] min-w-0 font-sans text-xs cursor-pointer text-center px-1 font-medium"
             />
-            <span className="text-slate-400 font-mono font-bold shrink-0 select-none">
+            <span className="text-slate-400 font-sans font-medium shrink-0 select-none">
               →
             </span>
             <input
@@ -63,14 +63,14 @@ export function RevenueFilterBar({
                 toDateRef.current?.showPicker();
               }}
               onChange={(e) => onToDateChange(e.target.value)}
-              className="bg-transparent text-slate-900 focus:outline-none w-[105px] min-w-0 font-mono text-xs cursor-pointer text-center px-1 font-semibold"
+              className="bg-transparent text-slate-900 focus:outline-none w-[105px] min-w-0 font-sans text-xs cursor-pointer text-center px-1 font-medium"
             />
           </div>
         </div>
 
         {/* Group By */}
         <div className="flex flex-col gap-1.5 md:col-span-3">
-          <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+          <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider font-sans">
             Nhóm theo
           </span>
           <div className="relative">
@@ -79,13 +79,13 @@ export function RevenueFilterBar({
               onChange={(e) =>
                 onGroupByChange(e.target.value as "day" | "week" | "month")
               }
-              className="appearance-none bg-white border border-slate-300 rounded-none pl-3 pr-8 py-2 text-xs font-mono font-semibold text-slate-900 focus:outline-none focus:border-slate-800 w-full h-10 transition-colors cursor-pointer"
+              className="appearance-none bg-white border border-slate-300 rounded-lg pl-3 pr-8 py-2 text-xs font-sans font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full h-10 transition-colors cursor-pointer"
             >
               <option value="day">Theo ngày</option>
               <option value="week">Theo tuần</option>
               <option value="month">Theo tháng</option>
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500">
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-400">
               <svg
                 className="w-3.5 h-3.5"
                 fill="none"
@@ -107,13 +107,13 @@ export function RevenueFilterBar({
         <div className="flex gap-2 justify-end h-10 md:col-span-4">
           <button
             onClick={onReset}
-            className="flex-1 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 font-mono text-xs font-semibold py-2 px-3 rounded-none transition-colors cursor-pointer"
+            className="flex-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-sans text-xs font-medium py-2 px-3 rounded-lg transition-colors cursor-pointer"
           >
             Mặc định
           </button>
           <button
             onClick={onApply}
-            className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold py-2 px-3 rounded-none transition-colors cursor-pointer"
+            className="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-sans text-xs font-medium py-2 px-3 rounded-lg shadow-sm transition-colors cursor-pointer"
           >
             Áp dụng
           </button>

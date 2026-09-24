@@ -81,13 +81,13 @@ export default function AdminDashboardPage() {
       {/* Enterprise Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500">
+          <div className="text-xs font-semibold uppercase tracking-wider text-teal-600">
             Hệ thống Quản trị / Giám sát
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 mt-1 uppercase font-mono">
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 mt-1">
             Bảng điều khiển hệ thống
           </h1>
-          <p className="text-xs text-slate-600 font-sans mt-0.5">
+          <p className="text-xs text-slate-500 font-sans mt-0.5">
             Tổng hợp chỉ số doanh thu, giao dịch và sự kiện thời gian thực
           </p>
         </div>
@@ -96,11 +96,11 @@ export default function AdminDashboardPage() {
           <button
             onClick={reloadDashboard}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-1.5 px-3 py-2 border border-slate-300 rounded-none bg-white hover:bg-slate-100 text-xs font-mono font-bold text-slate-700 transition-colors disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-2 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
             title="Tải lại toàn bộ dữ liệu thống kê"
           >
             <RefreshCw
-              className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-slate-900" : ""}`}
+              className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-teal-600" : "text-slate-500"}`}
             />
             <span>Làm mới</span>
           </button>

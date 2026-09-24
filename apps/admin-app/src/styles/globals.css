@@ -43,19 +43,19 @@
 
 @layer components {
   .tixora-input {
-    @apply flex h-12 w-full rounded-none border border-input bg-transparent px-4 py-2 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply flex h-10 w-full rounded-lg border border-input bg-transparent px-3 py-2 text-xs shadow-2xs transition-colors file:border-0 file:bg-transparent file:text-xs file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .tixora-label {
-    @apply mb-2 block text-sm font-semibold text-foreground;
+    @apply mb-1.5 block text-xs font-semibold text-foreground;
   }
 
   .tixora-button-primary {
-    @apply inline-flex h-12 items-center justify-center rounded-none bg-primary px-6 py-2 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex h-10 items-center justify-center rounded-lg bg-teal-600 px-4 py-2 text-xs font-semibold text-white shadow-2xs transition-colors hover:bg-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/20 disabled:pointer-events-none disabled:opacity-50;
   }
 
   .tixora-button-outline {
-    @apply inline-flex h-12 items-center justify-center rounded-none border border-input bg-transparent px-6 py-2 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex h-10 items-center justify-center rounded-lg border border-input bg-white px-4 py-2 text-xs font-semibold text-foreground shadow-2xs transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/20 disabled:pointer-events-none disabled:opacity-50;
   }
 }
 

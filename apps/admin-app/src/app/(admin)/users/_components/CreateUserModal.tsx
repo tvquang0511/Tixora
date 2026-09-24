@@ -85,19 +85,19 @@ export function CreateUserModal({
               initial={{ scale: 0.98, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.98, opacity: 0 }}
-              className="bg-white border border-slate-300 rounded-none w-full max-w-md shadow-2xl overflow-hidden flex flex-col"
+              className="bg-white border border-slate-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col"
             >
               {/* Header */}
-              <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+              <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                 <div className="flex items-center gap-2 text-slate-900">
-                  <UserIcon className="w-4 h-4 text-slate-700" />
-                  <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-slate-900">
+                  <UserIcon className="w-4 h-4 text-teal-600" />
+                  <h3 className="font-sans text-sm font-semibold text-slate-900">
                     Tạo tài khoản người dùng
                   </h3>
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-1.5 hover:bg-slate-200 text-slate-500 hover:text-slate-900 rounded-none transition-colors cursor-pointer"
+                  className="p-1.5 hover:bg-slate-100 text-slate-400 hover:text-slate-700 rounded-lg transition-colors cursor-pointer"
                   title="Đóng"
                 >
                   <X className="w-4 h-4" />
@@ -107,10 +107,10 @@ export function CreateUserModal({
               {/* Form */}
               <form
                 onSubmit={handleSubmit}
-                className="p-5 space-y-4 font-mono text-xs"
+                className="p-5 space-y-4 font-sans text-xs"
               >
                 {activeError && (
-                  <div className="p-3 bg-rose-50 border border-rose-300 text-rose-800 rounded-none font-sans text-xs flex items-center gap-2">
+                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-lg font-sans text-xs flex items-center gap-2">
                     <ShieldAlert className="w-4 h-4 shrink-0 text-rose-600" />
                     <span>{activeError}</span>
                   </div>
@@ -118,7 +118,7 @@ export function CreateUserModal({
 
                 {/* Full Name */}
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-600 uppercase tracking-wider block text-[10px]">
+                  <label className="font-semibold text-slate-700 block text-xs">
                     Họ và tên *
                   </label>
                   <div className="relative">
@@ -129,14 +129,14 @@ export function CreateUserModal({
                       placeholder="Nguyễn Văn A"
                       value={newFullName}
                       onChange={(e) => onFullNameChange(e.target.value)}
-                      className="pl-9 pr-3 py-2 border border-slate-300 rounded-none bg-white focus:outline-none focus:border-slate-800 w-full transition-colors text-slate-900 font-sans text-xs"
+                      className="pl-9 pr-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full transition-colors text-slate-900 font-sans text-xs"
                     />
                   </div>
                 </div>
 
                 {/* Email */}
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-600 uppercase tracking-wider block text-[10px]">
+                  <label className="font-semibold text-slate-700 block text-xs">
                     Địa chỉ Email *
                   </label>
                   <div className="relative">
@@ -147,14 +147,14 @@ export function CreateUserModal({
                       placeholder="example@email.com"
                       value={newEmail}
                       onChange={(e) => onEmailChange(e.target.value)}
-                      className="pl-9 pr-3 py-2 border border-slate-300 rounded-none bg-white focus:outline-none focus:border-slate-800 w-full transition-colors text-slate-900 font-mono text-xs"
+                      className="pl-9 pr-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full transition-colors text-slate-900 font-sans text-xs"
                     />
                   </div>
                 </div>
 
                 {/* Password */}
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-600 uppercase tracking-wider block text-[10px]">
+                  <label className="font-semibold text-slate-700 block text-xs">
                     Mật khẩu khởi tạo *
                   </label>
                   <div className="relative">
@@ -165,7 +165,7 @@ export function CreateUserModal({
                       placeholder="••••••••"
                       value={newPassword}
                       onChange={(e) => onPasswordChange(e.target.value)}
-                      className="pl-9 pr-10 py-2 border border-slate-300 rounded-none bg-white focus:outline-none focus:border-slate-800 w-full transition-colors text-slate-900 text-xs font-mono"
+                      className="pl-9 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full transition-colors text-slate-900 text-xs font-mono"
                     />
                     <button
                       type="button"
@@ -183,7 +183,7 @@ export function CreateUserModal({
 
                 {/* Confirm Password */}
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-600 uppercase tracking-wider block text-[10px]">
+                  <label className="font-semibold text-slate-700 block text-xs">
                     Nhập lại mật khẩu *
                   </label>
                   <div className="relative">
@@ -194,7 +194,7 @@ export function CreateUserModal({
                       placeholder="••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="pl-9 pr-10 py-2 border border-slate-300 rounded-none bg-white focus:outline-none focus:border-slate-800 w-full transition-colors text-slate-900 text-xs font-mono"
+                      className="pl-9 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full transition-colors text-slate-900 text-xs font-mono"
                     />
                     <button
                       type="button"
@@ -212,13 +212,13 @@ export function CreateUserModal({
 
                 {/* Roles (Select 1 only) */}
                 <div className="space-y-1">
-                  <label className="font-bold text-slate-600 uppercase tracking-wider block text-[10px]">
+                  <label className="font-semibold text-slate-700 block text-xs">
                     Phân quyền vai trò *
                   </label>
                   <select
                     value={newRoles[0] || "Audience"}
                     onChange={(e) => onRolesChange([e.target.value])}
-                    className="bg-white border border-slate-300 rounded-none px-3 py-2 text-xs font-mono font-semibold text-slate-900 focus:outline-none focus:border-slate-800 w-full h-10 transition-colors cursor-pointer"
+                    className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-sans font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full h-10 transition-colors cursor-pointer"
                   >
                     <option value="Audience">Audience (Khách hàng)</option>
                     {isSuperAdmin && (
@@ -235,18 +235,18 @@ export function CreateUserModal({
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2 justify-end pt-3 border-t border-slate-200 mt-4">
+                <div className="flex gap-2 justify-end pt-3 border-t border-slate-100 mt-4">
                   <button
                     type="button"
                     onClick={onClose}
-                    className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 font-mono text-xs font-semibold py-2 px-3 rounded-none transition-colors cursor-pointer"
+                    className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-sans text-xs font-medium py-2 px-3.5 rounded-lg transition-colors cursor-pointer"
                   >
                     Hủy bỏ
                   </button>
                   <button
                     type="submit"
                     disabled={isCreating}
-                    className="bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold py-2 px-4 rounded-none transition-colors cursor-pointer disabled:opacity-50"
+                    className="bg-teal-600 hover:bg-teal-700 text-white font-sans text-xs font-medium py-2 px-4 rounded-lg shadow-sm transition-colors cursor-pointer disabled:opacity-50"
                   >
                     {isCreating ? "Đang tạo..." : "Lưu tài khoản"}
                   </button>
