@@ -6,60 +6,60 @@ interface UserStatsCardsProps {
 
 export function UserStatsCards({ stats }: UserStatsCardsProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div className="bg-surface rounded-2xl border border-border p-5 shadow-sm flex items-center gap-4">
-        <div className="p-3 bg-blue-500/10 rounded-xl text-blue-400">
-          <Users className="w-6 h-6" />
-        </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="bg-white rounded-none border border-slate-200 p-4 shadow-none flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+          <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider block">
             Tổng người dùng
-          </p>
-          <p className="text-2xl font-black text-foreground mt-0.5">
-            {stats.total}
-          </p>
+          </span>
+          <span className="text-2xl font-mono font-extrabold text-slate-900 mt-1 block">
+            {stats.total.toLocaleString("vi-VN")}
+          </span>
+        </div>
+        <div className="p-2.5 bg-slate-100 border border-slate-200 rounded-none text-slate-700">
+          <Users className="w-5 h-5" />
         </div>
       </div>
 
-      <div className="bg-surface rounded-2xl border border-border p-5 shadow-sm flex items-center gap-4">
-        <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400">
-          <UserCheck className="w-6 h-6" />
-        </div>
+      <div className="bg-white rounded-none border border-slate-200 p-4 shadow-none flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+          <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider block">
             Tài khoản hoạt động
-          </p>
-          <p className="text-2xl font-black text-foreground mt-0.5">
-            {stats.active}
-          </p>
+          </span>
+          <span className="text-2xl font-mono font-extrabold text-emerald-700 mt-1 block">
+            {stats.active.toLocaleString("vi-VN")}
+          </span>
+        </div>
+        <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-none text-emerald-700">
+          <UserCheck className="w-5 h-5" />
         </div>
       </div>
 
-      <div className="bg-surface rounded-2xl border border-border p-5 shadow-sm flex items-center gap-4">
-        <div className="p-3 bg-violet-500/10 rounded-xl text-violet-400">
-          <Shield className="w-6 h-6" />
-        </div>
+      <div className="bg-white rounded-none border border-slate-200 p-4 shadow-none flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+          <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider block">
             Quản trị viên
-          </p>
-          <p className="text-2xl font-black text-foreground mt-0.5">
-            {stats.admin}
-          </p>
+          </span>
+          <span className="text-2xl font-mono font-extrabold text-slate-900 mt-1 block">
+            {stats.admin.toLocaleString("vi-VN")}
+          </span>
+        </div>
+        <div className="p-2.5 bg-slate-100 border border-slate-200 rounded-none text-slate-700">
+          <Shield className="w-5 h-5" />
         </div>
       </div>
 
-      <div className="bg-surface rounded-2xl border border-border p-5 shadow-sm flex items-center gap-4">
-        <div className="p-3 bg-rose-500/10 rounded-xl text-rose-400">
-          <ShieldAlert className="w-6 h-6" />
-        </div>
+      <div className="bg-white rounded-none border border-slate-200 p-4 shadow-none flex items-center justify-between">
         <div>
-          <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-            Bị khoá / Tạm dừng
-          </p>
-          <p className="text-2xl font-black text-foreground mt-0.5">
-            {stats.blocked}
-          </p>
+          <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider block">
+            Bị khóa / Đình chỉ
+          </span>
+          <span className="text-2xl font-mono font-extrabold text-rose-700 mt-1 block">
+            {stats.blocked.toLocaleString("vi-VN")}
+          </span>
+        </div>
+        <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-none text-rose-700">
+          <ShieldAlert className="w-5 h-5" />
         </div>
       </div>
     </div>

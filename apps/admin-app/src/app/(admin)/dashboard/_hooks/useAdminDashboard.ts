@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { formatConcertCurrency } from "@/services/concert.service";
 import {
   getDashboardSummary,
@@ -36,40 +36,35 @@ export function useAdminDashboard() {
   // Chart hover
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // Load summary and recent orders
-  useEffect(() => {
-    async function loadSummaryAndOrders() {
-      try {
-        setIsLoadingSummary(true);
-        const sumData = await getDashboardSummary();
-        setSummary(sumData);
-      } catch (err) {
-        console.error("Failed to load dashboard summary", err);
-      } finally {
-        setIsLoadingSummary(false);
-      }
-      try {
-        setIsLoadingOrders(true);
-        const orders = await getDashboardRecentOrders({ limit: 10 });
-        setRecentOrders(orders);
-      } catch (err) {
-        console.error("Failed to load recent orders", err);
-      } finally {
-        setIsLoadingOrders(false);
-      }
+  const loadSummaryAndOrders = useCallback(async () => {
+    try {
+      setIsLoadingSummary(true);
+      const sumData = await getDashboardSummary();
+      setSummary(sumData);
+    } catch (err) {
+      console.error("Failed to load dashboard summary", err);
+    } finally {
+      setIsLoadingSummary(false);
     }
-    loadSummaryAndOrders();
+    try {
+      setIsLoadingOrders(true);
+      const orders = await getDashboardRecentOrders({ limit: 10 });
+      setRecentOrders(orders);
+    } catch (err) {
+      console.error("Failed to load recent orders", err);
+    } finally {
+      setIsLoadingOrders(false);
+    }
   }, []);
 
-  // Load revenue chart data on filter change
-  useEffect(() => {
-    async function loadRevenue() {
+  const loadRevenue = useCallback(
+    async (g = groupBy, from = fromDate, to = toDate) => {
       try {
         setIsLoadingRevenue(true);
         const data = await getDashboardRevenue({
-          group_by: groupBy,
-          from: fromDate || undefined,
-          to: toDate || undefined,
+          group_by: g,
+          from: from || undefined,
+          to: to || undefined,
         });
         setRevenueData(data);
       } catch (err) {
@@ -77,9 +72,30 @@ export function useAdminDashboard() {
       } finally {
         setIsLoadingRevenue(false);
       }
-    }
-    loadRevenue();
-  }, [groupBy, fromDate, toDate]);
+    },
+    [groupBy, fromDate, toDate],
+  );
+
+  // Load summary and recent orders
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void loadSummaryAndOrders();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [loadSummaryAndOrders]);
+
+  // Load revenue chart data on filter change
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void loadRevenue(groupBy, fromDate, toDate);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [loadRevenue, groupBy, fromDate, toDate]);
+
+  const reloadDashboard = useCallback(() => {
+    void loadSummaryAndOrders();
+    void loadRevenue(groupBy, fromDate, toDate);
+  }, [loadSummaryAndOrders, loadRevenue, groupBy, fromDate, toDate]);
 
   const handleApply = () => {
     setFromDate(tempFromDate);
@@ -251,6 +267,7 @@ export function useAdminDashboard() {
 
     handleApply,
     handleReset,
+    reloadDashboard,
     formatSummaryNumber,
     formatValueVND,
     formatYAxisLabel,

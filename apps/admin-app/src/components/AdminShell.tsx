@@ -10,7 +10,6 @@ import {
   DollarSign,
   Users,
   ClipboardCheck,
-  Plus,
   Menu,
   LogOut,
   ExternalLink,
@@ -38,81 +37,96 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const webAppUrl = process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3001";
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground font-body">
+    <div className="flex min-h-screen bg-slate-50 text-slate-900 font-body">
       {/* Desktop Sidebar */}
-      <nav className="hidden md:flex flex-col h-screen p-4 gap-4 w-64 bg-surface/90 backdrop-blur-md border-r border-outline-variant/60 shrink-0 sticky top-0 z-40">
-        <div className="mb-8 px-2 mt-2">
-          <Link href="/dashboard">
+      <nav className="hidden md:flex flex-col h-screen w-60 bg-white border-r border-slate-200 shrink-0 sticky top-0 z-40 rounded-none">
+        <div className="p-4 border-b border-slate-200">
+          <Link href="/dashboard" className="block">
             <BrandMark compact />
           </Link>
         </div>
-        <ul className="flex flex-col gap-1 mt-2 grow">
+        <ul className="flex flex-col py-2 grow overflow-y-auto">
           {navItems.map((item) => {
             const isActive = pathname?.startsWith(item.href);
             return (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl font-body text-sm font-semibold transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors rounded-none border-l-4 ${
                     isActive
-                      ? "bg-gradient-to-r from-primary to-indigo-600 text-white shadow-md shadow-primary/10 active:scale-[0.98]"
-                      : "text-on-surface-variant/85 hover:bg-surface-low hover:text-primary"
+                      ? "bg-slate-100 text-blue-700 border-blue-600 font-semibold"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 border-transparent"
                   }`}
                 >
-                  <item.icon className="w-5 h-5" />
-                  {item.label}
+                  <item.icon className="w-4 h-4 shrink-0" />
+                  <span>{item.label}</span>
                 </Link>
               </li>
             );
           })}
         </ul>
+
+        {/* User Info Bar at bottom of sidebar */}
+        <div className="p-3 border-t border-slate-200 bg-slate-50 text-xs">
+          <div className="font-semibold text-slate-900 truncate">
+            {user?.fullName || "Quản trị viên"}
+          </div>
+          <div className="text-slate-500 truncate text-[11px]">
+            {user?.email || ""}
+          </div>
+        </div>
       </nav>
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
         {/* Top Header */}
-        <header className="h-16 flex items-center justify-between px-4 md:px-10 bg-surface/90 backdrop-blur-md sticky top-0 z-30 border-b border-outline-variant/60 shadow-sm">
+        <header className="h-14 flex items-center justify-between px-6 bg-white sticky top-0 z-30 border-b border-slate-200 rounded-none shadow-none">
           {/* Mobile Menu Toggle */}
-          <button className="md:hidden text-muted-foreground p-2">
-            <Menu className="w-6 h-6" />
+          <button className="md:hidden text-slate-600 p-2 rounded-none">
+            <Menu className="w-5 h-5" />
           </button>
 
-          <h2 className="font-display text-2xl font-bold text-foreground hidden md:block">
-            {navItems.find((item) => pathname?.startsWith(item.href))?.label ||
-              "Trang quản trị"}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-base font-bold text-slate-900 hidden md:block">
+              {navItems.find((item) => pathname?.startsWith(item.href))
+                ?.label || "Trang quản trị"}
+            </h2>
+          </div>
 
-          <div className="flex items-center gap-4 ml-auto">
+          <div className="flex items-center gap-3 ml-auto">
             <a
               href={webAppUrl}
               target="_blank"
               rel="noreferrer"
-              className="hidden sm:flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg border border-outline-variant/80 hover:bg-surface-high transition-colors text-on-surface-variant"
+              className="hidden sm:flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 rounded-none transition-colors"
             >
-              <span>Vào Web Khách Hàng</span>
-              <ExternalLink size={14} />
+              <span>Web Khách Hàng</span>
+              <ExternalLink size={12} />
             </a>
 
             <div className="relative group">
-              <div className="h-8 w-8 rounded-full bg-primary-container text-primary-foreground flex items-center justify-center font-bold text-sm overflow-hidden ring-2 ring-transparent group-hover:ring-primary transition-all cursor-pointer">
+              <button
+                type="button"
+                className="h-8 w-8 bg-slate-900 text-white flex items-center justify-center font-bold text-xs rounded-none cursor-pointer border border-slate-900"
+              >
                 {user?.fullName?.charAt(0).toUpperCase() || "A"}
-              </div>
-              <div className="absolute right-0 mt-2 w-48 bg-surface-low rounded-xl shadow-xl border border-outline-variant/60 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
-                <div className="p-2 flex flex-col gap-1 text-left">
+              </button>
+              <div className="absolute right-0 mt-1 w-48 bg-white border border-slate-200 shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 rounded-none">
+                <div className="p-1 flex flex-col gap-0.5 text-left text-xs">
                   <a
                     href={webAppUrl}
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-foreground hover:bg-surface-high rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-slate-100 rounded-none"
                   >
-                    <ExternalLink size={16} /> Trang khách hàng
+                    <ExternalLink size={14} /> Trang khách hàng
                   </a>
-                  <div className="h-px bg-outline-variant/60 my-1" />
+                  <div className="h-px bg-slate-200 my-0.5" />
                   <button
                     onClick={() => {
                       void logout().then(() => router.replace("/login"));
                     }}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm font-semibold text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-none cursor-pointer font-medium"
                   >
-                    <LogOut size={16} /> Đăng xuất
+                    <LogOut size={14} /> Đăng xuất
                   </button>
                 </div>
               </div>
@@ -121,39 +135,31 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </header>
 
         {/* Page Content */}
-        <div className="p-4 md:p-10 grow max-w-[1600px] w-full mx-auto">
+        <div className="p-6 md:p-8 grow max-w-[1600px] w-full mx-auto">
           {children}
         </div>
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-2 shadow-[0px_-4px_20px_rgba(15,23,42,0.08)] bg-surface border-t border-outline-variant/60">
+      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-14 bg-white border-t border-slate-200 rounded-none">
         {navItems.map((item) => {
           const isActive = pathname?.startsWith(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center font-body text-[10px] font-semibold transition-all duration-150 w-full h-full ${
+              className={`flex flex-col items-center justify-center text-[10px] font-semibold w-full h-full rounded-none ${
                 isActive
-                  ? "text-primary scale-90"
-                  : "text-muted-foreground hover:bg-surface-low"
+                  ? "text-blue-700 bg-slate-100"
+                  : "text-slate-600 hover:bg-slate-50"
               }`}
             >
-              <item.icon className="w-5 h-5 mb-1" />
-              {item.label}
+              <item.icon className="w-4 h-4 mb-0.5" />
+              <span>{item.label}</span>
             </Link>
           );
         })}
       </nav>
-
-      {/* Floating Action Button (FAB) for Mobile */}
-      <Link
-        href="/create-event"
-        className="md:hidden fixed bottom-24 right-6 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-2xl flex items-center justify-center active:scale-95 transition-transform z-40"
-      >
-        <Plus className="w-8 h-8" />
-      </Link>
     </div>
   );
 }

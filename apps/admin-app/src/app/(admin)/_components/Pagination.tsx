@@ -41,20 +41,22 @@ export function Pagination({
   onLimitChange,
 }: PaginationProps) {
   return (
-    <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border/50 text-xs select-none">
+    <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200 text-xs select-none">
       <div className="flex items-center gap-4 flex-wrap">
-        <span className="text-xs text-muted-foreground font-body">
-          Trang <span className="font-bold text-foreground">{page}</span> trên{" "}
-          <span className="font-bold text-foreground">{totalPages}</span>
+        <span className="text-xs text-slate-600 font-mono">
+          Trang <span className="font-bold text-slate-900">{page}</span> /{" "}
+          <span className="font-bold text-slate-900">{totalPages}</span>
           {" · "}
-          Tổng số:{" "}
-          <span className="font-bold text-foreground">{totalItems}</span>{" "}
+          Tổng cộng:{" "}
+          <span className="font-bold text-slate-900">
+            {totalItems.toLocaleString("vi-VN")}
+          </span>{" "}
           {itemLabel}
         </span>
 
         {onLimitChange && (
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
+            <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider font-mono">
               Hiển thị:
             </span>
             <div className="relative">
@@ -64,14 +66,14 @@ export function Pagination({
                   onLimitChange(Number(e.target.value));
                   onPageChange(1);
                 }}
-                className="appearance-none pl-2.5 pr-7 py-1 border border-border rounded-lg bg-background font-body text-xs focus:outline-none focus:border-primary text-foreground font-semibold cursor-pointer"
+                className="appearance-none pl-2.5 pr-7 py-1 border border-slate-300 rounded-none bg-white font-mono text-xs focus:outline-none focus:border-slate-800 text-slate-900 font-semibold cursor-pointer"
               >
                 <option value={10}>10 {itemLabel}</option>
                 <option value={20}>20 {itemLabel}</option>
                 <option value={50}>50 {itemLabel}</option>
                 <option value={100}>100 {itemLabel}</option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-muted-foreground">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-500">
                 <svg
                   className="w-3.5 h-3.5"
                   fill="none"
@@ -91,22 +93,23 @@ export function Pagination({
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         <button
           disabled={page <= 1}
           onClick={() => onPageChange(Math.max(page - 1, 1))}
-          className="p-1.5 border border-border rounded-lg hover:border-primary/50 hover:text-primary transition-all disabled:opacity-30 disabled:hover:border-border disabled:hover:text-muted-foreground cursor-pointer"
+          className="p-1.5 border border-slate-300 rounded-none bg-white hover:bg-slate-100 text-slate-700 transition-colors disabled:opacity-30 disabled:hover:bg-white cursor-pointer"
+          title="Trang trước"
         >
           <ChevronLeft size={16} />
         </button>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {getPageNumbers(page, totalPages).map((pageNumber, idx) => {
             if (pageNumber === "...") {
               return (
                 <span
                   key={`ellipsis-${idx}`}
-                  className="px-2 text-muted-foreground text-xs font-semibold select-none"
+                  className="px-2 text-slate-400 text-xs font-semibold select-none font-mono"
                 >
                   ...
                 </span>
@@ -117,10 +120,10 @@ export function Pagination({
               <button
                 key={pageNumber}
                 onClick={() => onPageChange(pageNumber as number)}
-                className={`px-3 py-1 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+                className={`min-w-7 px-2.5 py-1 text-xs font-mono font-bold rounded-none border transition-colors cursor-pointer ${
                   isSelected
-                    ? "bg-primary border-primary text-white"
-                    : "border-border hover:border-primary/50 text-foreground hover:text-primary"
+                    ? "bg-slate-900 border-slate-900 text-white"
+                    : "border-slate-300 bg-white hover:bg-slate-100 text-slate-800"
                 }`}
               >
                 {pageNumber}
@@ -132,7 +135,8 @@ export function Pagination({
         <button
           disabled={page >= totalPages}
           onClick={() => onPageChange(Math.min(page + 1, totalPages))}
-          className="p-1.5 border border-border rounded-lg hover:border-primary/50 hover:text-primary transition-all disabled:opacity-30 disabled:hover:border-border disabled:hover:text-muted-foreground cursor-pointer"
+          className="p-1.5 border border-slate-300 rounded-none bg-white hover:bg-slate-100 text-slate-700 transition-colors disabled:opacity-30 disabled:hover:bg-white cursor-pointer"
+          title="Trang sau"
         >
           <ChevronRight size={16} />
         </button>

@@ -18,34 +18,34 @@ export function UserFilterBar({
   onRoleChange,
 }: UserFilterBarProps) {
   return (
-    <section className="bg-surface rounded-2xl border border-border p-6 shadow-sm">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+    <section className="bg-white rounded-none border border-slate-200 p-5 shadow-none">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
         {/* Search */}
-        <div className="flex flex-col gap-2 md:col-span-6">
-          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-            Tìm kiếm
+        <div className="flex flex-col gap-1.5 md:col-span-6">
+          <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+            Tìm kiếm tài khoản
           </span>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
-              placeholder="Tìm theo tên, email..."
+              placeholder="Nhập tên người dùng, email..."
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-9 pr-3 py-2 border border-border rounded-xl bg-background focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body text-xs w-full h-11 transition-all"
+              className="pl-8 pr-3 py-2 border border-slate-300 rounded-none bg-white focus:outline-none focus:border-slate-800 font-mono text-xs w-full h-10 transition-colors text-slate-900"
             />
           </div>
         </div>
 
         {/* Status filter */}
-        <div className="flex flex-col gap-2 md:col-span-3">
-          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+        <div className="flex flex-col gap-1.5 md:col-span-3">
+          <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
             Trạng thái tài khoản
           </span>
           <select
             value={status}
             onChange={(e) => onStatusChange(e.target.value)}
-            className="bg-background border border-border rounded-xl px-4 py-2 text-xs font-semibold text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-full h-11 transition-all cursor-pointer"
+            className="bg-white border border-slate-300 rounded-none px-3 py-2 text-xs font-mono font-semibold text-slate-900 focus:outline-none focus:border-slate-800 w-full h-10 transition-colors cursor-pointer"
           >
             <option value="All">Tất cả trạng thái</option>
             <option value="ACTIVE">ACTIVE</option>
@@ -56,14 +56,14 @@ export function UserFilterBar({
         </div>
 
         {/* Role filter */}
-        <div className="flex flex-col gap-2 md:col-span-3">
-          <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-            Lọc theo vai trò
+        <div className="flex flex-col gap-1.5 md:col-span-3">
+          <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+            Phân quyền vai trò
           </span>
           <select
             value={role}
             onChange={(e) => onRoleChange(e.target.value)}
-            className="bg-background border border-border rounded-xl px-4 py-2 text-xs font-semibold text-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-full h-11 transition-all cursor-pointer"
+            className="bg-white border border-slate-300 rounded-none px-3 py-2 text-xs font-mono font-semibold text-slate-900 focus:outline-none focus:border-slate-800 w-full h-10 transition-colors cursor-pointer"
           >
             <option value="All">Tất cả vai trò</option>
             <option value="SuperAdmin">SuperAdmin</option>

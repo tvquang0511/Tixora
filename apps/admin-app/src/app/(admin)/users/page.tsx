@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { Plus, RotateCw } from "lucide-react";
 import { useAdminUsers } from "./_hooks/useAdminUsers";
 import { UserStatsCards } from "./_components/UserStatsCards";
 import { UserFilterBar } from "./_components/UserFilterBar";
@@ -49,27 +49,42 @@ export default function AdminUsersPage() {
     isCreating,
     handleCreateUser,
     handleSaveChanges,
+    reloadUsers,
   } = useAdminUsers();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Title & Actions */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
         <div>
-          <h1 className="font-display text-3xl font-bold text-foreground">
-            Quản lý người dùng
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+            Quản lý Người dùng
           </h1>
-          <p className="text-muted-foreground font-body text-sm mt-1">
-            Quản lý tài khoản người dùng, cập nhật vai trò bảo mật và theo dõi
-            lịch sử
+          <p className="text-xs text-slate-500 mt-0.5">
+            Quản trị tài khoản, phân quyền bảo mật và theo dõi trạng thái hoạt
+            động.
           </p>
         </div>
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="bg-primary hover:bg-primary-container text-white font-body text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 transition-all hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 duration-200"
-        >
-          <Plus className="w-4 h-4" /> Tạo người dùng
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => void reloadUsers()}
+            disabled={isLoading}
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-none cursor-pointer transition-colors disabled:opacity-50"
+            title="Tải lại danh sách người dùng"
+          >
+            <RotateCw
+              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`}
+            />
+            <span>Làm mới</span>
+          </button>
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs py-2 px-4 rounded-none border border-slate-900 flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Tạo người dùng</span>
+          </button>
+        </div>
       </div>
 
       <UserStatsCards stats={stats} />

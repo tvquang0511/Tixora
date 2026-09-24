@@ -4,16 +4,12 @@ import { X, ShoppingBag, CheckCircle, Ticket, DollarSign } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { type AdminUserDetail } from "@/services/admin-user.service";
+import { StatusBadge } from "../../_components/StatusBadge";
 
 const formatVND = (value: number) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
     value,
   );
-
-const ORDER_STATUS_CLASSES: Record<string, string> = {
-  PAID: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  PENDING: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-};
 
 interface UserDetailDrawerProps {
   selectedUserId: string | null;
@@ -62,116 +58,118 @@ export function UserDetailDrawer({
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black z-40"
+            className="fixed inset-0 bg-slate-900/60 z-40 backdrop-blur-xs"
           />
 
           <motion.aside
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "tween", duration: 0.3 }}
-            className="fixed top-0 right-0 h-full w-full sm:max-w-2xl bg-surface border-l border-border z-50 flex flex-col shadow-2xl overflow-hidden text-foreground"
+            transition={{ type: "tween", duration: 0.25 }}
+            className="fixed top-0 right-0 h-full w-full sm:max-w-2xl bg-white border-l border-slate-300 z-50 flex flex-col shadow-2xl overflow-hidden rounded-none text-slate-900"
           >
             {/* Header */}
-            <div className="p-6 border-b border-border flex justify-between items-start bg-surface-low">
-              <div className="flex gap-4 items-center">
-                <div className="w-12 h-12 rounded-full bg-primary-container text-primary-foreground flex items-center justify-center font-bold text-lg ring-2 ring-primary/20">
+            <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+              <div className="flex gap-3 items-center">
+                <div className="w-10 h-10 rounded-none bg-slate-900 text-white flex items-center justify-center font-bold font-mono text-base">
                   {detailData?.full_name?.charAt(0).toUpperCase() || "U"}
                 </div>
                 <div>
-                  <h3 className="font-display text-lg font-bold text-foreground">
-                    {detailData?.full_name || "Chi tiết người dùng"}
+                  <h3 className="font-mono text-sm font-bold text-slate-900 uppercase">
+                    {detailData?.full_name || "Hồ sơ người dùng"}
                   </h3>
-                  <p className="text-xs text-muted-foreground font-body mt-0.5">
+                  <p className="text-xs text-slate-500 font-mono mt-0.5">
                     {detailData?.email}
                   </p>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-surface-high hover:text-foreground rounded-xl text-muted-foreground transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer"
+                className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-200 rounded-none transition-colors cursor-pointer"
+                title="Đóng ngăn chi tiết"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            <div className="flex-1 overflow-y-auto p-5 space-y-5">
               {isDetailLoading ? (
-                <div className="py-20 text-center text-muted-foreground">
-                  <div className="flex flex-col items-center justify-center gap-3">
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                    <span className="font-body text-xs">
-                      Đang tải hồ sơ chi tiết...
-                    </span>
-                  </div>
+                <div className="py-20 text-center text-slate-500 font-mono text-xs flex flex-col items-center justify-center gap-2">
+                  <div className="h-5 w-5 animate-spin border-2 border-slate-900 border-t-transparent" />
+                  <span>Đang tải thông tin chi tiết hồ sơ...</span>
                 </div>
               ) : !detailData ? (
-                <div className="py-20 text-center text-muted-foreground text-sm font-body">
-                  Không thể tải chi tiết.
+                <div className="py-20 text-center text-slate-500 font-mono text-xs">
+                  Không thể tải hồ sơ người dùng.
                 </div>
               ) : (
                 <>
                   {/* Stat Metrics */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div className="bg-background border border-border rounded-2xl p-4 shadow-sm text-center">
-                      <ShoppingBag className="w-5 h-5 text-blue-400 mx-auto mb-1.5" />
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="bg-slate-50 border border-slate-200 rounded-none p-3 text-center">
+                      <ShoppingBag className="w-4 h-4 text-slate-600 mx-auto mb-1" />
+                      <p className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
                         Đơn hàng
                       </p>
-                      <p className="text-xl font-black text-foreground font-mono mt-0.5">
-                        {detailData.stats.order_count}
+                      <p className="text-base font-bold text-slate-900 font-mono mt-1">
+                        {detailData.stats.order_count.toLocaleString("vi-VN")}
                       </p>
                     </div>
-                    <div className="bg-background border border-border rounded-2xl p-4 shadow-sm text-center">
-                      <CheckCircle className="w-5 h-5 text-emerald-400 mx-auto mb-1.5" />
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                        Đã thanh toán
+
+                    <div className="bg-slate-50 border border-slate-200 rounded-none p-3 text-center">
+                      <CheckCircle className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
+                      <p className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+                        Hoàn tất
                       </p>
-                      <p className="text-xl font-black text-foreground font-mono mt-0.5">
-                        {detailData.stats.paid_order_count}
-                      </p>
-                    </div>
-                    <div className="bg-background border border-border rounded-2xl p-4 shadow-sm text-center">
-                      <Ticket className="w-5 h-5 text-violet-400 mx-auto mb-1.5" />
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                        Vé đã mua
-                      </p>
-                      <p className="text-xl font-black text-foreground font-mono mt-0.5">
-                        {detailData.stats.ticket_count}
+                      <p className="text-base font-bold text-emerald-700 font-mono mt-1">
+                        {detailData.stats.paid_order_count.toLocaleString(
+                          "vi-VN",
+                        )}
                       </p>
                     </div>
-                    <div className="bg-background border border-border rounded-2xl p-4 shadow-sm text-center">
-                      <DollarSign className="w-5 h-5 text-emerald-400 mx-auto mb-1.5" />
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+
+                    <div className="bg-slate-50 border border-slate-200 rounded-none p-3 text-center">
+                      <Ticket className="w-4 h-4 text-slate-600 mx-auto mb-1" />
+                      <p className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
+                        Số vé mua
+                      </p>
+                      <p className="text-base font-bold text-slate-900 font-mono mt-1">
+                        {detailData.stats.ticket_count.toLocaleString("vi-VN")}
+                      </p>
+                    </div>
+
+                    <div className="bg-slate-50 border border-slate-200 rounded-none p-3 text-center">
+                      <DollarSign className="w-4 h-4 text-slate-600 mx-auto mb-1" />
+                      <p className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
                         Tổng chi tiêu
                       </p>
-                      <p className="text-xs font-bold text-foreground font-mono mt-1.5 leading-tight truncate">
+                      <p className="text-xs font-bold text-slate-900 font-mono mt-1 truncate">
                         {formatVND(detailData.stats.total_spent)}
                       </p>
                     </div>
                   </div>
 
                   {/* Status & Roles Editor */}
-                  <div className="space-y-4 bg-background rounded-2xl border border-border p-6">
+                  <div className="space-y-4 bg-white rounded-none border border-slate-200 p-4">
                     {!canEditTarget && (
-                      <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-semibold">
+                      <div className="p-3 rounded-none bg-purple-50 border border-purple-200 text-purple-800 text-xs font-sans">
                         Tài khoản SuperAdmin được bảo vệ. Chỉ SuperAdmin khác
-                        mới có quyền chỉnh sửa trạng thái hoặc vai trò của tài
+                        mới có quyền thay đổi trạng thái hoặc vai trò của tài
                         khoản này.
                       </div>
                     )}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Status */}
-                      <div className="space-y-3">
-                        <h4 className="font-display text-sm font-bold text-foreground">
-                          Trạng thái tài khoản
-                        </h4>
+                      <div className="space-y-1.5">
+                        <label className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+                          Trạng thái hoạt động
+                        </label>
                         <select
                           disabled={isSavingDraft || !canEditTarget}
                           value={draftStatus}
                           onChange={(e) => onDraftStatusChange(e.target.value)}
-                          className="bg-surface border border-border rounded-xl px-3 py-1.5 text-xs font-semibold text-foreground focus:outline-none focus:border-primary w-full h-10 transition-all cursor-pointer disabled:opacity-50"
+                          className="bg-white border border-slate-300 rounded-none px-3 py-1.5 text-xs font-mono font-semibold text-slate-900 focus:outline-none focus:border-slate-800 w-full h-10 transition-colors cursor-pointer disabled:opacity-50"
                         >
                           <option value="ACTIVE">ACTIVE</option>
                           <option value="INACTIVE">INACTIVE</option>
@@ -181,15 +179,15 @@ export function UserDetailDrawer({
                       </div>
 
                       {/* Roles */}
-                      <div className="space-y-3">
-                        <h4 className="font-display text-sm font-bold text-foreground">
-                          Vai trò tài khoản
-                        </h4>
+                      <div className="space-y-1.5">
+                        <label className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+                          Vai trò người dùng
+                        </label>
                         <select
                           disabled={isSavingDraft || !canEditTarget}
                           value={draftRoles[0] || "Audience"}
                           onChange={(e) => onDraftRolesChange([e.target.value])}
-                          className="bg-surface border border-border rounded-xl px-3 py-1.5 text-xs font-semibold text-foreground focus:outline-none focus:border-primary w-full h-10 transition-all cursor-pointer disabled:opacity-50"
+                          className="bg-white border border-slate-300 rounded-none px-3 py-1.5 text-xs font-mono font-semibold text-slate-900 focus:outline-none focus:border-slate-800 w-full h-10 transition-colors cursor-pointer disabled:opacity-50"
                         >
                           <option value="Audience">Audience</option>
                           {isCurrentSuperAdmin && (
@@ -205,12 +203,12 @@ export function UserDetailDrawer({
                     </div>
 
                     {hasChanges && (
-                      <div className="pt-4 border-t border-border flex justify-end gap-2 animate-fadeIn">
+                      <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
                         <button
                           type="button"
                           onClick={onCancelDraft}
                           disabled={isSavingDraft}
-                          className="bg-surface hover:bg-surface-high border border-border text-foreground font-body text-xs font-semibold py-2 px-4 rounded-xl transition-all cursor-pointer disabled:opacity-50"
+                          className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 font-mono text-xs font-semibold py-2 px-3 rounded-none transition-colors cursor-pointer disabled:opacity-50"
                         >
                           Hủy
                         </button>
@@ -218,7 +216,7 @@ export function UserDetailDrawer({
                           type="button"
                           onClick={onSaveChanges}
                           disabled={isSavingDraft}
-                          className="bg-primary hover:bg-primary-container text-white font-body text-xs font-semibold py-2 px-5 rounded-xl transition-all hover:shadow-lg hover:shadow-primary/20 cursor-pointer disabled:opacity-50"
+                          className="bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold py-2 px-4 rounded-none transition-colors cursor-pointer disabled:opacity-50"
                         >
                           {isSavingDraft ? "Đang lưu..." : "Lưu thay đổi"}
                         </button>
@@ -227,49 +225,48 @@ export function UserDetailDrawer({
                   </div>
 
                   {/* Recent Orders */}
-                  <div className="space-y-3">
-                    <h4 className="font-display text-sm font-bold text-foreground">
-                      Đơn hàng mua gần đây
+                  <div className="space-y-2">
+                    <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-900">
+                      Đơn hàng gần đây của tài khoản
                     </h4>
                     {detailData.recent_orders.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground font-body text-xs border border-border border-dashed rounded-xl bg-background/20">
-                        Người dùng này chưa thực hiện đơn hàng nào.
+                      <div className="text-center py-8 text-slate-500 font-mono text-xs border border-slate-200 bg-slate-50">
+                        Người dùng này chưa có đơn hàng nào.
                       </div>
                     ) : (
-                      <div className="border border-border rounded-xl overflow-hidden bg-background">
+                      <div className="border border-slate-200 rounded-none overflow-hidden bg-white">
                         <table className="w-full text-left border-collapse text-xs">
                           <thead>
-                            <tr className="border-b border-border bg-surface-low font-body text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
-                              <th className="p-3">Sự kiện</th>
-                              <th className="p-3 text-center">Trạng thái</th>
-                              <th className="p-3 text-right">Tổng tiền</th>
-                              <th className="p-3 text-center">Số vé</th>
-                              <th className="p-3">Ngày đặt</th>
+                            <tr className="border-b border-slate-200 bg-slate-100 font-mono text-[10px] font-bold text-slate-600 uppercase tracking-wider">
+                              <th className="p-2.5">Sự kiện</th>
+                              <th className="p-2.5 text-center">Trạng thái</th>
+                              <th className="p-2.5 text-right">Tổng tiền</th>
+                              <th className="p-2.5 text-center">Số vé</th>
+                              <th className="p-2.5">Ngày đặt</th>
                             </tr>
                           </thead>
-                          <tbody className="font-body divide-y divide-border/50">
+                          <tbody className="divide-y divide-slate-200 font-sans">
                             {detailData.recent_orders.map((o) => (
                               <tr
                                 key={o.order_id}
-                                className="hover:bg-surface-high/10"
+                                className="hover:bg-slate-50 transition-colors"
                               >
-                                <td className="p-3 font-bold text-foreground">
+                                <td className="p-2.5 font-bold text-slate-900 text-xs">
                                   {o.concert_name}
                                 </td>
-                                <td className="p-3 text-center">
-                                  <span
-                                    className={`inline-flex items-center px-1.5 py-0.25 rounded text-[8px] font-bold border uppercase ${ORDER_STATUS_CLASSES[o.status] ?? "bg-rose-500/10 text-rose-400 border-rose-500/20"}`}
-                                  >
-                                    {o.status}
-                                  </span>
+                                <td className="p-2.5 text-center">
+                                  <StatusBadge
+                                    status={o.status}
+                                    variant="order"
+                                  />
                                 </td>
-                                <td className="p-3 text-right font-bold text-foreground font-mono">
+                                <td className="p-2.5 text-right font-bold text-slate-900 font-mono">
                                   {formatVND(o.total_amount)}
                                 </td>
-                                <td className="p-3 text-center font-bold text-foreground font-mono">
+                                <td className="p-2.5 text-center font-bold text-slate-900 font-mono">
                                   {o.ticket_count}
                                 </td>
-                                <td className="p-3 text-muted-foreground font-semibold">
+                                <td className="p-2.5 text-slate-500 font-mono text-[11px]">
                                   {new Date(o.created_at).toLocaleDateString(
                                     "vi-VN",
                                     { month: "short", day: "numeric" },

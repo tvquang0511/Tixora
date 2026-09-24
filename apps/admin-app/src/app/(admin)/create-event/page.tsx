@@ -69,24 +69,24 @@ function ConfirmModal({
 }: ConfirmModalProps) {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[250] flex items-center justify-center p-4 select-none">
-      <div className="bg-surface border border-border rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
-        <h3 className="font-display text-lg font-bold text-foreground">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[250] flex items-center justify-center p-4 select-none">
+      <div className="bg-white border border-slate-300 rounded-none max-w-md w-full p-5 shadow-2xl space-y-4">
+        <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-slate-900">
           {title}
         </h3>
-        <p className="font-body text-sm text-muted-foreground leading-relaxed">
+        <p className="font-sans text-xs text-slate-600 leading-relaxed">
           {message}
         </p>
-        <div className="flex justify-end gap-3 pt-2">
+        <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-xs font-semibold rounded-lg border border-border text-foreground hover:bg-surface-high transition-all cursor-pointer"
+            className="px-3 py-1.5 text-xs font-mono font-semibold rounded-none border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
           >
             {cancelLabel}
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 text-xs font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all cursor-pointer"
+            className="px-4 py-1.5 text-xs font-mono font-bold rounded-none bg-rose-700 text-white hover:bg-rose-800 transition-colors cursor-pointer"
           >
             {confirmLabel}
           </button>
@@ -382,59 +382,59 @@ function EventForm() {
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <div className="h-6 w-6 animate-spin border-2 border-slate-900 border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 pb-32">
+    <div className="space-y-6 pb-28">
       {/* Header */}
-      <header className="mb-8 pb-4 border-b border-border">
+      <header className="pb-4 border-b border-slate-200">
         <nav
           aria-label="Breadcrumb"
-          className="flex text-muted-foreground font-body text-xs font-semibold mb-2"
+          className="flex text-slate-500 font-mono text-xs font-semibold mb-1"
         >
-          <ol className="inline-flex items-center space-x-1 md:space-x-3">
+          <ol className="inline-flex items-center space-x-1 md:space-x-2">
             <li className="inline-flex items-center">
               <Link
-                className="hover:text-primary transition-colors"
+                className="hover:text-slate-900 transition-colors"
                 href="/events"
               >
-                Sự kiện
+                SỰ KIỆN
               </Link>
             </li>
             <li>
               <div className="flex items-center">
-                <ChevronRight className="w-4 h-4 mx-1" />
-                <span className="text-foreground">
-                  {isEditing ? "Chỉnh sửa sự kiện" : "Tạo sự kiện mới"}
+                <ChevronRight className="w-3.5 h-3.5 mx-1 text-slate-400" />
+                <span className="text-slate-900 uppercase">
+                  {isEditing ? "Chỉnh sửa" : "Tạo mới"}
                 </span>
               </div>
             </li>
           </ol>
         </nav>
-        <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-          {isEditing ? "Chỉnh sửa sự kiện" : "Thiết lập sự kiện mới"}
+        <h2 className="font-mono text-xl font-bold uppercase text-slate-900">
+          {isEditing ? "Chỉnh sửa thông tin sự kiện" : "Thiết lập sự kiện mới"}
         </h2>
       </header>
 
       {/* Form Wizard */}
-      <div className="max-w-[800px] mx-auto">
-        <div className="space-y-8">
+      <div className="max-w-[850px] mx-auto">
+        <div className="space-y-6">
           {/* Section 1: Basic Info */}
-          <section className="bg-surface rounded-xl p-6 shadow-sm border border-border">
-            <h3 className="font-display text-xl font-bold border-b border-border pb-4 mb-6 flex items-center gap-2">
-              <Info className="w-6 h-6 text-primary" />
-              Thông tin cơ bản
+          <section className="bg-white rounded-none p-5 border border-slate-200 shadow-none">
+            <h3 className="font-mono text-sm font-bold uppercase tracking-wider border-b border-slate-200 pb-3 mb-5 flex items-center gap-2 text-slate-900">
+              <Info className="w-4 h-4 text-slate-700" />
+              Thông tin cơ bản sự kiện
             </h3>
-            <div className="space-y-5">
+            <div className="space-y-4 font-sans text-xs">
               <div>
-                <label className="block font-body text-xs font-semibold text-foreground mb-1">
-                  Tên sự kiện
+                <label className="block font-mono text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Tên sự kiện *
                 </label>
                 <input
-                  className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:border-primary focus:ring-1 focus:ring-primary transition-shadow text-sm"
+                  className="w-full rounded-none border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:border-slate-800 text-xs"
                   placeholder="Ví dụ: Mắt Nhắm Mắt Mở 2026"
                   type="text"
                   value={formData.name}
@@ -444,11 +444,11 @@ function EventForm() {
                 />
               </div>
               <div>
-                <label className="block font-body text-xs font-semibold text-foreground mb-1">
+                <label className="block font-mono text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
                   Mô tả ngắn
                 </label>
                 <input
-                  className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:border-primary focus:ring-1 focus:ring-primary transition-shadow text-sm"
+                  className="w-full rounded-none border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:border-slate-800 text-xs"
                   placeholder="Nhập mô tả ngắn gọn về sự kiện..."
                   type="text"
                   value={formData.description}
@@ -460,13 +460,13 @@ function EventForm() {
 
               {/* Performers Input chips */}
               <div>
-                <label className="block font-body text-xs font-semibold text-foreground mb-1">
+                <label className="block font-mono text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
                   Nghệ sĩ biểu diễn
                 </label>
                 <div className="flex gap-2 mb-2">
                   <input
-                    className="flex-1 rounded-lg border border-border bg-background px-4 py-2.5 text-foreground focus:border-primary focus:ring-1 focus:ring-primary text-sm"
-                    placeholder="Nhập tên nghệ sĩ (Ví dụ: Phùng Khánh Linh, Vũ...) và nhấn Thêm"
+                    className="flex-1 rounded-none border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:border-slate-800 text-xs font-sans"
+                    placeholder="Nhập tên nghệ sĩ và nhấn Thêm (hoặc Enter)"
                     type="text"
                     value={newPerformer}
                     onChange={(e) => setNewPerformer(e.target.value)}
@@ -480,23 +480,23 @@ function EventForm() {
                   <button
                     type="button"
                     onClick={handleAddPerformer}
-                    className="px-4 bg-surface-low border border-border hover:bg-surface-high hover:border-primary text-primary text-xs font-bold rounded-lg transition-all cursor-pointer active:scale-95 shrink-0"
+                    className="px-4 bg-white border border-slate-300 hover:bg-slate-100 text-slate-800 text-xs font-mono font-bold rounded-none transition-colors cursor-pointer shrink-0"
                   >
                     Thêm
                   </button>
                 </div>
                 {formData.performers.length > 0 ? (
-                  <div className="flex flex-wrap gap-2 p-3 bg-background/50 border border-border rounded-lg">
+                  <div className="flex flex-wrap gap-1.5 p-3 bg-slate-50 border border-slate-200 rounded-none">
                     {formData.performers.map((p) => (
                       <span
                         key={p}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 bg-surface-high border border-border text-foreground rounded-full text-xs font-semibold select-none"
+                        className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-white border border-slate-300 text-slate-800 rounded-none text-xs font-mono font-medium select-none"
                       >
                         {p}
                         <button
                           type="button"
                           onClick={() => handleRemovePerformer(p)}
-                          className="hover:text-red-400 text-muted-foreground transition-colors font-bold cursor-pointer"
+                          className="hover:text-rose-600 text-slate-400 transition-colors font-bold cursor-pointer"
                         >
                           &times;
                         </button>
@@ -504,21 +504,21 @@ function EventForm() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-muted-foreground italic">
+                  <p className="text-[11px] text-slate-500 font-sans italic">
                     Chưa cấu hình nghệ sĩ nào cho sự kiện.
                   </p>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block font-body text-xs font-semibold text-foreground mb-1">
-                    Địa điểm tổ chức
+                  <label className="block font-mono text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                    Địa điểm tổ chức *
                   </label>
                   <input
-                    className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                    className="w-full rounded-none border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:border-slate-800 text-xs"
                     type="text"
-                    placeholder="Ví dụ: Nhà Thi Đấu Phú Thọ, Quận 11, TP. HCM"
+                    placeholder="Ví dụ: Sân vận động Quân khu 7"
                     value={formData.location}
                     onChange={(e) =>
                       setFormData({ ...formData, location: e.target.value })
@@ -526,11 +526,11 @@ function EventForm() {
                   />
                 </div>
                 <div>
-                  <label className="block font-body text-xs font-semibold text-foreground mb-1">
-                    Ngày & Giờ bắt đầu
+                  <label className="block font-mono text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                    Thời gian bắt đầu *
                   </label>
                   <input
-                    className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                    className="w-full rounded-none border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:border-slate-800 text-xs font-mono"
                     type="datetime-local"
                     value={formData.start_time}
                     onChange={(e) =>
@@ -539,45 +539,42 @@ function EventForm() {
                   />
                 </div>
                 <div>
-                  <label className="block font-body text-xs font-semibold text-foreground mb-1">
+                  <label className="block font-mono text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
                     Trạng thái sự kiện
                   </label>
                   <select
-                    className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground focus:border-primary focus:ring-1 focus:ring-primary text-sm cursor-pointer appearance-none"
+                    className="w-full rounded-none border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:border-slate-800 text-xs font-mono cursor-pointer"
                     value={formData.status}
                     onChange={(e) =>
                       setFormData({ ...formData, status: e.target.value })
                     }
                   >
-                    <option value="DRAFT">DRAFT</option>
-                    <option value="PUBLISHED">PUBLISHED</option>
-                    <option value="COMPLETED">COMPLETED</option>
+                    <option value="DRAFT">DRAFT (Bản nháp)</option>
+                    <option value="PUBLISHED">PUBLISHED (Phát hành)</option>
+                    <option value="COMPLETED">COMPLETED (Hoàn tất)</option>
                   </select>
                 </div>
               </div>
 
               <div>
-                <label className="block font-body text-xs font-semibold text-foreground mb-1">
-                  Ảnh bìa sự kiện{" "}
-                  <span className="text-muted-foreground font-normal">
-                    (Tùy chọn)
-                  </span>
+                <label className="block font-mono text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Ảnh bìa sự kiện (Poster)
                 </label>
                 {formData.poster_url && (
                   <div
                     onClick={() => setLightboxUrl(formData.poster_url)}
-                    className="mb-3 relative w-full h-48 rounded-xl overflow-hidden border border-border bg-black/20 cursor-zoom-in hover:border-primary/50 transition-all group"
+                    className="mb-3 relative w-full h-44 rounded-none overflow-hidden border border-slate-300 bg-slate-100 cursor-zoom-in group"
                     title="Click để phóng to ảnh bìa"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={formData.poster_url}
                       alt="Cover preview"
-                      className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 )}
-                <div className="mt-2 flex justify-center rounded-xl border-2 border-dashed border-border px-6 py-10 hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer group relative">
+                <div className="flex justify-center rounded-none border-2 border-dashed border-slate-300 px-6 py-8 hover:border-slate-800 bg-slate-50 transition-colors cursor-pointer group relative">
                   <input
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     type="file"
@@ -585,49 +582,44 @@ function EventForm() {
                     onChange={handleCoverImageChange}
                     disabled={isUploadingImage}
                   />
-                  <div className="text-center">
-                    <ImagePlus className="w-10 h-10 mx-auto text-muted-foreground group-hover:text-primary transition-colors mb-2" />
-                    <div className="mt-4 flex text-sm leading-6 text-muted-foreground justify-center">
-                      <span className="font-semibold text-primary hover:text-primary/80">
+                  <div className="text-center font-sans">
+                    <ImagePlus className="w-8 h-8 mx-auto text-slate-400 group-hover:text-slate-800 transition-colors mb-2" />
+                    <div className="text-xs text-slate-600">
+                      <span className="font-bold text-slate-900 underline">
                         {isUploadingImage
                           ? "Đang tải ảnh lên..."
-                          : "Tải ảnh lên"}
-                      </span>
-                      {!isUploadingImage && (
-                        <p className="pl-1">hoặc kéo thả vào đây</p>
-                      )}
+                          : "Chọn tập tin ảnh"}
+                      </span>{" "}
+                      {!isUploadingImage && "hoặc kéo thả vào đây"}
                     </div>
-                    <p className="text-xs leading-5 text-muted-foreground">
-                      Hỗ trợ PNG, JPG, WEBP dung lượng tối đa 5MB
+                    <p className="text-[11px] text-slate-500 font-mono mt-1">
+                      PNG, JPG, WEBP tối đa 5MB
                     </p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block font-body text-xs font-semibold text-foreground mb-1">
-                  Sơ đồ ghế ngồi{" "}
-                  <span className="text-muted-foreground font-normal">
-                    (Tùy chọn)
-                  </span>
+                <label className="block font-mono text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-1">
+                  Sơ đồ phân khu ghế ngồi (SVG Map)
                 </label>
                 {formData.svg_map_url &&
                   formData.svg_map_url !==
                     "https://cdn.tixora.local/maps/default.svg" && (
                     <div
                       onClick={() => setLightboxUrl(formData.svg_map_url)}
-                      className="mb-3 relative w-full h-64 rounded-xl overflow-hidden border border-border bg-black/40 flex items-center justify-center p-4 cursor-zoom-in hover:border-primary/50 transition-all group"
+                      className="mb-3 relative w-full h-56 rounded-none overflow-hidden border border-slate-300 bg-slate-100 flex items-center justify-center p-4 cursor-zoom-in group"
                       title="Click để phóng to sơ đồ ghế ngồi"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={formData.svg_map_url}
                         alt="Sơ đồ ghế ngồi"
-                        className="max-w-full max-h-full object-contain group-hover:scale-[1.02] transition-transform duration-300"
+                        className="max-w-full max-h-full object-contain"
                       />
                     </div>
                   )}
-                <div className="mt-2 flex justify-center rounded-xl border-2 border-dashed border-border px-6 py-10 hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer group relative">
+                <div className="flex justify-center rounded-none border-2 border-dashed border-slate-300 px-6 py-8 hover:border-slate-800 bg-slate-50 transition-colors cursor-pointer group relative">
                   <input
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     type="file"
@@ -635,19 +627,17 @@ function EventForm() {
                     onChange={handleSvgMapChange}
                     disabled={isUploadingSvg}
                   />
-                  <div className="text-center">
-                    <ImagePlus className="w-10 h-10 mx-auto text-muted-foreground group-hover:text-primary transition-colors mb-2" />
-                    <div className="mt-4 flex text-sm leading-6 text-muted-foreground justify-center">
-                      <span className="font-semibold text-primary hover:text-primary/80">
+                  <div className="text-center font-sans">
+                    <ImagePlus className="w-8 h-8 mx-auto text-slate-400 group-hover:text-slate-800 transition-colors mb-2" />
+                    <div className="text-xs text-slate-600">
+                      <span className="font-bold text-slate-900 underline">
                         {isUploadingSvg
                           ? "Đang tải sơ đồ lên..."
-                          : "Tải sơ đồ lên"}
-                      </span>
-                      {!isUploadingSvg && (
-                        <p className="pl-1">hoặc kéo thả vào đây</p>
-                      )}
+                          : "Chọn tập tin sơ đồ"}
+                      </span>{" "}
+                      {!isUploadingSvg && "hoặc kéo thả vào đây"}
                     </div>
-                    <p className="text-xs leading-5 text-muted-foreground">
+                    <p className="text-[11px] text-slate-500 font-mono mt-1">
                       Hỗ trợ SVG, PNG, JPG, WEBP dung lượng tối đa 5MB
                     </p>
                   </div>
@@ -657,32 +647,29 @@ function EventForm() {
           </section>
 
           {/* Section 2: Ticketing */}
-          <section className="bg-surface rounded-xl p-6 shadow-sm border border-border">
-            <div className="flex justify-between items-center border-b border-border pb-4 mb-6">
-              <h3 className="font-display text-xl font-bold flex items-center gap-2">
-                <Ticket className="w-6 h-6 text-primary" />
-                Cấu hình hạng vé
+          <section className="bg-white rounded-none p-5 border border-slate-200 shadow-none">
+            <div className="flex justify-between items-center border-b border-slate-200 pb-3 mb-5">
+              <h3 className="font-mono text-sm font-bold uppercase tracking-wider flex items-center gap-2 text-slate-900">
+                <Ticket className="w-4 h-4 text-slate-700" />
+                Cấu hình các hạng vé
               </h3>
               <button
                 onClick={handleAddTier}
-                className="px-3 py-1.5 rounded-lg border border-primary/30 text-primary hover:bg-primary/10 transition-all font-body text-xs font-bold flex items-center gap-1 cursor-pointer"
+                className="px-3 py-1.5 rounded-none border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 transition-colors font-mono text-xs font-bold flex items-center gap-1 cursor-pointer"
               >
-                <PlusCircle className="w-4 h-4" /> Thêm hạng vé
+                <PlusCircle className="w-3.5 h-3.5" /> Thêm hạng vé
               </button>
             </div>
 
             {ticketCategories.map((tier, index) => (
               <div
                 key={index}
-                className="border border-border rounded-xl p-5 mb-6 bg-background relative overflow-hidden group"
+                className="border border-slate-200 rounded-none p-4 mb-4 bg-slate-50 relative"
               >
-                <div
-                  className={`absolute top-0 left-0 w-1 h-full ${index % 2 === 0 ? "bg-secondary" : "bg-primary"}`}
-                ></div>
-                <div className="flex justify-between items-start mb-4 pl-2">
+                <div className="flex justify-between items-start mb-3">
                   <input
-                    className="font-display text-xl font-bold bg-transparent border-none p-0 focus:ring-0 w-2/3 text-foreground placeholder:text-muted-foreground focus:outline-none"
-                    placeholder="Tên hạng vé (ví dụ: Hạng Cloud, VIP...)"
+                    className="font-mono text-base font-bold bg-white border border-slate-300 px-3 py-1.5 w-2/3 text-slate-900 focus:outline-none focus:border-slate-800 rounded-none"
+                    placeholder="Tên hạng vé (ví dụ: VIP, GA, SVIP...)"
                     type="text"
                     value={tier.name}
                     onChange={(e) =>
@@ -691,20 +678,20 @@ function EventForm() {
                   />
                   <button
                     onClick={() => handleRemoveTier(index)}
-                    className="text-muted-foreground hover:text-error transition-colors cursor-pointer"
+                    className="text-slate-400 hover:text-rose-700 p-1 transition-colors cursor-pointer"
                     title="Xóa hạng vé"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pl-2 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-3">
                   <div>
-                    <label className="block font-body text-xs font-semibold text-muted-foreground mb-1">
+                    <label className="block font-mono text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                       Giá vé (VNĐ)
                     </label>
                     <input
-                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-foreground focus:border-primary focus:ring-1 focus:ring-primary text-sm text-right font-mono"
+                      className="w-full rounded-none border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:border-slate-800 text-xs text-right font-mono"
                       type="text"
                       value={formatNumberString(tier.price)}
                       onChange={(e) => {
@@ -714,11 +701,11 @@ function EventForm() {
                     />
                   </div>
                   <div>
-                    <label className="block font-body text-xs font-semibold text-muted-foreground mb-1">
+                    <label className="block font-mono text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                       Tổng số lượng vé
                     </label>
                     <input
-                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-foreground focus:border-primary focus:ring-1 focus:ring-primary text-sm text-right font-mono"
+                      className="w-full rounded-none border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:border-slate-800 text-xs text-right font-mono"
                       type="text"
                       value={formatNumberString(tier.total_quantity)}
                       onChange={(e) => {
@@ -728,11 +715,11 @@ function EventForm() {
                     />
                   </div>
                   <div>
-                    <label className="block font-body text-xs font-semibold text-muted-foreground mb-1">
+                    <label className="block font-mono text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                       Tối đa / Người mua
                     </label>
                     <input
-                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-foreground focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                      className="w-full rounded-none border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:border-slate-800 text-xs font-mono"
                       type="number"
                       value={tier.max_per_user}
                       onChange={(e) =>
@@ -745,11 +732,11 @@ function EventForm() {
                     />
                   </div>
                   <div>
-                    <label className="block font-body text-xs font-semibold text-muted-foreground mb-1">
+                    <label className="block font-mono text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                       Số cổng vào
                     </label>
                     <input
-                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-foreground focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                      className="w-full rounded-none border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:border-slate-800 text-xs font-mono"
                       type="number"
                       placeholder="Ví dụ: 1"
                       value={tier.gate_number ?? ""}
@@ -764,14 +751,14 @@ function EventForm() {
                   </div>
                 </div>
 
-                {/* Additional API parameters for tier */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pl-2 border-t border-border/40 pt-4">
+                {/* Additional parameters */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-slate-200 pt-3">
                   <div>
-                    <label className="block font-body text-xs font-semibold text-muted-foreground mb-1">
-                      Thứ tự hiển thị (Position)
+                    <label className="block font-mono text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                      Thứ tự hiển thị
                     </label>
                     <input
-                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-foreground focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                      className="w-full rounded-none border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:border-slate-800 text-xs font-mono"
                       type="number"
                       value={tier.position}
                       onChange={(e) =>
@@ -784,11 +771,11 @@ function EventForm() {
                     />
                   </div>
                   <div>
-                    <label className="block font-body text-xs font-semibold text-muted-foreground mb-1">
+                    <label className="block font-mono text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
                       Thời gian mở bán
                     </label>
                     <input
-                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-foreground focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                      className="w-full rounded-none border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:border-slate-800 text-xs font-mono"
                       type="datetime-local"
                       value={tier.sales_start_at}
                       onChange={(e) =>
@@ -801,18 +788,18 @@ function EventForm() {
                     />
                   </div>
                   <div>
-                    <label className="block font-body text-xs font-semibold text-muted-foreground mb-1">
-                      Trạng thái hạng vé
+                    <label className="block font-mono text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
+                      Trạng thái bán vé
                     </label>
                     <select
-                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-foreground focus:border-primary focus:ring-1 focus:ring-primary text-sm cursor-pointer"
+                      className="w-full rounded-none border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:border-slate-800 text-xs font-mono cursor-pointer"
                       value={tier.status}
                       onChange={(e) =>
                         handleTierChange(index, "status", e.target.value)
                       }
                     >
-                      <option value="book_now">BOOK NOW</option>
-                      <option value="sold_out">SOLD OUT</option>
+                      <option value="book_now">BOOK NOW (Đang mở bán)</option>
+                      <option value="sold_out">SOLD OUT (Hết vé)</option>
                     </select>
                   </div>
                 </div>
@@ -823,24 +810,24 @@ function EventForm() {
       </div>
 
       {/* Sticky Bottom Actions Bar */}
-      <div className="fixed bottom-0 left-0 right-0 md:left-64 bg-surface/95 backdrop-blur-md border-t border-border p-4 flex justify-end gap-3 z-30 shadow-lg select-none">
+      <div className="fixed bottom-0 left-0 right-0 md:left-64 bg-white/95 backdrop-blur-xs border-t border-slate-200 p-4 flex justify-end gap-2 z-30 select-none">
         <button
           type="button"
           onClick={handleCancelClick}
-          className="px-6 py-2.5 rounded-lg border border-border text-foreground hover:bg-surface-high transition-all active:scale-95 font-body text-xs font-semibold cursor-pointer"
+          className="px-5 py-2 rounded-none border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors font-mono text-xs font-semibold cursor-pointer"
         >
-          Hủy
+          Hủy bỏ
         </button>
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="px-6 py-2.5 rounded-lg bg-primary text-primary-foreground font-body text-xs font-semibold hover:bg-primary-hover active:scale-95 transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+          className="px-6 py-2 rounded-none bg-slate-900 text-white font-mono text-xs font-bold hover:bg-slate-800 transition-colors disabled:opacity-50 cursor-pointer"
         >
           {isSaving
-            ? "Đang lưu..."
+            ? "Đang lưu dữ liệu..."
             : isEditing
               ? "Lưu thay đổi"
-              : "Tạo sự kiện"}
+              : "Hoàn tất tạo sự kiện"}
         </button>
       </div>
 
@@ -849,7 +836,7 @@ function EventForm() {
         isOpen={confirmDeleteIdx !== null}
         title="Xác nhận xóa hạng vé"
         message="Bạn có chắc chắn muốn xóa hạng vé này? Các thông tin cấu hình giá và số lượng vé của hạng này sẽ mất."
-        confirmLabel="Xóa"
+        confirmLabel="Xóa hạng vé"
         cancelLabel="Hủy"
         onConfirm={confirmDeleteTier}
         onCancel={() => setConfirmDeleteIdx(null)}
@@ -868,12 +855,12 @@ function EventForm() {
       {/* Lightbox Modal */}
       {lightboxUrl && (
         <div
-          className="fixed inset-0 bg-black/90 backdrop-blur-md z-[300] flex items-center justify-center p-4 cursor-zoom-out select-none animate-in fade-in duration-200"
+          className="fixed inset-0 bg-slate-900/90 backdrop-blur-xs z-[300] flex items-center justify-center p-4 cursor-zoom-out select-none"
           onClick={() => setLightboxUrl(null)}
         >
           <button
             type="button"
-            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors cursor-pointer text-xl font-bold bg-white/10 hover:bg-white/20 w-10 h-10 rounded-full flex items-center justify-center"
+            className="absolute top-4 right-4 text-white hover:text-slate-300 transition-colors cursor-pointer text-xl font-bold bg-white/10 hover:bg-white/20 w-8 h-8 rounded-none flex items-center justify-center font-mono"
             onClick={() => setLightboxUrl(null)}
           >
             &times;
@@ -882,7 +869,7 @@ function EventForm() {
           <img
             src={lightboxUrl}
             alt="Xem ảnh lớn"
-            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+            className="max-w-full max-h-full object-contain rounded-none border border-slate-700 shadow-2xl"
           />
         </div>
       )}
@@ -895,7 +882,7 @@ export default function CreateEventPage() {
     <Suspense
       fallback={
         <div className="flex h-64 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <div className="h-6 w-6 animate-spin border-2 border-slate-900 border-t-transparent" />
         </div>
       }
     >

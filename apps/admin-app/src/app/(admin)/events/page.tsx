@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/context/ToastContext";
 import {
   getConcerts,
+  updateConcert,
   deleteConcert,
   getConcertPosterUrl,
   type ConcertCardItem,
@@ -22,8 +23,12 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  RotateCw,
+  Send,
+  Pause,
 } from "lucide-react";
 import { ConcertWorkerDrawer } from "./_components/ConcertWorkerDrawer";
+import { StatusBadge } from "../_components/StatusBadge";
 
 export default function AdminEventsPage() {
   const { success, error: toastError, warning } = useToast();
@@ -35,7 +40,9 @@ export default function AdminEventsPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{
     id: string;
     name: string;
@@ -44,7 +51,7 @@ export default function AdminEventsPage() {
     useState<ConcertCardItem | null>(null);
   const [isWorkerDrawerOpen, setIsWorkerDrawerOpen] = useState(false);
 
-  // Debounce search input to prevent API spamming
+  // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchQuery);
@@ -53,26 +60,53 @@ export default function AdminEventsPage() {
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
-  useEffect(() => {
-    async function fetchConcerts() {
-      setIsLoading(true);
-      try {
-        const response = await getConcerts({
-          page,
-          limit,
-          search: debouncedSearch || undefined,
-          status: statusFilter === "All" ? undefined : statusFilter,
-        });
-        setConcerts(response.items);
-        setTotalPages(response.meta.totalPages);
-      } catch (error) {
-        console.error("Failed to load concerts", error);
-      } finally {
-        setIsLoading(false);
-      }
+  const fetchConcerts = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await getConcerts({
+        page,
+        limit,
+        search: debouncedSearch || undefined,
+        status: statusFilter === "All" ? undefined : statusFilter,
+      });
+      setConcerts(response.items);
+      setTotalPages(response.meta.totalPages);
+      setTotalItems(response.meta.totalItems);
+    } catch (error) {
+      console.error("Failed to load concerts", error);
+      toastError("Không thể tải danh sách sự kiện.");
+    } finally {
+      setIsLoading(false);
     }
-    void fetchConcerts();
-  }, [page, limit, debouncedSearch, statusFilter]);
+  }, [page, limit, debouncedSearch, statusFilter, toastError]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void fetchConcerts();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchConcerts]);
+
+  // Quick 1-click status change
+  const handleQuickStatusChange = async (
+    id: string,
+    newStatus: string,
+    title: string,
+  ) => {
+    setUpdatingStatusId(id);
+    try {
+      await updateConcert(id, { status: newStatus });
+      setConcerts((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, status: newStatus } : c)),
+      );
+      success(`Đã chuyển trạng thái sự kiện "${title}" sang ${newStatus}!`);
+    } catch (err) {
+      console.error("Failed to update status", err);
+      toastError("Cập nhật trạng thái sự kiện thất bại.");
+    } finally {
+      setUpdatingStatusId(null);
+    }
+  };
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
@@ -161,61 +195,73 @@ export default function AdminEventsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Page Header */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
         <div>
-          <h2 className="font-display text-3xl font-bold text-foreground mb-1">
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
             Quản lý Sự kiện
-          </h2>
-          <p className="text-muted-foreground font-body text-sm">
-            Theo dõi, chỉnh sửa và quản lý tất cả các sự kiện bán vé trên hệ
-            thống.
+          </h1>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Quản trị danh mục sự kiện, kiểm soát trạng thái phát hành và phân bổ
+            vé.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => void fetchConcerts()}
+            disabled={isLoading}
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-none cursor-pointer transition-colors disabled:opacity-50"
+            title="Tải lại danh sách mà không reset trang"
+          >
+            <RotateCw
+              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`}
+            />
+            <span>Làm mới</span>
+          </button>
           <button
             onClick={handleExport}
-            className="hidden md:flex items-center gap-2 px-4 py-2 text-primary border border-border rounded-lg hover:bg-surface-high transition-all font-semibold text-sm cursor-pointer"
+            className="hidden md:flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-none cursor-pointer transition-colors"
           >
-            <Download className="w-4 h-4" />
-            Xuất danh sách
+            <Download className="w-3.5 h-3.5" />
+            <span>Xuất CSV</span>
           </button>
           <Link
             href="/create-event"
-            className="flex-1 md:flex-none bg-primary hover:bg-primary-hover text-primary-foreground px-6 py-2.5 rounded-lg font-bold text-sm transition-all active:scale-95 shadow-sm flex items-center justify-center gap-2"
+            className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 font-semibold text-xs rounded-none border border-slate-900 flex items-center justify-center gap-1.5 transition-colors shadow-none"
           >
-            <Plus className="w-5 h-5" />
-            Tạo sự kiện
+            <Plus className="w-4 h-4" />
+            <span>Tạo sự kiện mới</span>
           </Link>
         </div>
-      </header>
+      </div>
 
-      {/* Search and Filter Bar */}
-      <section className="bg-surface p-4 rounded-xl shadow-sm border border-border flex flex-col md:flex-row gap-4 items-center">
+      {/* Filter and Search Bar */}
+      <div className="bg-white p-3 border border-slate-200 rounded-none flex flex-col md:flex-row gap-3 items-center">
         <div className="relative w-full md:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
-            className="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm transition-all text-foreground"
-            placeholder="Tìm kiếm sự kiện theo tên, ID hoặc địa điểm..."
+            className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-none text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-slate-900"
+            placeholder="Tìm theo tên sự kiện, ID, địa điểm..."
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-2 w-full md:w-auto font-semibold">
+        <div className="flex items-center gap-2 w-full md:w-auto">
           <select
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="flex-1 md:w-48 px-3 py-2.5 bg-background border border-border rounded-lg text-sm font-semibold cursor-pointer focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none text-foreground"
+            className="px-3 py-2 bg-white border border-slate-300 rounded-none text-xs font-medium text-slate-700 cursor-pointer focus:outline-none focus:border-slate-900"
           >
-            <option value="All">All Statuses</option>
-            <option value="DRAFT">DRAFT</option>
-            <option value="PUBLISHED">PUBLISHED</option>
-            <option value="COMPLETED">COMPLETED</option>
+            <option value="All">Tất cả trạng thái</option>
+            <option value="DRAFT">DRAFT (Bản nháp)</option>
+            <option value="PUBLISHED">PUBLISHED (Đã mở bán)</option>
+            <option value="COMPLETED">COMPLETED (Hoàn tất)</option>
+            <option value="CANCELLED">CANCELLED (Đã hủy)</option>
           </select>
           <button
             onClick={() => {
@@ -223,62 +269,46 @@ export default function AdminEventsPage() {
               setStatusFilter("All");
               setPage(1);
             }}
-            className="p-2.5 bg-background border border-border hover:bg-surface-high hover:border-primary text-muted-foreground hover:text-primary rounded-lg transition-all flex items-center justify-center cursor-pointer active:scale-95 duration-200"
+            className="px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-600 rounded-none text-xs font-medium flex items-center gap-1 cursor-pointer transition-colors"
             title="Đặt lại bộ lọc"
           >
-            <SlidersHorizontal className="w-5 h-5" />
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            <span>Đặt lại</span>
           </button>
         </div>
-      </section>
+      </div>
 
-      {/* Data Table */}
-      <section className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
+      {/* Table Data Container */}
+      <div className="bg-white border border-slate-200 rounded-none overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-border bg-background">
-                <th className="px-6 py-4 font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Tên sự kiện
-                </th>
-                <th className="px-6 py-4 font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Ngày & Giờ
-                </th>
-                <th className="px-6 py-4 font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Địa điểm
-                </th>
-                <th className="px-6 py-4 font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">
-                  Trạng thái
-                </th>
-                <th className="px-6 py-4 font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider text-right">
-                  Hành động
-                </th>
+              <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold uppercase tracking-wider text-[11px]">
+                <th className="px-4 py-3">Sự kiện</th>
+                <th className="px-4 py-3">Thời gian</th>
+                <th className="px-4 py-3">Địa điểm</th>
+                <th className="px-4 py-3 text-center">Trạng thái</th>
+                <th className="px-4 py-3 text-center">Thay đổi trạng thái</th>
+                <th className="px-4 py-3 text-right">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-slate-200 text-slate-800">
               {isLoading ? (
                 <tr>
-                  <td
-                    colSpan={5}
-                    className="p-12 text-center text-muted-foreground"
-                  >
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      <p className="text-sm font-medium">
-                        Đang tải danh sách sự kiện...
-                      </p>
+                  <td colSpan={6} className="p-10 text-center text-slate-500">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <RotateCw className="w-5 h-5 animate-spin text-slate-600" />
+                      <p className="text-xs">Đang tải dữ liệu sự kiện...</p>
                     </div>
                   </td>
                 </tr>
               ) : concerts.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={5}
-                    className="p-12 text-center text-muted-foreground"
-                  >
-                    <div className="flex flex-col items-center justify-center gap-3">
-                      <CalendarOff className="w-10 h-10 text-border" />
-                      <p className="text-sm font-medium">
-                        Không tìm thấy sự kiện nào khớp với bộ lọc.
+                  <td colSpan={6} className="p-10 text-center text-slate-500">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <CalendarOff className="w-8 h-8 text-slate-300" />
+                      <p className="text-xs font-medium">
+                        Không tìm thấy sự kiện nào.
                       </p>
                     </div>
                   </td>
@@ -287,93 +317,129 @@ export default function AdminEventsPage() {
                 concerts.map((concert) => (
                   <tr
                     key={concert.id}
-                    className="hover:bg-surface-high/50 transition-colors group"
+                    className="hover:bg-slate-50 transition-colors"
                   >
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-12 h-12 rounded-lg bg-primary/10 overflow-hidden shrink-0 bg-cover bg-center"
+                          className="w-10 h-10 border border-slate-200 bg-slate-100 shrink-0 bg-cover bg-center rounded-none"
                           style={{
                             backgroundImage: `url('${getConcertPosterUrl(concert.posterUrl)}')`,
                           }}
-                        ></div>
+                        />
                         <div>
-                          <p className="font-bold text-foreground group-hover:text-primary transition-colors">
+                          <div className="font-semibold text-slate-900 leading-snug">
                             {concert.title}
-                          </p>
+                          </div>
+                          <div className="text-[10px] font-mono text-slate-400 mt-0.5">
+                            ID: {concert.id.slice(0, 8)}...
+                          </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      <p className="font-body text-sm font-medium text-foreground">
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="font-medium text-slate-900">
                         {concert.date}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      </div>
+                      <div className="text-[11px] text-slate-500">
                         {concert.time}
-                      </p>
+                      </div>
                     </td>
-                    <td className="px-6 py-4 font-body text-sm font-medium text-foreground">
-                      {concert.venue}
+                    <td className="px-4 py-3">
+                      <div className="font-medium text-slate-900">
+                        {concert.venue}
+                      </div>
+                      <div className="text-[11px] text-slate-500">
+                        {concert.city}
+                      </div>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <span
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
-                          concert.status === "PUBLISHED"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                            : concert.status === "COMING_SOON"
-                              ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                              : concert.status === "COMPLETED"
-                                ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                                : concert.status === "CANCELLED"
-                                  ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
-                                  : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
-                        }`}
-                      >
-                        {concert.status === "PUBLISHED" && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                        )}
-                        {concert.status.replace("_", " ")}
-                      </span>
+                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                      <StatusBadge status={concert.status} variant="concert" />
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+
+                    {/* Quick 1-Click Status Action Column */}
+                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                      {updatingStatusId === concert.id ? (
+                        <span className="text-[11px] text-slate-400 flex items-center justify-center gap-1">
+                          <RotateCw className="w-3 h-3 animate-spin" /> Đang
+                          lưu...
+                        </span>
+                      ) : concert.status === "DRAFT" ? (
+                        <button
+                          onClick={() =>
+                            void handleQuickStatusChange(
+                              concert.id,
+                              "PUBLISHED",
+                              concert.title,
+                            )
+                          }
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] rounded-none border border-emerald-600 cursor-pointer transition-colors shadow-none"
+                          title="Phát hành ngay để mở bán vé"
+                        >
+                          <Send className="w-3 h-3" />
+                          <span>Phát hành</span>
+                        </button>
+                      ) : concert.status === "PUBLISHED" ? (
+                        <button
+                          onClick={() =>
+                            void handleQuickStatusChange(
+                              concert.id,
+                              "DRAFT",
+                              concert.title,
+                            )
+                          }
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 font-medium text-[11px] rounded-none border border-slate-300 cursor-pointer transition-colors shadow-none"
+                          title="Tạm ngưng về trạng thái bản nháp"
+                        >
+                          <Pause className="w-3 h-3 text-slate-500" />
+                          <span>Tạm ngưng</span>
+                        </button>
+                      ) : (
+                        <span className="text-slate-400 text-[11px] font-mono">
+                          —
+                        </span>
+                      )}
+                    </td>
+
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                      <div className="inline-flex items-center gap-1">
                         <Link
                           href={`/create-event?edit=${concert.id}`}
-                          className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
-                          title="Chỉnh sửa sự kiện"
+                          className="p-1.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 rounded-none transition-colors"
+                          title="Chỉnh sửa nội dung & vé"
                         >
-                          <Pencil className="w-5 h-5" />
+                          <Pencil className="w-3.5 h-3.5" />
                         </Link>
                         <Link
                           href={`/concerts/${concert.id}`}
                           target="_blank"
-                          className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
+                          className="p-1.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 rounded-none transition-colors"
                           title="Xem trang công khai"
                         >
-                          <Eye className="w-5 h-5" />
+                          <Eye className="w-3.5 h-3.5" />
                         </Link>
                         <button
                           onClick={() => {
                             setSelectedWorkerConcert(concert);
                             setIsWorkerDrawerOpen(true);
                           }}
-                          className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all cursor-pointer"
-                          title="Tác vụ AI & Import khách mời"
+                          className="p-1.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 rounded-none transition-colors cursor-pointer"
+                          title="Tác vụ AI & Danh sách khách"
                         >
-                          <Sparkles className="w-5 h-5" />
+                          <Sparkles className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() =>
                             handleDelete(concert.id, concert.title)
                           }
                           disabled={isDeleting === concert.id}
-                          className="p-2 text-muted-foreground hover:text-error hover:bg-error/10 rounded-lg transition-all disabled:opacity-50 cursor-pointer"
+                          className="p-1.5 border border-red-200 bg-white hover:bg-red-50 text-red-600 rounded-none transition-colors disabled:opacity-50 cursor-pointer"
                           title="Xóa sự kiện"
                         >
                           {isDeleting === concert.id ? (
-                            <Hourglass className="w-5 h-5" />
+                            <Hourglass className="w-3.5 h-3.5 animate-spin" />
                           ) : (
-                            <Trash2 className="w-5 h-5" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           )}
                         </button>
                       </div>
@@ -385,103 +451,80 @@ export default function AdminEventsPage() {
           </table>
         </div>
 
-        {/* Pagination bar */}
+        {/* Pagination Bar */}
         {!isLoading && totalPages > 1 && (
-          <div className="px-6 py-4 bg-background border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 select-none">
-            <div className="flex items-center gap-4 flex-wrap">
-              <span className="text-xs text-muted-foreground font-body">
-                Trang <span className="font-bold text-foreground">{page}</span>{" "}
-                trên{" "}
-                <span className="font-bold text-foreground">{totalPages}</span>
+          <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs select-none">
+            <div className="flex items-center gap-3 text-slate-600 font-medium">
+              <span>
+                Trang <strong className="text-slate-900">{page}</strong> trên{" "}
+                <strong className="text-slate-900">{totalPages}</strong> (Tổng:{" "}
+                <strong className="text-slate-900">{totalItems}</strong> sự
+                kiện)
               </span>
-
-              {/* Limit Selector */}
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
-                  Hiển thị:
-                </span>
-                <div className="relative">
-                  <select
-                    value={limit}
-                    onChange={(e) => {
-                      setLimit(Number(e.target.value));
-                      setPage(1);
-                    }}
-                    className="appearance-none pl-2.5 pr-7 py-1 border border-border rounded-lg bg-surface font-body text-xs focus:outline-none focus:border-primary text-foreground font-semibold cursor-pointer"
-                  >
-                    <option value={10}>10 dòng</option>
-                    <option value={20}>20 dòng</option>
-                    <option value={50}>50 dòng</option>
-                    <option value={100}>100 dòng</option>
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-muted-foreground">
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                      />
-                    </svg>
-                  </div>
-                </div>
+                <span className="text-[11px] text-slate-500">Hiển thị:</span>
+                <select
+                  value={limit}
+                  onChange={(e) => {
+                    setLimit(Number(e.target.value));
+                    setPage(1);
+                  }}
+                  className="px-2 py-1 border border-slate-300 bg-white text-xs font-semibold text-slate-700 rounded-none cursor-pointer focus:outline-none"
+                >
+                  <option value={10}>10 dòng</option>
+                  <option value={20}>20 dòng</option>
+                  <option value={50}>50 dòng</option>
+                </select>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <button
                 disabled={page === 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="p-1.5 border border-border rounded-lg hover:border-primary/50 hover:text-primary transition-all disabled:opacity-30 disabled:hover:border-border disabled:hover:text-muted-foreground cursor-pointer"
+                className="px-2.5 py-1 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-none disabled:opacity-40 cursor-pointer transition-colors"
               >
-                <ChevronLeft size={16} />
+                <ChevronLeft size={14} />
               </button>
 
-              <div className="flex items-center gap-1.5">
-                {getPageNumbers().map((p: number | string, idx: number) => {
-                  if (p === "...") {
-                    return (
-                      <span
-                        key={`dots-${idx}`}
-                        className="px-2 text-muted-foreground text-xs font-semibold select-none"
-                      >
-                        ...
-                      </span>
-                    );
-                  }
-                  const isCurrent = p === page;
+              {getPageNumbers().map((p: number | string, idx: number) => {
+                if (p === "...") {
                   return (
-                    <button
-                      key={`page-${p}`}
-                      onClick={() => setPage(p as number)}
-                      className={`px-3 py-1 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
-                        isCurrent
-                          ? "bg-primary border-primary text-white"
-                          : "border-border hover:border-primary/50 text-foreground hover:text-primary"
-                      }`}
+                    <span
+                      key={`dots-${idx}`}
+                      className="px-2 text-slate-400 text-xs font-mono"
                     >
-                      {p}
-                    </button>
+                      ...
+                    </span>
                   );
-                })}
-              </div>
+                }
+                const isCurrent = p === page;
+                return (
+                  <button
+                    key={`page-${p}`}
+                    onClick={() => setPage(p as number)}
+                    className={`px-3 py-1 text-xs font-semibold rounded-none border transition-colors cursor-pointer ${
+                      isCurrent
+                        ? "bg-slate-900 border-slate-900 text-white"
+                        : "border-slate-300 bg-white hover:bg-slate-50 text-slate-700"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
 
               <button
                 disabled={page === totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="p-1.5 border border-border rounded-lg hover:border-primary/50 hover:text-primary transition-all disabled:opacity-30 disabled:hover:border-border disabled:hover:text-muted-foreground cursor-pointer"
+                className="px-2.5 py-1 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-none disabled:opacity-40 cursor-pointer transition-colors"
               >
-                <ChevronRight size={16} />
+                <ChevronRight size={14} />
               </button>
             </div>
           </div>
         )}
-      </section>
+      </div>
 
       <ConcertWorkerDrawer
         isOpen={isWorkerDrawerOpen}
@@ -504,9 +547,9 @@ export default function AdminEventsPage() {
       <ConfirmModal
         isOpen={deleteTarget !== null}
         title="Xác nhận xóa sự kiện"
-        message={`Bạn có chắc chắn muốn xóa sự kiện "${deleteTarget?.name}" không? Hành động này sẽ hủy sự kiện và không thể hoàn tác.`}
-        confirmLabel="Xóa"
-        cancelLabel="Hủy"
+        message={`Bạn có chắc chắn muốn xóa sự kiện "${deleteTarget?.name}" không? Hành động này sẽ xóa dữ liệu và không thể hoàn tác.`}
+        confirmLabel="Xóa sự kiện"
+        cancelLabel="Hủy bỏ"
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />
@@ -535,24 +578,20 @@ function ConfirmModal({
 }: ConfirmModalProps) {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[250] flex items-center justify-center p-4 select-none animate-in fade-in duration-200">
-      <div className="bg-surface border border-border rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
-        <h3 className="font-display text-lg font-bold text-foreground">
-          {title}
-        </h3>
-        <p className="font-body text-sm text-muted-foreground leading-relaxed">
-          {message}
-        </p>
-        <div className="flex justify-end gap-3 pt-2">
+    <div className="fixed inset-0 bg-slate-900/40 z-[250] flex items-center justify-center p-4 select-none">
+      <div className="bg-white border border-slate-300 rounded-none max-w-md w-full p-5 shadow-lg space-y-3">
+        <h3 className="text-base font-bold text-slate-900">{title}</h3>
+        <p className="text-xs text-slate-600 leading-relaxed">{message}</p>
+        <div className="flex justify-end gap-2 pt-2 border-t border-slate-200">
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-xs font-semibold rounded-lg border border-border text-foreground hover:bg-surface-high transition-all cursor-pointer"
+            className="px-3 py-1.5 text-xs font-semibold rounded-none border border-slate-300 text-slate-700 bg-white hover:bg-slate-50 transition-colors cursor-pointer"
           >
             {cancelLabel}
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 text-xs font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all cursor-pointer"
+            className="px-3 py-1.5 text-xs font-semibold rounded-none bg-red-600 text-white hover:bg-red-700 border border-red-600 transition-colors cursor-pointer"
           >
             {confirmLabel}
           </button>

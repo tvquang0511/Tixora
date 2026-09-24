@@ -44,8 +44,8 @@ export function ProtectedRoute({
 
   if (!isAuthorized) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-none border-4 border-slate-900 border-t-transparent"></div>
       </div>
     );
   }

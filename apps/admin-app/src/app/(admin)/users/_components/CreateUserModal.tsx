@@ -77,27 +77,28 @@ export function CreateUserModal({
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black z-50"
+            className="fixed inset-0 bg-slate-900/60 z-50 backdrop-blur-xs"
           />
 
-          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4 select-none">
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
+              initial={{ scale: 0.98, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-surface border border-border rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col"
+              exit={{ scale: 0.98, opacity: 0 }}
+              className="bg-white border border-slate-300 rounded-none w-full max-w-md shadow-2xl overflow-hidden flex flex-col"
             >
               {/* Header */}
-              <div className="p-5 border-b border-border flex justify-between items-center bg-surface-low">
-                <div className="flex items-center gap-2 text-primary">
-                  <UserIcon className="w-5 h-5" />
-                  <h3 className="font-display text-base font-bold text-foreground">
+              <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <div className="flex items-center gap-2 text-slate-900">
+                  <UserIcon className="w-4 h-4 text-slate-700" />
+                  <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-slate-900">
                     Tạo tài khoản người dùng
                   </h3>
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-1.5 hover:bg-surface-high hover:text-foreground rounded-lg text-muted-foreground transition-all active:scale-95 duration-200 cursor-pointer"
+                  className="p-1.5 hover:bg-slate-200 text-slate-500 hover:text-slate-900 rounded-none transition-colors cursor-pointer"
+                  title="Đóng"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -106,70 +107,70 @@ export function CreateUserModal({
               {/* Form */}
               <form
                 onSubmit={handleSubmit}
-                className="p-5 space-y-4 font-body text-xs"
+                className="p-5 space-y-4 font-mono text-xs"
               >
                 {activeError && (
-                  <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl font-bold flex items-center gap-2">
-                    <ShieldAlert className="w-4 h-4 shrink-0" />
+                  <div className="p-3 bg-rose-50 border border-rose-300 text-rose-800 rounded-none font-sans text-xs flex items-center gap-2">
+                    <ShieldAlert className="w-4 h-4 shrink-0 text-rose-600" />
                     <span>{activeError}</span>
                   </div>
                 )}
 
                 {/* Full Name */}
-                <div className="space-y-1.5">
-                  <label className="font-bold text-muted-foreground uppercase tracking-wider block">
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-600 uppercase tracking-wider block text-[10px]">
                     Họ và tên *
                   </label>
                   <div className="relative">
-                    <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type="text"
                       required
                       placeholder="Nguyễn Văn A"
                       value={newFullName}
                       onChange={(e) => onFullNameChange(e.target.value)}
-                      className="pl-9 pr-3 py-2.5 border border-border rounded-xl bg-background focus:outline-none focus:border-primary w-full transition-all text-foreground"
+                      className="pl-9 pr-3 py-2 border border-slate-300 rounded-none bg-white focus:outline-none focus:border-slate-800 w-full transition-colors text-slate-900 font-sans text-xs"
                     />
                   </div>
                 </div>
 
                 {/* Email */}
-                <div className="space-y-1.5">
-                  <label className="font-bold text-muted-foreground uppercase tracking-wider block">
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-600 uppercase tracking-wider block text-[10px]">
                     Địa chỉ Email *
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type="email"
                       required
                       placeholder="example@email.com"
                       value={newEmail}
                       onChange={(e) => onEmailChange(e.target.value)}
-                      className="pl-9 pr-3 py-2.5 border border-border rounded-xl bg-background focus:outline-none focus:border-primary w-full transition-all text-foreground"
+                      className="pl-9 pr-3 py-2 border border-slate-300 rounded-none bg-white focus:outline-none focus:border-slate-800 w-full transition-colors text-slate-900 font-mono text-xs"
                     />
                   </div>
                 </div>
 
                 {/* Password */}
-                <div className="space-y-1.5">
-                  <label className="font-bold text-muted-foreground uppercase tracking-wider block">
-                    Mật khẩu *
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-600 uppercase tracking-wider block text-[10px]">
+                    Mật khẩu khởi tạo *
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type={showPassword ? "text" : "password"}
                       required
                       placeholder="••••••••"
                       value={newPassword}
                       onChange={(e) => onPasswordChange(e.target.value)}
-                      className="pl-9 pr-10 py-2.5 border border-border rounded-xl bg-background focus:outline-none focus:border-primary w-full transition-all text-foreground"
+                      className="pl-9 pr-10 py-2 border border-slate-300 rounded-none bg-white focus:outline-none focus:border-slate-800 w-full transition-colors text-slate-900 text-xs font-mono"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((p) => !p)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
                     >
                       {showPassword ? (
                         <EyeOff className="w-4 h-4" />
@@ -181,24 +182,24 @@ export function CreateUserModal({
                 </div>
 
                 {/* Confirm Password */}
-                <div className="space-y-1.5">
-                  <label className="font-bold text-muted-foreground uppercase tracking-wider block">
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-600 uppercase tracking-wider block text-[10px]">
                     Nhập lại mật khẩu *
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type={showConfirmPassword ? "text" : "password"}
                       required
                       placeholder="••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="pl-9 pr-10 py-2.5 border border-border rounded-xl bg-background focus:outline-none focus:border-primary w-full transition-all text-foreground"
+                      className="pl-9 pr-10 py-2 border border-slate-300 rounded-none bg-white focus:outline-none focus:border-slate-800 w-full transition-colors text-slate-900 text-xs font-mono"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword((p) => !p)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="w-4 h-4" />
@@ -210,40 +211,44 @@ export function CreateUserModal({
                 </div>
 
                 {/* Roles (Select 1 only) */}
-                <div className="space-y-1.5">
-                  <label className="font-bold text-muted-foreground uppercase tracking-wider block">
-                    Vai trò *
+                <div className="space-y-1">
+                  <label className="font-bold text-slate-600 uppercase tracking-wider block text-[10px]">
+                    Phân quyền vai trò *
                   </label>
                   <select
                     value={newRoles[0] || "Audience"}
                     onChange={(e) => onRolesChange([e.target.value])}
-                    className="bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground focus:outline-none focus:border-primary w-full h-11 transition-all cursor-pointer"
+                    className="bg-white border border-slate-300 rounded-none px-3 py-2 text-xs font-mono font-semibold text-slate-900 focus:outline-none focus:border-slate-800 w-full h-10 transition-colors cursor-pointer"
                   >
-                    <option value="Audience">Audience</option>
+                    <option value="Audience">Audience (Khách hàng)</option>
                     {isSuperAdmin && (
-                      <option value="SuperAdmin">SuperAdmin</option>
+                      <option value="SuperAdmin">
+                        SuperAdmin (Quản trị cấp cao)
+                      </option>
                     )}
-                    {isSuperAdmin && <option value="Admin">Admin</option>}
-                    <option value="Checker">Checker</option>
-                    <option value="Organizer">Organizer</option>
+                    {isSuperAdmin && (
+                      <option value="Admin">Admin (Quản trị viên)</option>
+                    )}
+                    <option value="Checker">Checker (Soát vé)</option>
+                    <option value="Organizer">Organizer (Ban tổ chức)</option>
                   </select>
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-3 justify-end pt-3 border-t border-border mt-5">
+                <div className="flex gap-2 justify-end pt-3 border-t border-slate-200 mt-4">
                   <button
                     type="button"
                     onClick={onClose}
-                    className="bg-background hover:bg-surface-low border border-border text-foreground font-body text-xs font-bold py-2.5 px-4 rounded-xl transition-all active:scale-95 duration-200"
+                    className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 font-mono text-xs font-semibold py-2 px-3 rounded-none transition-colors cursor-pointer"
                   >
-                    Hủy
+                    Hủy bỏ
                   </button>
                   <button
                     type="submit"
                     disabled={isCreating}
-                    className="bg-primary hover:bg-primary-container text-white font-body text-xs font-bold py-2.5 px-5 rounded-xl transition-all hover:shadow-lg hover:shadow-primary/20 active:scale-95 duration-200 disabled:opacity-50"
+                    className="bg-slate-900 hover:bg-slate-800 text-white font-mono text-xs font-bold py-2 px-4 rounded-none transition-colors cursor-pointer disabled:opacity-50"
                   >
-                    {isCreating ? "Đang tạo..." : "Lưu người dùng"}
+                    {isCreating ? "Đang tạo..." : "Lưu tài khoản"}
                   </button>
                 </div>
               </form>

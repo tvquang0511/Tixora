@@ -263,5 +263,9 @@ export function useAdminUsers() {
     // Actions
     handleCreateUser,
     handleSaveChanges,
+    reloadUsers: () => {
+      void fetchUsersData();
+      void fetchStatsData();
+    },
   };
 }

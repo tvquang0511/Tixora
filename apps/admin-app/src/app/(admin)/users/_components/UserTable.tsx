@@ -4,11 +4,11 @@ import { StatusBadge } from "../../_components/StatusBadge";
 import { Pagination } from "../../_components/Pagination";
 
 const ROLE_CLASSES: Record<string, string> = {
-  SuperAdmin: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20",
-  Admin: "bg-violet-500/10 text-violet-400 border-violet-500/20",
-  Checker: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  Organizer: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  Audience: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  SuperAdmin: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-300",
+  Admin: "bg-purple-50 text-purple-700 border-purple-300",
+  Checker: "bg-amber-50 text-amber-800 border-amber-300",
+  Organizer: "bg-emerald-50 text-emerald-800 border-emerald-300",
+  Audience: "bg-blue-50 text-blue-700 border-blue-300",
 };
 
 interface UserTableProps {
@@ -35,77 +35,73 @@ export function UserTable({
   onViewDetail,
 }: UserTableProps) {
   return (
-    <section className="bg-surface rounded-2xl border border-border p-6 shadow-sm space-y-4">
-      <div className="flex justify-between items-center">
+    <section className="bg-white rounded-none border border-slate-200 p-5 shadow-none space-y-4">
+      <div className="flex justify-between items-center pb-2">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-primary/10 rounded-lg text-primary">
-            <Activity className="w-5 h-5" />
+          <div className="p-1.5 bg-slate-100 rounded-none border border-slate-200 text-slate-800">
+            <Activity className="w-4 h-4" />
           </div>
-          <h3 className="font-display text-lg font-bold text-foreground">
-            Danh sách tài khoản
+          <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-slate-900">
+            Danh sách tài khoản hệ thống
           </h3>
         </div>
       </div>
 
       <div className="overflow-x-auto w-full">
         {isLoading ? (
-          <div className="py-20 text-center text-muted-foreground">
-            <div className="flex flex-col items-center justify-center gap-3">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-              <span className="font-body text-xs">
-                Đang tải danh sách người dùng...
-              </span>
-            </div>
+          <div className="py-16 text-center text-slate-500 font-mono text-xs flex flex-col items-center justify-center gap-2">
+            <div className="h-4 w-4 animate-spin border-2 border-slate-900 border-t-transparent" />
+            <span>Đang tải danh sách người dùng...</span>
           </div>
         ) : users.length === 0 ? (
-          <div className="py-20 text-center text-muted-foreground font-body text-sm border border-border/50 rounded-xl bg-background/20">
+          <div className="py-16 text-center text-slate-500 font-mono text-xs border border-slate-200 bg-slate-50">
             Không tìm thấy người dùng nào khớp bộ lọc.
           </div>
         ) : (
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-border bg-background/50 font-body text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                <th className="p-4 rounded-tl-xl">Người dùng</th>
-                <th className="p-4 text-center">Trạng thái</th>
-                <th className="p-4">Vai trò</th>
-                <th className="p-4 text-center">Đơn hàng</th>
-                <th className="p-4 text-center">Vé đã mua</th>
-                <th className="p-4">Ngày tham gia</th>
-                <th className="p-4 text-center rounded-tr-xl">Thao tác</th>
+              <tr className="border-y border-slate-200 bg-slate-100 font-mono text-[10px] font-bold text-slate-600 uppercase tracking-wider">
+                <th className="p-3">Người dùng</th>
+                <th className="p-3 text-center">Trạng thái</th>
+                <th className="p-3">Vai trò</th>
+                <th className="p-3 text-center">Đơn hàng</th>
+                <th className="p-3 text-center">Vé đã mua</th>
+                <th className="p-3">Ngày tham gia</th>
+                <th className="p-3 text-center">Thao tác</th>
               </tr>
             </thead>
-            <tbody className="font-body text-xs divide-y divide-border/50">
+            <tbody className="divide-y divide-slate-200 font-sans">
               {users.map((item) => (
                 <tr
                   key={item.id}
-                  className="hover:bg-surface-high/20 transition-colors"
+                  className="hover:bg-slate-50 transition-colors"
                 >
-                  <td className="p-4 font-semibold text-foreground">
+                  <td className="p-3 font-semibold text-slate-900">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-primary-container text-primary-foreground flex items-center justify-center font-bold text-sm shrink-0">
+                      <div className="w-8 h-8 rounded-none bg-slate-900 text-white flex items-center justify-center font-bold font-mono text-xs shrink-0">
                         {item.full_name.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <div className="text-sm font-bold text-foreground leading-tight">
+                        <div className="text-xs font-bold text-slate-900 leading-tight">
                           {item.full_name}
                         </div>
-                        <div className="text-xs text-muted-foreground font-medium mt-0.5">
+                        <div className="text-[11px] text-slate-500 font-mono mt-0.5">
                           {item.email}
                         </div>
                       </div>
                     </div>
                   </td>
 
-                  <td className="p-4 text-center">
+                  <td className="p-3 text-center">
                     <StatusBadge status={item.status} variant="user" />
                   </td>
 
-                  <td className="p-4">
-                    <div className="flex flex-wrap gap-1.5">
+                  <td className="p-3">
+                    <div className="flex flex-wrap gap-1">
                       {item.roles.map((r) => (
                         <span
                           key={r}
-                          className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${ROLE_CLASSES[r] ?? "bg-blue-500/10 text-blue-400 border-blue-500/20"}`}
+                          className={`px-1.5 py-0.5 rounded-none text-[10px] font-mono font-bold border ${ROLE_CLASSES[r] ?? "bg-slate-50 text-slate-700 border-slate-300"}`}
                         >
                           {r}
                         </span>
@@ -113,15 +109,15 @@ export function UserTable({
                     </div>
                   </td>
 
-                  <td className="p-4 text-center font-bold text-foreground font-mono">
+                  <td className="p-3 text-center font-bold text-slate-900 font-mono">
                     {item.order_count.toLocaleString("vi-VN")}
                   </td>
 
-                  <td className="p-4 text-center font-bold text-foreground font-mono">
+                  <td className="p-3 text-center font-bold text-slate-900 font-mono">
                     {item.ticket_count.toLocaleString("vi-VN")}
                   </td>
 
-                  <td className="p-4 text-muted-foreground font-semibold">
+                  <td className="p-3 text-slate-600 font-mono text-[11px]">
                     {new Date(item.created_at).toLocaleDateString("vi-VN", {
                       year: "numeric",
                       month: "short",
@@ -129,12 +125,12 @@ export function UserTable({
                     })}
                   </td>
 
-                  <td className="p-4 text-center">
+                  <td className="p-3 text-center">
                     <button
                       onClick={() => onViewDetail(item.id)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-border hover:border-primary hover:bg-primary hover:text-white font-body text-xs font-bold rounded-lg transition-all hover:-translate-y-0.5 active:translate-y-0 active:scale-95 duration-200 cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-slate-300 rounded-none bg-white hover:bg-slate-100 text-slate-700 font-mono text-xs font-bold transition-colors cursor-pointer"
                     >
-                      Xem chi tiết
+                      Chi tiết
                     </button>
                   </td>
                 </tr>
@@ -144,7 +140,7 @@ export function UserTable({
         )}
       </div>
 
-      {!isLoading && (totalPages > 1 || totalItems > 0) && (
+      {!isLoading && (
         <Pagination
           page={page}
           totalPages={totalPages}

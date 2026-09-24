@@ -67,36 +67,39 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   );
 
   const styles = {
-    success: "bg-emerald-950/90 border-emerald-500/20 text-emerald-300",
-    error: "bg-red-950/90 border-red-500/20 text-red-300",
-    info: "bg-blue-950/90 border-blue-500/20 text-blue-300",
-    warning: "bg-amber-950/90 border-amber-500/20 text-amber-300",
+    success:
+      "bg-white border-slate-300 text-slate-800 shadow-lg border-l-4 border-l-emerald-600",
+    error:
+      "bg-white border-slate-300 text-slate-800 shadow-lg border-l-4 border-l-red-600",
+    info: "bg-white border-slate-300 text-slate-800 shadow-lg border-l-4 border-l-blue-600",
+    warning:
+      "bg-white border-slate-300 text-slate-800 shadow-lg border-l-4 border-l-amber-600",
   };
 
   const icons = {
-    success: <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" />,
-    error: <AlertCircle className="h-5 w-5 shrink-0 text-red-400" />,
-    info: <Info className="h-5 w-5 shrink-0 text-blue-400" />,
-    warning: <AlertTriangle className="h-5 w-5 shrink-0 text-amber-400" />,
+    success: <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />,
+    error: <AlertCircle className="h-5 w-5 shrink-0 text-red-600" />,
+    info: <Info className="h-5 w-5 shrink-0 text-blue-600" />,
+    warning: <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600" />,
   };
 
   return (
     <ToastContext.Provider value={{ toast, success, error, info, warning }}>
       {children}
-      <div className="fixed top-20 right-6 z-[200] flex flex-col gap-3 max-w-sm w-[calc(100vw-3rem)] md:w-96 pointer-events-none">
+      <div className="fixed top-16 right-6 z-[200] flex flex-col gap-2.5 max-w-sm w-[calc(100vw-3rem)] md:w-96 pointer-events-none">
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`pointer-events-auto flex items-start gap-3 rounded-2xl border p-4 text-sm shadow-2xl backdrop-blur-md transition-all duration-300 ease-out animate-in fade-in slide-in-from-top-5 ${styles[t.type]}`}
+            className={`pointer-events-auto flex items-start gap-3 rounded-none border p-3.5 text-xs font-medium transition-all duration-200 ease-out animate-in fade-in slide-in-from-top-2 ${styles[t.type]}`}
           >
             {icons[t.type]}
-            <div className="flex-1 pr-6 leading-relaxed text-left">
+            <div className="flex-1 pr-4 leading-relaxed text-left">
               {t.message}
             </div>
             <button
               type="button"
               onClick={() => removeToast(t.id)}
-              className="text-on-surface-variant/40 hover:text-on-surface transition-colors cursor-pointer"
+              className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer rounded-none"
             >
               <X size={14} />
             </button>

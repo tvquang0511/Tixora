@@ -10,11 +10,11 @@ const formatVND = (value: number) =>
 
 const formatConciseNumber = (value: number) => {
   if (value >= 1_000_000_000)
-    return `${(value / 1_000_000_000).toLocaleString("en-US", { maximumFractionDigits: 1 })}B`;
+    return `${(value / 1_000_000_000).toLocaleString("en-US", { maximumFractionDigits: 1 })} tỷ`;
   if (value >= 1_000_000)
-    return `${(value / 1_000_000).toLocaleString("en-US", { maximumFractionDigits: 0 })}M`;
+    return `${(value / 1_000_000).toLocaleString("en-US", { maximumFractionDigits: 0 })} tr`;
   if (value >= 1_000)
-    return `${(value / 1_000).toLocaleString("en-US", { maximumFractionDigits: 0 })}K`;
+    return `${(value / 1_000).toLocaleString("en-US", { maximumFractionDigits: 0 })}k`;
   return value.toString();
 };
 
@@ -105,15 +105,17 @@ export function RevenueTrendChart({
   const revenuePath = getLinePath((i) => i.revenue, maxRevenue);
   const ordersPath = getLinePath((i) => i.paid_orders, maxPaidOrders);
   const ticketsPath = getLinePath((i) => i.tickets_sold, maxTicketsSold);
-  const revenueAreaPath = revenuePath
-    ? `${revenuePath} L ${paddingLeft + chartWidth} ${paddingTop + chartHeight} L ${paddingLeft} ${paddingTop + chartHeight} Z`
-    : "";
+
+  const revenueAreaPath =
+    trendItems.length > 0
+      ? `${revenuePath} L ${getX(trendItems.length - 1)} ${paddingTop + chartHeight} L ${getX(0)} ${paddingTop + chartHeight} Z`
+      : "";
 
   const formatPeriodLabel = (period: string) => {
     if (!period) return "";
     const parts = period.split("-");
     if (groupBy === "month" && parts.length >= 2)
-      return `Tháng ${parts[1]}/${parts[0]}`;
+      return `${parts[1]}/${parts[0].slice(2)}`;
     if (parts.length === 3) {
       const d = new Date(
         Number(parts[0]),
@@ -152,62 +154,56 @@ export function RevenueTrendChart({
 
     if (fromDate && toDate)
       return `${formatDate(fromDate)} - ${formatDate(toDate)}`;
-    if (fromDate) return `Tá»« ${formatDate(fromDate)}`;
-    if (toDate) return `Äáº¿n ${formatDate(toDate)}`;
-    return "Táº¥t cáº£ thá»i gian";
+    if (fromDate) return `Từ ${formatDate(fromDate)}`;
+    if (toDate) return `Đến ${formatDate(toDate)}`;
+    return "Tất cả thời gian";
   };
 
   return (
-    <section className="bg-surface rounded-2xl border border-border p-6 shadow-sm flex flex-col min-h-[480px]">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <section className="bg-white rounded-none border border-slate-200 p-5 shadow-none flex flex-col min-h-[480px]">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-primary/10 rounded-lg text-primary">
-            <TrendingUp className="w-5 h-5" />
+          <div className="p-1.5 bg-slate-100 rounded-none border border-slate-200 text-slate-800">
+            <TrendingUp className="w-4 h-4" />
           </div>
-          <h3 className="font-display text-lg font-bold text-foreground">
-            Revenue trend
+          <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-slate-900">
+            Biểu đồ xu hướng doanh thu
           </h3>
-          <span className="text-xs font-semibold text-muted-foreground">
-            {formatDateRangeLabel()}
+          <span className="text-xs font-mono text-slate-500">
+            [{formatDateRangeLabel()}]
           </span>
         </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs font-semibold">
-          <div className="flex items-center gap-1.5 text-blue-400">
-            <span className="w-2.5 h-1.5 rounded bg-blue-500 inline-block" />
-            Revenue (VND)
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono">
+          <div className="flex items-center gap-1.5 text-blue-700">
+            <span className="w-2.5 h-1 bg-blue-600 inline-block" />
+            Doanh thu (VND)
           </div>
-          <div className="flex items-center gap-1.5 text-emerald-400">
-            <span className="w-2.5 h-1.5 rounded bg-emerald-500 inline-block" />
-            Paid orders
+          <div className="flex items-center gap-1.5 text-emerald-700">
+            <span className="w-2.5 h-1 bg-emerald-600 inline-block" />
+            Đơn hoàn tất
           </div>
-          <div className="flex items-center gap-1.5 text-violet-400">
-            <span className="w-2.5 h-1.5 rounded bg-violet-500 inline-block" />
-            Tickets sold
+          <div className="flex items-center gap-1.5 text-violet-700">
+            <span className="w-2.5 h-1 bg-violet-600 inline-block" />
+            Vé đã bán
           </div>
         </div>
       </div>
 
       <div className="grow relative min-h-[300px] w-full select-none">
         {isTrendLoading ? (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="flex flex-col items-center gap-3">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-              <span className="text-xs text-muted-foreground font-body">
-                Loading trend data...
-              </span>
-            </div>
+          <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-slate-500 gap-2">
+            <div className="h-4 w-4 animate-spin border-2 border-slate-900 border-t-transparent" />
+            Đang tải dữ liệu xu hướng...
           </div>
         ) : trendItems.length === 0 ? (
-          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground font-body text-sm">
-            No revenue records in this period.
+          <div className="absolute inset-0 flex items-center justify-center font-mono text-xs text-slate-500">
+            Không có dữ liệu trong khoảng thời gian đã lọc.
           </div>
         ) : (
           <>
             <svg
               viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-              width="100%"
-              height="100%"
-              className="overflow-visible"
+              className="w-full h-full min-h-[300px]"
             >
               <defs>
                 <linearGradient
@@ -217,96 +213,105 @@ export function RevenueTrendChart({
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.0" />
+                  <stop offset="0%" stopColor="#2563eb" stopOpacity="0.15" />
+                  <stop offset="100%" stopColor="#2563eb" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
 
-              {yTicksLeft.map((val, idx) => {
-                const y =
-                  paddingTop + (idx / (yTicksLeft.length - 1)) * chartHeight;
+              {/* Grid Lines */}
+              {yTicksLeft.map((_, idx) => {
+                const y = paddingTop + (idx / 4) * chartHeight;
                 return (
-                  <g key={idx}>
-                    <line
-                      x1={paddingLeft}
-                      y1={y}
-                      x2={svgWidth - paddingRight}
-                      y2={y}
-                      stroke="var(--color-border)"
-                      strokeOpacity={0.15}
-                      strokeDasharray={
-                        idx === yTicksLeft.length - 1 ? "" : "4 4"
-                      }
-                    />
-                    <text
-                      x={paddingLeft - 10}
-                      y={y + 3}
-                      fill="var(--color-muted-foreground)"
-                      fontSize={10}
-                      fontWeight="semibold"
-                      textAnchor="end"
-                      className="font-body"
-                    >
-                      {formatConciseNumber(val)}
-                    </text>
-                    <text
-                      x={svgWidth - paddingRight + 20}
-                      y={y + 3}
-                      fill="#34d399"
-                      fontSize={10}
-                      fontWeight="semibold"
-                      textAnchor="start"
-                      className="font-body"
-                    >
-                      {formatConciseNumber(yTicksRightOrders[idx])}
-                    </text>
-                    <text
-                      x={svgWidth - paddingRight + 75}
-                      y={y + 3}
-                      fill="#a78bfa"
-                      fontSize={10}
-                      fontWeight="semibold"
-                      textAnchor="start"
-                      className="font-body"
-                    >
-                      {formatConciseNumber(yTicksRightTickets[idx])}
-                    </text>
-                  </g>
+                  <line
+                    key={`grid-${idx}`}
+                    x1={paddingLeft}
+                    y1={y}
+                    x2={svgWidth - paddingRight}
+                    y2={y}
+                    stroke="#e2e8f0"
+                    strokeDasharray={idx === 4 ? "" : "3 3"}
+                  />
                 );
               })}
 
+              {/* Y Axis Left - Revenue */}
+              {yTicksLeft.map((val, idx) => (
+                <text
+                  key={`ytick-rev-${idx}`}
+                  x={paddingLeft - 10}
+                  y={paddingTop + (idx / 4) * chartHeight + 4}
+                  fill="#64748b"
+                  fontSize={10}
+                  textAnchor="end"
+                  fontFamily="monospace"
+                >
+                  {formatConciseNumber(val)}
+                </text>
+              ))}
+
+              {/* Y Axis Right - Orders */}
+              {yTicksRightOrders.map((val, idx) => (
+                <text
+                  key={`ytick-orders-${idx}`}
+                  x={svgWidth - paddingRight + 15}
+                  y={paddingTop + (idx / 4) * chartHeight + 4}
+                  fill="#059669"
+                  fontSize={10}
+                  textAnchor="start"
+                  fontFamily="monospace"
+                >
+                  {Math.round(val)}
+                </text>
+              ))}
+
+              {/* Y Axis Right - Tickets */}
+              {yTicksRightTickets.map((val, idx) => (
+                <text
+                  key={`ytick-tickets-${idx}`}
+                  x={svgWidth - paddingRight + 65}
+                  y={paddingTop + (idx / 4) * chartHeight + 4}
+                  fill="#7c3aed"
+                  fontSize={10}
+                  textAnchor="start"
+                  fontFamily="monospace"
+                >
+                  {Math.round(val)}
+                </text>
+              ))}
+
+              {/* Legend headers on axis */}
               <text
                 x={paddingLeft - 10}
                 y={paddingTop - 15}
-                fill="var(--color-muted-foreground)"
+                fill="#2563eb"
                 fontSize={9}
                 fontWeight="bold"
                 textAnchor="end"
-                className="font-body uppercase tracking-wider"
+                fontFamily="monospace"
               >
-                Revenue (VND)
+                DOANH THU (VND)
               </text>
               <text
-                x={svgWidth - paddingRight + 20}
+                x={svgWidth - paddingRight + 15}
                 y={paddingTop - 15}
-                fill="#34d399"
+                fill="#059669"
                 fontSize={9}
                 fontWeight="bold"
                 textAnchor="start"
-                className="font-body uppercase tracking-wider"
+                fontFamily="monospace"
               >
-                Orders
+                ĐƠN HÀNG
               </text>
               <text
-                x={svgWidth - paddingRight + 75}
+                x={svgWidth - paddingRight + 65}
                 y={paddingTop - 15}
-                fill="#a78bfa"
+                fill="#7c3aed"
                 fontSize={9}
                 fontWeight="bold"
                 textAnchor="start"
-                className="font-body uppercase tracking-wider"
+                fontFamily="monospace"
               >
-                Sold
+                VÉ BÁN
               </text>
 
               {revenueAreaPath && (
@@ -316,30 +321,30 @@ export function RevenueTrendChart({
                 <path
                   d={revenuePath}
                   fill="none"
-                  stroke="#3b82f6"
-                  strokeWidth={3}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  stroke="#2563eb"
+                  strokeWidth={2}
+                  strokeLinecap="square"
+                  strokeLinejoin="miter"
                 />
               )}
               {ordersPath && (
                 <path
                   d={ordersPath}
                   fill="none"
-                  stroke="#10b981"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  stroke="#059669"
+                  strokeWidth={1.5}
+                  strokeLinecap="square"
+                  strokeLinejoin="miter"
                 />
               )}
               {ticketsPath && (
                 <path
                   d={ticketsPath}
                   fill="none"
-                  stroke="#8b5cf6"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  stroke="#7c3aed"
+                  strokeWidth={1.5}
+                  strokeLinecap="square"
+                  strokeLinejoin="miter"
                 />
               )}
 
@@ -349,9 +354,9 @@ export function RevenueTrendChart({
                   y1={paddingTop}
                   x2={getX(hoveredIndex)}
                   y2={paddingTop + chartHeight}
-                  stroke="var(--color-outline)"
+                  stroke="#94a3b8"
                   strokeWidth={1}
-                  strokeDasharray="4 4"
+                  strokeDasharray="2 2"
                 />
               )}
 
@@ -360,32 +365,38 @@ export function RevenueTrendChart({
                 const isHovered = hoveredIndex === index;
                 return (
                   <g key={index}>
-                    <circle
-                      cx={x}
-                      cy={getY(item.revenue, maxRevenue)}
-                      r={isHovered ? 6 : 3}
-                      fill={isHovered ? "#3b82f6" : "var(--color-surface)"}
-                      stroke="#3b82f6"
-                      strokeWidth={2}
-                      className="transition-all duration-75"
-                    />
-                    <circle
-                      cx={x}
-                      cy={getY(item.paid_orders, maxPaidOrders)}
-                      r={isHovered ? 5 : 2.5}
-                      fill={isHovered ? "#10b981" : "var(--color-surface)"}
-                      stroke="#10b981"
+                    <rect
+                      x={x - (isHovered ? 4 : 2)}
+                      y={getY(item.revenue, maxRevenue) - (isHovered ? 4 : 2)}
+                      width={isHovered ? 8 : 4}
+                      height={isHovered ? 8 : 4}
+                      fill={isHovered ? "#2563eb" : "#ffffff"}
+                      stroke="#2563eb"
                       strokeWidth={1.5}
-                      className="transition-all duration-75"
                     />
-                    <circle
-                      cx={x}
-                      cy={getY(item.tickets_sold, maxTicketsSold)}
-                      r={isHovered ? 5 : 2.5}
-                      fill={isHovered ? "#8b5cf6" : "var(--color-surface)"}
-                      stroke="#8b5cf6"
-                      strokeWidth={1.5}
-                      className="transition-all duration-75"
+                    <rect
+                      x={x - (isHovered ? 3.5 : 1.5)}
+                      y={
+                        getY(item.paid_orders, maxPaidOrders) -
+                        (isHovered ? 3.5 : 1.5)
+                      }
+                      width={isHovered ? 7 : 3}
+                      height={isHovered ? 7 : 3}
+                      fill={isHovered ? "#059669" : "#ffffff"}
+                      stroke="#059669"
+                      strokeWidth={1}
+                    />
+                    <rect
+                      x={x - (isHovered ? 3.5 : 1.5)}
+                      y={
+                        getY(item.tickets_sold, maxTicketsSold) -
+                        (isHovered ? 3.5 : 1.5)
+                      }
+                      width={isHovered ? 7 : 3}
+                      height={isHovered ? 7 : 3}
+                      fill={isHovered ? "#7c3aed" : "#ffffff"}
+                      stroke="#7c3aed"
+                      strokeWidth={1}
                     />
                   </g>
                 );
@@ -403,11 +414,10 @@ export function RevenueTrendChart({
                     key={idx}
                     x={x}
                     y={svgHeight - 15}
-                    fill="var(--color-muted-foreground)"
+                    fill="#64748b"
                     fontSize={10}
-                    fontWeight="semibold"
                     textAnchor="middle"
-                    className="font-body"
+                    fontFamily="monospace"
                   >
                     {formatPeriodLabel(item.period)}
                   </text>
@@ -436,43 +446,32 @@ export function RevenueTrendChart({
 
             {hoveredIndex !== null && trendItems[hoveredIndex] && (
               <div
-                className="absolute z-20 bg-surface border border-border p-3 rounded-xl shadow-lg pointer-events-none transition-all duration-75 text-xs text-foreground"
+                className="absolute z-20 bg-slate-900 border border-slate-800 p-3 rounded-none shadow-xl pointer-events-none transition-all duration-75 text-xs text-white"
                 style={{
                   left: `${((paddingLeft + (trendItems.length > 1 ? (hoveredIndex / (trendItems.length - 1)) * chartWidth : chartWidth / 2)) / svgWidth) * 100}%`,
-                  top: `${((paddingTop + chartHeight - (trendItems[hoveredIndex].revenue / maxRevenue) * chartHeight) / svgHeight) * 100 - 15}%`,
+                  top: `${((paddingTop + chartHeight - (trendItems[hoveredIndex].revenue / maxRevenue) * chartHeight) / svgHeight) * 100 - 10}%`,
                   transform: "translate(-50%, -100%)",
                 }}
               >
-                <div className="font-bold text-muted-foreground border-b border-border/50 pb-1 mb-1.5">
+                <div className="font-mono text-slate-300 text-[10px] border-b border-slate-700 pb-1 mb-1.5 font-bold">
                   {formatFullPeriod(trendItems[hoveredIndex].period)}
                 </div>
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between gap-4 font-semibold text-blue-400">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-blue-500" />
-                      Revenue:
-                    </span>
-                    <span className="font-mono">
-                      {formatVND(trendItems[hoveredIndex].revenue)}
-                    </span>
+                <div className="space-y-1 font-mono text-[11px]">
+                  <div className="flex items-center justify-between gap-4 text-blue-400 font-semibold">
+                    <span>Doanh thu:</span>
+                    <span>{formatVND(trendItems[hoveredIndex].revenue)}</span>
                   </div>
-                  <div className="flex items-center justify-between gap-4 font-semibold text-emerald-400">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                      Paid orders:
-                    </span>
-                    <span className="font-mono">
+                  <div className="flex items-center justify-between gap-4 text-emerald-400 font-semibold">
+                    <span>Đơn hoàn tất:</span>
+                    <span>
                       {trendItems[hoveredIndex].paid_orders.toLocaleString(
                         "vi-VN",
                       )}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between gap-4 font-semibold text-violet-400">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-violet-500" />
-                      Tickets sold:
-                    </span>
-                    <span className="font-mono">
+                  <div className="flex items-center justify-between gap-4 text-violet-400 font-semibold">
+                    <span>Vé bán ra:</span>
+                    <span>
                       {trendItems[hoveredIndex].tickets_sold.toLocaleString(
                         "vi-VN",
                       )}

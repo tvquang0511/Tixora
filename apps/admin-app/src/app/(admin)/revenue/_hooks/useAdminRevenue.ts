@@ -138,6 +138,18 @@ export function useAdminRevenue() {
     return () => clearTimeout(timer);
   }, [selectedConcertId, fromDate, toDate]);
 
+  const reloadRevenue = useCallback(() => {
+    void fetchTrendData(fromDate, toDate, groupBy);
+    void fetchConcertsData(fromDate, toDate, tempStatus);
+  }, [
+    fetchTrendData,
+    fetchConcertsData,
+    fromDate,
+    toDate,
+    groupBy,
+    tempStatus,
+  ]);
+
   const handleApply = () => {
     setFromDate(tempFromDate);
     setToDate(tempToDate);
@@ -220,5 +232,6 @@ export function useAdminRevenue() {
     tierTotals,
     handleApply,
     handleReset,
+    reloadRevenue,
   };
 }

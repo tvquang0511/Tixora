@@ -25,11 +25,11 @@ import {
 const JOB_TYPE_MAP: Record<string, { label: string; className: string }> = {
   GENERATE_BIO: {
     label: "Tạo Bio AI",
-    className: "bg-violet-500/10 text-violet-400 border border-violet-500/20",
+    className: "bg-purple-50 text-purple-700 border border-purple-200",
   },
   GUEST_LIST_IMPORT: {
     label: "Import khách mời",
-    className: "bg-sky-500/10 text-sky-400 border border-sky-500/20",
+    className: "bg-sky-50 text-sky-700 border border-sky-200",
   },
 };
 
@@ -39,24 +39,22 @@ const STATUS_MAP: Record<
 > = {
   PENDING: {
     label: "Đang chờ",
-    className: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
+    className: "bg-amber-50 text-amber-800 border border-amber-300",
     icon: <Clock className="w-3 h-3" />,
   },
   PROCESSING: {
     label: "Đang xử lý",
-    className:
-      "bg-blue-500/10 text-blue-400 border border-blue-500/20 animate-pulse",
+    className: "bg-blue-50 text-blue-700 border border-blue-300 animate-pulse",
     icon: <Loader2 className="w-3 h-3 animate-spin" />,
   },
   COMPLETED: {
     label: "Hoàn thành",
-    className:
-      "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+    className: "bg-emerald-50 text-emerald-800 border border-emerald-300",
     icon: <CheckCircle2 className="w-3 h-3" />,
   },
   FAILED: {
     label: "Thất bại",
-    className: "bg-rose-500/10 text-rose-400 border border-rose-500/20",
+    className: "bg-rose-50 text-rose-800 border border-rose-300",
     icon: <XCircle className="w-3 h-3" />,
   },
 };
@@ -82,10 +80,10 @@ function CopyIdButton({
     <button
       onClick={handleCopy}
       title={title}
-      className="p-0.5 rounded text-muted-foreground hover:text-foreground transition-all active:scale-90 cursor-pointer shrink-0"
+      className="p-1 rounded-none text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
     >
       {copied ? (
-        <Check className="w-3 h-3 text-emerald-400" />
+        <Check className="w-3 h-3 text-emerald-600" />
       ) : (
         <Copy className="w-3 h-3" />
       )}
@@ -97,14 +95,14 @@ function ExpandableError({ message }: { message: string }) {
   const [expanded, setExpanded] = useState(false);
   const isLong = message.length > 80;
   return (
-    <div className="text-rose-400 text-[10px] leading-snug">
+    <div className="text-rose-700 text-[11px] leading-snug font-sans">
       <span className={!expanded && isLong ? "line-clamp-2" : ""}>
         {message}
       </span>
       {isLong && (
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="ml-1 text-[9px] font-bold text-rose-300 hover:text-rose-100 underline cursor-pointer"
+          className="ml-1 text-[10px] font-bold text-rose-800 hover:underline cursor-pointer"
         >
           {expanded ? "Thu gọn" : "Xem thêm"}
         </button>
@@ -116,21 +114,21 @@ function ExpandableError({ message }: { message: string }) {
 function MiniProgressBar({ value, status }: { value: number; status: string }) {
   const barColor =
     status === "COMPLETED"
-      ? "bg-emerald-500"
+      ? "bg-emerald-600"
       : status === "FAILED"
-        ? "bg-rose-500"
+        ? "bg-rose-600"
         : status === "PROCESSING"
-          ? "bg-blue-500"
-          : "bg-amber-500";
+          ? "bg-blue-600"
+          : "bg-amber-600";
   return (
     <div className="flex items-center gap-2 w-full min-w-[80px]">
-      <div className="flex-1 bg-border rounded-full h-2 overflow-hidden">
+      <div className="flex-1 bg-slate-200 rounded-none h-2 overflow-hidden">
         <div
-          className={`${barColor} h-full rounded-full transition-all duration-500`}
+          className={`${barColor} h-full rounded-none transition-all duration-300`}
           style={{ width: `${value}%` }}
         />
       </div>
-      <span className="text-[10px] font-bold tabular-nums text-muted-foreground w-7 text-right">
+      <span className="text-[10px] font-mono font-bold tabular-nums text-slate-600 w-7 text-right">
         {value}%
       </span>
     </div>
@@ -153,24 +151,24 @@ function formatDt(iso: string | null) {
 function StatCard({
   label,
   value,
-  colorClass,
   icon,
 }: {
   label: string;
   value: number;
-  colorClass: string;
   icon: React.ReactNode;
 }) {
   return (
-    <div className="bg-surface rounded-xl border border-border p-5 flex items-center gap-4 shadow-sm">
-      <div className={`p-3 rounded-xl ${colorClass}`}>{icon}</div>
+    <div className="bg-white rounded-none border border-slate-200 p-4 shadow-none flex items-center justify-between">
       <div>
-        <p className="text-2xl font-black font-display text-foreground tabular-nums">
-          {value}
-        </p>
-        <p className="text-xs font-semibold text-muted-foreground mt-0.5">
+        <p className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
           {label}
         </p>
+        <p className="text-2xl font-mono font-bold text-slate-900 tabular-nums mt-1">
+          {value.toLocaleString("vi-VN")}
+        </p>
+      </div>
+      <div className="p-2.5 bg-slate-100 border border-slate-200 rounded-none text-slate-700">
+        {icon}
       </div>
     </div>
   );
@@ -228,7 +226,7 @@ export default function AdminJobsPage() {
     return () => clearTimeout(t);
   }, [search]);
 
-  // Main fetch effect – defines async function inline to satisfy react-hooks/set-state-in-effect
+  // Main fetch effect
   useEffect(() => {
     let cancelled = false;
     const silent = isAutoRefreshRef.current;
@@ -288,69 +286,71 @@ export default function AdminJobsPage() {
   const failed = jobs.filter((j) => j.status === "FAILED").length;
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-full">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-6">
+      {/* Enterprise Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground flex items-center gap-2">
-            <Cpu className="w-6 h-6 text-primary" />
-            Tác vụ nền
+          <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500">
+            Hạ tầng / Xử lý bất đồng bộ
+          </div>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 mt-1 uppercase font-mono">
+            Hàng đợi tác vụ nền
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Theo dõi tất cả background jobs trong hệ thống (AI Bio, Import khách
-            mời…)
+          <p className="text-xs text-slate-600 font-sans mt-0.5">
+            Giám sát tiến trình các background worker: Tạo tiểu sử AI, xử lý
+            danh sách khách mời
           </p>
         </div>
-        <button
-          onClick={handleManualRefresh}
-          disabled={isLoading || isRefreshing}
-          className="flex items-center gap-2 px-4 py-2 text-xs font-semibold border border-border rounded-lg text-foreground hover:bg-surface-high transition-all disabled:opacity-50 cursor-pointer select-none"
-        >
-          <RefreshCw
-            className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`}
-          />
-          {isRefreshing ? "Đang cập nhật..." : "Làm mới"}
-        </button>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleManualRefresh}
+            disabled={isLoading || isRefreshing}
+            className="inline-flex items-center gap-1.5 px-3 py-2 border border-slate-300 rounded-none bg-white hover:bg-slate-100 text-xs font-mono font-bold text-slate-700 transition-colors disabled:opacity-50 cursor-pointer"
+            title="Tải lại danh sách tác vụ"
+          >
+            <RefreshCw
+              className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-slate-900" : ""}`}
+            />
+            <span>{isRefreshing ? "Đang cập nhật..." : "Làm mới"}</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard
-          label="Tổng số tác vụ"
+          label="Tổng tác vụ"
           value={meta?.total ?? 0}
-          colorClass="bg-primary/10 text-primary"
-          icon={<Cpu className="w-5 h-5" />}
+          icon={<Cpu className="w-4 h-4" />}
         />
         <StatCard
-          label="Đang chờ"
+          label="Đang chờ xử lý"
           value={pending}
-          colorClass="bg-amber-500/10 text-amber-400"
-          icon={<Clock className="w-5 h-5" />}
+          icon={<Clock className="w-4 h-4" />}
         />
         <StatCard
-          label="Đang xử lý"
+          label="Đang chạy"
           value={processing}
-          colorClass="bg-blue-500/10 text-blue-400"
-          icon={<Loader2 className="w-5 h-5" />}
+          icon={<Loader2 className="w-4 h-4" />}
         />
         <StatCard
           label="Thất bại"
           value={failed}
-          colorClass="bg-rose-500/10 text-rose-400"
-          icon={<XCircle className="w-5 h-5" />}
+          icon={<XCircle className="w-4 h-4" />}
         />
       </div>
 
-      {/* Filters */}
-      <div className="bg-surface rounded-xl border border-border p-4 flex flex-col sm:flex-row gap-3 shadow-sm">
+      {/* Filters Bar */}
+      <div className="bg-white rounded-none border border-slate-200 p-4 shadow-none flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
-            placeholder="Tìm theo Concert ID…"
+            placeholder="Tìm theo Concert ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-border bg-background rounded-lg text-sm focus:ring-1 focus:ring-primary focus:border-primary focus:outline-none"
+            className="w-full pl-8 pr-3 py-2 border border-slate-300 bg-white rounded-none text-xs font-mono text-slate-900 focus:outline-none focus:border-slate-800 h-10"
           />
         </div>
         <select
@@ -359,7 +359,7 @@ export default function AdminJobsPage() {
             setStatusFilter(e.target.value);
             setPage(1);
           }}
-          className="px-3 py-2 border border-border bg-background rounded-lg text-sm font-semibold cursor-pointer focus:outline-none"
+          className="px-3 py-2 border border-slate-300 bg-white rounded-none text-xs font-mono font-semibold text-slate-900 cursor-pointer focus:outline-none focus:border-slate-800 h-10"
         >
           <option value="">Tất cả trạng thái</option>
           <option value="PENDING">Đang chờ</option>
@@ -373,7 +373,7 @@ export default function AdminJobsPage() {
             setTypeFilter(e.target.value);
             setPage(1);
           }}
-          className="px-3 py-2 border border-border bg-background rounded-lg text-sm font-semibold cursor-pointer focus:outline-none"
+          className="px-3 py-2 border border-slate-300 bg-white rounded-none text-xs font-mono font-semibold text-slate-900 cursor-pointer focus:outline-none focus:border-slate-800 h-10"
         >
           <option value="">Tất cả loại tác vụ</option>
           <option value="GENERATE_BIO">Tạo Bio AI</option>
@@ -382,40 +382,40 @@ export default function AdminJobsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-surface rounded-xl border border-border shadow-sm overflow-hidden">
+      <div className="bg-white rounded-none border border-slate-200 shadow-none overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-sm">
+          <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-border bg-surface-high/40 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider select-none">
-                <th className="px-4 py-3.5">Loại</th>
-                <th className="px-4 py-3.5">Sự kiện</th>
-                <th className="px-4 py-3.5">Người tạo</th>
-                <th className="px-4 py-3.5 text-center">Trạng thái</th>
-                <th className="px-4 py-3.5 w-40">Tiến trình</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">Tạo lúc</th>
-                <th className="px-4 py-3.5 whitespace-nowrap">
-                  Hoàn thành lúc
-                </th>
-                <th className="px-4 py-3.5">Lỗi</th>
+              <tr className="border-b border-slate-200 bg-slate-100 text-[10px] font-mono font-bold text-slate-600 uppercase tracking-wider select-none">
+                <th className="px-3 py-3">Loại tác vụ</th>
+                <th className="px-3 py-3">Sự kiện</th>
+                <th className="px-3 py-3">Người khởi tạo</th>
+                <th className="px-3 py-3 text-center">Trạng thái</th>
+                <th className="px-3 py-3 w-36">Tiến độ</th>
+                <th className="px-3 py-3 whitespace-nowrap">Khởi tạo</th>
+                <th className="px-3 py-3 whitespace-nowrap">Hoàn thành</th>
+                <th className="px-3 py-3">Lỗi phát sinh</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-slate-200 font-sans">
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="p-10 text-center select-none">
-                    <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                      Đang tải dữ liệu…
-                    </p>
+                  <td
+                    colSpan={8}
+                    className="p-12 text-center font-mono text-xs text-slate-500"
+                  >
+                    <Loader2 className="w-5 h-5 animate-spin text-slate-900 mx-auto mb-2" />
+                    <p>Đang tải dữ liệu tác vụ...</p>
                   </td>
                 </tr>
               ) : jobs.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="p-10 text-center select-none">
-                    <Cpu className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                      Không tìm thấy tác vụ nào.
-                    </p>
+                  <td
+                    colSpan={8}
+                    className="p-12 text-center font-mono text-xs text-slate-500"
+                  >
+                    <Cpu className="w-6 h-6 text-slate-400 mx-auto mb-2" />
+                    <p>Không tìm thấy tác vụ nền nào phù hợp.</p>
                   </td>
                 </tr>
               ) : (
@@ -423,79 +423,72 @@ export default function AdminJobsPage() {
                   const typeInfo = JOB_TYPE_MAP[job.job_type] ?? {
                     label: job.job_type,
                     className:
-                      "bg-zinc-500/10 text-zinc-400 border border-zinc-500/20",
+                      "bg-slate-100 text-slate-700 border border-slate-300",
                   };
                   const statusInfo = STATUS_MAP[job.status] ?? {
                     label: job.status,
                     className:
-                      "bg-zinc-500/10 text-zinc-400 border border-zinc-500/20",
+                      "bg-slate-100 text-slate-700 border border-slate-300",
                     icon: null,
                   };
                   return (
                     <tr
                       key={job.id}
-                      className="hover:bg-surface/50 transition-colors"
+                      className="hover:bg-slate-50 transition-colors"
                     >
                       {/* Loại + copy ID tác vụ */}
-                      <td className="px-4 py-4">
+                      <td className="px-3 py-3">
                         <div className="flex items-center gap-1.5">
                           <span
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${typeInfo.className}`}
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-none font-mono text-[9px] font-bold uppercase tracking-wider ${typeInfo.className}`}
                           >
                             {typeInfo.label}
                           </span>
-                          <CopyIdButton
-                            id={job.id}
-                            title="Sao chép ID tác vụ"
-                          />
+                          <CopyIdButton id={job.id} title="Sao chép Job ID" />
                         </div>
                       </td>
 
                       {/* Sự kiện + copy ID sự kiện */}
-                      <td className="px-4 py-4 max-w-[200px]">
+                      <td className="px-3 py-3 max-w-[200px]">
                         {job.concert_name ? (
                           <div className="flex items-center gap-1.5">
                             <Link
                               href={`/create-event?edit=${job.target_id}`}
-                              className="text-primary hover:underline font-semibold line-clamp-2 leading-snug"
+                              className="text-slate-900 hover:text-blue-700 font-bold line-clamp-1 text-xs"
                               title={job.concert_name}
                             >
                               {job.concert_name}
                             </Link>
                             <CopyIdButton
                               id={job.target_id}
-                              title="Sao chép ID sự kiện"
+                              title="Sao chép Concert ID"
                             />
                           </div>
                         ) : (
-                          <span className="text-muted-foreground/40 italic">
-                            —
-                          </span>
+                          <span className="text-slate-400 italic">—</span>
                         )}
                       </td>
 
                       {/* Người tạo */}
-                      <td className="px-4 py-4">
+                      <td className="px-3 py-3">
                         {job.triggered_by_name ? (
                           <div>
-                            <p className="font-semibold text-foreground">
+                            <p className="font-semibold text-slate-900">
                               {job.triggered_by_name}
                             </p>
-                            <p className="text-[10px] text-muted-foreground select-all">
+                            <p className="text-[10px] text-slate-500 font-mono select-all">
                               {job.triggered_by_email}
                             </p>
                           </div>
                         ) : (
-                          <span className="text-muted-foreground/40 italic">
-                            —
-                          </span>
+                          <span className="text-slate-400 italic">—</span>
                         )}
                       </td>
 
                       {/* Trạng thái */}
-                      <td className="px-4 py-4 text-center">
+                      <td className="px-3 py-3 text-center">
                         <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${statusInfo.className}`}
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-none font-mono text-[9px] font-bold uppercase tracking-wider ${statusInfo.className}`}
                         >
                           {statusInfo.icon}
                           {statusInfo.label}
@@ -503,7 +496,7 @@ export default function AdminJobsPage() {
                       </td>
 
                       {/* Tiến trình */}
-                      <td className="px-4 py-4 w-40">
+                      <td className="px-3 py-3 w-36">
                         <MiniProgressBar
                           value={job.progress_percentage}
                           status={job.status}
@@ -511,21 +504,21 @@ export default function AdminJobsPage() {
                       </td>
 
                       {/* Tạo lúc */}
-                      <td className="px-4 py-4 text-muted-foreground tabular-nums whitespace-nowrap">
+                      <td className="px-3 py-3 text-slate-600 font-mono text-[11px] whitespace-nowrap">
                         {formatDt(job.created_at)}
                       </td>
 
                       {/* Hoàn thành lúc */}
-                      <td className="px-4 py-4 text-muted-foreground tabular-nums whitespace-nowrap">
+                      <td className="px-3 py-3 text-slate-600 font-mono text-[11px] whitespace-nowrap">
                         {formatDt(job.completed_at)}
                       </td>
 
                       {/* Lỗi */}
-                      <td className="px-4 py-4 max-w-[180px]">
+                      <td className="px-3 py-3 max-w-[180px]">
                         {job.error_message ? (
                           <ExpandableError message={job.error_message} />
                         ) : (
-                          <span className="text-muted-foreground/30">—</span>
+                          <span className="text-slate-400">—</span>
                         )}
                       </td>
                     </tr>
@@ -538,13 +531,13 @@ export default function AdminJobsPage() {
 
         {/* Pagination */}
         {!isLoading && jobs.length > 0 && meta && (
-          <div className="px-4 py-3 border-t border-border bg-surface-high/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 select-none">
+          <div className="px-4 py-3 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 select-none">
             <div className="flex items-center gap-4">
-              <span className="text-xs text-muted-foreground font-semibold">
-                {meta.total} tác vụ · Trang {meta.page}/{meta.totalPages}
+              <span className="text-xs text-slate-600 font-mono">
+                Tổng {meta.total} tác vụ · Trang {meta.page}/{meta.totalPages}
               </span>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-muted-foreground font-semibold">
+                <span className="text-[10px] text-slate-500 font-mono font-bold uppercase">
                   Hiển thị:
                 </span>
                 <select
@@ -553,7 +546,7 @@ export default function AdminJobsPage() {
                     setLimit(Number(e.target.value));
                     setPage(1);
                   }}
-                  className="px-1.5 py-0.5 border border-border bg-background rounded text-[10px] font-semibold cursor-pointer focus:outline-none"
+                  className="px-1.5 py-0.5 border border-slate-300 bg-white rounded-none font-mono text-[11px] font-semibold cursor-pointer focus:outline-none"
                 >
                   <option value={10}>10</option>
                   <option value={20}>20</option>
@@ -567,7 +560,7 @@ export default function AdminJobsPage() {
               <button
                 disabled={page === 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="p-1.5 rounded border border-border bg-background hover:bg-surface-high disabled:opacity-40 transition-all cursor-pointer"
+                className="p-1 rounded-none border border-slate-300 bg-white hover:bg-slate-100 disabled:opacity-40 transition-colors cursor-pointer text-slate-700"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
@@ -575,7 +568,7 @@ export default function AdminJobsPage() {
                 p === "..." ? (
                   <span
                     key={`ellipsis-${idx}`}
-                    className="px-2 py-1 text-[10px] text-muted-foreground font-bold self-center"
+                    className="px-2 py-1 text-[10px] text-slate-400 font-bold self-center font-mono"
                   >
                     ...
                   </span>
@@ -583,10 +576,10 @@ export default function AdminJobsPage() {
                   <button
                     key={`page-${p}`}
                     onClick={() => setPage(Number(p))}
-                    className={`px-2.5 py-1 rounded text-[10px] font-bold border transition-all cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-none text-xs font-mono font-bold border transition-colors cursor-pointer ${
                       page === p
-                        ? "bg-primary border-primary text-primary-foreground"
-                        : "border-border hover:border-primary/50 text-foreground hover:text-primary bg-background"
+                        ? "bg-slate-900 border-slate-900 text-white"
+                        : "border-slate-300 hover:bg-slate-100 text-slate-800 bg-white"
                     }`}
                   >
                     {p}
@@ -596,7 +589,7 @@ export default function AdminJobsPage() {
               <button
                 disabled={page === totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="p-1.5 rounded border border-border bg-background hover:bg-surface-high disabled:opacity-40 transition-all cursor-pointer"
+                className="p-1 rounded-none border border-slate-300 bg-white hover:bg-slate-100 disabled:opacity-40 transition-colors cursor-pointer text-slate-700"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
@@ -609,8 +602,8 @@ export default function AdminJobsPage() {
       {response?.data.some(
         (j) => j.status === "PENDING" || j.status === "PROCESSING",
       ) && (
-        <p className="text-[11px] text-muted-foreground text-center flex items-center justify-center gap-1.5 select-none">
-          <Loader2 className="w-3 h-3 animate-spin text-primary" />
+        <p className="text-[11px] text-slate-600 font-mono text-center flex items-center justify-center gap-1.5 select-none">
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-900" />
           Đang có tác vụ hoạt động — tự động làm mới mỗi 5 giây
         </p>
       )}

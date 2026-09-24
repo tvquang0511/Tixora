@@ -1,20 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, RotateCw } from "lucide-react";
 import { formatConcertCurrency } from "@/services/concert.service";
 import {
   getAdminOrders,
   type AdminOrderListItem,
 } from "@/services/order.service";
-
-const ORDER_STATUS_CLASSES: Record<string, string> = {
-  PAID: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  PENDING: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  CANCELLED: "bg-rose-500/10 text-rose-400 border-rose-500/20",
-};
+import { StatusBadge } from "../_components/StatusBadge";
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -33,29 +27,14 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="p-1 rounded-md hover:bg-surface-highest text-muted-foreground hover:text-foreground transition-all active:scale-90 cursor-pointer shrink-0"
+      className="p-1 border border-slate-300 bg-white hover:bg-slate-50 text-slate-500 rounded-none cursor-pointer shrink-0"
       title="Sao chép"
     >
       {copied ? (
-        <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-0.5 select-none">
-          <svg
-            className="w-3.5 h-3.5 shrink-0"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4.5 12.75l6 6 9-13.5"
-            />
-          </svg>
-          Đã chép
-        </span>
+        <span className="text-[10px] text-emerald-600 font-bold">✓</span>
       ) : (
         <svg
-          className="w-3.5 h-3.5 shrink-0 select-none"
+          className="w-3 h-3"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -64,7 +43,7 @@ function CopyButton({ text }: { text: string }) {
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"
+            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
           />
         </svg>
       )}
@@ -72,18 +51,19 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
-export default function AdminOrdersListPage() {
+export default function AdminOrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<AdminOrderListItem[]>([]);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
-  // Debounce search input to prevent API spamming
+  // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
@@ -92,26 +72,31 @@ export default function AdminOrdersListPage() {
     return () => clearTimeout(handler);
   }, [search]);
 
-  useEffect(() => {
-    async function fetchOrders() {
-      try {
-        setIsLoading(true);
-        const response = await getAdminOrders({
-          page,
-          limit,
-          search: debouncedSearch || undefined,
-          status: statusFilter || undefined,
-        });
-        setOrders(response.data);
-        setTotalPages(response.meta.totalPages);
-      } catch (err) {
-        console.error("Failed to fetch admin orders:", err);
-      } finally {
-        setIsLoading(false);
-      }
+  const fetchOrders = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAdminOrders({
+        page,
+        limit,
+        search: debouncedSearch || undefined,
+        status: statusFilter || undefined,
+      });
+      setOrders(response.data);
+      setTotalPages(response.meta.totalPages);
+      setTotalItems(response.meta.totalItems);
+    } catch (err) {
+      console.error("Failed to fetch admin orders:", err);
+    } finally {
+      setIsLoading(false);
     }
-    void fetchOrders();
   }, [page, limit, debouncedSearch, statusFilter]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void fetchOrders();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchOrders]);
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
@@ -137,186 +122,135 @@ export default function AdminOrdersListPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-4 max-w-7xl mx-auto">
       {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-        <div className="space-y-1">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline mb-2 select-none"
-          >
-            <ChevronLeft size={14} /> Quay lại trang tổng quan
-          </Link>
-          <h1 className="font-display text-3xl font-bold text-foreground">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
             Quản lý Đơn hàng
           </h1>
-          <p className="text-muted-foreground font-body text-sm">
-            Duyệt, tìm kiếm và giám sát tất cả các giao dịch vé trên hệ thống
+          <p className="text-xs text-slate-500 mt-0.5">
+            Duyệt, tìm kiếm và kiểm tra tất cả các giao dịch thanh toán vé trong
+            hệ thống.
           </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => void fetchOrders()}
+            disabled={isLoading}
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-none cursor-pointer transition-colors disabled:opacity-50"
+            title="Làm mới danh sách đơn hàng"
+          >
+            <RotateCw
+              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`}
+            />
+            <span>Làm mới</span>
+          </button>
         </div>
       </div>
 
       {/* Filters Bar */}
-      <div className="p-4 bg-surface border border-border rounded-xl shadow-sm flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div className="p-3 bg-white border border-slate-200 rounded-none flex flex-col sm:flex-row gap-3 items-center justify-between">
         <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
-            className="pl-10 pr-4 py-2 border border-border rounded-lg bg-background focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body text-sm w-full transition-all text-foreground"
-            placeholder="Tìm theo mã đơn, tên, email..."
+            className="pl-9 pr-3 py-2 border border-slate-300 rounded-none bg-white text-slate-900 text-xs w-full focus:outline-none focus:border-slate-900 placeholder:text-slate-400"
+            placeholder="Tìm theo mã đơn, người mua, email..."
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
-          <span className="text-xs text-muted-foreground font-body font-semibold select-none">
+          <span className="text-xs text-slate-600 font-medium select-none">
             Trạng thái:
           </span>
-          <div className="relative">
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setPage(1);
-              }}
-              className="appearance-none pl-3 pr-8 py-1.5 border border-border rounded-lg bg-background font-body text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-foreground font-semibold cursor-pointer"
-            >
-              <option
-                value=""
-                className="bg-surface text-foreground font-semibold"
-              >
-                Tất cả Trạng thái
-              </option>
-              <option
-                value="PAID"
-                className="bg-surface text-foreground font-semibold"
-              >
-                ĐÃ THANH TOÁN
-              </option>
-              <option
-                value="PENDING"
-                className="bg-surface text-foreground font-semibold"
-              >
-                CHỜ THANH TOÁN
-              </option>
-              <option
-                value="CANCELLED"
-                className="bg-surface text-foreground font-semibold"
-              >
-                ĐÃ HỦY
-              </option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-muted-foreground">
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                />
-              </svg>
-            </div>
-          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setPage(1);
+            }}
+            className="px-3 py-1.5 border border-slate-300 rounded-none bg-white text-xs font-semibold text-slate-700 cursor-pointer focus:outline-none focus:border-slate-900"
+          >
+            <option value="">Tất cả trạng thái</option>
+            <option value="PAID">PAID (Đã thanh toán)</option>
+            <option value="PENDING">PENDING (Chờ thanh toán)</option>
+            <option value="CANCELLED">CANCELLED (Đã hủy)</option>
+          </select>
         </div>
       </div>
 
       {/* Main Table Card */}
-      <div className="bg-surface border border-border rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-none overflow-hidden">
         {isLoading ? (
-          <div className="py-32 text-center text-muted-foreground">
-            <div className="flex flex-col items-center justify-center gap-3">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <span className="font-body text-sm select-none">
-                Đang tải danh sách đơn hàng...
-              </span>
+          <div className="py-20 text-center text-slate-500">
+            <div className="flex flex-col items-center justify-center gap-2">
+              <RotateCw className="h-6 w-6 animate-spin text-slate-600" />
+              <span className="text-xs">Đang tải danh sách đơn hàng...</span>
             </div>
           </div>
         ) : orders.length === 0 ? (
-          <div className="py-32 text-center text-muted-foreground font-body text-sm select-none">
+          <div className="py-20 text-center text-slate-500 text-xs">
             Không tìm thấy đơn hàng nào khớp với bộ lọc.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[900px]">
+            <table className="w-full text-left border-collapse min-w-[900px] text-xs">
               <thead>
-                <tr className="bg-background/50 font-body text-xs font-semibold text-muted-foreground uppercase tracking-wider select-none">
-                  <th className="p-4 border-b border-border">Mã đơn hàng</th>
-                  <th className="p-4 border-b border-border">Khách hàng</th>
-                  <th className="p-4 border-b border-border">Sự kiện</th>
-                  <th className="p-4 border-b border-border text-center">
-                    Số vé
-                  </th>
-                  <th className="p-4 border-b border-border">Số tiền</th>
-                  <th className="p-4 border-b border-border">Trạng thái</th>
-                  <th className="p-4 border-b border-border">Ngày tạo</th>
-                  <th className="p-4 border-b border-border text-center">
-                    Hành động
-                  </th>
+                <tr className="bg-slate-100 border-b border-slate-200 text-slate-700 font-semibold uppercase tracking-wider text-[11px] select-none">
+                  <th className="p-3">Mã đơn hàng</th>
+                  <th className="p-3">Khách hàng</th>
+                  <th className="p-3">Sự kiện</th>
+                  <th className="p-3 text-center">Số vé</th>
+                  <th className="p-3">Số tiền</th>
+                  <th className="p-3">Trạng thái</th>
+                  <th className="p-3">Ngày tạo</th>
+                  <th className="p-3 text-center">Hành động</th>
                 </tr>
               </thead>
-              <tbody className="font-body text-sm divide-y divide-border/60">
+              <tbody className="divide-y divide-slate-200 text-slate-800">
                 {orders.map((order) => (
                   <tr
                     key={order.id}
                     onClick={() => router.push(`/orders/${order.id}`)}
-                    className="hover:bg-surface-high/30 transition-colors cursor-pointer"
+                    className="hover:bg-slate-50 transition-colors cursor-pointer"
                   >
-                    <td className="p-4">
+                    <td className="p-3">
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="font-mono text-[11px] font-bold text-foreground break-all">
-                          {order.id.toUpperCase()}
+                        <span className="font-mono text-[11px] font-semibold text-slate-900 break-all">
+                          {order.id.slice(0, 8)}...
                         </span>
                         <CopyButton text={order.id} />
                       </div>
                     </td>
-                    <td className="p-4">
-                      <p className="font-bold text-foreground">
+                    <td className="p-3">
+                      <div className="font-semibold text-slate-900">
                         {order.user_name || "Khách hàng ẩn danh"}
-                      </p>
-                      {order.user_email && (
-                        <p className="text-muted-foreground text-xs">
-                          {order.user_email}
-                        </p>
-                      )}
+                      </div>
+                      <div className="text-[11px] text-slate-500 font-mono">
+                        {order.user_email || "N/A"}
+                      </div>
                     </td>
-                    <td
-                      className="p-4 font-semibold text-foreground max-w-xs truncate"
-                      title={order.concert_name}
-                    >
+                    <td className="p-3 font-medium text-slate-900">
                       {order.concert_name}
                     </td>
-                    <td className="p-4 text-center font-bold text-foreground">
+                    <td className="p-3 text-center font-bold text-slate-900">
                       {order.ticket_count}
                     </td>
-                    <td className="p-4 font-bold text-primary">
+                    <td className="p-3 font-semibold text-slate-900 whitespace-nowrap">
                       {formatConcertCurrency(Number(order.total_amount))}
                     </td>
-                    <td className="p-4 select-none">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full font-body text-[10px] font-bold border ${ORDER_STATUS_CLASSES[order.status] ?? "bg-surface-highest text-foreground border-border"}`}
-                      >
-                        {order.status === "PAID"
-                          ? "ĐÃ THANH TOÁN"
-                          : order.status === "PENDING"
-                            ? "CHỜ THANH TOÁN"
-                            : "ĐÃ HỦY"}
-                      </span>
+                    <td className="p-3">
+                      <StatusBadge status={order.status} variant="order" />
                     </td>
-                    <td className="p-4 text-muted-foreground text-xs">
+                    <td className="p-3 text-slate-500 whitespace-nowrap text-[11px]">
                       {new Date(order.created_at).toLocaleString("vi-VN")}
                     </td>
-                    <td className="p-4 text-center select-none">
-                      <Link
-                        href={`/orders/${order.id}`}
-                        className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
-                      >
+                    <td className="p-3 text-center">
+                      <span className="inline-block px-2 py-1 bg-white border border-slate-300 text-slate-700 text-[11px] font-semibold rounded-none hover:bg-slate-100">
                         Chi tiết
-                      </Link>
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -325,98 +259,74 @@ export default function AdminOrdersListPage() {
           </div>
         )}
 
-        {/* Pagination bar */}
+        {/* Pagination */}
         {!isLoading && totalPages > 1 && (
-          <div className="p-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 bg-background/30 select-none">
-            <div className="flex items-center gap-4 flex-wrap">
-              <span className="text-xs text-muted-foreground font-body">
-                Trang <span className="font-bold text-foreground">{page}</span>{" "}
-                trên{" "}
-                <span className="font-bold text-foreground">{totalPages}</span>
+          <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs select-none">
+            <div className="flex items-center gap-3 text-slate-600 font-medium">
+              <span>
+                Trang <strong className="text-slate-900">{page}</strong> trên{" "}
+                <strong className="text-slate-900">{totalPages}</strong> (Tổng:{" "}
+                <strong className="text-slate-900">{totalItems}</strong> đơn)
               </span>
-
-              {/* Limit Selector */}
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
-                  Hiển thị:
-                </span>
-                <div className="relative">
-                  <select
-                    value={limit}
-                    onChange={(e) => {
-                      setLimit(Number(e.target.value));
-                      setPage(1);
-                    }}
-                    className="appearance-none pl-2.5 pr-7 py-1 border border-border rounded-lg bg-background font-body text-xs focus:outline-none focus:border-primary text-foreground font-semibold cursor-pointer"
-                  >
-                    <option value={10}>10 dòng</option>
-                    <option value={20}>20 dòng</option>
-                    <option value={50}>50 dòng</option>
-                    <option value={100}>100 dòng</option>
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-muted-foreground">
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                      />
-                    </svg>
-                  </div>
-                </div>
+                <span className="text-[11px] text-slate-500">Hiển thị:</span>
+                <select
+                  value={limit}
+                  onChange={(e) => {
+                    setLimit(Number(e.target.value));
+                    setPage(1);
+                  }}
+                  className="px-2 py-1 border border-slate-300 bg-white text-xs font-semibold text-slate-700 rounded-none cursor-pointer focus:outline-none"
+                >
+                  <option value={10}>10 dòng</option>
+                  <option value={20}>20 dòng</option>
+                  <option value={50}>50 dòng</option>
+                </select>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <button
                 disabled={page === 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="p-1.5 border border-border rounded-lg hover:border-primary/50 hover:text-primary transition-all disabled:opacity-30 disabled:hover:border-border disabled:hover:text-muted-foreground cursor-pointer"
+                className="px-2.5 py-1 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-none disabled:opacity-40 cursor-pointer transition-colors"
               >
-                <ChevronLeft size={16} />
+                <ChevronLeft size={14} />
               </button>
 
-              <div className="flex items-center gap-1.5">
-                {getPageNumbers().map((p, idx) => {
-                  if (p === "...") {
-                    return (
-                      <span
-                        key={`dots-${idx}`}
-                        className="px-2 text-muted-foreground text-xs font-semibold select-none"
-                      >
-                        ...
-                      </span>
-                    );
-                  }
-                  const isCurrent = p === page;
+              {getPageNumbers().map((p: number | string, idx: number) => {
+                if (p === "...") {
                   return (
-                    <button
-                      key={`page-${p}`}
-                      onClick={() => setPage(p as number)}
-                      className={`px-3 py-1 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
-                        isCurrent
-                          ? "bg-primary border-primary text-white"
-                          : "border-border hover:border-primary/50 text-foreground hover:text-primary"
-                      }`}
+                    <span
+                      key={`dots-${idx}`}
+                      className="px-2 text-slate-400 text-xs font-mono"
                     >
-                      {p}
-                    </button>
+                      ...
+                    </span>
                   );
-                })}
-              </div>
+                }
+                const isCurrent = p === page;
+                return (
+                  <button
+                    key={`page-${p}`}
+                    onClick={() => setPage(p as number)}
+                    className={`px-3 py-1 text-xs font-semibold rounded-none border transition-colors cursor-pointer ${
+                      isCurrent
+                        ? "bg-slate-900 border-slate-900 text-white"
+                        : "border-slate-300 bg-white hover:bg-slate-50 text-slate-700"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
 
               <button
                 disabled={page === totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="p-1.5 border border-border rounded-lg hover:border-primary/50 hover:text-primary transition-all disabled:opacity-30 disabled:hover:border-border disabled:hover:text-muted-foreground cursor-pointer"
+                className="px-2.5 py-1 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-none disabled:opacity-40 cursor-pointer transition-colors"
               >
-                <ChevronRight size={16} />
+                <ChevronRight size={14} />
               </button>
             </div>
           </div>
