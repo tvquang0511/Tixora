@@ -6,7 +6,7 @@ import {
   OrderSummaryCard,
   ConfirmModal,
 } from "@/components/screens";
-import { Loader2, Ban, Sparkles } from "lucide-react";
+import { Loader2, Ban } from "lucide-react";
 import { processPayment, simulateMockPayment } from "@/services/payment.service";
 import { getCheckoutReservationState } from "@/utils/checkout-state.utils";
 import { getOrderById, cancelOrder } from "@/services/order.service";
@@ -321,10 +321,7 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
                   <span>Đang xác nhận thanh toán mô phỏng...</span>
                 </>
               ) : (
-                <>
-                  <Sparkles className="h-4 w-4 text-amber-200" />
-                  <span>Demo: Xác nhận thanh toán thành công</span>
-                </>
+                <span>Demo: Xác nhận thanh toán thành công</span>
               )}
             </button>
 
@@ -397,12 +394,8 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
               disabled={isAnyLoading || mockLoading}
               className="inline-flex items-center gap-2 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 to-indigo-500/10 px-5 py-3 text-sm font-semibold text-amber-300 hover:bg-amber-500/20 active:scale-[0.98] transition-all cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {mockLoading ? (
-                <Loader2 size={15} className="animate-spin" />
-              ) : (
-                <Sparkles size={15} className="text-amber-400" />
-              )}
-              {mockLoading ? "Đang xử lý mô phỏng…" : "⚡ Demo: Thanh toán 1-Click"}
+              {mockLoading && <Loader2 size={15} className="animate-spin" />}
+              {mockLoading ? "Đang xử lý mô phỏng…" : "Demo: Thanh toán 1-Click"}
             </button>
 
             {/* Cancel Order */}
