@@ -44,11 +44,17 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
     try {
       const state = getCheckoutReservationState();
       const resolvedOrderId = state?.orderId ?? orderId;
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem(
+          "last_checkout_order_id",
+          resolvedOrderId,
+        );
+      }
       await simulateMockPayment(resolvedOrderId);
       if (showSuccessToast) {
         showSuccessToast("Thanh toán thử nghiệm thành công!");
       }
-      window.location.href = `/payment/callback?code=00&cancel=false`;
+      window.location.href = `/payment/callback?code=00&cancel=false&orderId=${resolvedOrderId}`;
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Thanh toán thử nghiệm thất bại";
       setError(message);
@@ -83,7 +89,7 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
         if (orderData) {
           setOrderStatus(orderData.status);
           if (orderData.status === "PAID") {
-            window.location.href = `/payment/callback?code=00&cancel=false`;
+            window.location.href = `/payment/callback?code=00&cancel=false&orderId=${orderId}`;
           } else if (orderData.status === "CANCELLED") {
             setError("Đơn hàng này đã bị hủy hoặc đã hết hạn giữ chỗ.");
           }
@@ -133,7 +139,7 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
         const orderData = await getOrderById(paymentSession.resolvedOrderId);
         if (active && orderData && orderData.status === "PAID") {
           clearInterval(interval);
-          window.location.href = `/payment/callback?code=00&cancel=false`;
+          window.location.href = `/payment/callback?code=00&cancel=false&orderId=${paymentSession.resolvedOrderId}`;
         }
       } catch (err) {
         console.error("Polling order status error:", err);
@@ -317,7 +323,7 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
               ) : (
                 <>
                   <Sparkles className="h-4 w-4 text-amber-200" />
-                  <span>⚡ Demo: Xác nhận thanh toán thành công (1-Click)</span>
+                  <span>Demo: Xác nhận thanh toán thành công</span>
                 </>
               )}
             </button>
@@ -333,7 +339,7 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
 
         {/* Right column */}
         <OrderSummaryCard
-          onPay={() => {}}
+          onPay={() => { }}
           rightLoading={false}
           isAnyLoading={true}
           orderId={orderId}

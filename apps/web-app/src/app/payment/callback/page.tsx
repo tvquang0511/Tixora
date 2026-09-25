@@ -28,6 +28,7 @@ function CallbackContent() {
   const code = searchParams.get("code");
   const cancel = searchParams.get("cancel") === "true";
   const orderCodeParam = searchParams.get("orderCode");
+  const orderIdParam = searchParams.get("orderId");
 
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,7 +40,7 @@ function CallbackContent() {
 
     async function resolveAndVerifyOrder() {
       try {
-        let resolvedOrderId = window.sessionStorage.getItem(
+        let resolvedOrderId = orderIdParam || window.sessionStorage.getItem(
           "last_checkout_order_id",
         );
 
@@ -59,6 +60,18 @@ function CallbackContent() {
           );
           if (matched) {
             resolvedOrderId = matched.id;
+          }
+        }
+
+        // Fallback: if resolvedOrderId is still missing, attempt to fetch user's most recent order
+        if (!resolvedOrderId) {
+          try {
+            const recentOrders = await getOrders(1, 1);
+            if (recentOrders.data && recentOrders.data.length > 0) {
+              resolvedOrderId = recentOrders.data[0].id;
+            }
+          } catch (fetchErr) {
+            console.warn("Could not fetch recent order fallback:", fetchErr);
           }
         }
 
@@ -109,7 +122,7 @@ function CallbackContent() {
     return () => {
       active = false;
     };
-  }, [code, cancel, orderCodeParam, pollingCount]);
+  }, [code, cancel, orderCodeParam, orderIdParam, pollingCount]);
 
   if (loading) {
     return (
