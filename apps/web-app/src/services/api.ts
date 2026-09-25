@@ -22,22 +22,49 @@ class FetchError extends Error {
   }
 }
 
-let isRefreshing = false;
-let failedQueue: Array<{
-  resolve: (value?: unknown) => void;
-  reject: (reason?: unknown) => void;
-}> = [];
+let refreshPromise: Promise<string | null> | null = null;
 
-const processQueue = (error: unknown, token: string | null = null): void => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
+export async function refreshAccessToken(): Promise<string | null> {
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  refreshPromise = (async () => {
+    try {
+      const refreshToken = tokenStorage.getRefreshToken();
+      if (!refreshToken) {
+        throw new Error("No refresh token available");
+      }
+
+      const refreshResp = await fetch(`${API_BASE_URL}/auth/refresh`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!refreshResp.ok) {
+        throw new Error("Invalid refresh response");
+      }
+
+      const refreshData = await refreshResp.json();
+      tokenStorage.setTokens(
+        refreshData.accessToken,
+        refreshData.refreshToken,
+      );
+      return refreshData.accessToken as string;
+    } catch (err) {
+      tokenStorage.clearTokens();
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+      throw err;
+    } finally {
+      refreshPromise = null;
     }
-  });
-  failedQueue = [];
-};
+  })();
+
+  return refreshPromise;
+}
 
 export async function fetchClient<T>(
   endpoint: string,
@@ -81,78 +108,32 @@ export async function fetchClient<T>(
           endpoint.includes("/auth/reset-password") ||
           endpoint.includes("/auth/resend-verification");
 
-        if (isPublicAuthRequest) {
-          throw new FetchError("Unauthorized", response, errorData);
-        }
-
-        if (isRefreshRequest || _retry) {
-          tokenStorage.clearTokens();
-          if (typeof window !== "undefined") {
-            window.location.href = "/login";
-          }
-          throw new FetchError("Unauthorized", response, errorData);
-        }
-
-        if (!isRefreshing) {
-          isRefreshing = true;
-
-          try {
-            const refreshToken = tokenStorage.getRefreshToken();
-            if (!refreshToken) {
-              throw new Error("No refresh token available");
-            }
-
-            const refreshResp = await fetch(`${API_BASE_URL}/auth/refresh`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ refreshToken }),
-            });
-
-            if (refreshResp.ok) {
-              const refreshData = await refreshResp.json();
-              tokenStorage.setTokens(
-                refreshData.accessToken,
-                refreshData.refreshToken,
-              );
-              processQueue(null, refreshData.accessToken);
-            } else {
-              throw new Error("Invalid refresh response");
-            }
-          } catch (err) {
+        if (isPublicAuthRequest || isRefreshRequest || _retry) {
+          if (isRefreshRequest || _retry) {
             tokenStorage.clearTokens();
-            processQueue(err, null);
             if (typeof window !== "undefined") {
               window.location.href = "/login";
             }
-            throw err;
-          } finally {
-            isRefreshing = false;
           }
+          throw new FetchError("Unauthorized", response, errorData);
         }
 
-        // Wait for the token refresh to complete
-        return new Promise<T>((resolve, reject) => {
-          failedQueue.push({
-            resolve: resolve as (value?: unknown) => void,
-            reject,
-          });
-        })
-          .then((newToken) => {
-            const t = newToken as string | null;
-            if (t) {
-              const newHeaders = new Headers(config.headers);
-              newHeaders.set("Authorization", `Bearer ${t}`);
-              return fetchClient<T>(
-                endpoint,
-                { ...config, headers: newHeaders },
-                true,
-              );
-            }
-            throw new FetchError("Unauthorized", response, errorData);
-          })
-          .catch((err) => {
-            throw err;
-          });
+        try {
+          const newToken = await refreshAccessToken();
+          if (newToken) {
+            const newHeaders = new Headers(config.headers);
+            newHeaders.set("Authorization", `Bearer ${newToken}`);
+            return await fetchClient<T>(
+              endpoint,
+              { ...config, headers: newHeaders },
+              true,
+            );
+          }
+        } catch {
+          throw new FetchError("Unauthorized", response, errorData);
+        }
+
+        throw new FetchError("Unauthorized", response, errorData);
       }
 
       // Handle 403 Forbidden

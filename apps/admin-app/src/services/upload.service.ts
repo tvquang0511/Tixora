@@ -1,9 +1,24 @@
-import { tokenStorage } from "@/utils/token.utils";
+import { tokenStorage, isTokenExpired } from "@/utils/token.utils";
+import { refreshAccessToken, API_BASE_URL } from "./api";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api/proxy";
+async function getValidToken(): Promise<string | null> {
+  let token = tokenStorage.getAccessToken();
+  if (!token) return null;
+  if (isTokenExpired(token)) {
+    try {
+      token = await refreshAccessToken();
+    } catch {
+      return null;
+    }
+  }
+  return token;
+}
 
-export async function uploadImage(file: File): Promise<{ url: string }> {
-  const token = tokenStorage.getAccessToken();
+export async function uploadImage(
+  file: File,
+  isRetry = false,
+): Promise<{ url: string }> {
+  const token = await getValidToken();
   const formData = new FormData();
   formData.append("file", file);
 
@@ -19,6 +34,15 @@ export async function uploadImage(file: File): Promise<{ url: string }> {
     body: formData,
   });
 
+  if (response.status === 401 && !isRetry) {
+    try {
+      await refreshAccessToken();
+      return await uploadImage(file, true);
+    } catch {
+      // Refresh error redirects to /login automatically
+    }
+  }
+
   if (!response.ok) {
     const errorBody = await response.text();
     throw new Error(
@@ -29,8 +53,11 @@ export async function uploadImage(file: File): Promise<{ url: string }> {
   return response.json();
 }
 
-export async function uploadSvg(file: File): Promise<{ url: string }> {
-  const token = tokenStorage.getAccessToken();
+export async function uploadSvg(
+  file: File,
+  isRetry = false,
+): Promise<{ url: string }> {
+  const token = await getValidToken();
   const formData = new FormData();
   formData.append("file", file);
 
@@ -44,6 +71,15 @@ export async function uploadSvg(file: File): Promise<{ url: string }> {
     headers,
     body: formData,
   });
+
+  if (response.status === 401 && !isRetry) {
+    try {
+      await refreshAccessToken();
+      return await uploadSvg(file, true);
+    } catch {
+      // Refresh error redirects to /login automatically
+    }
+  }
 
   if (!response.ok) {
     const errorBody = await response.text();
