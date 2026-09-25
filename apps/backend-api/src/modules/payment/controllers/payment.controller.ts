@@ -55,6 +55,17 @@ export class PaymentController {
         return this.paymentService.processPayment(req.user.sub, dto, req.paymentTracking?.idempotencyKey);
     }
 
+    @Post('mock-process')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Simulate successful payment for demo/testing purposes' })
+    async mockProcessPayment(
+        @Req() req: any,
+        @Body() body: { order_id: string },
+    ) {
+        return this.paymentService.mockSimulatePaymentSuccess(req.user.sub, body.order_id);
+    }
+
     @Post('webhook')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ summary: 'Handle payment provider webhook callback' })

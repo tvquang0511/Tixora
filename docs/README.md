@@ -1,4 +1,4 @@
-﻿# 📚 HỆ THỐNG TÀI LIỆU DỰ ÁN Tixora (DOCUMENTATION PORTAL)
+# 📚 HỆ THỐNG TÀI LIỆU DỰ ÁN Tixora (DOCUMENTATION PORTAL)
 
 > **Chào mừng bạn đến với trung tâm tài liệu chính thức của Tixora!**  
 > Toàn bộ tài liệu được chuẩn hóa theo phân tầng nghiệp vụ, giúp đội ngũ kỹ thuật, kiểm thử và quản trị dễ dàng tra cứu, vận hành và phát triển tính năng mới.
@@ -69,6 +69,7 @@ Chứa các bản vẽ kiến trúc, thiết kế dữ liệu và giải pháp c
 - **[TECHSTACK.md](./01-architecture/TECHSTACK.md):** Đánh giá công nghệ (NestJS, Next.js 16, PostgreSQL, Redis, RabbitMQ) và các quyết định kỹ thuật then chốt (ADR).
 - **[DATABASE_SCHEMA.md](./01-architecture/DATABASE_SCHEMA.md):** Bản thiết kế CSDL hoàn chỉnh, sơ đồ ERD, các bảng, khóa ngoại và chỉ mục (Indexes).
 - **[HIGH_LOAD_DEFENSE.md](./01-architecture/HIGH_LOAD_DEFENSE.md):** Cơ chế bảo vệ hệ thống trước đợt bùng nổ 80.000 users (Token Bucket Rate Limiting, Redis Lua script nguyên tử, Opossum Circuit Breaker).
+- **[CASHFLOW_ESCROW_SETTLEMENT.md](./01-architecture/CASHFLOW_ESCROW_SETTLEMENT.md):** Thiết kế dòng tiền, tài khoản ký quỹ (Escrow), phân chia phí sàn và đối soát giải ngân cho Ban tổ chức (chuẩn Ticketbox).
 
 ### 2. [02-modules/](./02-modules/README.md) — Đặc Tả Nghiệp Vụ Các Module
 Đặc tả chi tiết đầu vào/đầu ra, API contracts, DTOs và luồng xử lý nội bộ:

@@ -30,6 +30,26 @@ export class PayOsStrategy implements PaymentGatewayStrategy {
             // session response (and therefore paymentLinkId) was lost to timeout.
             const orderCode = input.providerOrderCode;
             
+            const clientId = process.env.PAYOS_CLIENT_ID;
+            const apiKey = process.env.PAYOS_API_KEY;
+            const checksumKey = process.env.PAYOS_CHECKSUM_KEY;
+
+            // If PayOS credentials are mock or missing, return a simulated payment session
+            if (!clientId || !apiKey || !checksumKey || clientId === 'mock-client-id') {
+                this.logger.log(`[Demo/Mock Mode] Generating simulated VietQR session for orderCode ${orderCode}`);
+                const simulatedQr = `00020101021238540010A00000072701240006970422011003571314760208QRIBFTTA5303704540${input.amount}5802VN62180814TIXORA${orderCode}6304ABCD`;
+                const frontendUrl = process.env.FRONTEND_URL || 'https://tixora.tvquang.id.vn';
+                return {
+                    paymentMethod: this.paymentMethod,
+                    providerTransactionId: `mock_payos_${orderCode}`,
+                    checkoutUrl: `${frontendUrl}/checkout/${input.orderId}`,
+                    qrCode: simulatedQr,
+                    accountName: 'TIXORA DEMO (VIETQR MB BANK)',
+                    outcome: 'SUCCESS',
+                    raw: { isMock: true, orderCode },
+                };
+            }
+            
             const cancelUrl = input.returnUrl || `${process.env.FRONTEND_URL}/checkout/cancel`;
             const returnUrl = input.returnUrl || `${process.env.FRONTEND_URL}/checkout/success`;
 

@@ -1,6 +1,7 @@
 import {
     BadRequestException,
     ConflictException,
+    ForbiddenException,
     Injectable,
     Logger,
     NotFoundException,
@@ -1033,5 +1034,138 @@ export class PaymentService {
                 raw_response: updatedRaw as Prisma.JsonObject,
             },
         });
+    }
+
+    public async mockSimulatePaymentSuccess(userId: string, orderId: string) {
+        const order = await this.prisma.order.findUnique({
+            where: { id: orderId },
+            include: {
+                payment_transactions: true,
+                tickets: true,
+            },
+        });
+
+        if (!order) {
+            throw new NotFoundException('Order not found');
+        }
+
+        if (order.user_id !== userId) {
+            throw new ForbiddenException('You do not have access to this order');
+        }
+
+        if (order.status === 'PAID') {
+            return {
+                order_status: 'PAID',
+                payment_status: 'SUCCESS',
+                ticket_count: order.tickets.length,
+                message: 'Order is already paid',
+                ticket_ids: order.tickets.map((t) => t.id),
+            };
+        }
+
+        if (order.status !== 'PENDING') {
+            throw new BadRequestException(`Order cannot be paid because it is ${order.status}`);
+        }
+
+        let breakdown = this.extractTicketBreakdown(order.ticket_metadata);
+        if (breakdown.length === 0) {
+            const defaultCategory = await this.prisma.ticketCategory.findFirst({
+                where: { concert_id: order.concert_id },
+                orderBy: { price: 'asc' },
+                select: { id: true },
+            });
+            if (defaultCategory) {
+                breakdown = [{ category_id: defaultCategory.id, quantity: 1 }];
+            } else {
+                throw new BadRequestException('Order does not contain valid ticket breakdown metadata');
+            }
+        }
+
+        let transaction = order.payment_transactions[0];
+        if (!transaction) {
+            const idempotencyKey = `mock_sim_${order.id}_${Date.now()}`;
+            transaction = await this.prisma.paymentTransaction.create({
+                data: {
+                    order_id: order.id,
+                    payment_method: 'PAYOS',
+                    amount: order.total_amount,
+                    status: 'INIT',
+                    idempotency_key: idempotencyKey,
+                    raw_response: {
+                        phase: 'MOCK_PROCESS_REQUESTED',
+                        order_id: order.id,
+                    } as Prisma.JsonObject,
+                },
+            });
+        }
+
+        const ticketIds: string[] = [];
+
+        await this.prisma.$transaction(async (tx) => {
+            await tx.paymentTransaction.update({
+                where: { id: transaction.id },
+                data: {
+                    status: 'SUCCESS',
+                    transaction_id_3rd_party: `mock_sim_tx_${transaction.provider_order_code}`,
+                    raw_response: {
+                        is_mock_simulation: true,
+                        simulated_at: new Date().toISOString(),
+                    } as Prisma.JsonObject,
+                },
+            });
+
+            await tx.order.update({
+                where: { id: order.id },
+                data: {
+                    status: 'PAID',
+                    ticket_metadata: this.mergeTicketMetadata((order as any).ticket_metadata, breakdown),
+                } as any,
+            });
+
+            for (const item of breakdown) {
+                for (let index = 0; index < item.quantity; index += 1) {
+                    const qrCodeHash = this.generateQrCodeHash(order.id, transaction.id, item.category_id, index);
+                    const ticket = await tx.ticket.create({
+                        data: {
+                            order_id: order.id,
+                            category_id: item.category_id,
+                            qr_code_hash: qrCodeHash,
+                        },
+                    });
+                    ticketIds.push(ticket.id);
+                }
+            }
+
+            for (const item of breakdown) {
+                const category = await tx.ticketCategory.findUnique({
+                    where: { id: item.category_id },
+                    select: { total_quantity: true, status: true },
+                });
+                if (category) {
+                    const soldCount = await tx.ticket.count({
+                        where: { category_id: item.category_id },
+                    });
+                    if (soldCount >= category.total_quantity && category.status !== 'sold_out') {
+                        await tx.ticketCategory.update({
+                            where: { id: item.category_id },
+                            data: { status: 'sold_out' },
+                        });
+                        this.logger.log(`[Sold Out] Category ${item.category_id} marked as sold_out via mock payment`);
+                    }
+                }
+            }
+        });
+
+        void this.notificationService.sendTicketConfirmation(order.id).catch((error) => {
+            this.logger.error(`Failed to dispatch ticket confirmation for mock order ${order.id}`, error);
+        });
+
+        return {
+            order_status: 'PAID',
+            payment_status: 'SUCCESS',
+            ticket_count: ticketIds.length,
+            message: 'Mock payment processed successfully',
+            ticket_ids: ticketIds,
+        };
     }
 }

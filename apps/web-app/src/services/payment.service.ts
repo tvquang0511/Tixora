@@ -115,3 +115,16 @@ export async function resolveRefund(
     },
   );
 }
+
+export async function simulateMockPayment(
+  orderId: string,
+): Promise<{ order_status: string; payment_status: string; message: string }> {
+  return fetchClient<{ order_status: string; payment_status: string; message: string }>(
+    "/payments/mock-process",
+    {
+      method: "POST",
+      body: JSON.stringify({ order_id: orderId }),
+    },
+  );
+}
+

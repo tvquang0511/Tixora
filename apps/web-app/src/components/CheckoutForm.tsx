@@ -6,8 +6,8 @@ import {
   OrderSummaryCard,
   ConfirmModal,
 } from "@/components/screens";
-import { Loader2, Ban } from "lucide-react";
-import { processPayment } from "@/services/payment.service";
+import { Loader2, Ban, Sparkles } from "lucide-react";
+import { processPayment, simulateMockPayment } from "@/services/payment.service";
 import { getCheckoutReservationState } from "@/utils/checkout-state.utils";
 import { getOrderById, cancelOrder } from "@/services/order.service";
 import { useToast } from "@/context/ToastContext";
@@ -33,8 +33,29 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
     resolvedOrderId: string;
   } | null>(null);
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
-  const { error: showErrorToast } = useToast();
+  const { error: showErrorToast, success: showSuccessToast } = useToast();
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [mockLoading, setMockLoading] = useState(false);
+
+  const handleMockPay = useCallback(async () => {
+    if (loadingSource !== null || mockLoading) return;
+    setMockLoading(true);
+    setError(null);
+    try {
+      const state = getCheckoutReservationState();
+      const resolvedOrderId = state?.orderId ?? orderId;
+      await simulateMockPayment(resolvedOrderId);
+      if (showSuccessToast) {
+        showSuccessToast("Thanh toán thử nghiệm thành công!");
+      }
+      window.location.href = `/payment/callback?code=00&cancel=false`;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Thanh toán thử nghiệm thất bại";
+      setError(message);
+      showErrorToast(message);
+      setMockLoading(false);
+    }
+  }, [loadingSource, mockLoading, orderId, showErrorToast, showSuccessToast]);
 
   const handleCancelOrder = useCallback(async () => {
     setLoadingSource("cancel");
@@ -282,6 +303,26 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
 
           <div className="flex flex-col gap-3">
             <button
+              id="mock-pay-session-btn"
+              type="button"
+              onClick={handleMockPay}
+              disabled={mockLoading}
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-indigo-600 px-6 font-semibold text-white shadow-md hover:from-amber-600 hover:to-indigo-700 active:scale-[0.98] transition-all cursor-pointer"
+            >
+              {mockLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Đang xác nhận thanh toán mô phỏng...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 text-amber-200" />
+                  <span>⚡ Demo: Xác nhận thanh toán thành công (1-Click)</span>
+                </>
+              )}
+            </button>
+
+            <button
               onClick={() => setShowCancelConfirm(true)}
               className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-outline-variant text-sm font-semibold text-on-surface-variant transition-colors hover:bg-slate-850 hover:text-on-surface cursor-pointer"
             >
@@ -340,6 +381,22 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
             >
               {leftLoading && <Loader2 size={15} className="animate-spin" />}
               {leftLoading ? "Đang chuyển hướng…" : "Thanh toán ngay"}
+            </button>
+
+            {/* Mock Sandbox Pay */}
+            <button
+              id="mock-pay-btn"
+              type="button"
+              onClick={handleMockPay}
+              disabled={isAnyLoading || mockLoading}
+              className="inline-flex items-center gap-2 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 to-indigo-500/10 px-5 py-3 text-sm font-semibold text-amber-300 hover:bg-amber-500/20 active:scale-[0.98] transition-all cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {mockLoading ? (
+                <Loader2 size={15} className="animate-spin" />
+              ) : (
+                <Sparkles size={15} className="text-amber-400" />
+              )}
+              {mockLoading ? "Đang xử lý mô phỏng…" : "⚡ Demo: Thanh toán 1-Click"}
             </button>
 
             {/* Cancel Order */}
