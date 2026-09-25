@@ -1,5 +1,5 @@
-# 🎟️ Tixora — High-Concurrency Ticketing & Event Gate Distribution Platform
-### Nền Tảng Phân Phối Vé & Soát Vé Sự Kiện Chịu Tải Cao (pnpm Monorepo)
+# Tixora — High-Concurrency Ticketing & Event Gate Distribution Platform
+### Nền Tảng Phân Phối Vé & Soát Vé Sự Kiện Chịu Tải Cao
 
 <p align="center">
   <img src="docs/assets/HighLevelArchitecture.png" alt="Tixora Enterprise Architecture Banner" width="100%" />
@@ -17,16 +17,40 @@
   <img src="https://img.shields.io/badge/Testing-Playwright%20E2E%20%2B%20k6-2EAD33?style=for-the-badge&logo=k6&logoColor=white" alt="k6 Testing" />
 </p>
 
-> 💡 **Tixora là gì?**  
 > **Tixora** là một nền tảng bán vé và quản trị sự kiện trực tuyến hoàn chỉnh (tương tự mô hình *Ticketbox* hay *Ticketmaster*). Hệ thống được thiết kế đặc thù để giải quyết **2 bài toán kỹ thuật "sống còn"** của ngành công nghiệp sự kiện & hòa nhạc quy mô lớn:
 > 1. **Cơn ác mộng mở bán vé "Flash-Sale"**: Hàng chục ngàn khán giả đổ xô bấm nút "Mua vé" cùng lúc gây sập server, nghẽn database và bán vượt quá số lượng vé thực tế (Overselling / Race condition).
 > 2. **Cơn ác mộng nghẽn cổng soát vé**: Sóng 4G/Wifi bị tê liệt tại sân vận động có 40.000 khán giả, khiến ứng dụng soát vé quay tròn không tải được dữ liệu, gây ùn tắc kéo dài tại cổng check-in.
 
 ---
 
+## 🌐 Trải Nghiệm Trực Tiếp Trên Cloud (Instant Live Demo & Test Accounts)
+
+> Toàn bộ hệ thống Tixora đã được triển khai sẵn sàng trên Cloud Vercel. Bạn có thể truy cập ngay vào 2 cổng độc lập dưới đây:
+
+<p align="center">
+  <a href="https://tixora.tvquang.id.vn" target="_blank">
+    <img src="https://img.shields.io/badge/Audience%20Web%20Demo-https%3A%2F%2Ftixora.tvquang.id.vn-brightgreen?style=for-the-badge&logo=vercel" alt="Audience Web Live Demo" />
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://tixora-admin.tvquang.id.vn" target="_blank">
+    <img src="https://img.shields.io/badge/Admin%20Portal%20Demo-https%3A%2F%2Ftixora--admin.tvquang.id.vn-blue?style=for-the-badge&logo=vercel" alt="Admin Portal Live Demo" />
+  </a>
+</p>
+
+### 🔑 Danh Sách Tài Khoản Thử Nghiệm Nạp Sẵn Dữ Liệu (Mật khẩu chung: `12345678`)
+
+| Vai trò (Role) | Tài Khoản Đăng Nhập | Mật khẩu | Tính Năng Chính Trải Nghiệm |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `admin@tixora.local` | `12345678` | Bảng điều khiển doanh thu tổng quan, duyệt concert, quản lý phân quyền RBAC và audit logs. |
+| **Organizer** | `organizer@tixora.local` | `12345678` | Tạo sự kiện concert mới, thiết lập sơ đồ ghế & hạng vé, quản lý khách mời, theo dõi doanh số. |
+| **Audience** | `audience@tixora.local` | `12345678` | Săn vé Flash-Sale tải cao, đếm ngược giữ chỗ 10 phút, thanh toán VietQR PayOS và nhận vé QR. |
+| **Checker** | `checker@tixora.local` | `12345678` | Quét QR vé tại cổng kiểm soát, hỗ trợ hoạt động ngoại tuyến khi mất sóng Internet. *(Chỉ dùng trên Mobile)*. |
+
+---
+
 ## 📺 Video Giới Thiệu & Bản Trình Diễn (Video Demo & Walkthrough)
 
-> [!TIP]
+> [!NOTE]
 > 🎥 **Xem Video Demo Trực Quan (3-5 phút)**:
 > - **Luồng Khán giả & Săn vé Tải cao**: Đặt chỗ thời gian thực, giữ vé đếm ngược 10 phút, thanh toán PayOS và xuất vé QR.
 > - **Luồng Soát vé Ngoại tuyến (Offline Check-in)**: Tắt toàn bộ Wifi/4G trên điện thoại, quét vé QR thành công dưới 100ms và tự động đồng bộ khi có mạng.
@@ -165,19 +189,6 @@ sequenceDiagram
 ### 4. Bảo Vệ Phòng Thủ Đa Tầng (Token Bucket Rate Limiting & Idempotency)
 - **Token Bucket Guard**: Chặn đứng bot cào vé và người dùng nhấn F5 liên tục bằng mã lỗi `HTTP 429 Too Many Requests`.
 - **Idempotency Key (Redis SETNX)**: Khóa giao dịch thanh toán trong 24 giờ, chống hoàn toàn hiện tượng trừ tiền 2 lần khi người dùng bấm đúp nút thanh toán.
-
----
-
-## 🔑 Tài Khoản Trải Nghiệm Mẫu (Demo & Seed Accounts)
-
-Hệ thống đã nạp sẵn bộ dữ liệu mẫu chuẩn cho tất cả các vai trò. Mật khẩu chung: **`123456`**
-
-| Vai trò | Tài khoản Đăng Nhập | Cổng truy cập | Trải nghiệm tính năng |
-| :--- | :--- | :---: | :--- |
-| **Admin** | `vy.admin@tixora.local` | `:3002` | Quản trị nền tảng, duyệt sự kiện, báo cáo doanh thu tổng quan, quản lý phân quyền. |
-| **Organizer** | `tuan.organizer@tixora.local` | `:3002` | Tạo concert mới, thiết lập sơ đồ ghế & hạng vé, quản lý khách mời, theo dõi doanh thu. |
-| **Checker** | `quang.checker@tixora.local` | `:8081` *(Mobile)* | Đăng nhập trên ứng dụng di động, quét vé QR, thử nghiệm bật/tắt mạng kiểm tra tính năng Offline. |
-| **Audience** | Đăng ký mới hoặc dùng tài khoản test | `:3001` | Trải nghiệm săn vé Flash-Sale, đếm ngược giữ chỗ 10 phút, thanh toán và xem vé QR. |
 
 ---
 
