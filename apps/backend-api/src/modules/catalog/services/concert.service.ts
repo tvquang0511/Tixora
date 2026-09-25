@@ -120,10 +120,12 @@ export class ConcertService {
       if (client && client.isOpen) {
         for (const tier of concert.ticketTiers) {
           const key = `category:${tier.id}`;
+          const salesStartAtStr = tier.sales_start_at ? new Date(tier.sales_start_at).toISOString() : '';
           if (isNew) {
             await client.hSet(key, {
               available: tier.total_quantity.toString(),
               max_per_user: tier.max_per_user.toString(),
+              sales_start_at: salesStartAtStr,
             });
             this.logger.log(`[Redis Warmup] Automatically initialized category ${tier.id} for new concert ${concert.name}`);
           } else {
@@ -138,8 +140,11 @@ export class ConcertService {
                 await client.hIncrBy(key, 'available', difference);
                 this.logger.log(`[Redis Update] Adjusted category ${tier.id} available count by ${difference} (new total: ${tier.total_quantity})`);
               }
-              await client.hSet(key, 'max_per_user', tier.max_per_user.toString());
-              this.logger.log(`[Redis Update] Updated category ${tier.id} max_per_user to ${tier.max_per_user}`);
+              await client.hSet(key, {
+                max_per_user: tier.max_per_user.toString(),
+                sales_start_at: salesStartAtStr,
+              });
+              this.logger.log(`[Redis Update] Updated category ${tier.id} max_per_user to ${tier.max_per_user}, sales_start_at: ${salesStartAtStr || 'none'}`);
             } else {
               // If not in Redis yet, let lazy seeding handle it on-demand
               this.logger.log(`[Redis Update] Category ${tier.id} not found in Redis, skipping in-place update`);

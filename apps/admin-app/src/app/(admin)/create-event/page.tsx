@@ -140,9 +140,7 @@ function EventForm() {
         gate_number: 1,
         position: 1,
         status: "book_now",
-        sales_start_at: new Date(Date.now() + 3600 * 24 * 7 * 1000)
-          .toISOString()
-          .slice(0, 16),
+        sales_start_at: new Date().toISOString().slice(0, 16),
       },
     ],
   );
@@ -283,9 +281,10 @@ function EventForm() {
           gate_number: tc.gate_number ? Number(tc.gate_number) : null,
           position: Number(tc.position),
           status: tc.status,
-          sales_start_at: tc.sales_start_at
-            ? new Date(tc.sales_start_at).toISOString()
-            : null,
+          sales_start_at:
+            tc.sales_start_at && tc.sales_start_at.trim() !== ""
+              ? new Date(tc.sales_start_at).toISOString()
+              : null,
         })),
       };
 
@@ -317,9 +316,7 @@ function EventForm() {
         gate_number: 1,
         position: nextPos,
         status: "book_now",
-        sales_start_at: new Date(Date.now() + 3600 * 24 * 7 * 1000)
-          .toISOString()
-          .slice(0, 16),
+        sales_start_at: new Date().toISOString().slice(0, 16),
       },
     ]);
   };
