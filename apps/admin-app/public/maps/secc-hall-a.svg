@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" width="100%" height="100%" className="w-full h-auto select-none">
+  <style>
+    .zone-shape {
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      stroke: rgba(255, 255, 255, 0.4);
+      stroke-width: 1.5;
+    }
+    .zone-shape:hover {
+      filter: brightness(1.25);
+      stroke: #ffffff;
+      stroke-width: 3;
+    }
+    .zone-active {
+      filter: brightness(1.35) drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+      stroke: #ffffff !important;
+      stroke-width: 3.5 !important;
+    }
+    .zone-text {
+      pointer-events: none;
+      user-select: none;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+  </style>
+
+  <!-- Hall Outline -->
+  <rect x="100" y="30" width="800" height="590" rx="20" fill="#0f172a" stroke="#334155" stroke-width="2" />
+
+  <!-- Exhibition Stage -->
+  <rect x="250" y="55" width="500" height="60" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+  <text x="500" y="92" fill="#38bdf8" font-size="20" font-weight="800" text-anchor="middle" letter-spacing="4" class="zone-text">SECC HALL A - SÂN KHẤU</text>
+
+  <!-- VIP LOUNGE & SOFA -->
+  <rect id="VIP_LOUNGE" data-zone-code="VIP_LOUNGE" class="zone-shape" x="200" y="145" width="600" height="95" rx="10" fill="#f59e0b" fill-opacity="0.85" />
+  <text x="500" y="190" fill="#ffffff" font-size="18" font-weight="800" text-anchor="middle" class="zone-text">VIP LOUNGE &amp; SOFA</text>
+  <text x="500" y="215" fill="#fef3c7" font-size="13" font-weight="500" text-anchor="middle" class="zone-text">Bàn tròn &amp; Sofa thượng hạng</text>
+
+  <!-- ZONE A -->
+  <rect id="ZONE_A" data-zone-code="ZONE_A" class="zone-shape" x="200" y="260" width="600" height="105" rx="10" fill="#ec4899" fill-opacity="0.85" />
+  <text x="500" y="310" fill="#ffffff" font-size="18" font-weight="700" text-anchor="middle" class="zone-text">KHU A (GẦN SÂN KHẤU)</text>
+  <text x="500" y="335" fill="#fce7f3" font-size="13" font-weight="500" text-anchor="middle" class="zone-text">Ghế ngồi tiêu chuẩn dãy trước</text>
+
+  <!-- ZONE B -->
+  <rect id="ZONE_B" data-zone-code="ZONE_B" class="zone-shape" x="200" y="385" width="600" height="105" rx="10" fill="#8b5cf6" fill-opacity="0.85" />
+  <text x="500" y="435" fill="#ffffff" font-size="18" font-weight="700" text-anchor="middle" class="zone-text">KHU B (TRUNG TÂM)</text>
+  <text x="500" y="460" fill="#ede9fe" font-size="13" font-weight="500" text-anchor="middle" class="zone-text">Ghế ngồi trung tâm hội trường</text>
+
+  <!-- GA STANDARD -->
+  <rect id="GA_STANDARD" data-zone-code="GA_STANDARD" class="zone-shape" x="200" y="510" width="600" height="85" rx="10" fill="#3b82f6" fill-opacity="0.85" />
+  <text x="500" y="555" fill="#ffffff" font-size="17" font-weight="700" text-anchor="middle" class="zone-text">KHU GA TIÊU CHUẨN</text>
+  <text x="500" y="575" fill="#dbeafe" font-size="12" font-weight="500" text-anchor="middle" class="zone-text">Đứng tự do cuối sảnh</text>
+</svg>

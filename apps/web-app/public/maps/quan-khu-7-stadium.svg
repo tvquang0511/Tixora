@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" width="100%" height="100%" className="w-full h-auto select-none">
+  <style>
+    .zone-shape {
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      stroke: rgba(255, 255, 255, 0.4);
+      stroke-width: 1.5;
+    }
+    .zone-shape:hover {
+      filter: brightness(1.25);
+      stroke: #ffffff;
+      stroke-width: 3;
+    }
+    .zone-active {
+      filter: brightness(1.35) drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+      stroke: #ffffff !important;
+      stroke-width: 3.5 !important;
+    }
+    .zone-text {
+      pointer-events: none;
+      user-select: none;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+  </style>
+
+  <!-- Pitch border -->
+  <rect x="50" y="20" width="900" height="610" rx="36" fill="#0b1329" stroke="#1e293b" stroke-width="2" />
+
+  <!-- Stage & Catwalk -->
+  <rect x="360" y="45" width="280" height="50" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+  <text x="500" y="78" fill="#38bdf8" font-size="18" font-weight="800" text-anchor="middle" letter-spacing="3" class="zone-text">MAIN STAGE</text>
+  
+  <!-- Catwalk runway projecting down -->
+  <rect x="475" y="95" width="50" height="70" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+
+  <!-- SVIP CATWALK (Front Stage Left & Right) -->
+  <rect id="SVIP_CATWALK" data-zone-code="SVIP_CATWALK" class="zone-shape" x="250" y="115" width="210" height="95" rx="8" fill="#eab308" fill-opacity="0.85" />
+  <text x="355" y="160" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" class="zone-text">SUPER VIP (TRÁI)</text>
+  <text x="355" y="185" fill="#fef9c3" font-size="12" font-weight="500" text-anchor="middle" class="zone-text">Cận Sân Khấu</text>
+
+  <rect id="SVIP_CATWALK_R" data-zone-code="SVIP_CATWALK" class="zone-shape" x="540" y="115" width="210" height="95" rx="8" fill="#eab308" fill-opacity="0.85" />
+  <text x="645" y="160" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" class="zone-text">SUPER VIP (PHẢI)</text>
+  <text x="645" y="185" fill="#fef9c3" font-size="12" font-weight="500" text-anchor="middle" class="zone-text">Cận Sân Khấu</text>
+
+  <!-- VIP STANDING (Standing Floor) -->
+  <rect id="VIP_STANDING" data-zone-code="VIP_STANDING" class="zone-shape" x="250" y="230" width="500" height="130" rx="10" fill="#a855f7" fill-opacity="0.85" />
+  <text x="500" y="295" fill="#ffffff" font-size="19" font-weight="800" text-anchor="middle" class="zone-text">VIP ĐỨNG LÒNG SÂN</text>
+  <text x="500" y="325" fill="#f3e8ff" font-size="13" font-weight="500" text-anchor="middle" class="zone-text">Standing Floor Area</text>
+
+  <!-- GA FESTIVAL -->
+  <rect id="GA_FESTIVAL" data-zone-code="GA_FESTIVAL" class="zone-shape" x="250" y="380" width="500" height="110" rx="10" fill="#10b981" fill-opacity="0.85" />
+  <text x="500" y="435" fill="#ffffff" font-size="18" font-weight="700" text-anchor="middle" class="zone-text">KHU PHỔ THÔNG (GA)</text>
+  <text x="500" y="460" fill="#d1fae5" font-size="12" font-weight="500" text-anchor="middle" class="zone-text">Đứng Tự Do</text>
+
+  <!-- Stand A Center -->
+  <rect id="STAND_A_CENTER" data-zone-code="STAND_A_CENTER" class="zone-shape" x="180" y="510" width="640" height="55" rx="8" fill="#06b6d4" fill-opacity="0.85" />
+  <text x="500" y="545" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" class="zone-text">KHÁN ĐÀI A TRUNG TÂM</text>
+
+  <!-- Stand B -->
+  <rect id="STAND_B" data-zone-code="STAND_B" class="zone-shape" x="180" y="575" width="640" height="45" rx="8" fill="#3b82f6" fill-opacity="0.85" />
+  <text x="500" y="605" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle" class="zone-text">KHÁN ĐÀI B (TẦNG CAO)</text>
+</svg>

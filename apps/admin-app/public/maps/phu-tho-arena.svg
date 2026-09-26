@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 650" width="100%" height="100%" className="w-full h-auto select-none">
+  <style>
+    .zone-shape {
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      stroke: rgba(255, 255, 255, 0.4);
+      stroke-width: 1.5;
+    }
+    .zone-shape:hover {
+      filter: brightness(1.25);
+      stroke: #ffffff;
+      stroke-width: 3;
+    }
+    .zone-active {
+      filter: brightness(1.35) drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+      stroke: #ffffff !important;
+      stroke-width: 3.5 !important;
+    }
+    .zone-text {
+      pointer-events: none;
+      user-select: none;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+  </style>
+
+  <!-- Arena Outer -->
+  <rect x="60" y="30" width="880" height="590" rx="30" fill="#0d1322" stroke="#1e293b" stroke-width="2" />
+
+  <!-- Stage -->
+  <rect x="320" y="55" width="360" height="55" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+  <text x="500" y="90" fill="#38bdf8" font-size="19" font-weight="800" text-anchor="middle" letter-spacing="3" class="zone-text">SÂN KHẤU THI ĐẤU</text>
+
+  <!-- Tribune West (Left) -->
+  <rect id="TRIBUNE_WEST" data-zone-code="TRIBUNE_WEST" class="zone-shape" x="90" y="130" width="160" height="340" rx="10" fill="#3b82f6" fill-opacity="0.85" />
+  <text x="170" y="300" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" class="zone-text" transform="rotate(-90 170 300)">KHÁN ĐÀI TÂY (TẦNG 1)</text>
+
+  <!-- Tribune East (Right) -->
+  <rect id="TRIBUNE_EAST" data-zone-code="TRIBUNE_EAST" class="zone-shape" x="750" y="130" width="160" height="340" rx="10" fill="#06b6d4" fill-opacity="0.85" />
+  <text x="830" y="300" fill="#ffffff" font-size="16" font-weight="700" text-anchor="middle" class="zone-text" transform="rotate(90 830 300)">KHÁN ĐÀI ĐÔNG (TẦNG 1)</text>
+
+  <!-- Floor VIP (Center floor with seats) -->
+  <rect id="FLOOR_VIP" data-zone-code="FLOOR_VIP" class="zone-shape" x="280" y="140" width="440" height="320" rx="12" fill="#eab308" fill-opacity="0.85" />
+  <text x="500" y="290" fill="#ffffff" font-size="20" font-weight="800" text-anchor="middle" class="zone-text">SÀN ĐẤU VIP (KÈM GHẾ)</text>
+  <text x="500" y="320" fill="#fef9c3" font-size="13" font-weight="500" text-anchor="middle" class="zone-text">Trực diện sân khấu sàn gỗ</text>
+
+  <!-- Balcony Tier 2 (Bottom) -->
+  <rect id="BALCONY_TIER2" data-zone-code="BALCONY_TIER2" class="zone-shape" x="90" y="495" width="820" height="100" rx="10" fill="#a855f7" fill-opacity="0.85" />
+  <text x="500" y="545" fill="#ffffff" font-size="17" font-weight="700" text-anchor="middle" class="zone-text">TẦNG 2 TỔNG HỢP (BALCONY)</text>
+  <text x="500" y="570" fill="#f3e8ff" font-size="12" font-weight="500" text-anchor="middle" class="zone-text">Toàn cảnh tầm nhìn từ trên cao</text>
+</svg>

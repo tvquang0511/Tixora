@@ -83,7 +83,9 @@ model Concert {
   poster_url  String?  @db.VarChar(500)
   status      String   @db.VarChar(50)
   category    String   @default("CONCERT") @db.VarChar(50)
+  venue_id    String?  @db.Uuid
 
+  venue               Venue?              @relation(fields: [venue_id], references: [id])
   ticket_categories   TicketCategory[]
   orders              Order[]
   guest_lists         GuestList[]
@@ -92,7 +94,25 @@ model Concert {
   notifications       Notification[]
 
   @@index([category])
+  @@index([venue_id])
   @@map("concerts")
+}
+
+model Venue {
+  id               String    @id @default(uuid()) @db.Uuid
+  name             String    @db.VarChar(255)
+  city             String    @db.VarChar(100)
+  address          String    @db.VarChar(500)
+  capacity         Int
+  svg_template_url String?   @db.VarChar(500)
+  zone_presets     Json?     @db.JsonB
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  concerts         Concert[]
+
+  @@index([city])
+  @@map("venues")
 }
 
 model TicketCategory {

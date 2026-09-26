@@ -62,6 +62,11 @@ export class UpdateConcertDto {
   @MaxLength(50)
   category?: string;
 
+  @ApiPropertyOptional({ example: 'b3f572a1-2139-4dd7-897b-cf10972410a5', description: 'ID of the associated venue' })
+  @IsOptional()
+  @IsString()
+  venue_id?: string;
+
   @ApiPropertyOptional({ type: [CreateTicketCategoryDto] })
   @IsOptional()
   @IsArray()

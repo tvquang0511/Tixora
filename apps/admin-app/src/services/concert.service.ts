@@ -5,6 +5,7 @@ export interface ConcertApiItem {
   name: string;
   description: string;
   location: string;
+  venue_id?: string | null;
   start_time: string;
   svg_map_url: string;
   poster_url?: string;
@@ -32,6 +33,7 @@ export interface ConcertDetailResponse {
   name: string;
   description: string;
   location: string;
+  venue_id?: string | null;
   ai_bio: string;
   start_time: string;
   svg_map_url: string;
@@ -78,6 +80,7 @@ export interface ConcertDetailItem extends ConcertCardItem {
   aiBio: string;
   ticketTiers: ConcertTicketTier[];
   startTime: string;
+  venue_id?: string | null;
 }
 
 export interface ConcertQuery {
@@ -192,6 +195,7 @@ function mapConcertDetail(item: ConcertDetailResponse): ConcertDetailItem {
     aiBio: item.ai_bio,
     ticketTiers: tiers,
     startTime: item.start_time,
+    venue_id: item.venue_id,
   };
 }
 
@@ -284,12 +288,14 @@ export interface CreateConcertDto {
   name: string;
   description: string;
   location: string;
+  venue_id?: string | null;
   ai_bio: string;
   start_time: string;
   svg_map_url: string;
   poster_url: string;
   status: string;
   category?: string;
+  performers?: string[];
   ticketTiers: Array<{
     id?: string;
     name: string;
@@ -297,6 +303,9 @@ export interface CreateConcertDto {
     total_quantity: number;
     max_per_user: number;
     gate_number?: number | null;
+    position?: number;
+    status?: string;
+    sales_start_at?: string | null;
   }>;
 }
 

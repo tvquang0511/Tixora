@@ -9,6 +9,7 @@ import {
   updateConcert,
   getConcertById,
 } from "@/services/concert.service";
+import { getVenues, type VenueItem } from "@/services/venue.service";
 import { uploadImage, uploadSvg } from "@/services/upload.service";
 import { getErrorMessage } from "@/utils/error.utils";
 import {
@@ -18,6 +19,7 @@ import {
   Ticket,
   PlusCircle,
   Trash2,
+  Building2,
 } from "lucide-react";
 
 type TicketCategory = {
@@ -119,10 +121,14 @@ function EventForm() {
   // Performers tags state
   const [newPerformer, setNewPerformer] = useState("");
 
+  // Venues Preset State
+  const [venues, setVenues] = useState<VenueItem[]>([]);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     location: "",
+    venue_id: "",
     start_time: "",
     svg_map_url: "https://cdn.tixora.local/maps/default.svg",
     poster_url: "",
@@ -191,6 +197,18 @@ function EventForm() {
   };
 
   useEffect(() => {
+    getVenues({ limit: 100 })
+      .then((res) => {
+        if (res && res.data) {
+          setVenues(res.data);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load venues", err);
+      });
+  }, []);
+
+  useEffect(() => {
     if (editId) {
       getConcertById(editId)
         .then((data) => {
@@ -213,6 +231,7 @@ function EventForm() {
               data.venue && data.city
                 ? `${data.venue}, ${data.city}`
                 : data.venue || "",
+            venue_id: data.venue_id || "",
             start_time: formattedDate,
             svg_map_url:
               data.mapUrl || "https://cdn.tixora.local/maps/default.svg",
@@ -249,6 +268,51 @@ function EventForm() {
     }
   }, [editId, toastError]);
 
+  const handleVenueSelect = (selectedVenueId: string) => {
+    if (!selectedVenueId) {
+      setFormData((prev) => ({ ...prev, venue_id: "" }));
+      return;
+    }
+
+    const selectedVenue = venues.find((v) => v.id === selectedVenueId);
+    if (!selectedVenue) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      venue_id: selectedVenue.id,
+      location: `${selectedVenue.name}, ${selectedVenue.address}, ${selectedVenue.city}`,
+      svg_map_url: selectedVenue.svg_template_url || prev.svg_map_url,
+    }));
+
+    if (
+      selectedVenue.zone_presets &&
+      Array.isArray(selectedVenue.zone_presets) &&
+      selectedVenue.zone_presets.length > 0
+    ) {
+      const perZoneCap = Math.floor(
+        (selectedVenue.capacity || 1000) / selectedVenue.zone_presets.length,
+      );
+      const newTiers: TicketCategory[] = selectedVenue.zone_presets.map(
+        (zp, idx) => ({
+          name: zp.name,
+          price: zp.default_price || 500000,
+          total_quantity: perZoneCap,
+          max_per_user: 4,
+          gate_number: zp.gate_number || idx + 1,
+          position: idx + 1,
+          status: "book_now",
+          sales_start_at: new Date().toISOString().slice(0, 16),
+        }),
+      );
+      setTicketCategories(newTiers);
+      success(
+        `Đã tự động áp dụng sơ đồ & ${newTiers.length} phân khu vé mẫu từ ${selectedVenue.name}!`,
+      );
+    } else {
+      success(`Đã chọn địa điểm ${selectedVenue.name}!`);
+    }
+  };
+
   const handleSave = async () => {
     if (!formData.name || !formData.location || !formData.start_time) {
       warning(
@@ -269,6 +333,7 @@ function EventForm() {
         name: formData.name,
         description: formData.description,
         location: formData.location,
+        venue_id: formData.venue_id || null,
         start_time: startDate.toISOString(),
         svg_map_url: formData.svg_map_url,
         poster_url: formData.poster_url,
@@ -528,6 +593,36 @@ function EventForm() {
                     Chưa cấu hình nghệ sĩ nào cho sự kiện.
                   </p>
                 )}
+              </div>
+
+              {/* Standard Venue Preset Selector */}
+              <div className="rounded-xl border border-teal-200/80 bg-teal-50/40 p-4 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-1.5 font-sans text-xs font-semibold text-teal-900">
+                    <Building2 className="w-4 h-4 text-teal-600" />
+                    Địa điểm tiêu chuẩn (Venue Preset)
+                  </label>
+                  <span className="text-[11px] text-teal-700 font-sans hidden sm:inline">
+                    Tự động điền địa chỉ, sơ đồ SVG và các hạng vé chuẩn
+                  </span>
+                </div>
+                <select
+                  className="w-full rounded-lg border border-teal-200 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans cursor-pointer font-medium"
+                  value={formData.venue_id}
+                  onChange={(e) => handleVenueSelect(e.target.value)}
+                >
+                  <option value="">
+                    -- Nhập thủ công tự do (Không dùng mẫu có sẵn) --
+                  </option>
+                  {venues.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.name} ({v.city}) - Sức chứa:{" "}
+                      {v.capacity
+                        ? v.capacity.toLocaleString()
+                        : "Chưa xác định"}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

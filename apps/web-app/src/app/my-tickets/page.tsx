@@ -19,7 +19,6 @@ import {
   Landmark,
   Search,
   AlertCircle,
-  Sparkles,
   CheckCircle2,
   Ban,
   X,

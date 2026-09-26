@@ -19,7 +19,6 @@ import {
   ChevronRight,
   TrendingUp,
   Music2,
-  Sparkles,
 } from "lucide-react";
 
 // ─── Danh Sách Nghệ Sĩ Được Yêu Thích (Lineup Nổi Bật) ─────────────────────
@@ -409,7 +408,7 @@ function MainHomeContent() {
         if (active) {
           setConcerts(res.items);
         }
-      } catch (err) {
+      } catch {
         if (active) {
           showErrorToast("Không thể tải danh sách concert nổi bật.");
         }

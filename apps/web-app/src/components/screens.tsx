@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -565,11 +565,21 @@ const getReservationExpiry = (expiresAtStr?: string | null): string => {
   return new Date(Date.now() + 10 * 60 * 1000).toISOString();
 };
 
+export interface InteractiveTicketSelectorProps {
+  concert: ConcertDetailItem;
+  selectedTierId?: string | null;
+  onSelectTier?: (tierId: string) => void;
+  hoveredTierId?: string | null;
+  onHoverTier?: (tierId: string | null) => void;
+}
+
 export function InteractiveTicketSelector({
   concert,
-}: {
-  concert: ConcertDetailItem;
-}) {
+  selectedTierId,
+  onSelectTier,
+  hoveredTierId,
+  onHoverTier,
+}: InteractiveTicketSelectorProps) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { toast } = useToast();
@@ -583,7 +593,12 @@ export function InteractiveTicketSelector({
     if (!tier.sales_start_at) return true;
     return now >= new Date(tier.sales_start_at);
   });
-  const selectedTier = tiers[selectedIdx];
+
+  const computedIdx = selectedTierId
+    ? tiers.findIndex((t) => t.id === selectedTierId)
+    : -1;
+  const activeIdx = computedIdx !== -1 ? computedIdx : selectedIdx;
+  const selectedTier = tiers[activeIdx];
   const maxQty = selectedTier
     ? Math.min(
         selectedTier.max_per_user,
@@ -673,7 +688,8 @@ export function InteractiveTicketSelector({
         <div className="mt-8 space-y-3">
           {tiers.length > 0 ? (
             tiers.map((tier, index) => {
-              const isSelected = selectedIdx === index;
+              const isSelected = activeIdx === index;
+              const isHovered = hoveredTierId === tier.id;
               const isSoldOut =
                 tier.status === "sold_out" || tier.remaining_quantity === 0;
               const remaining = tier.remaining_quantity ?? 0;
@@ -685,13 +701,18 @@ export function InteractiveTicketSelector({
                     setSelectedIdx(index);
                     setQuantity(isSoldOut ? 0 : 1);
                     setError(null);
+                    onSelectTier?.(tier.id);
                   }}
+                  onMouseEnter={() => onHoverTier?.(tier.id)}
+                  onMouseLeave={() => onHoverTier?.(null)}
                   className={`p-5 cursor-pointer rounded-[20px] border-2 transition-all duration-200 ${
                     isSelected
-                      ? "border-primary bg-primary/5 shadow-sm scale-[1.01]"
-                      : isSoldOut
-                        ? "border-slate-800/40 bg-slate-950/10 opacity-80 hover:border-slate-850"
-                        : "border-outline-variant/60 bg-surface hover:border-primary/30"
+                      ? "border-primary bg-primary/10 shadow-lg ring-2 ring-primary/40 scale-[1.01]"
+                      : isHovered
+                        ? "border-primary/60 bg-primary/5 ring-1 ring-primary/30"
+                        : isSoldOut
+                          ? "border-slate-800/40 bg-slate-950/10 opacity-80 hover:border-slate-850"
+                          : "border-outline-variant/60 bg-surface hover:border-primary/30"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-4">

@@ -10,14 +10,6 @@ import {
   Ticket,
   LayoutDashboard,
   LogOut,
-  Guitar,
-  Drama,
-  Mic,
-  Headphones,
-  Sparkles,
-  Star,
-  Compass,
-  Handshake,
 } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";

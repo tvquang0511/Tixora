@@ -18,6 +18,7 @@ type ConcertListRow = {
   poster_url: string | null;
   status: string;
   category?: string | null;
+  venue_id?: string | null;
 };
 
 type ConcertTicketCategoryRow = {
@@ -89,6 +90,7 @@ export class ConcertRepository {
           poster_url: true,
           status: true,
           category: true,
+          venue_id: true,
         },
         orderBy: { start_time: 'desc' },
       }),
@@ -126,6 +128,7 @@ export class ConcertRepository {
         poster_url: payload.poster_url ?? null,
         status: payload.status,
         category: payload.category ?? 'CONCERT',
+        venue_id: payload.venue_id ?? null,
         ticket_categories: {
           create: (payload.ticketTiers || []).map((category) => ({
             name: category.name,
@@ -239,6 +242,7 @@ export class ConcertRepository {
         poster_url: payload.poster_url ?? undefined,
         status: payload.status,
         category: payload.category ?? undefined,
+        venue_id: payload.venue_id ?? undefined,
       },
       include: { ticket_categories: true },
     });
@@ -285,6 +289,7 @@ export class ConcertRepository {
       poster_url: concert.poster_url ?? null,
       status: concert.status,
       category: concert.category ?? null,
+      venue_id: concert.venue_id ?? null,
       ticketTiers,
     });
   }
@@ -301,6 +306,7 @@ export class ConcertRepository {
       poster_url: concert.poster_url ?? null,
       status: concert.status,
       category: concert.category ?? null,
+      venue_id: concert.venue_id ?? null,
     });
   }
 }
