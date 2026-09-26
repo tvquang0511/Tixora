@@ -8,7 +8,7 @@ export default function AdminPortalLayout({
   children: ReactNode;
 }) {
   return (
-    <ProtectedRoute allowedRoles={["SuperAdmin", "Admin", "Organizer"]}>
+    <ProtectedRoute allowedRoles={["SuperAdmin", "Admin"]}>
       <AdminShell>{children}</AdminShell>
     </ProtectedRoute>
   );

@@ -29,29 +29,24 @@ function AdminLoginForm() {
       const user = response.user;
 
       const userRoles = user.roles || [];
-      if (
-        userRoles.includes("Checker") &&
-        !userRoles.includes("SuperAdmin") &&
-        !userRoles.includes("Admin") &&
-        !userRoles.includes("Organizer")
-      ) {
-        await logout();
-        showErrorToast(
-          "Truy cập bị từ chối: Tài khoản Soát vé (Checker) chỉ được sử dụng trên ứng dụng di động Mobile App.",
-        );
-        setLoading(false);
-        return;
-      }
+      const isAdminOrSuperAdmin =
+        userRoles.includes("SuperAdmin") || userRoles.includes("Admin");
 
-      if (
-        !userRoles.includes("SuperAdmin") &&
-        !userRoles.includes("Admin") &&
-        !userRoles.includes("Organizer")
-      ) {
+      if (!isAdminOrSuperAdmin) {
         await logout();
-        showErrorToast(
-          "Truy cập bị từ chối: Tài khoản không có quyền Quản trị viên (Admin).",
-        );
+        if (userRoles.includes("Checker")) {
+          showErrorToast(
+            "Truy cập bị từ chối: Tài khoản Soát vé (Checker) chỉ được sử dụng trên ứng dụng di động Mobile App.",
+          );
+        } else if (userRoles.includes("Organizer")) {
+          showErrorToast(
+            "Truy cập bị từ chối: Tài khoản Ban tổ chức (Organizer) chỉ sử dụng Cổng Quản lý sự kiện trên Web Tixora, không được truy cập Cổng Quản trị sàn.",
+          );
+        } else {
+          showErrorToast(
+            "Truy cập bị từ chối: Tài khoản không có quyền Quản trị viên sàn (Admin/SuperAdmin).",
+          );
+        }
         setLoading(false);
         return;
       }
