@@ -26,6 +26,7 @@ import {
   RotateCw,
   Send,
   Pause,
+  CheckCircle,
 } from "lucide-react";
 import { ConcertWorkerDrawer } from "./_components/ConcertWorkerDrawer";
 import { StatusBadge } from "../_components/StatusBadge";
@@ -258,6 +259,7 @@ export default function AdminEventsPage() {
             className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 cursor-pointer focus:outline-none focus:border-teal-500 shadow-xs"
           >
             <option value="All">Tất cả trạng thái</option>
+            <option value="PENDING_REVIEW">PENDING_REVIEW (Chờ duyệt)</option>
             <option value="DRAFT">DRAFT (Bản nháp)</option>
             <option value="PUBLISHED">PUBLISHED (Đã mở bán)</option>
             <option value="COMPLETED">COMPLETED (Hoàn tất)</option>
@@ -364,6 +366,21 @@ export default function AdminEventsPage() {
                           <RotateCw className="w-3 h-3 animate-spin text-teal-600" />{" "}
                           Đang lưu...
                         </span>
+                      ) : concert.status === "PENDING_REVIEW" ? (
+                        <button
+                          onClick={() =>
+                            void handleQuickStatusChange(
+                              concert.id,
+                              "PUBLISHED",
+                              concert.title,
+                            )
+                          }
+                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-[11px] rounded-lg shadow-2xs cursor-pointer transition-colors"
+                          title="Phê duyệt phát hành sự kiện mở bán công khai"
+                        >
+                          <CheckCircle className="w-3 h-3" />
+                          <span>Duyệt phát hành</span>
+                        </button>
                       ) : concert.status === "DRAFT" ? (
                         <button
                           onClick={() =>

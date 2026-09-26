@@ -12,7 +12,12 @@ export interface TicketPurchasedContext {
   concertId: string;
   concertName: string;
   totalAmount: number;
-  tickets: Array<{ id: string; categoryName: string; gateNumber: number | null; qrCodeHash: string }>;
+  tickets: Array<{
+    id: string;
+    categoryName: string;
+    gateNumber: number | null;
+    qrCodeHash: string;
+  }>;
 }
 
 export interface ConcertReminderContext {
@@ -26,7 +31,8 @@ export interface ConcertReminderContext {
   location: string;
 }
 
-export type NotificationContext = TicketPurchasedContext | ConcertReminderContext;
+export type NotificationContext =
+  TicketPurchasedContext | ConcertReminderContext;
 
 export interface NotificationChannel {
   readonly name: string;

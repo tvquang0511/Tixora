@@ -168,8 +168,8 @@ Seed completed.
 
 Mật khẩu chung: `123456`
 
-| Vai trò   | Email                            |
-| --------- | -------------------------------- |
+| Vai trò   | Email                         |
+| --------- | ----------------------------- |
 | Audience  | `audience1@tixora.local`      |
 | Admin     | `vy.admin@tixora.local`       |
 | Organizer | `tuan.organizer@tixora.local` |

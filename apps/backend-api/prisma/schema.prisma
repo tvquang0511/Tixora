@@ -22,6 +22,8 @@ model User {
   notifications       Notification[]
   background_jobs     BackgroundJob[]     @relation("BackgroundJobTriggeredBy")
   checker_assignments CheckerAssignment[] @relation("CheckerAssignments")
+  organized_concerts  Concert[]           @relation("OrganizerConcerts")
+  organizer_profile   OrganizerProfile?
 
   refresh_token String? @db.Text
 
@@ -84,8 +86,10 @@ model Concert {
   status      String   @db.VarChar(50)
   category    String   @default("CONCERT") @db.VarChar(50)
   venue_id    String?  @db.Uuid
+  organizer_id String? @db.Uuid
 
   venue               Venue?              @relation(fields: [venue_id], references: [id])
+  organizer           User?               @relation("OrganizerConcerts", fields: [organizer_id], references: [id])
   ticket_categories   TicketCategory[]
   orders              Order[]
   guest_lists         GuestList[]
@@ -95,7 +99,31 @@ model Concert {
 
   @@index([category])
   @@index([venue_id])
+  @@index([organizer_id])
   @@map("concerts")
+}
+
+model OrganizerProfile {
+  id                   String    @id @default(uuid()) @db.Uuid
+  user_id              String    @unique @db.Uuid
+  organization_name    String    @db.VarChar(255)
+  tax_code_or_id       String    @db.VarChar(50)
+  phone_number         String    @db.VarChar(20)
+  business_license_url String?   @db.VarChar(500)
+  portfolio_url        String?   @db.VarChar(500)
+  bank_account_name    String?   @db.VarChar(100)
+  bank_account_number  String?   @db.VarChar(50)
+  bank_name            String?   @db.VarChar(100)
+  status               String    @default("PENDING") @db.VarChar(50)
+  rejection_reason     String?   @db.Text
+  approved_at          DateTime?
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @updatedAt
+
+  user                 User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@map("organizer_profiles")
 }
 
 model Venue {

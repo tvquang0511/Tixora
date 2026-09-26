@@ -2,15 +2,25 @@ import { Injectable } from "@nestjs/common";
 import { NotificationType, Prisma } from "@prisma/client";
 import { PrismaService } from "../../../shared/prisma.service";
 import { NotificationStreamService } from "../notification-stream.service";
-import { NotificationChannel, NotificationContext, NotificationEvent } from "../notification.types";
+import {
+  NotificationChannel,
+  NotificationContext,
+  NotificationEvent,
+} from "../notification.types";
 
 @Injectable()
 export class InAppNotificationChannel implements NotificationChannel {
   readonly name = "IN_APP";
-  constructor(private readonly prisma: PrismaService, private readonly stream: NotificationStreamService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly stream: NotificationStreamService,
+  ) {}
 
   supports(event: NotificationEvent): boolean {
-    return event === NotificationEvent.TICKET_PURCHASED || event === NotificationEvent.CONCERT_REMINDER;
+    return (
+      event === NotificationEvent.TICKET_PURCHASED ||
+      event === NotificationEvent.CONCERT_REMINDER
+    );
   }
 
   async send(context: NotificationContext) {
@@ -24,7 +34,9 @@ export class InAppNotificationChannel implements NotificationChannel {
         user_id: context.userId,
         order_id: purchased ? context.orderId : null,
         concert_id: context.concertId,
-        type: purchased ? NotificationType.TICKET_PURCHASED : NotificationType.CONCERT_REMINDER,
+        type: purchased
+          ? NotificationType.TICKET_PURCHASED
+          : NotificationType.CONCERT_REMINDER,
         deduplication_key: deduplicationKey,
         title: purchased ? "Mua vé thành công" : "Concert sắp diễn ra",
         message: purchased
@@ -32,7 +44,9 @@ export class InAppNotificationChannel implements NotificationChannel {
           : `${context.concertName} sẽ bắt đầu trong vòng 24 giờ tới.`,
         data: {
           concertId: context.concertId,
-          ...(purchased ? { orderId: context.orderId, route: `/orders/${context.orderId}` } : {}),
+          ...(purchased
+            ? { orderId: context.orderId, route: `/orders/${context.orderId}` }
+            : {}),
         } satisfies Prisma.JsonObject,
       },
       update: {},

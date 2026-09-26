@@ -16,6 +16,7 @@ import {
   Receipt,
   Cpu,
   Bell,
+  Building2,
 } from "lucide-react";
 import { BrandMark } from "@/components/BrandMark";
 
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/dashboard", label: "Tổng quan", icon: LayoutDashboard },
   { href: "/orders", label: "Đơn hàng", icon: Receipt },
   { href: "/events", label: "Sự kiện", icon: Calendar },
+  { href: "/organizer-requests", label: "Yêu cầu đối tác", icon: Building2 },
   { href: "/revenue", label: "Doanh thu", icon: DollarSign },
   { href: "/users", label: "Người dùng", icon: Users },
   { href: "/assignments", label: "Phân công", icon: ClipboardCheck },

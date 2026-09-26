@@ -1,9 +1,9 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { PrismaService } from '../../../shared/prisma.service';
-import { RabbitMqService } from '../../../shared/rabbitmq';
-import * as fs from 'fs';
-import * as readline from 'readline';
-import { randomUUID } from 'crypto';
+import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { PrismaService } from "../../../shared/prisma.service";
+import { RabbitMqService } from "../../../shared/rabbitmq";
+import * as fs from "fs";
+import * as readline from "readline";
+import { randomUUID } from "crypto";
 
 interface GuestImportPayload {
   jobId: string;
@@ -14,7 +14,7 @@ interface GuestImportPayload {
 
 export function parseCsvLine(line: string): string[] {
   const result: string[] = [];
-  let current = '';
+  let current = "";
   let inQuotes = false;
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
@@ -25,9 +25,9 @@ export function parseCsvLine(line: string): string[] {
       } else {
         inQuotes = !inQuotes;
       }
-    } else if (char === ',' && !inQuotes) {
+    } else if (char === "," && !inQuotes) {
       result.push(current.trim());
-      current = '';
+      current = "";
     } else {
       current += char;
     }
@@ -47,18 +47,20 @@ export class GuestImportConsumer implements OnModuleInit {
 
   async onModuleInit() {
     try {
-      await this.rabbitMqService.consume('guest.import.queue', async (msg) => {
+      await this.rabbitMqService.consume("guest.import.queue", async (msg) => {
         const payload: GuestImportPayload = JSON.parse(msg.content.toString());
         await this.handleGuestImport(payload);
       });
     } catch (err) {
-      this.logger.error('Failed to start GuestImportConsumer', err);
+      this.logger.error("Failed to start GuestImportConsumer", err);
     }
   }
 
   private async handleGuestImport(payload: GuestImportPayload): Promise<void> {
     const { jobId, concertId, filePath } = payload;
-    this.logger.log(`Starting guest import job ${jobId} for concert ${concertId} from ${filePath}`);
+    this.logger.log(
+      `Starting guest import job ${jobId} for concert ${concertId} from ${filePath}`,
+    );
 
     // Check if the file exists
     if (!fs.existsSync(filePath)) {
@@ -66,7 +68,7 @@ export class GuestImportConsumer implements OnModuleInit {
       await this.prisma.backgroundJob.update({
         where: { id: jobId },
         data: {
-          status: 'FAILED',
+          status: "FAILED",
           error_message: `CSV file not found on disk at path: ${filePath}`,
           completed_at: new Date(),
         },
@@ -78,7 +80,7 @@ export class GuestImportConsumer implements OnModuleInit {
     await this.prisma.backgroundJob.update({
       where: { id: jobId },
       data: {
-        status: 'PROCESSING',
+        status: "PROCESSING",
         progress_percentage: 0,
       },
     });
@@ -106,10 +108,13 @@ export class GuestImportConsumer implements OnModuleInit {
         await this.prisma.backgroundJob.update({
           where: { id: jobId },
           data: {
-            status: 'COMPLETED',
+            status: "COMPLETED",
             progress_percentage: 100,
             completed_at: new Date(),
-            result_data: { processed: 0, message: 'CSV file is empty or contains only headers' },
+            result_data: {
+              processed: 0,
+              message: "CSV file is empty or contains only headers",
+            },
           },
         });
         return;
@@ -124,14 +129,22 @@ export class GuestImportConsumer implements OnModuleInit {
 
       let isHeader = true;
       let headers: string[] = [];
-      let headerMap: { email: number; fullName: number; ticketCategory: number } = {
+      let headerMap: {
+        email: number;
+        fullName: number;
+        ticketCategory: number;
+      } = {
         email: -1,
         fullName: -1,
         ticketCategory: -1,
       };
 
       let processedCount = 0;
-      const batch: Array<{ email: string; fullName: string; ticketCategory: string }> = [];
+      const batch: Array<{
+        email: string;
+        fullName: string;
+        ticketCategory: string;
+      }> = [];
 
       for await (const line of rl) {
         const trimmedLine = line.trim();
@@ -140,22 +153,32 @@ export class GuestImportConsumer implements OnModuleInit {
         if (isHeader) {
           headers = parseCsvLine(trimmedLine);
           const normalized = headers.map((h) =>
-            h.trim().toLowerCase().replace(/[^a-z0-9_]/g, ''),
+            h
+              .trim()
+              .toLowerCase()
+              .replace(/[^a-z0-9_]/g, ""),
           );
 
           headerMap = {
-            email: normalized.findIndex((h) => h === 'email'),
+            email: normalized.findIndex((h) => h === "email"),
             fullName: normalized.findIndex(
-              (h) => h === 'fullname' || h === 'full_name' || h === 'name',
+              (h) => h === "fullname" || h === "full_name" || h === "name",
             ),
             ticketCategory: normalized.findIndex(
-              (h) => h === 'ticketcategory' || h === 'ticket_category' || h === 'category',
+              (h) =>
+                h === "ticketcategory" ||
+                h === "ticket_category" ||
+                h === "category",
             ),
           };
 
-          if (headerMap.email === -1 || headerMap.fullName === -1 || headerMap.ticketCategory === -1) {
+          if (
+            headerMap.email === -1 ||
+            headerMap.fullName === -1 ||
+            headerMap.ticketCategory === -1
+          ) {
             throw new Error(
-              `Invalid CSV headers. Required headers: 'email', 'full_name', 'ticket_category'. Found: ${headers.join(', ')}`,
+              `Invalid CSV headers. Required headers: 'email', 'full_name', 'ticket_category'. Found: ${headers.join(", ")}`,
             );
           }
 
@@ -187,7 +210,10 @@ export class GuestImportConsumer implements OnModuleInit {
           await this.prisma.backgroundJob.update({
             where: { id: jobId },
             data: {
-              progress_percentage: Math.min(100, Math.round((processedCount / totalRecords) * 100)),
+              progress_percentage: Math.min(
+                100,
+                Math.round((processedCount / totalRecords) * 100),
+              ),
             },
           });
         }
@@ -202,7 +228,10 @@ export class GuestImportConsumer implements OnModuleInit {
         await this.prisma.backgroundJob.update({
           where: { id: jobId },
           data: {
-            progress_percentage: Math.min(100, Math.round((processedCount / totalRecords) * 100)),
+            progress_percentage: Math.min(
+              100,
+              Math.round((processedCount / totalRecords) * 100),
+            ),
           },
         });
       }
@@ -211,20 +240,22 @@ export class GuestImportConsumer implements OnModuleInit {
       await this.prisma.backgroundJob.update({
         where: { id: jobId },
         data: {
-          status: 'COMPLETED',
+          status: "COMPLETED",
           progress_percentage: 100,
           completed_at: new Date(),
           result_data: { processed: processedCount },
         },
       });
 
-      this.logger.log(`Completed guest import job ${jobId}. Processed ${processedCount} records.`);
+      this.logger.log(
+        `Completed guest import job ${jobId}. Processed ${processedCount} records.`,
+      );
     } catch (err) {
       this.logger.error(`Error processing guest import job ${jobId}`, err);
       await this.prisma.backgroundJob.update({
         where: { id: jobId },
         data: {
-          status: 'FAILED',
+          status: "FAILED",
           error_message: (err as Error).message,
           completed_at: new Date(),
         },
@@ -237,7 +268,10 @@ export class GuestImportConsumer implements OnModuleInit {
           this.logger.log(`Deleted temporary CSV file at ${filePath}`);
         }
       } catch (cleanupErr) {
-        this.logger.error(`Failed to delete temporary CSV file at ${filePath}`, cleanupErr);
+        this.logger.error(
+          `Failed to delete temporary CSV file at ${filePath}`,
+          cleanupErr,
+        );
       }
     }
   }
@@ -249,7 +283,10 @@ export class GuestImportConsumer implements OnModuleInit {
     if (batch.length === 0) return;
 
     // Deduplicate within the batch itself to prevent "ON CONFLICT DO UPDATE command cannot affect the same row twice" PostgreSQL error
-    const uniqueMap = new Map<string, { email: string; fullName: string; ticketCategory: string }>();
+    const uniqueMap = new Map<
+      string,
+      { email: string; fullName: string; ticketCategory: string }
+    >();
     for (const record of batch) {
       uniqueMap.set(record.email.toLowerCase(), record);
     }
@@ -264,13 +301,20 @@ export class GuestImportConsumer implements OnModuleInit {
       valuesSql.push(
         `($${paramIndex}::uuid, $${paramIndex + 1}::uuid, $${paramIndex + 2}, $${paramIndex + 3}, $${paramIndex + 4}, $${paramIndex + 5})`,
       );
-      params.push(id, concertId, record.email, record.fullName, record.ticketCategory, false);
+      params.push(
+        id,
+        concertId,
+        record.email,
+        record.fullName,
+        record.ticketCategory,
+        false,
+      );
       paramIndex += 6;
     }
 
     const query = `
       INSERT INTO guest_lists (id, concert_id, email, full_name, ticket_category, is_scanned)
-      VALUES ${valuesSql.join(', ')}
+      VALUES ${valuesSql.join(", ")}
       ON CONFLICT (concert_id, email)
       DO UPDATE SET
         full_name = EXCLUDED.full_name,

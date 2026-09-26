@@ -1,9 +1,13 @@
-import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
+import {
+  registerDecorator,
+  ValidationOptions,
+  ValidationArguments,
+} from "class-validator";
 
 export function IsFutureDate(validationOptions?: ValidationOptions) {
   return (object: object, propertyName: string) => {
     registerDecorator({
-      name: 'isFutureDate',
+      name: "isFutureDate",
       target: object.constructor,
       propertyName,
       options: validationOptions,

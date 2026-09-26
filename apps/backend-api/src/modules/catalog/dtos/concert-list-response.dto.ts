@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { ConcertListItemDto } from './concert-list-item.dto';
-import { PaginationMetaDto } from '../../../shared/dtos/pagination-meta.dto';
+import { ApiProperty } from "@nestjs/swagger";
+import { ConcertListItemDto } from "./concert-list-item.dto";
+import { PaginationMetaDto } from "../../../shared/dtos/pagination-meta.dto";
 
 export class ConcertListResponseDto {
   @ApiProperty({ type: [ConcertListItemDto] })

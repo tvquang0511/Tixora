@@ -1,38 +1,40 @@
-import { Module } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule';
-import { CatalogModule } from './modules/catalog/catalog.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { PaymentModule } from './modules/payment/payment.module';
-import { RedisModule } from './shared/redis/redis.module';
-import { RabbitMqModule } from './shared/rabbitmq';
-import { TicketingModule } from './modules/ticketing/ticketing.module';
-import { UploadModule } from './modules/upload/upload.module';
-import { WorkerModule } from './modules/worker/worker.module';
-import { CheckInModule } from './modules/checkin/checkin.module';
-import { AdminDashboardModule } from './modules/admin-dashboard/admin-dashboard.module';
-import { AdminRevenueModule } from './modules/admin-revenue/admin-revenue.module';
-import { AdminUsersModule } from './modules/admin-users/admin-users.module';
-import { NotificationModule } from './modules/notifications/notification.module';
-import { PrismaService } from './shared/prisma.service';
-import { RolesPermissionsSyncService } from './shared/roles-permissions-sync.service';
+import { Module } from "@nestjs/common";
+import { ScheduleModule } from "@nestjs/schedule";
+import { CatalogModule } from "./modules/catalog/catalog.module";
+import { AuthModule } from "./modules/auth/auth.module";
+import { PaymentModule } from "./modules/payment/payment.module";
+import { RedisModule } from "./shared/redis/redis.module";
+import { RabbitMqModule } from "./shared/rabbitmq";
+import { TicketingModule } from "./modules/ticketing/ticketing.module";
+import { UploadModule } from "./modules/upload/upload.module";
+import { WorkerModule } from "./modules/worker/worker.module";
+import { CheckInModule } from "./modules/checkin/checkin.module";
+import { AdminDashboardModule } from "./modules/admin-dashboard/admin-dashboard.module";
+import { AdminRevenueModule } from "./modules/admin-revenue/admin-revenue.module";
+import { AdminUsersModule } from "./modules/admin-users/admin-users.module";
+import { NotificationModule } from "./modules/notifications/notification.module";
+import { OrganizerModule } from "./modules/organizer/organizer.module";
+import { PrismaService } from "./shared/prisma.service";
+import { RolesPermissionsSyncService } from "./shared/roles-permissions-sync.service";
 
 @Module({
-	imports: [
-		ScheduleModule.forRoot(),
-		RedisModule,
-		RabbitMqModule,
-		CatalogModule,
-		AuthModule,
-		PaymentModule,
-		TicketingModule,
-		UploadModule,
-		WorkerModule,
-		CheckInModule,
-		AdminDashboardModule,
-		AdminRevenueModule,
-		AdminUsersModule,
-		NotificationModule,
-	],
-	providers: [PrismaService, RolesPermissionsSyncService],
+  imports: [
+    ScheduleModule.forRoot(),
+    RedisModule,
+    RabbitMqModule,
+    CatalogModule,
+    AuthModule,
+    PaymentModule,
+    TicketingModule,
+    UploadModule,
+    WorkerModule,
+    CheckInModule,
+    AdminDashboardModule,
+    AdminRevenueModule,
+    AdminUsersModule,
+    NotificationModule,
+    OrganizerModule,
+  ],
+  providers: [PrismaService, RolesPermissionsSyncService],
 })
-export class AppModule { }
+export class AppModule {}

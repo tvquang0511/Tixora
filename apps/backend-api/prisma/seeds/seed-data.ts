@@ -17,7 +17,10 @@ export const permissions = [
   { code: "VIEW_REVENUE", description: "View revenue reports" },
   { code: "SCAN_TICKET", description: "Scan tickets at gate" },
   { code: "MANAGE_USERS", description: "Manage staff accounts and roles" },
-  { code: "MANAGE_ADMINS", description: "Manage administrator accounts and privilege levels" },
+  {
+    code: "MANAGE_ADMINS",
+    description: "Manage administrator accounts and privilege levels",
+  },
   { code: "ASSIGN_CHECKER", description: "Assign checkers to concert gates" },
   { code: "IMPORT_GUESTS", description: "Import VIP and guest lists" },
 ];

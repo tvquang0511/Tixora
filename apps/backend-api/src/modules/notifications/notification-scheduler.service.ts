@@ -6,7 +6,10 @@ import { NotificationService } from "./notification.service";
 @Injectable()
 export class NotificationSchedulerService {
   private readonly logger = new Logger(NotificationSchedulerService.name);
-  constructor(private readonly prisma: PrismaService, private readonly notifications: NotificationService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationService,
+  ) {}
 
   @Cron(CronExpression.EVERY_HOUR)
   async handleConcertReminders(): Promise<void> {
@@ -27,7 +30,9 @@ export class NotificationSchedulerService {
     });
 
     for (const concert of concerts) {
-      const users = new Map(concert.orders.map((order) => [order.user_id, order.user]));
+      const users = new Map(
+        concert.orders.map((order) => [order.user_id, order.user]),
+      );
       for (const user of users.values()) {
         const deduplicationKey = `concert-reminder:${concert.id}:${user.id}`;
         const alreadyCreated = await this.prisma.notification.findUnique({
@@ -46,6 +51,8 @@ export class NotificationSchedulerService {
         });
       }
     }
-    this.logger.log(`Processed reminders for ${concerts.length} upcoming concert(s)`);
+    this.logger.log(
+      `Processed reminders for ${concerts.length} upcoming concert(s)`,
+    );
   }
 }

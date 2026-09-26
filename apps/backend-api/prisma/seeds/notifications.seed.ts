@@ -18,8 +18,7 @@ export async function seedNotifications(prisma: PrismaClient) {
     concert_id: order.concert_id,
     deduplication_key: `ticket-purchased:${order.id}`,
     title: "Mua vé thành công",
-    message:
-        `Vé concert ${order.concert.name} của bạn đã sẵn sàng.`,
+    message: `Vé concert ${order.concert.name} của bạn đã sẵn sàng.`,
     data: {
       orderId: order.id,
       orderStatus: order.status,

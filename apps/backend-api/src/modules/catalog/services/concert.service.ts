@@ -1,13 +1,26 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { ConcertRepository } from '../repositories/concert.repository';
-import { ConcertResponseDto } from '../entities/concert-response.dto';
-import { CreateConcertDto } from '../dtos/create-concert.dto';
-import { UpdateConcertDto } from '../dtos/update-concert.dto';
-import { ConcertListQueryDto } from '../dtos/concert-list-query.dto';
-import { ConcertListResponseDto } from '../dtos/concert-list-response.dto';
-import { PaginationMetaDto } from '../../../shared/dtos/pagination-meta.dto';
-import { RedisService } from '../../../shared/redis';
-import { TicketingService } from '../../ticketing/services/ticketing.service';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from "@nestjs/common";
+import { ConcertRepository } from "../repositories/concert.repository";
+import { ConcertResponseDto } from "../entities/concert-response.dto";
+import { CreateConcertDto } from "../dtos/create-concert.dto";
+import { UpdateConcertDto } from "../dtos/update-concert.dto";
+import { ConcertListQueryDto } from "../dtos/concert-list-query.dto";
+import { ConcertListResponseDto } from "../dtos/concert-list-response.dto";
+import { PaginationMetaDto } from "../../../shared/dtos/pagination-meta.dto";
+import { RedisService } from "../../../shared/redis";
+import { TicketingService } from "../../ticketing/services/ticketing.service";
+import { ConcertStatus } from "../constants/concert-status.enum";
+
+export interface CurrentUserPayload {
+  sub: string;
+  email?: string;
+  roles?: string[];
+  permissions?: string[];
+}
 
 @Injectable()
 export class ConcertService {
@@ -18,17 +31,47 @@ export class ConcertService {
     private readonly concertRepo: ConcertRepository,
     private readonly redisService: RedisService,
     private readonly ticketingService: TicketingService,
-  ) { }
+  ) {}
 
-  async getConcerts(query: ConcertListQueryDto): Promise<ConcertListResponseDto> {
+  private isOrganizerOnly(currentUser?: CurrentUserPayload): boolean {
+    if (!currentUser?.roles) return false;
+    const normalized = currentUser.roles.map((r) => r.toUpperCase());
+    const isOrg = normalized.includes("ORGANIZER");
+    const isAdmin =
+      normalized.includes("ADMIN") ||
+      normalized.includes("SUPERADMIN") ||
+      normalized.includes("SUPER_ADMIN");
+    return isOrg && !isAdmin;
+  }
+
+  async getConcerts(
+    query: ConcertListQueryDto,
+    currentUser?: CurrentUserPayload,
+  ): Promise<ConcertListResponseDto> {
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
     const status = query.status;
     const search = query.search?.trim();
     const category = query.category?.trim();
-    const cacheKey = this.getConcertListCacheKey(page, limit, status, search, category);
+    let organizerId = query.organizer_id?.trim();
 
-    const cached = await this.redisService.getJson<ConcertListResponseDto>(cacheKey);
+    if (this.isOrganizerOnly(currentUser)) {
+      if (organizerId && organizerId !== currentUser?.sub) {
+        throw new ForbiddenException("You can only access your own concerts");
+      }
+    }
+
+    const cacheKey = this.getConcertListCacheKey(
+      page,
+      limit,
+      status,
+      search,
+      category,
+      organizerId,
+    );
+
+    const cached =
+      await this.redisService.getJson<ConcertListResponseDto>(cacheKey);
     if (cached) {
       this.logger.log(`[REDIS] getConcerts cache hit key=${cacheKey}`);
       return new ConcertListResponseDto(cached);
@@ -36,7 +79,14 @@ export class ConcertService {
 
     this.logger.log(`[DB] getConcerts cache miss key=${cacheKey}`);
 
-    const { items, total } = await this.concertRepo.findManyWithPagination(page, limit, status, search, category);
+    const { items, total } = await this.concertRepo.findManyWithPagination(
+      page,
+      limit,
+      status,
+      search,
+      category,
+      organizerId,
+    );
     const totalPages = total === 0 ? 0 : Math.ceil(total / limit);
     const meta = new PaginationMetaDto({
       totalItems: total,
@@ -55,14 +105,19 @@ export class ConcertService {
     const cacheKey = this.getConcertDetailCacheKey(id);
     let concert: ConcertResponseDto | null;
 
-    const cached = await this.redisService.getJson<ConcertResponseDto>(cacheKey);
+    const cached =
+      await this.redisService.getJson<ConcertResponseDto>(cacheKey);
     if (cached) {
-      this.logger.log(`[REDIS] getConcertById cache hit id=${id} key=${cacheKey}`);
+      this.logger.log(
+        `[REDIS] getConcertById cache hit id=${id} key=${cacheKey}`,
+      );
       concert = new ConcertResponseDto(cached);
     } else {
-      this.logger.log(`[DB] getConcertById cache miss id=${id} key=${cacheKey}`);
+      this.logger.log(
+        `[DB] getConcertById cache miss id=${id} key=${cacheKey}`,
+      );
       concert = await this.concertRepo.findById(id, false);
-      if (!concert) throw new NotFoundException('Concert not found');
+      if (!concert) throw new NotFoundException("Concert not found");
       await this.redisService.setJson(cacheKey, concert, this.cacheTtlSeconds);
     }
 
@@ -70,13 +125,18 @@ export class ConcertService {
     if (concert.ticketTiers && concert.ticketTiers.length > 0) {
       for (const tier of concert.ticketTiers) {
         try {
-          const remaining = await this.ticketingService.getOrSeedInventory(tier.id);
+          const remaining = await this.ticketingService.getOrSeedInventory(
+            tier.id,
+          );
           tier.remaining_quantity = remaining;
           if (remaining <= 0) {
-            tier.status = 'sold_out';
+            tier.status = "sold_out";
           }
         } catch (err) {
-          this.logger.error(`Failed to resolve real-time inventory for category ${tier.id}`, err);
+          this.logger.error(
+            `Failed to resolve real-time inventory for category ${tier.id}`,
+            err,
+          );
         }
       }
     }
@@ -84,71 +144,141 @@ export class ConcertService {
     return concert;
   }
 
-  async createConcert(payload: CreateConcertDto): Promise<ConcertResponseDto> {
+  async createConcert(
+    payload: CreateConcertDto,
+    currentUser?: CurrentUserPayload,
+  ): Promise<ConcertResponseDto> {
+    if (this.isOrganizerOnly(currentUser)) {
+      payload.organizer_id = currentUser?.sub;
+      if (!payload.status || payload.status === ConcertStatus.PUBLISHED) {
+        payload.status = ConcertStatus.PENDING_REVIEW;
+      }
+    }
+
     const created = await this.concertRepo.create(payload);
     await this.invalidateConcertListCaches();
-    await this.redisService.setJson(this.getConcertDetailCacheKey(created.id), created, this.cacheTtlSeconds);
+    await this.redisService.setJson(
+      this.getConcertDetailCacheKey(created.id),
+      created,
+      this.cacheTtlSeconds,
+    );
     await this.warmUpConcertRedisCache(created, true);
     return created;
   }
 
-  async updateConcert(id: string, payload: UpdateConcertDto): Promise<ConcertResponseDto> {
+  async updateConcert(
+    id: string,
+    payload: UpdateConcertDto,
+    currentUser?: CurrentUserPayload,
+  ): Promise<ConcertResponseDto> {
     const existing = await this.concertRepo.findById(id, true);
-    if (!existing) throw new NotFoundException('Concert not found');
+    if (!existing) throw new NotFoundException("Concert not found");
+
+    if (this.isOrganizerOnly(currentUser)) {
+      if (existing.organizer_id !== currentUser?.sub) {
+        throw new ForbiddenException(
+          "You do not have permission to modify this concert",
+        );
+      }
+      if (
+        payload.status === ConcertStatus.PUBLISHED &&
+        existing.status !== ConcertStatus.PUBLISHED
+      ) {
+        payload.status = ConcertStatus.PENDING_REVIEW;
+      }
+      payload.organizer_id = existing.organizer_id ?? currentUser?.sub;
+    }
 
     const updated = await this.concertRepo.update(id, payload);
-    await this.redisService.setJson(this.getConcertDetailCacheKey(id), updated, this.cacheTtlSeconds);
+    await this.redisService.setJson(
+      this.getConcertDetailCacheKey(id),
+      updated,
+      this.cacheTtlSeconds,
+    );
     await this.invalidateConcertListCaches();
     await this.warmUpConcertRedisCache(updated, false, existing);
     return updated;
   }
 
-  async deleteConcert(id: string): Promise<ConcertResponseDto> {
+  async deleteConcert(
+    id: string,
+    currentUser?: CurrentUserPayload,
+  ): Promise<ConcertResponseDto> {
     const existing = await this.concertRepo.findById(id, true);
-    if (!existing) throw new NotFoundException('Concert not found');
+    if (!existing) throw new NotFoundException("Concert not found");
 
-    if (existing.status === 'CANCELLED') return existing;
+    if (this.isOrganizerOnly(currentUser)) {
+      if (existing.organizer_id !== currentUser?.sub) {
+        throw new ForbiddenException(
+          "You do not have permission to delete this concert",
+        );
+      }
+    }
+
+    if (existing.status === "CANCELLED") return existing;
 
     const deleted = await this.concertRepo.delete(id);
-    await this.redisService.setJson(this.getConcertDetailCacheKey(id), deleted, this.cacheTtlSeconds);
+    await this.redisService.setJson(
+      this.getConcertDetailCacheKey(id),
+      deleted,
+      this.cacheTtlSeconds,
+    );
     await this.invalidateConcertListCaches();
     return deleted;
   }
 
-  private async warmUpConcertRedisCache(concert: ConcertResponseDto, isNew = false, oldConcert?: ConcertResponseDto) {
-    if (concert.status === 'PUBLISHED' && concert.ticketTiers) {
+  private async warmUpConcertRedisCache(
+    concert: ConcertResponseDto,
+    isNew = false,
+    oldConcert?: ConcertResponseDto,
+  ) {
+    if (concert.status === "PUBLISHED" && concert.ticketTiers) {
       const client = this.redisService.getClient();
       if (client && client.isOpen) {
         for (const tier of concert.ticketTiers) {
           const key = `category:${tier.id}`;
-          const salesStartAtStr = tier.sales_start_at ? new Date(tier.sales_start_at).toISOString() : '';
+          const salesStartAtStr = tier.sales_start_at
+            ? new Date(tier.sales_start_at).toISOString()
+            : "";
           if (isNew) {
             await client.hSet(key, {
               available: tier.total_quantity.toString(),
               max_per_user: tier.max_per_user.toString(),
               sales_start_at: salesStartAtStr,
             });
-            this.logger.log(`[Redis Warmup] Automatically initialized category ${tier.id} for new concert ${concert.name}`);
+            this.logger.log(
+              `[Redis Warmup] Automatically initialized category ${tier.id} for new concert ${concert.name}`,
+            );
           } else {
             // For updates: update in place to avoid losing in-flight Redis reservations.
             const exists = await client.exists(key);
             if (exists) {
-              const oldTier = oldConcert?.ticketTiers?.find((t) => t.id === tier.id);
-              const oldTotal = oldTier ? oldTier.total_quantity : tier.total_quantity;
+              const oldTier = oldConcert?.ticketTiers?.find(
+                (t) => t.id === tier.id,
+              );
+              const oldTotal = oldTier
+                ? oldTier.total_quantity
+                : tier.total_quantity;
               const difference = tier.total_quantity - oldTotal;
 
               if (difference !== 0) {
-                await client.hIncrBy(key, 'available', difference);
-                this.logger.log(`[Redis Update] Adjusted category ${tier.id} available count by ${difference} (new total: ${tier.total_quantity})`);
+                await client.hIncrBy(key, "available", difference);
+                this.logger.log(
+                  `[Redis Update] Adjusted category ${tier.id} available count by ${difference} (new total: ${tier.total_quantity})`,
+                );
               }
               await client.hSet(key, {
                 max_per_user: tier.max_per_user.toString(),
                 sales_start_at: salesStartAtStr,
               });
-              this.logger.log(`[Redis Update] Updated category ${tier.id} max_per_user to ${tier.max_per_user}, sales_start_at: ${salesStartAtStr || 'none'}`);
+              this.logger.log(
+                `[Redis Update] Updated category ${tier.id} max_per_user to ${tier.max_per_user}, sales_start_at: ${salesStartAtStr || "none"}`,
+              );
             } else {
               // If not in Redis yet, let lazy seeding handle it on-demand
-              this.logger.log(`[Redis Update] Category ${tier.id} not found in Redis, skipping in-place update`);
+              this.logger.log(
+                `[Redis Update] Category ${tier.id} not found in Redis, skipping in-place update`,
+              );
             }
           }
         }
@@ -162,12 +292,14 @@ export class ConcertService {
     status?: string,
     search?: string,
     category?: string,
+    organizer_id?: string,
   ): string {
-    const normalizedStatus = status ?? 'all';
-    const normalizedSearch = search?.toLowerCase() ?? 'all';
-    const normalizedCategory = category?.toLowerCase() ?? 'all';
+    const normalizedStatus = status ?? "all";
+    const normalizedSearch = search?.toLowerCase() ?? "all";
+    const normalizedCategory = category?.toLowerCase() ?? "all";
+    const normalizedOrganizer = organizer_id ?? "all";
 
-    return `concerts:list:${page}:${limit}:${normalizedStatus}:${normalizedSearch}:${normalizedCategory}`;
+    return `concerts:list:${page}:${limit}:${normalizedStatus}:${normalizedSearch}:${normalizedCategory}:${normalizedOrganizer}`;
   }
 
   private getConcertDetailCacheKey(id: string): string {
@@ -175,6 +307,6 @@ export class ConcertService {
   }
 
   private async invalidateConcertListCaches(): Promise<void> {
-    await this.redisService.deleteByPattern('concerts:list:*');
+    await this.redisService.deleteByPattern("concerts:list:*");
   }
 }

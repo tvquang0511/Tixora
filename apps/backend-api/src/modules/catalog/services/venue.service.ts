@@ -3,14 +3,14 @@ import {
   Logger,
   NotFoundException,
   BadRequestException,
-} from '@nestjs/common';
-import { VenueRepository } from '../repositories/venue.repository';
-import { CreateVenueDto } from '../dtos/create-venue.dto';
-import { UpdateVenueDto } from '../dtos/update-venue.dto';
-import { VenueResponseDto } from '../dtos/venue-response.dto';
-import { VenueListQueryDto } from '../dtos/venue-list-query.dto';
-import { PaginationMetaDto } from '../../../shared/dtos/pagination-meta.dto';
-import { RedisService } from '../../../shared/redis';
+} from "@nestjs/common";
+import { VenueRepository } from "../repositories/venue.repository";
+import { CreateVenueDto } from "../dtos/create-venue.dto";
+import { UpdateVenueDto } from "../dtos/update-venue.dto";
+import { VenueResponseDto } from "../dtos/venue-response.dto";
+import { VenueListQueryDto } from "../dtos/venue-list-query.dto";
+import { PaginationMetaDto } from "../../../shared/dtos/pagination-meta.dto";
+import { RedisService } from "../../../shared/redis";
 
 export class VenueListResponseDto {
   data!: VenueResponseDto[];
@@ -29,7 +29,7 @@ export class VenueService {
   constructor(
     private readonly venueRepo: VenueRepository,
     private readonly redisService: RedisService,
-  ) { }
+  ) {}
 
   async getVenues(query: VenueListQueryDto): Promise<VenueListResponseDto> {
     const page = query.page ?? 1;
@@ -38,7 +38,8 @@ export class VenueService {
     const search = query.search?.trim();
     const cacheKey = this.getVenueListCacheKey(page, limit, city, search);
 
-    const cached = await this.redisService.getJson<VenueListResponseDto>(cacheKey);
+    const cached =
+      await this.redisService.getJson<VenueListResponseDto>(cacheKey);
     if (cached) {
       this.logger.log(`[REDIS] getVenues cache hit key=${cacheKey}`);
       return new VenueListResponseDto(cached);
@@ -88,7 +89,10 @@ export class VenueService {
     return created;
   }
 
-  async updateVenue(id: string, payload: UpdateVenueDto): Promise<VenueResponseDto> {
+  async updateVenue(
+    id: string,
+    payload: UpdateVenueDto,
+  ): Promise<VenueResponseDto> {
     const existing = await this.venueRepo.findById(id);
     if (!existing) {
       throw new NotFoundException(`Venue with ID '${id}' not found`);
@@ -123,8 +127,8 @@ export class VenueService {
     city?: string,
     search?: string,
   ): string {
-    const normalizedCity = city?.toLowerCase() ?? 'all';
-    const normalizedSearch = search?.toLowerCase() ?? 'all';
+    const normalizedCity = city?.toLowerCase() ?? "all";
+    const normalizedSearch = search?.toLowerCase() ?? "all";
     return `venues:list:${page}:${limit}:${normalizedCity}:${normalizedSearch}`;
   }
 
@@ -133,7 +137,7 @@ export class VenueService {
   }
 
   private async invalidateVenueCaches(id?: string): Promise<void> {
-    await this.redisService.deleteByPattern('venues:list:*');
+    await this.redisService.deleteByPattern("venues:list:*");
     if (id) {
       await this.redisService.delete(this.getVenueDetailCacheKey(id));
     }

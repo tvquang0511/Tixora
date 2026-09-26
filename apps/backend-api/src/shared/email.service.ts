@@ -143,7 +143,9 @@ export class EmailService {
     fullName: string,
     token: string,
   ): Promise<boolean> {
-    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:3001").replace(/\/+$/, "");
+    const frontendUrl = (
+      process.env.FRONTEND_URL || "http://localhost:3001"
+    ).replace(/\/+$/, "");
     const baseVerifyUrl = process.env.EMAIL_VERIFICATION_URL
       ? process.env.EMAIL_VERIFICATION_URL.replace(/\/+$/, "")
       : `${frontendUrl}/verify`;
@@ -191,7 +193,9 @@ export class EmailService {
     fullName: string,
     token: string,
   ): Promise<boolean> {
-    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:3001").replace(/\/+$/, "");
+    const frontendUrl = (
+      process.env.FRONTEND_URL || "http://localhost:3001"
+    ).replace(/\/+$/, "");
     const baseResetUrl = process.env.PASSWORD_RESET_URL
       ? process.env.PASSWORD_RESET_URL.replace(/\/+$/, "")
       : `${frontendUrl}/reset-password`;

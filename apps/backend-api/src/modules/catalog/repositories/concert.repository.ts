@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../shared/prisma.service';
-import { ConcertResponseDto } from '../entities/concert-response.dto';
-import { TicketTierDto } from '../entities/ticket-tier.dto';
-import { CreateConcertDto } from '../dtos/create-concert.dto';
-import { UpdateConcertDto } from '../dtos/update-concert.dto';
-import { ConcertListItemDto } from '../dtos/concert-list-item.dto';
-import { ConcertListStatus } from '../dtos/concert-list-query.dto';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../../../shared/prisma.service";
+import { ConcertResponseDto } from "../entities/concert-response.dto";
+import { TicketTierDto } from "../entities/ticket-tier.dto";
+import { CreateConcertDto } from "../dtos/create-concert.dto";
+import { UpdateConcertDto } from "../dtos/update-concert.dto";
+import { ConcertListItemDto } from "../dtos/concert-list-item.dto";
+import { ConcertListStatus } from "../dtos/concert-list-query.dto";
 
 type ConcertListRow = {
   id: string;
@@ -19,6 +19,7 @@ type ConcertListRow = {
   status: string;
   category?: string | null;
   venue_id?: string | null;
+  organizer_id?: string | null;
 };
 
 type ConcertTicketCategoryRow = {
@@ -40,9 +41,9 @@ type ConcertDetailRow = ConcertListRow & {
 
 @Injectable()
 export class ConcertRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
-  private readonly deletedStatus = 'CANCELLED';
+  private readonly deletedStatus = "CANCELLED";
 
   /**
    * Retrieve concerts with pagination. Returns items + total count.
@@ -53,25 +54,32 @@ export class ConcertRepository {
     status?: ConcertListStatus,
     search?: string,
     category?: string,
-  ): Promise<{ items: ConcertListItemDto[]; total: number; page: number; limit: number }> {
+    organizer_id?: string,
+  ): Promise<{
+    items: ConcertListItemDto[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     const take = limit;
     const skip = Math.max(0, (page - 1) * limit);
     const trimmedSearch = search?.trim();
     const trimmedCategory = category?.trim();
     const where: Record<string, unknown> = {
       status: status ?? { not: this.deletedStatus },
+      ...(organizer_id ? { organizer_id } : {}),
       ...(trimmedSearch
         ? {
-          name: {
-            contains: trimmedSearch,
-            mode: 'insensitive' as const,
-          },
-        }
+            name: {
+              contains: trimmedSearch,
+              mode: "insensitive" as const,
+            },
+          }
         : {}),
-      ...(trimmedCategory && trimmedCategory.toUpperCase() !== 'ALL'
+      ...(trimmedCategory && trimmedCategory.toUpperCase() !== "ALL"
         ? {
-          category: trimmedCategory.toUpperCase(),
-        }
+            category: trimmedCategory.toUpperCase(),
+          }
         : {}),
     };
     const [items, total] = await this.prisma.$transaction([
@@ -91,8 +99,9 @@ export class ConcertRepository {
           status: true,
           category: true,
           venue_id: true,
+          organizer_id: true,
         },
-        orderBy: { start_time: 'desc' },
+        orderBy: { start_time: "desc" },
       }),
       this.prisma.concert.count({ where }),
     ]);
@@ -104,8 +113,13 @@ export class ConcertRepository {
   /**
    * Find a single concert by id including related ticket categories (ticket tiers)
    */
-  async findById(id: string, includeDeleted = false): Promise<ConcertResponseDto | null> {
-    const where = includeDeleted ? { id } : { id, status: { not: this.deletedStatus } };
+  async findById(
+    id: string,
+    includeDeleted = false,
+  ): Promise<ConcertResponseDto | null> {
+    const where = includeDeleted
+      ? { id }
+      : { id, status: { not: this.deletedStatus } };
     const concert = await this.prisma.concert.findFirst({
       where,
       include: { ticket_categories: true },
@@ -127,8 +141,9 @@ export class ConcertRepository {
         svg_map_url: payload.svg_map_url ?? null,
         poster_url: payload.poster_url ?? null,
         status: payload.status,
-        category: payload.category ?? 'CONCERT',
+        category: payload.category ?? "CONCERT",
         venue_id: payload.venue_id ?? null,
+        organizer_id: payload.organizer_id ?? null,
         ticket_categories: {
           create: (payload.ticketTiers || []).map((category) => ({
             name: category.name,
@@ -137,8 +152,10 @@ export class ConcertRepository {
             max_per_user: category.max_per_user,
             gate_number: category.gate_number ?? null,
             position: category.position ?? 0,
-            status: category.status ?? 'book_now',
-            sales_start_at: category.sales_start_at ? new Date(category.sales_start_at) : null,
+            status: category.status ?? "book_now",
+            sales_start_at: category.sales_start_at
+              ? new Date(category.sales_start_at)
+              : null,
           })),
         },
       },
@@ -148,7 +165,10 @@ export class ConcertRepository {
     return this.mapToDto(concert);
   }
 
-  async update(id: string, payload: UpdateConcertDto): Promise<ConcertResponseDto> {
+  async update(
+    id: string,
+    payload: UpdateConcertDto,
+  ): Promise<ConcertResponseDto> {
     if (payload.ticketTiers) {
       const incomingTiers = payload.ticketTiers;
 
@@ -164,11 +184,17 @@ export class ConcertRepository {
 
       for (const incoming of incomingTiers) {
         // 1. Try to find match by ID
-        let existingMatch = existing.find((e) => incoming.id && e.id === incoming.id);
+        let existingMatch = existing.find(
+          (e) => incoming.id && e.id === incoming.id,
+        );
 
         // 2. Try to find match by Name (case-insensitive) if ID match is not found
         if (!existingMatch) {
-          existingMatch = existing.find((e) => e.name.toLowerCase() === incoming.name.toLowerCase() && !matchedIds.has(e.id));
+          existingMatch = existing.find(
+            (e) =>
+              e.name.toLowerCase() === incoming.name.toLowerCase() &&
+              !matchedIds.has(e.id),
+          );
         }
 
         if (existingMatch) {
@@ -182,8 +208,10 @@ export class ConcertRepository {
               max_per_user: incoming.max_per_user,
               gate_number: incoming.gate_number ?? null,
               position: incoming.position ?? 0,
-              status: incoming.status ?? 'book_now',
-              sales_start_at: incoming.sales_start_at ? new Date(incoming.sales_start_at) : null,
+              status: incoming.status ?? "book_now",
+              sales_start_at: incoming.sales_start_at
+                ? new Date(incoming.sales_start_at)
+                : null,
             },
           });
         } else {
@@ -195,14 +223,18 @@ export class ConcertRepository {
             max_per_user: incoming.max_per_user,
             gate_number: incoming.gate_number ?? null,
             position: incoming.position ?? 0,
-            status: incoming.status ?? 'book_now',
-            sales_start_at: incoming.sales_start_at ? new Date(incoming.sales_start_at) : null,
+            status: incoming.status ?? "book_now",
+            sales_start_at: incoming.sales_start_at
+              ? new Date(incoming.sales_start_at)
+              : null,
           });
         }
       }
 
       // Existing categories not matched are deleted
-      const toDelete = existing.filter((e) => !matchedIds.has(e.id)).map((e) => e.id);
+      const toDelete = existing
+        .filter((e) => !matchedIds.has(e.id))
+        .map((e) => e.id);
 
       await this.prisma.$transaction(async (tx) => {
         // 1. Delete removed categories
@@ -237,7 +269,9 @@ export class ConcertRepository {
         location: payload.location,
         performers: payload.performers ?? undefined,
         ai_bio: payload.ai_bio ?? undefined,
-        start_time: payload.start_time ? new Date(payload.start_time) : undefined,
+        start_time: payload.start_time
+          ? new Date(payload.start_time)
+          : undefined,
         svg_map_url: payload.svg_map_url ?? undefined,
         poster_url: payload.poster_url ?? undefined,
         status: payload.status,
@@ -260,21 +294,24 @@ export class ConcertRepository {
     return this.mapToDto(concert);
   }
 
-  private mapToDto(
-    concert: ConcertDetailRow,
-  ): ConcertResponseDto {
-    const ticketTiers: TicketTierDto[] = (concert.ticket_categories || []).map((tc: ConcertTicketCategoryRow) =>
-      new TicketTierDto({
-        id: tc.id,
-        name: tc.name,
-        price: Number(typeof tc.price === 'object' && tc.price !== null ? tc.price.toNumber() : tc.price),
-        total_quantity: tc.total_quantity,
-        max_per_user: tc.max_per_user,
-        gate_number: tc.gate_number ?? null,
-        position: tc.position ?? 0,
-        status: tc.status ?? 'book_now',
-        sales_start_at: tc.sales_start_at ?? null,
-      }),
+  private mapToDto(concert: ConcertDetailRow): ConcertResponseDto {
+    const ticketTiers: TicketTierDto[] = (concert.ticket_categories || []).map(
+      (tc: ConcertTicketCategoryRow) =>
+        new TicketTierDto({
+          id: tc.id,
+          name: tc.name,
+          price: Number(
+            typeof tc.price === "object" && tc.price !== null
+              ? tc.price.toNumber()
+              : tc.price,
+          ),
+          total_quantity: tc.total_quantity,
+          max_per_user: tc.max_per_user,
+          gate_number: tc.gate_number ?? null,
+          position: tc.position ?? 0,
+          status: tc.status ?? "book_now",
+          sales_start_at: tc.sales_start_at ?? null,
+        }),
     );
 
     return new ConcertResponseDto({
@@ -290,6 +327,7 @@ export class ConcertRepository {
       status: concert.status,
       category: concert.category ?? null,
       venue_id: concert.venue_id ?? null,
+      organizer_id: concert.organizer_id ?? null,
       ticketTiers,
     });
   }
@@ -307,6 +345,7 @@ export class ConcertRepository {
       status: concert.status,
       category: concert.category ?? null,
       venue_id: concert.venue_id ?? null,
+      organizer_id: concert.organizer_id ?? null,
     });
   }
 }

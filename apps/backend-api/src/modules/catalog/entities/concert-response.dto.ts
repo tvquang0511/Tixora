@@ -1,6 +1,6 @@
-import { ConcertEntity } from './concert.entity';
-import { TicketTierDto } from './ticket-tier.dto';
-import { ApiProperty } from '@nestjs/swagger';
+import { ConcertEntity } from "./concert.entity";
+import { TicketTierDto } from "./ticket-tier.dto";
+import { ApiProperty } from "@nestjs/swagger";
 
 /**
  * DTO returned by catalog queries for a concert

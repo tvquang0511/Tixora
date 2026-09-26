@@ -19,6 +19,9 @@ const concertStatusClasses: Record<string, string> = {
   COMING_SOON: "bg-amber-50 text-amber-700 border-amber-200/80",
   CANCELLED: "bg-rose-50 text-rose-700 border-rose-200/80",
   DRAFT: "bg-slate-100 text-slate-600 border-slate-200",
+  PENDING_REVIEW: "bg-amber-50 text-amber-700 border-amber-200/80",
+  APPROVED: "bg-teal-50 text-teal-700 border-teal-200/80",
+  REJECTED: "bg-rose-50 text-rose-700 border-rose-200/80",
 };
 
 const orderStatusClasses: Record<string, string> = {
@@ -33,6 +36,9 @@ const labelMap: Record<string, string> = {
   CANCELLED: "Đã hủy",
   PUBLISHED: "Đã xuất bản",
   DRAFT: "Bản nháp",
+  PENDING_REVIEW: "Chờ duyệt",
+  APPROVED: "Đã phê duyệt",
+  REJECTED: "Bị từ chối",
   COMPLETED: "Đã hoàn thành",
   COMING_SOON: "Sắp mở bán",
   ACTIVE: "Đang hoạt động",

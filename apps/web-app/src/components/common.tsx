@@ -10,6 +10,7 @@ import {
   Ticket,
   LayoutDashboard,
   LogOut,
+  Building2,
 } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -413,8 +414,11 @@ export function SiteShell({
   const pathname = usePathname();
   const isAdmin =
     user?.roles?.some((role) =>
-      ["admin", "organizer", "checker"].includes(role.toLowerCase()),
+      ["admin", "superadmin", "super_admin"].includes(role.toLowerCase()),
     ) || false;
+
+  const isOrganizer =
+    user?.roles?.some((role) => role.toLowerCase() === "organizer") || false;
 
   const showCategorySubNav =
     pathname === "/" || pathname === "/concerts" || pathname === "/concerts/";
@@ -449,16 +453,16 @@ export function SiteShell({
               >
                 Vé của tôi
               </Link>
-              <a
-                href={
-                  process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3002"
-                }
-                target="_blank"
-                rel="noreferrer"
-                className="relative transition-colors hover:text-primary"
+              <Link
+                href={isOrganizer ? "/organizer/dashboard" : "/organizer/apply"}
+                className={`relative transition-colors hover:text-primary ${
+                  pathname?.startsWith("/organizer")
+                    ? "text-primary font-bold"
+                    : ""
+                }`}
               >
-                Hợp tác tổ chức
-              </a>
+                {isOrganizer ? "Kênh Ban Tổ Chức" : "Hợp tác tổ chức"}
+              </Link>
             </nav>
           </div>
 
@@ -482,7 +486,7 @@ export function SiteShell({
 
                   {/* Dropdown Menu */}
                   <div
-                    className="absolute right-0 mt-3 w-52 origin-top-right rounded-2xl border border-slate-800 bg-[#16222f]/95 backdrop-blur-md shadow-2xl ring-1 ring-black/5
+                    className="absolute right-0 mt-3 w-56 origin-top-right rounded-2xl border border-slate-800 bg-[#16222f]/95 backdrop-blur-md shadow-2xl ring-1 ring-black/5
               opacity-0 invisible translate-y-1 scale-95
               group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100
               transition-all duration-200 ease-out z-50 overflow-hidden"
@@ -508,6 +512,17 @@ export function SiteShell({
                         />{" "}
                         Thư viện vé
                       </Link>
+
+                      {isOrganizer && (
+                        <Link
+                          href="/organizer/dashboard"
+                          className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-primary hover:bg-slate-900 rounded-xl transition-colors"
+                        >
+                          <Building2 size={16} className="text-primary" /> Kênh
+                          Ban Tổ Chức
+                        </Link>
+                      )}
+
                       {isAdmin && (
                         <a
                           href={
@@ -516,13 +531,13 @@ export function SiteShell({
                           }
                           target="_blank"
                           rel="noreferrer"
-                          className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-on-surface-variant/90 hover:bg-slate-900 hover:text-on-surface rounded-xl transition-colors"
+                          className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-amber-400 hover:bg-slate-900 rounded-xl transition-colors"
                         >
                           <LayoutDashboard
                             size={16}
-                            className="text-on-surface-variant/70"
+                            className="text-amber-400"
                           />{" "}
-                          Quản trị hệ thống
+                          Quản trị sàn (Admin)
                         </a>
                       )}
 

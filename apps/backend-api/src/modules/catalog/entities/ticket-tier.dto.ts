@@ -1,13 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
 /**
  * DTO representing a ticket tier (maps to TicketCategory in Prisma schema)
  */
 export class TicketTierDto {
-  @ApiProperty({ example: 'f6c2a9c4-0e88-4b7c-8b9d-2e93c1c5c1b1' })
+  @ApiProperty({ example: "f6c2a9c4-0e88-4b7c-8b9d-2e93c1c5c1b1" })
   id!: string;
 
-  @ApiProperty({ example: 'SVIP' })
+  @ApiProperty({ example: "SVIP" })
   name!: string;
 
   @ApiProperty({ example: 5000000 })
@@ -28,10 +28,10 @@ export class TicketTierDto {
   @ApiProperty({ example: 0, required: false })
   position?: number | null;
 
-  @ApiProperty({ example: 'book_now', required: false })
+  @ApiProperty({ example: "book_now", required: false })
   status?: string | null;
 
-  @ApiProperty({ example: '2026-08-20T10:00:00.000Z', required: false })
+  @ApiProperty({ example: "2026-08-20T10:00:00.000Z", required: false })
   sales_start_at?: Date | null;
 
   constructor(partial: Partial<TicketTierDto> = {}) {

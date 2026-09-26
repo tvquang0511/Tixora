@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { PrismaService } from '../../../shared/prisma.service';
-import { CreateVenueDto } from '../dtos/create-venue.dto';
-import { UpdateVenueDto } from '../dtos/update-venue.dto';
-import { VenueResponseDto } from '../dtos/venue-response.dto';
+import { Injectable } from "@nestjs/common";
+import { Prisma } from "@prisma/client";
+import { PrismaService } from "../../../shared/prisma.service";
+import { CreateVenueDto } from "../dtos/create-venue.dto";
+import { UpdateVenueDto } from "../dtos/update-venue.dto";
+import { VenueResponseDto } from "../dtos/venue-response.dto";
 
 type VenueRow = {
   id: string;
@@ -19,14 +19,19 @@ type VenueRow = {
 
 @Injectable()
 export class VenueRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findManyWithPagination(
     page: number,
     limit: number,
     city?: string,
     search?: string,
-  ): Promise<{ items: VenueResponseDto[]; total: number; page: number; limit: number }> {
+  ): Promise<{
+    items: VenueResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     const take = limit;
     const skip = Math.max(0, (page - 1) * limit);
     const trimmedCity = city?.trim();
@@ -35,19 +40,19 @@ export class VenueRepository {
     const where: Prisma.VenueWhereInput = {
       ...(trimmedCity
         ? {
-          city: {
-            contains: trimmedCity,
-            mode: 'insensitive',
-          },
-        }
+            city: {
+              contains: trimmedCity,
+              mode: "insensitive",
+            },
+          }
         : {}),
       ...(trimmedSearch
         ? {
-          OR: [
-            { name: { contains: trimmedSearch, mode: 'insensitive' } },
-            { address: { contains: trimmedSearch, mode: 'insensitive' } },
-          ],
-        }
+            OR: [
+              { name: { contains: trimmedSearch, mode: "insensitive" } },
+              { address: { contains: trimmedSearch, mode: "insensitive" } },
+            ],
+          }
         : {}),
     };
 
@@ -56,7 +61,7 @@ export class VenueRepository {
         skip,
         take,
         where,
-        orderBy: { name: 'asc' },
+        orderBy: { name: "asc" },
       }),
       this.prisma.venue.count({ where }),
     ]);
@@ -81,7 +86,9 @@ export class VenueRepository {
         address: payload.address,
         capacity: payload.capacity,
         svg_template_url: payload.svg_template_url ?? null,
-        zone_presets: payload.zone_presets ? JSON.parse(JSON.stringify(payload.zone_presets)) : Prisma.JsonNull,
+        zone_presets: payload.zone_presets
+          ? JSON.parse(JSON.stringify(payload.zone_presets))
+          : Prisma.JsonNull,
       },
     });
     return this.mapToDto(venue);
@@ -96,7 +103,9 @@ export class VenueRepository {
         address: payload.address,
         capacity: payload.capacity,
         svg_template_url: payload.svg_template_url,
-        zone_presets: payload.zone_presets ? JSON.parse(JSON.stringify(payload.zone_presets)) : undefined,
+        zone_presets: payload.zone_presets
+          ? JSON.parse(JSON.stringify(payload.zone_presets))
+          : undefined,
       },
     });
     return this.mapToDto(venue);
@@ -111,7 +120,7 @@ export class VenueRepository {
 
   async countConcertsByVenueId(venueId: string): Promise<number> {
     return this.prisma.concert.count({
-      where: { venue_id: venueId, status: { not: 'CANCELLED' } },
+      where: { venue_id: venueId, status: { not: "CANCELLED" } },
     });
   }
 

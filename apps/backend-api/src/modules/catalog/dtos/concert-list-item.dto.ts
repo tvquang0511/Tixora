@@ -1,38 +1,50 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class ConcertListItemDto {
-  @ApiProperty({ example: '0edb0b61-8c91-4d2c-9b7c-9b6e2e3e7cf1' })
+  @ApiProperty({ example: "0edb0b61-8c91-4d2c-9b7c-9b6e2e3e7cf1" })
   id!: string;
 
-  @ApiProperty({ example: 'Anh Trai Say Hi' })
+  @ApiProperty({ example: "Anh Trai Say Hi" })
   name!: string;
 
-  @ApiPropertyOptional({ example: 'A high-energy showcase with headline performances.' })
+  @ApiPropertyOptional({
+    example: "A high-energy showcase with headline performances.",
+  })
   description?: string | null;
 
-  @ApiProperty({ example: 'District 1 Stadium, Ho Chi Minh City' })
+  @ApiProperty({ example: "District 1 Stadium, Ho Chi Minh City" })
   location!: string;
 
-  @ApiPropertyOptional({ type: [String], example: ['Phung Khanh Linh', 'Chi Dep'] })
+  @ApiPropertyOptional({
+    type: [String],
+    example: ["Phung Khanh Linh", "Chi Dep"],
+  })
   performers!: string[];
 
-  @ApiProperty({ format: 'date-time', example: '2026-06-10T19:30:00+07:00' })
+  @ApiProperty({ format: "date-time", example: "2026-06-10T19:30:00+07:00" })
   start_time!: Date;
 
-  @ApiPropertyOptional({ example: 'https://cdn.tixora.local/maps/anh-trai-say-hi.svg' })
+  @ApiPropertyOptional({
+    example: "https://cdn.tixora.local/maps/anh-trai-say-hi.svg",
+  })
   svg_map_url?: string | null;
 
-  @ApiPropertyOptional({ example: 'https://cdn.tixora.local/posters/anh-trai-say-hi.jpg' })
+  @ApiPropertyOptional({
+    example: "https://cdn.tixora.local/posters/anh-trai-say-hi.jpg",
+  })
   poster_url?: string | null;
 
-  @ApiProperty({ example: 'PUBLISHED' })
+  @ApiProperty({ example: "PUBLISHED" })
   status!: string;
 
-  @ApiPropertyOptional({ example: 'CONCERT' })
+  @ApiPropertyOptional({ example: "CONCERT" })
   category?: string | null;
 
-  @ApiPropertyOptional({ example: 'b3f572a1-2139-4dd7-897b-cf10972410a5' })
+  @ApiPropertyOptional({ example: "b3f572a1-2139-4dd7-897b-cf10972410a5" })
   venue_id?: string | null;
+
+  @ApiPropertyOptional({ example: "b3f572a1-2139-4dd7-897b-cf10972410a5" })
+  organizer_id?: string | null;
 
   constructor(partial: Partial<ConcertListItemDto> = {}) {
     Object.assign(this, partial);

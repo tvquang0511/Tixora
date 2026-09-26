@@ -90,6 +90,7 @@ export interface ConcertQuery {
   search?: string;
   status?: string;
   category?: string;
+  organizer_id?: string;
 }
 
 export const CONCERT_CATEGORIES = [
@@ -245,6 +246,10 @@ export async function getConcerts(query: ConcertQuery = {}) {
     params.set("category", query.category.trim().toUpperCase());
   }
 
+  if (query.organizer_id && query.organizer_id.trim()) {
+    params.set("organizer_id", query.organizer_id.trim());
+  }
+
   const isServer = typeof window === "undefined";
   const baseUrl = isServer
     ? (
@@ -258,7 +263,16 @@ export async function getConcerts(query: ConcertQuery = {}) {
       );
   const url = `${baseUrl}/concerts?${params.toString()}`;
 
-  const response = await fetch(url);
+  const headers: Record<string, string> = {};
+  if (!isServer) {
+    const { tokenStorage } = await import("@/utils/token.utils");
+    const token = tokenStorage.getAccessToken();
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+  }
+
+  const response = await fetch(url, { headers });
 
   if (!response.ok) {
     throw new Error(`Failed to load concerts (${response.status})`);

@@ -8,7 +8,9 @@ export class ResolveRefundDto {
   @MaxLength(100)
   refund_tx_id?: string;
 
-  @ApiPropertyOptional({ example: "Refunded via bank transfer because user paid after expiration" })
+  @ApiPropertyOptional({
+    example: "Refunded via bank transfer because user paid after expiration",
+  })
   @IsOptional()
   @IsString()
   @MaxLength(500)
