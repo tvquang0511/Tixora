@@ -1,23 +1,25 @@
 # Kiến Trúc Nền Tảng Ban Tổ Chức Tự Quản (Self-Service Organizer Platform)
 
-Tài liệu thiết kế kiến trúc và đề xuất giải pháp mở rộng hệ thống Tixora từ mô hình bán vé nội bộ (In-house Curated) sang **Nền tảng phân phối vé đa bên (Open Multi-Tenant Ticketing Platform)** tương tự Ticketbox.vn và Eventbrite.
+Tài liệu thiết kế kiến trúc và giải pháp mở rộng hệ thống Tixora từ mô hình bán vé nội bộ (In-house Curated) sang **Nền tảng phân phối vé đa bên (Open Multi-Tenant Platform)** theo mô hình Shared-Domain (dùng chung website chính như Eventbrite, Luma và Airbnb).
 
 ---
 
 ## 1. Bối cảnh & So sánh thực tế (Market Benchmark)
 
 ### 1.1. Hiện trạng của Tixora
-- Hiện tại, vai trò `Organizer` đã tồn tại trong hệ sinh thái phân quyền (RBAC) của Backend (`Role` & `Permission`), nhưng:
-  - Chưa có luồng công khai cho khán giả/đối tác tự đăng ký trở thành Ban tổ chức.
-  - Việc tạo tài khoản `Organizer` phải do `Admin`/`SuperAdmin` thực hiện thủ công trong Admin Portal (`:3002`).
+- Vai trò `Organizer` đã tồn tại trong hệ thống phân quyền (RBAC) của Backend, nhưng:
+  - Chưa có luồng cho khán giả/đối tác tự đăng ký trở thành Ban tổ chức.
+  - Cổng Quản trị sàn (`apps/admin-app`, `:3002`) là cổng điều hành nội bộ của sàn (`SuperAdmin` & `Admin`), vừa được siết chặt để chặn hoàn toàn `Audience`, `Checker` và `Organizer` khỏi bước đăng nhập.
   - Bảng `Concert` chưa gắn `organizer_id`, dẫn đến việc các concert chưa được cô lập quyền sở hữu theo từng đơn vị tổ chức.
 
-### 1.2. Mô hình của Ticketbox & Eventbrite
-- **Ticketbox**:
-  - Cung cấp nút *"Tạo sự kiện"* / *"Hợp tác tổ chức"* trực tiếp tại Header của Web Khách hàng.
-  - Cho phép người dùng đăng ký thông tin đối tác (Doanh nghiệp hoặc Cá nhân).
-  - Cung cấp cổng làm việc riêng (Organizer Center) để tạo sự kiện, cấu hình hạng vé, tải sơ đồ phân khu và theo dõi doanh thu thực tế.
-  - **Cơ chế kiểm duyệt (Event Review Gate)**: Sự kiện sau khi tạo không mở bán ngay lập tức mà trải qua vòng duyệt nội dung, giấy phép biểu diễn và pháp lý trước khi chính thức `PUBLISHED`.
+### 1.2. Mô hình Shared-Domain (Eventbrite / Luma / Airbnb)
+- **Cổng Quản Trị Sàn Nội Bộ (`apps/admin-app`, port `:3002`)**:
+  - Chỉ dành riêng cho nhân sự vận hành sàn (`SuperAdmin`, `Admin`).
+  - Quản lý tài khoản toàn sàn, duyệt hồ sơ đối tác (`/organizer-requests`), kiểm duyệt sự kiện trước khi mở bán, theo dõi hàng đợi tác vụ nền (Queue/Workers).
+- **Cổng Web & Phân Hệ Đối Tác (`apps/web-app`, port `:3001`)**:
+  - Dùng chung domain duy nhất cho Khán giả và Ban tổ chức.
+  - Khán giả đăng nhập 1 lần (Single Sign-On). Khi được cấp quyền `Organizer`, thanh điều hướng hoặc menu avatar mở thêm phân hệ **Trung tâm Ban Tổ Chức (`/organizer/*`)**.
+  - Không bị sự cố mất session hay cookie giữa các subdomain (vấn đề Safari/iOS hay chặn third-party cookies).
 
 ---
 
@@ -32,42 +34,50 @@ sequenceDiagram
     participant Admin as Admin Portal (:3002)
     actor SuperAdmin as Ban Quản Trị Sàn
 
-    User->>Web: Bấm "Hợp tác tổ chức"
-    Web->>API: Gửi đơn đăng ký (Tên BTC, MST/CCCD, SĐT, Portfolio)
-    API-->>Admin: Tạo thông báo & hàng đợi duyệt (OrganizerApplication)
-    SuperAdmin->>Admin: Xem xét hồ sơ & bấm "Phê duyệt"
-    API->>API: Nâng cấp Role từ 'Audience' lên 'Organizer'
-    API-->>User: Gửi email & thông báo kích hoạt thành công
+    Note over User,Web: 1. Nộp Hồ Sơ Đối Tác
+    User->>Web: Bấm "Hợp tác tổ chức" trên Header
+    Web->>API: Gửi đơn đăng ký (/organizer/apply: Tên BTC, MST/CCCD, SĐT, STK Ngân hàng)
+    API-->>Admin: Ghi nhận đơn đăng ký mới (OrganizerProfile: PENDING)
 
-    User->>Admin: Đăng nhập vào Không gian Ban Tổ Chức (Organizer Portal)
-    User->>Admin: Tạo sự kiện mới (Chọn Venue, tạo hạng vé, tải poster)
-    Admin->>API: Lưu sự kiện với trạng thái PENDING_REVIEW
-    SuperAdmin->>Admin: Kiểm duyệt sự kiện & bấm "Phê duyệt phát hành"
-    API->>API: Chuyển trạng thái sang PUBLISHED & Đồng bộ Redis Cache
-    API-->>Web: Sự kiện xuất hiện trên trang chủ & mở bán vé
+    Note over Admin,SuperAdmin: 2. Sàn Thẩm Định & Phê Duyệt
+    SuperAdmin->>Admin: Vào mục /organizer-requests xem xét hồ sơ
+    SuperAdmin->>Admin: Bấm "Phê duyệt"
+    Admin->>API: Cấp thêm vai trò 'Organizer' cho tài khoản
+    API-->>User: Gửi email & thông báo kích hoạt quyền Ban Tổ Chức
+
+    Note over User,Web: 3. Ban Tổ Chức Quản Lý Sự Kiện (Shared Domain)
+    User->>Web: Truy cập /organizer/dashboard (Trên cùng website :3001)
+    User->>Web: Tạo show diễn mới (/organizer/create-event: Chọn Venue, vé, sơ đồ SVG)
+    Web->>API: Lưu sự kiện với trạng thái PENDING_REVIEW (gắn organizer_id)
+
+    Note over Admin,Web: 4. Kiểm Duyệt Sự Kiện & Mở Bán
+    SuperAdmin->>Admin: Kiểm tra nội dung & giấy phép biểu diễn của show
+    SuperAdmin->>Admin: Bấm "Phê duyệt phát hành"
+    Admin->>API: Đổi trạng thái sang PUBLISHED & vô hiệu hóa Redis Cache
+    API-->>Web: Sự kiện xuất hiện trên Trang chủ Tixora để khán giả mua vé
 ```
 
 ---
 
 ## 3. Thiết Kế Cơ Sở Dữ Liệu (Database Schema)
 
-### 3.1. Bổ sung trường sở hữu cho `model Concert`
-Gắn kết mỗi sự kiện với một tài khoản Ban tổ chức duy nhất:
+### 3.1. Bổ sung quyền sở hữu cho `model Concert`
+Gắn kết mỗi sự kiện với một tài khoản Ban tổ chức duy nhất để phục vụ cơ chế **Data Isolation**:
 
 ```prisma
 model Concert {
-  id               String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name             String       @db.VarChar(255)
-  description      String       @db.Text
-  location         String       @db.VarChar(255)
-  venue_id         String?      @db.Uuid
-  organizer_id     String?      @db.Uuid     // <-- ID của User có role 'Organizer'
-  created_by_id    String?      @db.Uuid     // <-- Người tạo ban đầu (Admin hoặc Organizer)
+  id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String        @db.VarChar(255)
+  description      String        @db.Text
+  location         String        @db.VarChar(255)
+  venue_id         String?       @db.Uuid
+  organizer_id     String?       @db.Uuid     // <-- ID của User có vai trò 'Organizer'
+  created_by_id    String?       @db.Uuid     // <-- Người tạo (Admin sàn hoặc Organizer)
   status           ConcertStatus @default(DRAFT)
-  // ... các trường hiện có
+  // ... các trường hiện tại
   
-  venue            Venue?       @relation(fields: [venue_id], references: [id], onDelete: SetNull)
-  organizer        User?        @relation("OrganizerConcerts", fields: [organizer_id], references: [id], onDelete: SetNull)
+  venue            Venue?        @relation(fields: [venue_id], references: [id], onDelete: SetNull)
+  organizer        User?         @relation("OrganizerConcerts", fields: [organizer_id], references: [id], onDelete: SetNull)
 
   @@index([venue_id])
   @@index([organizer_id])
@@ -78,12 +88,12 @@ model Concert {
 ```prisma
 enum ConcertStatus {
   DRAFT             // Bản nháp nội bộ của Organizer
-  PENDING_REVIEW    // Đã gửi duyệt lên Sàn, chờ kiểm duyệt giấy tờ/nội dung
-  APPROVED          // Đã được duyệt, chờ đến ngày giờ mở bán
+  PENDING_REVIEW    // Đã nộp lên sàn, chờ kiểm duyệt giấy tờ/nội dung
+  APPROVED          // Đã được duyệt, chờ đến giờ hẹn mở bán tự động
   REJECTED          // Bị từ chối (kèm lý do ghi chú từ Admin sàn)
-  PUBLISHED         // Đang mở bán công khai trên sàn
-  COMPLETED         // Đã kết thúc show diễn
-  CANCELLED         // Đã hủy show (kích hoạt quy trình hoàn tiền tự động)
+  PUBLISHED         // Đang mở bán vé công khai trên sàn
+  COMPLETED         // Đã kết thúc sự kiện thành công
+  CANCELLED         // Đã hủy show (kích hoạt hoàn tiền tự động)
 }
 ```
 
@@ -120,75 +130,54 @@ model OrganizerProfile {
 
 ## 4. Cô Lập Dữ Liệu & Phân Quyền (Data Isolation & RBAC)
 
-| Thành phần | SuperAdmin / Admin sàn | Organizer (Ban tổ chức) | Audience (Khán giả) |
+| Phân Vùng | SuperAdmin / Admin Sàn (`:3002`) | Organizer (`:3001` - `/organizer/*`) | Audience (`:3001`) |
 | :--- | :--- | :--- | :--- |
-| **Danh sách Concert** | Xem & quản lý toàn bộ sự kiện của mọi đối tác | Chỉ xem & quản lý sự kiện do chính mình tạo (`where: { organizer_id: user.id }`) | Chỉ xem sự kiện có trạng thái `PUBLISHED` |
-| **Tạo / Cập nhật sự kiện** | Toàn quyền, có thể chọn trực tiếp trạng thái `PUBLISHED` | Tạo sự kiện ở trạng thái `DRAFT` hoặc gửi duyệt `PENDING_REVIEW` | Không có quyền (403) |
-| **Kiểm duyệt sự kiện** | Quyền duyệt (`APPROVE`) hoặc từ chối (`REJECT`) kèm lý do | Không có quyền | Không có quyền |
-| **Báo cáo Doanh thu** | Toàn sàn (Tổng GMV, Phí sàn, Lợi nhuận gộp) | Chỉ xem GMV & số vé bán của các sự kiện thuộc quyền sở hữu | Không có quyền |
-| **Phân công Soát vé (Checker)** | Có thể gán checker cho bất kỳ show nào | Chỉ được gán checker cho sự kiện của mình | Không có quyền |
-| **Quản trị Tài khoản (Users)** | Toàn quyền tạo/khóa User | Bị chặn hoàn toàn khỏi màn hình Quản lý User | Không có quyền |
+| **Danh sách Concert** | Xem & quản trị toàn bộ sự kiện của mọi đối tác | **Chỉ thấy sự kiện của chính mình** (`where: { organizer_id: user.id }`) | Chỉ thấy sự kiện `PUBLISHED` |
+| **Tạo sự kiện** | Toàn quyền, có thể chọn trực tiếp `PUBLISHED` | Tạo sự kiện ở dạng `DRAFT` hoặc gửi duyệt `PENDING_REVIEW` | Không có quyền (403) |
+| **Kiểm duyệt sự kiện** | Phê duyệt (`APPROVE`) hoặc Từ chối (`REJECT`) kèm lý do | Không có quyền | Không có quyền |
+| **Báo cáo Doanh thu** | Toàn sàn (Tổng GMV, Phí sàn thu được, Lợi nhuận) | **Chỉ xem doanh số bán vé của các show do mình tổ chức** | Không có quyền |
+| **Gán Soát vé (Checker)** | Toàn quyền trên mọi concert | Chỉ được gán checker cho concert của mình | Không có quyền |
+| **Quản trị User & Queue** | Toàn quyền | Không thấy & bị chặn hoàn toàn | Không có quyền |
 
 ---
 
-## 5. Quy Trình Trải Nghiệm Người Dùng (UX Flow)
+## 5. Cấu Trúc Trải Nghiệm Người Dùng (UX Flow)
 
-### 5.1. Khán giả nâng cấp thành Ban tổ chức (Web App `:3001`)
-1. Khán giả bấm **"Hợp tác tổ chức"** trên thanh Header.
-2. Nếu chưa đăng nhập: Chuyển tới trang `/login?returnUrl=/organizer/apply`.
-3. Nếu đã đăng nhập: Hiển thị form đăng ký trang trọng:
-   - Thông tin cá nhân/doanh nghiệp: Tên đơn vị tổ chức, Mã số thuế/CCCD, Hotline.
-   - Tài khoản nhận quyết toán: Ngân hàng, Số tài khoản, Chủ tài khoản.
-   - Giấy tờ xác minh (Upload ảnh Đăng ký kinh doanh / CCCD).
-4. Sau khi gửi: Hiển thị thông báo *"Hồ sơ đang được Ban quản trị Tixora thẩm định trong vòng 24 giờ làm việc"*.
+### 5.1. Khán giả nộp hồ sơ đối tác (`apps/web-app/src/app/organizer/apply`)
+- Nút **"Hợp tác tổ chức"** trên thanh Header dẫn tới `/organizer/apply`.
+- Nếu chưa đăng nhập: Yêu cầu đăng nhập hoặc đăng ký tài khoản Tixora.
+- Form đăng ký thông tin đối tác gồm 3 bước:
+  1. **Thông tin pháp nhân/nghệ sĩ**: Tên đơn vị, Mã số thuế/CCCD, Hotline liên hệ.
+  2. **Tài khoản thụ hưởng (Quyết toán)**: Tên ngân hàng, Số tài khoản, Tên chủ tài khoản.
+  3. **Hồ sơ năng lực / Giấy phép**: Tải ảnh Đăng ký kinh doanh / CCCD hoặc liên kết portfolio các show đã từng làm.
+- Sau khi nộp: Hiển thị banner trạng thái *"Hồ sơ đang chờ Ban quản trị Tixora thẩm định"*.
 
-### 5.2. Admin duyệt hồ sơ đối tác (Admin App `:3002`)
-1. Thêm tab **"Yêu cầu đối tác"** (`/organizer-requests`) trong Admin Portal.
-2. Hiển thị danh sách hồ sơ kèm nút xem giấy tờ đính kèm.
-3. Thao tác:
-   - **Phê duyệt**: Hệ thống cập nhật bảng `UserRole` cấp thêm role `Organizer`, gửi email thông báo kèm liên kết truy cập Cổng Ban Tổ Chức.
-   - **Từ chối**: Nhập lý do (ví dụ: *Ảnh CCCD bị mờ*, *Mã số thuế không hợp lệ*) để gửi phản hồi cho người nộp.
+### 5.2. Admin sàn duyệt hồ sơ đối tác (`apps/admin-app/src/app/(admin)/organizer-requests`)
+- Màn hình quản lý danh sách hồ sơ đối tác với các bộ lọc: Chờ duyệt (`PENDING`), Đã duyệt (`APPROVED`), Từ chối (`REJECTED`).
+- Thao tác:
+  - **Phê duyệt**: Hệ thống cập nhật bảng `UserRole`, cấp thêm role `Organizer`.
+  - **Từ chối**: Nhập lý do (ví dụ: *Ảnh CCCD bị mờ, không khớp tên*) để gửi thông báo cho đối tác.
 
-### 5.3. Không gian làm việc của Ban Tổ Chức (Organizer Workspace)
-Khi tài khoản có role `Organizer` đăng nhập vào Admin App (`:3002`):
-- Hệ thống tự động ẩn các menu không thuộc phạm vi: *Quản lý Quản trị viên*, *Quản trị Người dùng*, *Cấu hình hệ thống*.
-- Menu hiển thị chỉ bao gồm:
-  1. 🎪 **Sự kiện của tôi**: Danh sách show, trạng thái duyệt, nút "Tạo sự kiện mới".
-  2. 📊 **Báo cáo doanh số**: Biểu đồ doanh thu vé, tỉ lệ lấp đầy ghế theo thời gian thực của sự kiện mình.
-  3. 🎫 **Quản lý vé & Khách mời**: Cấp mã vé mời (Complimentary tickets), quản lý danh sách khán giả.
-  4. 📱 **Cổng soát vé (Check-in)**: Gán nhân viên Checker, cấp mã QR đăng nhập cho Mobile App tại cổng.
-  5. ⚙️ **Hồ sơ Ban tổ chức**: Cập nhật thông tin liên hệ, tài khoản ngân hàng.
+### 5.3. Không gian Ban Tổ Chức trên Web App (`apps/web-app/src/app/organizer/*`)
+Khi người dùng có vai trò `Organizer` đăng nhập vào Web App:
+- Menu Avatar trên Header có thêm mục: **"Quản lý sự kiện"** (hoặc nút chuyển đổi mode "Chế độ Ban Tổ Chức").
+- Bộ trang dành riêng cho Organizer:
+  1. `/organizer/dashboard`: Tổng quan số vé đã bán, doanh thu show mình, tỉ lệ check-in.
+  2. `/organizer/events`: Danh sách các show của mình kèm badge trạng thái (`DRAFT`, `PENDING_REVIEW`, `PUBLISHED`).
+  3. `/organizer/create-event`: Giao diện tạo sự kiện (kế thừa bộ chọn Venue Preset, sơ đồ SVG và tạo vé).
+  4. `/organizer/assignments`: Cấp tài khoản hoặc mã QR soát vé cho nhân viên Checker tại cổng.
 
 ---
 
-## 6. Mô Hình Tài Chính & Phí Nền Tảng (Platform Fee & Settlement)
+## 6. Mô Hình Ký Quỹ & Phí Sàn (Financial Escrow Model)
 
 ```
 [Tổng doanh thu bán vé (GMV)]
        │
        ├───► [Phí cổng thanh toán (Payment Gateway Fee: 1.5% - 2%)]
-       ├───► [Phí dịch vụ nền tảng Tixora (Platform Fee: 5%)]
-       └───► [Số dư khả dụng thanh toán cho Organizer: 93% - 93.5%]
+       ├───► [Phí sàn Tixora (Platform Fee: 5%)]
+       └───► [Số dư khả dụng chuyển cho Ban Tổ Chức: 93% - 93.5%]
 ```
 
-- **Cơ chế Ký quỹ (Escrow Model)**: Toàn bộ tiền bán vé được giữ trong tài khoản Escrow của Tixora nhằm bảo vệ khán giả khỏi rủi ro bùng show.
-- **Giải ngân đối soát**:
-  - Đợt 1 (Tùy chọn): Tạm ứng 30% - 50% trước show dựa trên hợp đồng bảo lãnh.
-  - Đợt 2: Quyết toán toàn bộ phần còn lại sau khi sự kiện diễn ra thành công trong vòng 3 - 5 ngày làm việc.
-
----
-
-## 7. Lộ Trình Triển Khai (Phased Roadmap)
-
-1. **Phase 1: Foundation & Data Isolation (Backend Core)**
-   - Migration Prisma: Thêm `organizer_id` vào `Concert`, cập nhật `ConcertStatus`.
-   - Cập nhật Concert Repository & Service: Lọc `where: { organizer_id: userId }` khi request đến từ role `Organizer`.
-   - Viết Unit Tests bảo đảm tính cô lập dữ liệu.
-
-2. **Phase 2: Organizer Onboarding & Admin Approval**
-   - Web App: Xây dựng trang `/organizer/apply` với form thông tin chuyên nghiệp.
-   - Admin App: Xây dựng trang Quản lý yêu cầu đối tác (`/organizer-requests`) kèm tính năng Duyệt/Từ chối.
-
-3. **Phase 3: Event Approval Lifecycle & Portal Polish**
-   - Hỗ trợ trạng thái `PENDING_REVIEW` và giao diện phê duyệt sự kiện trong Admin Portal.
-   - Tối ưu hóa UI/UX Admin Portal theo vai trò (Role-based Sidebar & Widgets).
+- **Cơ chế Escrow**: Tiền vé thanh toán qua PayOS/VNPay được giữ tại tài khoản Escrow của sàn Tixora trong suốt thời gian mở bán để bảo vệ quyền lợi khán giả.
+- **Quyết toán (Settlement)**: Sau khi show kết thúc thành công trong 3 - 5 ngày làm việc, sàn chuyển tiền vé thực tế cho Organizer theo số tài khoản ngân hàng đã đăng ký.
