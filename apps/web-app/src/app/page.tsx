@@ -157,19 +157,30 @@ function FeaturedShowsSection({ concerts }: { concerts: ConcertCardItem[] }) {
 
                   <div className="space-y-1 text-xs text-on-surface-variant/75">
                     <div className="flex items-center gap-1.5">
-                      <Calendar size={13} className="text-primary/70 shrink-0" />
+                      <Calendar
+                        size={13}
+                        className="text-primary/70 shrink-0"
+                      />
                       <span>{concert.date}</span>
                     </div>
                     {concert.venue && (
                       <div className="flex items-center gap-1.5 truncate">
-                        <MapPin size={13} className="text-primary/70 shrink-0" />
+                        <MapPin
+                          size={13}
+                          className="text-primary/70 shrink-0"
+                        />
                         <span className="truncate">{concert.venue}</span>
                       </div>
                     )}
                     {concert.performers && concert.performers.length > 0 && (
                       <div className="flex items-center gap-1.5 truncate text-on-surface-variant/60">
-                        <Music2 size={13} className="text-primary/70 shrink-0" />
-                        <span className="truncate">{concert.performers.join(", ")}</span>
+                        <Music2
+                          size={13}
+                          className="text-primary/70 shrink-0"
+                        />
+                        <span className="truncate">
+                          {concert.performers.join(", ")}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -240,7 +251,8 @@ function UpcomingEventsSection({ concerts }: { concerts: ConcertCardItem[] }) {
             Hiện tại chưa có sự kiện nào sắp diễn ra.
           </p>
           <p className="text-xs text-on-surface-variant/50 mt-1">
-            Vui lòng quay lại sau hoặc liên hệ ban tổ chức để biết thêm chi tiết.
+            Vui lòng quay lại sau hoặc liên hệ ban tổ chức để biết thêm chi
+            tiết.
           </p>
         </div>
       ) : (
@@ -281,19 +293,30 @@ function UpcomingEventsSection({ concerts }: { concerts: ConcertCardItem[] }) {
 
                   <div className="mt-2.5 space-y-1.5 text-xs text-on-surface-variant/70">
                     <div className="flex items-center gap-1.5">
-                      <Calendar size={12} className="text-primary/70 shrink-0" />
+                      <Calendar
+                        size={12}
+                        className="text-primary/70 shrink-0"
+                      />
                       <span>{concert.date}</span>
                     </div>
                     {concert.venue && (
                       <div className="flex items-center gap-1.5 truncate">
-                        <MapPin size={12} className="text-primary/70 shrink-0" />
+                        <MapPin
+                          size={12}
+                          className="text-primary/70 shrink-0"
+                        />
                         <span className="truncate">{concert.venue}</span>
                       </div>
                     )}
                     {concert.performers && concert.performers.length > 0 && (
                       <div className="flex items-center gap-1.5 truncate text-[11px] text-on-surface-variant/60">
-                        <Music2 size={11} className="text-primary/70 shrink-0" />
-                        <span className="truncate">{concert.performers.join(", ")}</span>
+                        <Music2
+                          size={11}
+                          className="text-primary/70 shrink-0"
+                        />
+                        <span className="truncate">
+                          {concert.performers.join(", ")}
+                        </span>
                       </div>
                     )}
                   </div>

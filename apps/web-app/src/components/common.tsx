@@ -356,8 +356,9 @@ function CategorySubNavInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentCategory =
-    (pathname?.startsWith("/concerts") ? searchParams?.get("category") : null) ||
-    "ALL";
+    (pathname?.startsWith("/concerts")
+      ? searchParams?.get("category")
+      : null) || "ALL";
 
   const handleSelect = (code: string) => {
     if (code === "ALL") {
@@ -442,15 +443,17 @@ export function SiteShell({
             <nav className="hidden md:flex items-center gap-6 text-sm font-bold text-on-surface-variant/80">
               <Link
                 href="/concerts"
-                className={`relative transition-colors hover:text-primary ${pathname?.startsWith("/concerts") ? "text-primary" : ""
-                  }`}
+                className={`relative transition-colors hover:text-primary ${
+                  pathname?.startsWith("/concerts") ? "text-primary" : ""
+                }`}
               >
                 Sự kiện
               </Link>
               <Link
                 href="/my-tickets"
-                className={`relative transition-colors hover:text-primary ${pathname === "/my-tickets" ? "text-primary" : ""
-                  }`}
+                className={`relative transition-colors hover:text-primary ${
+                  pathname === "/my-tickets" ? "text-primary" : ""
+                }`}
               >
                 Vé của tôi
               </Link>
@@ -612,10 +615,11 @@ export function SiteShell({
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-2 py-1 text-[10px] font-bold ${pathname === item.href
-                ? "text-primary"
-                : "text-on-surface-variant/75"
-                }`}
+              className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-2 py-1 text-[10px] font-bold ${
+                pathname === item.href
+                  ? "text-primary"
+                  : "text-on-surface-variant/75"
+              }`}
             >
               <span className="material-symbols-outlined text-[20px]">
                 {item.label === "My Tickets"

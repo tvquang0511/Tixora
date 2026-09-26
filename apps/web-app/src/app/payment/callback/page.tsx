@@ -40,9 +40,9 @@ function CallbackContent() {
 
     async function resolveAndVerifyOrder() {
       try {
-        let resolvedOrderId = orderIdParam || window.sessionStorage.getItem(
-          "last_checkout_order_id",
-        );
+        let resolvedOrderId =
+          orderIdParam ||
+          window.sessionStorage.getItem("last_checkout_order_id");
 
         // Validate sessionStorage orderId against orderCode if orderCode is present
         if (resolvedOrderId && orderCodeParam) {

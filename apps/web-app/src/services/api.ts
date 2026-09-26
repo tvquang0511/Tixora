@@ -47,10 +47,7 @@ export async function refreshAccessToken(): Promise<string | null> {
       }
 
       const refreshData = await refreshResp.json();
-      tokenStorage.setTokens(
-        refreshData.accessToken,
-        refreshData.refreshToken,
-      );
+      tokenStorage.setTokens(refreshData.accessToken, refreshData.refreshToken);
       return refreshData.accessToken as string;
     } catch (err) {
       tokenStorage.clearTokens();
@@ -70,7 +67,8 @@ export async function refreshAccessToken(): Promise<string | null> {
           "/private-policy",
         ];
         const isPublic =
-          publicPaths.includes(currentPath) || currentPath.startsWith("/concerts/");
+          publicPaths.includes(currentPath) ||
+          currentPath.startsWith("/concerts/");
         if (!isPublic) {
           window.location.href = "/login";
         }
@@ -145,7 +143,8 @@ export async function fetchClient<T>(
                 "/private-policy",
               ];
               const isPublic =
-                publicPaths.includes(currentPath) || currentPath.startsWith("/concerts/");
+                publicPaths.includes(currentPath) ||
+                currentPath.startsWith("/concerts/");
               if (!isPublic) {
                 window.location.href = "/login";
               }

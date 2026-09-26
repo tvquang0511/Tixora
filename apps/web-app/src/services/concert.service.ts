@@ -232,7 +232,11 @@ export async function getConcerts(query: ConcertQuery = {}) {
     params.set("status", query.status.trim());
   }
 
-  if (query.category && query.category.trim() && query.category.toUpperCase() !== "ALL") {
+  if (
+    query.category &&
+    query.category.trim() &&
+    query.category.toUpperCase() !== "ALL"
+  ) {
     params.set("category", query.category.trim().toUpperCase());
   }
 

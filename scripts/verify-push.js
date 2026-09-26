@@ -277,6 +277,10 @@ if (runAll) {
 if (activeFE) {
   printSection('Web App Checks');
   runCheck(
+    'Web: Prettier',
+    'pnpm', ['--filter', 'web-app', 'exec', 'prettier', '--check', '.']
+  );
+  runCheck(
     'Web: ESLint',
     'pnpm', ['--filter', 'web-app', 'run', 'lint']
   );

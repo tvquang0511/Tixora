@@ -7,7 +7,10 @@ import {
   ConfirmModal,
 } from "@/components/screens";
 import { Loader2, Ban } from "lucide-react";
-import { processPayment, simulateMockPayment } from "@/services/payment.service";
+import {
+  processPayment,
+  simulateMockPayment,
+} from "@/services/payment.service";
 import { getCheckoutReservationState } from "@/utils/checkout-state.utils";
 import { getOrderById, cancelOrder } from "@/services/order.service";
 import { useToast } from "@/context/ToastContext";
@@ -56,7 +59,8 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
       }
       window.location.href = `/payment/callback?code=00&cancel=false&orderId=${resolvedOrderId}`;
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Thanh toán thử nghiệm thất bại";
+      const message =
+        err instanceof Error ? err.message : "Thanh toán thử nghiệm thất bại";
       setError(message);
       showErrorToast(message);
       setMockLoading(false);
@@ -336,7 +340,7 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
 
         {/* Right column */}
         <OrderSummaryCard
-          onPay={() => { }}
+          onPay={() => {}}
           rightLoading={false}
           isAnyLoading={true}
           orderId={orderId}
@@ -395,7 +399,9 @@ export function CheckoutForm({ orderId }: CheckoutFormProps) {
               className="inline-flex items-center gap-2 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/10 to-indigo-500/10 px-5 py-3 text-sm font-semibold text-amber-300 hover:bg-amber-500/20 active:scale-[0.98] transition-all cursor-pointer shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {mockLoading && <Loader2 size={15} className="animate-spin" />}
-              {mockLoading ? "Đang xử lý mô phỏng…" : "Demo: Thanh toán 1-Click"}
+              {mockLoading
+                ? "Đang xử lý mô phỏng…"
+                : "Demo: Thanh toán 1-Click"}
             </button>
 
             {/* Cancel Order */}
