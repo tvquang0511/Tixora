@@ -1,539 +1,461 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState, Suspense, Fragment } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { SectionHeading, SiteShell } from "@/components/common";
+import { SiteShell } from "@/components/common";
 import { useToast } from "@/context/ToastContext";
 import { HeroCarousel } from "@/components/screens";
 import {
   getConcerts,
+  DEFAULT_POSTER_URL,
   type ConcertCardItem,
-  type ConcertListMeta,
 } from "@/services/concert.service";
 import {
-  ChevronLeft,
-  ChevronRight,
   ArrowRight,
   MapPin,
   Calendar,
+  Ticket,
+  ChevronRight,
+  TrendingUp,
+  Music2,
+  Sparkles,
 } from "lucide-react";
 
-// ─── Mini Concert Card (carousel style) ──────────────────────────────────────
-function MiniConcertCard({ concert }: { concert: ConcertCardItem }) {
-  return (
-    <Link
-      href={`/concerts/${concert.id}`}
-      className="group flex w-full flex-col gap-3 focus:outline-none"
-    >
-      {/* Poster */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={
-            concert.posterUrl && concert.posterUrl.startsWith("http")
-              ? concert.posterUrl
-              : "/Mockimg.webp"
-          }
-          alt={concert.title}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-      </div>
-      {/* Info */}
-      <div className="flex flex-col gap-1 px-0.5">
-        <h3 className="line-clamp-2 text-sm font-bold text-on-surface transition-colors group-hover:text-primary">
-          {concert.title}
-        </h3>
-        <p className="text-[13px] font-bold text-primary">{concert.price}</p>
-        <div className="flex items-center gap-1 text-xs text-on-surface-variant/70">
-          <Calendar size={11} />
-          <span>{concert.date}</span>
-        </div>
-        {concert.venue && (
-          <div className="flex items-center gap-1 text-xs text-on-surface-variant/60 truncate">
-            <MapPin size={11} />
-            <span className="truncate">{concert.venue}</span>
-          </div>
-        )}
-      </div>
-    </Link>
-  );
-}
+// ─── Danh Sách Nghệ Sĩ Được Yêu Thích (Lineup Nổi Bật) ─────────────────────
+const POPULAR_ARTISTS = [
+  {
+    name: "Đen Vâu",
+    role: "Rapper / Nhạc sĩ",
+    avatar:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+    query: "Đen Vâu",
+  },
+  {
+    name: "Vũ.",
+    role: "Hoàng tử Indie",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+    query: "Vũ",
+  },
+  {
+    name: "Chillies",
+    role: "Pop / Rock Band",
+    avatar:
+      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=300&q=80",
+    query: "Chillies",
+  },
+  {
+    name: "HIEUTHUHAI",
+    role: "Rapper / Singer",
+    avatar:
+      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=300&q=80",
+    query: "HIEUTHUHAI",
+  },
+  {
+    name: "Alan Walker",
+    role: "World Top DJ",
+    avatar:
+      "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=300&q=80",
+    query: "Alan Walker",
+  },
+];
 
-// ─── Explore More tile ────────────────────────────────────────────────────────
-function ExploreMoreTile({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-outline-variant/50 bg-surface/50 text-center transition-all duration-300 hover:border-primary/50 hover:bg-surface cursor-pointer"
-    >
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
-        <ChevronRight size={24} className="text-primary" />
-      </div>
-      <span className="text-sm font-bold text-on-surface-variant group-hover:text-primary transition-colors">
-        Khám phá thêm sự kiện
-      </span>
-    </button>
-  );
-}
+// ─── 1. Sự Kiện Nổi Bật (3 Sự Kiện Bán Được Nhiều Vé Nhất) ───────────────────
+function FeaturedShowsSection({ concerts }: { concerts: ConcertCardItem[] }) {
+  const topConcerts = concerts.slice(0, 3);
+  if (topConcerts.length === 0) return null;
 
-function ConcertsFullList() {
-  const searchParams = useSearchParams();
-  const search = searchParams?.get("q") || "";
-  // URL is the single source of truth — status comes from URL params
-  const activeStatus = (searchParams?.get("status") || "PUBLISHED") as
-    "PUBLISHED" | "COMPLETED";
-  const [page, setPage] = useState(1);
-  const [items, setItems] = useState<ConcertCardItem[]>([]);
-  const [meta, setMeta] = useState<ConcertListMeta>({
-    totalItems: 0,
-    itemCount: 0,
-    itemsPerPage: 12,
-    totalPages: 1,
-    currentPage: 1,
-  });
-  const [loading, setLoading] = useState(true);
-  const { error: showErrorToast } = useToast();
-
-  // Reset page when status changes via URL
-  const prevStatus = useRef(activeStatus);
-  if (prevStatus.current !== activeStatus) {
-    prevStatus.current = activeStatus;
-    if (page !== 1) setPage(1);
-  }
-
-  useEffect(() => {
-    let isActive = true;
-    const id = window.setTimeout(() => {
-      const load = async () => {
-        setLoading(true);
-        try {
-          const r = await getConcerts({
-            page,
-            limit: meta.itemsPerPage,
-            search: search.trim() || undefined,
-            status: activeStatus,
-          });
-          if (!isActive) return;
-          setItems(r.items);
-          setMeta(r.meta);
-        } catch (e) {
-          if (!isActive) return;
-          setItems([]);
-          showErrorToast(
-            e instanceof Error ? e.message : "Không thể tải concert.",
-          );
-        } finally {
-          if (isActive) setLoading(false);
-        }
-      };
-      void load();
-    }, 250);
-    return () => {
-      isActive = false;
-      clearTimeout(id);
-    };
-  }, [meta.itemsPerPage, page, search, activeStatus, showErrorToast]);
-
-  const totalPages = Math.max(meta.totalPages, 1);
+  const rankBadges = [
+    {
+      label: "#1 TOP BÁN CHẠY",
+      badgeColor: "bg-amber-500/20 text-amber-300 border-amber-500/40",
+      glowColor: "shadow-amber-500/10 border-amber-500/30",
+    },
+    {
+      label: "#2 XU HƯỚNG",
+      badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
+      glowColor: "shadow-cyan-500/10 border-cyan-500/30",
+    },
+    {
+      label: "#3 ĐƯỢC YÊU THÍCH",
+      badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/40",
+      glowColor: "shadow-purple-500/10 border-purple-500/30",
+    },
+  ];
 
   return (
-    <div className="mt-6">
-      {/* Search context & count row */}
-      <div className="flex flex-col gap-1 mb-6 sm:flex-row sm:items-end sm:justify-between">
+    <section className="mx-auto w-full max-w-7xl px-4 pt-10 pb-8 sm:px-6 lg:px-8">
+      {/* Header */}
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
-          {search ? (
-            <>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
-                Tìm kiếm
-              </p>
-              <p className="text-sm text-on-surface-variant">
-                Kết quả cho:{" "}
-                <span className="font-semibold text-on-surface">
-                  &ldquo;{search}&rdquo;
+          <h2 className="font-display text-2xl sm:text-3xl font-black text-on-surface tracking-tight">
+            Sự Kiện Nổi Bật
+          </h2>
+          <p className="mt-1 text-xs sm:text-sm text-on-surface-variant/70">
+            Top những sự kiện âm nhạc có lượng vé bán ra chạy nhất hiện nay
+          </p>
+        </div>
+        <Link
+          href="/concerts"
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-primary hover:text-primary-container transition-colors group"
+        >
+          Xem tất cả sự kiện
+          <ArrowRight
+            size={14}
+            className="transition-transform group-hover:translate-x-1"
+          />
+        </Link>
+      </div>
+
+      {/* 3 Large Showcase Cards */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {topConcerts.map((concert, idx) => {
+          const badge = rankBadges[idx] || rankBadges[2];
+          return (
+            <Link
+              key={concert.id}
+              href={`/concerts/${concert.id}`}
+              className={`group relative flex flex-col rounded-3xl border bg-slate-900/60 backdrop-blur-md overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl shadow-lg cursor-pointer ${badge.glowColor}`}
+            >
+              {/* Poster Container */}
+              <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={
+                    concert.posterUrl && concert.posterUrl.startsWith("http")
+                      ? concert.posterUrl
+                      : DEFAULT_POSTER_URL
+                  }
+                  alt={concert.title}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+
+                {/* Rank Badge */}
+                <span
+                  className={`absolute top-3 left-3 z-10 inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-black uppercase tracking-wider backdrop-blur-md shadow-md ${badge.badgeColor}`}
+                >
+                  <TrendingUp size={12} />
+                  {badge.label}
                 </span>
-              </p>
-            </>
-          ) : null}
-        </div>
-        <p className="text-sm text-on-surface-variant/60 tabular-nums">
-          {loading ? "..." : `${meta.totalItems} sự kiện`}
-        </p>
-      </div>
 
-      {/* Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {loading
-          ? Array.from({ length: 8 }, (_, i) => (
-              <div key={i} className="animate-pulse flex flex-col gap-3">
-                <div className="aspect-[4/3] w-full rounded-2xl bg-outline-variant/30" />
-                <div className="h-4 w-3/4 rounded-full bg-outline-variant/30" />
-                <div className="h-3 w-1/2 rounded-full bg-outline-variant/20" />
-              </div>
-            ))
-          : items.map((concert) => (
-              <MiniConcertCard key={concert.id} concert={concert} />
-            ))}
-      </div>
-      {!loading && items.length === 0 && (
-        <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
-          <p className="text-base font-semibold text-on-surface-variant">
-            Không có sự kiện nào
-          </p>
-          <p className="text-sm text-on-surface-variant/50">
-            {search
-              ? `Không tìm thấy sự kiện nào với từ khóa “${search}”`
-              : "Thử bộ lọc khác hoặc quay lại sau"}
-          </p>
-        </div>
-      )}
-
-      {totalPages > 1 && (
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2 border-t border-outline-variant/40 pt-6">
-          <button
-            type="button"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1 || loading}
-            className="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface-variant transition hover:border-primary/40 hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-          >
-            Trước
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1)
-            .filter(
-              (n) => n === 1 || n === totalPages || Math.abs(n - page) <= 1,
-            )
-            .map((n, idx, arr) => (
-              <Fragment key={n}>
-                {idx > 0 && arr[idx - 1] !== n - 1 && (
-                  <span
-                    key={`el-${n}`}
-                    className="px-1 text-on-surface-variant/40"
-                  >
-                    …
+                {/* Category Pill */}
+                {concert.genre && (
+                  <span className="absolute top-3 right-3 z-10 rounded-full bg-slate-950/80 border border-white/10 px-2.5 py-0.5 text-[10px] font-bold text-primary backdrop-blur-md shadow-sm">
+                    {concert.genre}
                   </span>
                 )}
-                <button
-                  type="button"
-                  onClick={() => setPage(n)}
-                  disabled={loading}
-                  className={`min-w-[40px] rounded-full px-3 py-2 text-sm font-bold transition-all duration-200 cursor-pointer ${
-                    n === page
-                      ? "bg-primary text-white shadow-sm"
-                      : "border border-outline-variant text-on-surface-variant hover:border-primary/40 hover:text-primary"
-                  } disabled:opacity-40`}
-                >
-                  {n}
-                </button>
-              </Fragment>
-            ))}
-          <button
-            type="button"
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages || loading}
-            className="rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-on-surface-variant transition hover:border-primary/40 hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-          >
-            Tiếp
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─── Main Section ─────────────────────────────────────────────────────────────
-function ConcertsSectionInner() {
-  const searchParams = useSearchParams();
-  const search = searchParams?.get("q") || "";
-  // Auto-expand to full list when a search query is present
-  const [showAll, setShowAll] = useState(() => !!search);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [scrollPos, setScrollPos] = useState(0);
-  const [maxScroll, setMaxScroll] = useState(0);
-
-  // When search changes, auto-switch to full list
-  const prevSearch = useRef(search);
-  if (prevSearch.current !== search) {
-    prevSearch.current = search;
-    if (search && !showAll) setShowAll(true);
-  }
-
-  const CARD_WIDTH = 300; // matches carousel card + gap (280px + 20px)
-  const STEP = CARD_WIDTH * 4;
-
-  const slide = (dir: 1 | -1) => {
-    if (!trackRef.current) return;
-    trackRef.current.scrollBy({ left: dir * STEP, behavior: "smooth" });
-  };
-
-  const onScroll = () => {
-    if (!trackRef.current) return;
-    setScrollPos(trackRef.current.scrollLeft);
-    setMaxScroll(trackRef.current.scrollWidth - trackRef.current.clientWidth);
-  };
-
-  // Recalculate dimensions when view shifts
-  useEffect(() => {
-    if (!showAll) {
-      const timer = setTimeout(onScroll, 600);
-      return () => clearTimeout(timer);
-    }
-  }, [showAll]);
-
-  return (
-    <section
-      id="upcoming-concerts"
-      className="mx-auto w-full max-w-7xl px-4 pt-8 pb-16 sm:px-6 lg:px-8"
-    >
-      <div className="tixora-panel p-6 sm:p-8">
-        {/* Header row */}
-        <div className="flex items-center justify-between mb-6">
-          <SectionHeading eyebrow="Khám phá" title="Sự kiện nổi bật" />
-          <button
-            type="button"
-            onClick={() => setShowAll((v) => !v)}
-            className="flex items-center gap-1.5 text-sm font-bold text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-          >
-            {showAll ? "Thu gọn" : "Xem thêm"}
-            <ArrowRight
-              size={15}
-              className={`transition-transform duration-300 ${showAll ? "rotate-90" : ""}`}
-            />
-          </button>
-        </div>
-
-        {!showAll ? (
-          /* ── CAROUSEL MODE ── */
-          <div className="relative">
-            {/* Left arrow */}
-            <button
-              type="button"
-              onClick={() => slide(-1)}
-              aria-label="Cuộn trái"
-              disabled={scrollPos <= 5}
-              className="absolute -left-4 top-[calc(50%-48px)] z-10 flex h-9 w-9 items-center justify-center rounded-full border border-outline-variant bg-surface shadow-md transition-all duration-200 hover:border-primary hover:text-primary disabled:opacity-0 disabled:pointer-events-none cursor-pointer"
-            >
-              <ChevronLeft size={18} />
-            </button>
-
-            {/* Scrollable track */}
-            <div
-              ref={trackRef}
-              onScroll={onScroll}
-              className="flex gap-5 overflow-x-auto scrollbar-none pb-1"
-            >
-              <Suspense
-                fallback={
-                  <div className="flex gap-5">
-                    {Array.from({ length: 4 }, (_, i) => (
-                      <div key={i} className="shrink-0 w-[280px] animate-pulse">
-                        <div className="aspect-[4/3] rounded-2xl bg-outline-variant/30" />
-                        <div className="mt-3 h-4 w-3/4 rounded-full bg-outline-variant/20" />
-                      </div>
-                    ))}
-                  </div>
-                }
-              >
-                <CarouselItems
-                  onShowAll={() => setShowAll(true)}
-                  onLoaded={() => setTimeout(onScroll, 100)}
-                />
-              </Suspense>
-            </div>
-
-            {/* Right arrow */}
-            <button
-              type="button"
-              onClick={() => slide(1)}
-              aria-label="Cuộn phải"
-              disabled={scrollPos >= maxScroll - 5}
-              className="absolute -right-4 top-[calc(50%-48px)] z-10 flex h-9 w-9 items-center justify-center rounded-full border border-outline-variant bg-surface shadow-md transition-all duration-200 hover:border-primary hover:text-primary disabled:opacity-0 disabled:pointer-events-none cursor-pointer"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        ) : (
-          /* ── FULL LIST MODE ── */
-          <Suspense
-            fallback={
-              <div className="h-64 flex items-center justify-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
               </div>
-            }
-          >
-            <ConcertsFullList />
-          </Suspense>
-        )}
+
+              {/* Card Body */}
+              <div className="flex flex-1 flex-col justify-between p-5 space-y-4">
+                <div className="space-y-2">
+                  <h3 className="line-clamp-2 font-display text-lg font-bold text-on-surface group-hover:text-primary transition-colors leading-snug">
+                    {concert.title}
+                  </h3>
+
+                  <div className="space-y-1 text-xs text-on-surface-variant/75">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar size={13} className="text-primary/70 shrink-0" />
+                      <span>{concert.date}</span>
+                    </div>
+                    {concert.venue && (
+                      <div className="flex items-center gap-1.5 truncate">
+                        <MapPin size={13} className="text-primary/70 shrink-0" />
+                        <span className="truncate">{concert.venue}</span>
+                      </div>
+                    )}
+                    {concert.performers && concert.performers.length > 0 && (
+                      <div className="flex items-center gap-1.5 truncate text-on-surface-variant/60">
+                        <Music2 size={13} className="text-primary/70 shrink-0" />
+                        <span className="truncate">{concert.performers.join(", ")}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Price and CTA */}
+                <div className="flex items-center justify-between border-t border-slate-800/80 pt-4">
+                  <div>
+                    <span className="text-[10px] uppercase font-semibold text-on-surface-variant/60 block">
+                      Giá từ
+                    </span>
+                    <span className="text-sm font-black text-primary">
+                      {concert.price}
+                    </span>
+                  </div>
+                  <span className="inline-flex items-center gap-1 rounded-xl bg-primary/10 border border-primary/25 px-3 py-1.5 text-xs font-bold text-primary group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+                    Mua vé
+                    <ChevronRight size={14} />
+                  </span>
+                </div>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );
 }
 
-// ─── Carousel items (needs useSearchParams → Suspense boundary) ──────────────
-function CarouselItems({
-  onShowAll,
-  onLoaded,
-}: {
-  onShowAll: () => void;
-  onLoaded?: () => void;
-}) {
-  const searchParams = useSearchParams();
-  const statusFilter = (searchParams?.get("status") || "PUBLISHED") as
-    "PUBLISHED" | "COMPLETED";
-  const [items, setItems] = useState<ConcertCardItem[]>([]);
-  const [loading, setLoading] = useState(true);
+// ─── 2. Sự Kiện Sắp Diễn Ra (8 Sự Kiện Sắp Tới Nhất) ─────────────────────────
+function UpcomingEventsSection({ concerts }: { concerts: ConcertCardItem[] }) {
+  // Sắp xếp các concert theo thời gian diễn ra gần nhất đến xa hơn
+  const upcomingList = [...concerts]
+    .sort((a, b) => {
+      const timeA = a.startTime ? new Date(a.startTime).getTime() : 0;
+      const timeB = b.startTime ? new Date(b.startTime).getTime() : 0;
+      return timeA - timeB;
+    })
+    .slice(0, 8);
 
-  // Store onLoaded in a ref so we can call the latest version in the effect
-  // without including it in the dependency array (which would trigger re-renders).
-  const onLoadedRef = useRef(onLoaded);
-  useEffect(() => {
-    onLoadedRef.current = onLoaded;
-  }, [onLoaded]);
+  return (
+    <section className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 border-t border-slate-900/60">
+      {/* Section Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+        <div>
+          <h2 className="font-display text-2xl sm:text-3xl font-black text-on-surface tracking-tight">
+            Sự Kiện Sắp Diễn Ra
+          </h2>
+          <p className="mt-1 text-xs sm:text-sm text-on-surface-variant/70">
+            Khám phá các đêm nhạc và sự kiện sắp khởi tranh gần nhất
+          </p>
+        </div>
 
-  useEffect(() => {
-    let isActive = true;
-    const id = window.setTimeout(() => {
-      const load = async () => {
-        setLoading(true);
-        try {
-          const r = await getConcerts({
-            page: 1,
-            limit: 9,
-            status: statusFilter,
-          });
-          if (!isActive) return;
-          setItems(r.items);
-        } catch {
-          if (!isActive) return;
-          setItems([]);
-        } finally {
-          if (isActive) {
-            setLoading(false);
-            onLoadedRef.current?.();
-          }
-        }
-      };
-      void load();
-    }, 0);
-    return () => {
-      isActive = false;
-      clearTimeout(id);
-    };
-  }, [statusFilter]);
+        <Link
+          href="/concerts"
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-primary hover:underline self-start sm:self-auto"
+        >
+          Xem tất cả ({concerts.length}) sự kiện
+          <ArrowRight size={14} />
+        </Link>
+      </div>
 
-  if (loading) {
-    return (
-      <>
-        {Array.from({ length: 4 }, (_, i) => (
-          <div key={i} className="shrink-0 w-[280px] animate-pulse">
-            <div className="aspect-[4/3] rounded-2xl bg-outline-variant/30" />
-            <div className="mt-3 h-4 w-3/4 rounded-full bg-outline-variant/20" />
-            <div className="mt-2 h-3 w-1/2 rounded-full bg-outline-variant/20" />
-          </div>
+      {/* Events Grid (8 Items) */}
+      {upcomingList.length === 0 ? (
+        <div className="py-16 text-center text-on-surface-variant/60">
+          <Ticket className="mx-auto h-12 w-12 text-slate-700 mb-3" />
+          <p className="text-base font-semibold">
+            Hiện tại chưa có sự kiện nào sắp diễn ra.
+          </p>
+          <p className="text-xs text-on-surface-variant/50 mt-1">
+            Vui lòng quay lại sau hoặc liên hệ ban tổ chức để biết thêm chi tiết.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {upcomingList.map((concert) => (
+            <Link
+              key={concert.id}
+              href={`/concerts/${concert.id}`}
+              className="group flex flex-col rounded-2xl border border-slate-850 bg-slate-900/40 p-3 hover:bg-slate-900/90 hover:border-primary/40 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 focus:outline-none cursor-pointer"
+            >
+              {/* Poster */}
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-950">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={
+                    concert.posterUrl && concert.posterUrl.startsWith("http")
+                      ? concert.posterUrl
+                      : DEFAULT_POSTER_URL
+                  }
+                  alt={concert.title}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+
+                {concert.genre && (
+                  <span className="absolute top-2.5 left-2.5 rounded-full bg-slate-950/80 border border-white/10 px-2.5 py-0.5 text-[10px] font-bold text-primary backdrop-blur-md">
+                    {concert.genre}
+                  </span>
+                )}
+              </div>
+
+              {/* Body */}
+              <div className="flex flex-1 flex-col justify-between pt-3.5 pb-1 px-1">
+                <div>
+                  <h3 className="line-clamp-2 text-sm font-bold text-on-surface group-hover:text-primary transition-colors leading-snug">
+                    {concert.title}
+                  </h3>
+
+                  <div className="mt-2.5 space-y-1.5 text-xs text-on-surface-variant/70">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar size={12} className="text-primary/70 shrink-0" />
+                      <span>{concert.date}</span>
+                    </div>
+                    {concert.venue && (
+                      <div className="flex items-center gap-1.5 truncate">
+                        <MapPin size={12} className="text-primary/70 shrink-0" />
+                        <span className="truncate">{concert.venue}</span>
+                      </div>
+                    )}
+                    {concert.performers && concert.performers.length > 0 && (
+                      <div className="flex items-center gap-1.5 truncate text-[11px] text-on-surface-variant/60">
+                        <Music2 size={11} className="text-primary/70 shrink-0" />
+                        <span className="truncate">{concert.performers.join(", ")}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between border-t border-slate-800/80 pt-3">
+                  <div>
+                    <span className="text-[10px] uppercase font-semibold text-on-surface-variant/50 block">
+                      Giá từ
+                    </span>
+                    <span className="text-xs font-black text-primary">
+                      {concert.price}
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-bold text-primary group-hover:underline flex items-center gap-0.5">
+                    Chi tiết
+                    <ChevronRight size={13} />
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ─── 3. Lineup Nghệ Sĩ Được Yêu Thích ─────────────────────────────────────────
+function ArtistSpotlightSection() {
+  return (
+    <section className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 border-t border-slate-900/60">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="font-display text-2xl font-black text-on-surface">
+            Nghệ Sĩ Được Yêu Thích
+          </h2>
+          <p className="mt-1 text-xs sm:text-sm text-on-surface-variant/70">
+            Dàn nghệ sĩ và ban nhạc đình đám tại các sự kiện Tixora
+          </p>
+        </div>
+        <Link
+          href="/concerts"
+          className="text-xs font-bold text-primary hover:underline transition-colors"
+        >
+          Xem tất cả
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+        {POPULAR_ARTISTS.map((artist) => (
+          <Link
+            key={artist.name}
+            href={`/concerts?q=${encodeURIComponent(artist.query)}`}
+            className="group flex flex-col items-center rounded-2xl border border-slate-850 bg-slate-900/30 p-4 text-center transition-all duration-300 hover:bg-slate-900/80 hover:border-primary/40 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
+          >
+            <div className="relative mb-3 h-20 w-20 overflow-hidden rounded-full border-2 border-primary/30 p-0.5 group-hover:border-primary transition-colors shadow-md">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={artist.avatar}
+                alt={artist.name}
+                className="h-full w-full rounded-full object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+            </div>
+            <h4 className="line-clamp-1 text-xs font-bold text-on-surface group-hover:text-primary transition-colors">
+              {artist.name}
+            </h4>
+            <span className="text-[10px] text-on-surface-variant/60 mt-0.5">
+              {artist.role}
+            </span>
+          </Link>
         ))}
-      </>
-    );
-  }
+      </div>
+    </section>
+  );
+}
+
+// ─── Main Interactive Content Container ─────────────────────────────────────
+function MainHomeContent() {
+  const [concerts, setConcerts] = useState<ConcertCardItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { error: showErrorToast } = useToast();
+
+  useEffect(() => {
+    let active = true;
+    async function load() {
+      try {
+        setLoading(true);
+        const res = await getConcerts({ limit: 20, status: "PUBLISHED" });
+        if (active) {
+          setConcerts(res.items);
+        }
+      } catch (err) {
+        if (active) {
+          showErrorToast("Không thể tải danh sách concert nổi bật.");
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    void load();
+    return () => {
+      active = false;
+    };
+  }, [showErrorToast]);
 
   return (
     <>
-      {items.map((concert) => (
-        <div key={concert.id} className="shrink-0 w-[280px]">
-          <MiniConcertCard concert={concert} />
+      {loading ? (
+        <div className="mx-auto max-w-7xl px-4 py-16 text-center">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="mt-3 text-xs text-on-surface-variant/60">
+            Đang tải những sự kiện âm nhạc hấp dẫn nhất...
+          </p>
         </div>
-      ))}
-      <div className="shrink-0 w-[280px]">
-        <ExploreMoreTile onClick={onShowAll} />
-      </div>
+      ) : (
+        <>
+          {/* 1. Sự Kiện Nổi Bật (3 Sự Kiện Bán Chạy Nhất) */}
+          <FeaturedShowsSection concerts={concerts} />
+
+          {/* 2. Sự Kiện Sắp Diễn Ra (8 Sự Kiện Sắp Tới Nhất) */}
+          <UpcomingEventsSection concerts={concerts} />
+
+          {/* 3. Nghệ Sĩ Được Yêu Thích */}
+          <ArtistSpotlightSection />
+        </>
+      )}
     </>
   );
 }
 
-function ConcertsSection() {
-  return (
-    <Suspense
-      fallback={
-        <div className="h-64 flex items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
-      }
-    >
-      <ConcertsSectionInner />
-    </Suspense>
-  );
-}
-
-function LoadingState() {
-  return (
-    <main className="auth-page flex items-center justify-center px-4">
-      <div className="tixora-panel flex items-center gap-4 px-6 py-5">
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        <p className="tixora-muted">Đang khôi phục phiên...</p>
-      </div>
-    </main>
-  );
-}
-
-function GuestLanding() {
-  return (
-    <SiteShell
-      active="/"
-      action={
-        <div className="flex items-center gap-3">
-          <Link href="/login" className="tixora-button-primary px-5 py-2.5">
-            Đăng nhập
-          </Link>
-          <Link
-            href="/register"
-            className="tixora-button-secondary px-5 py-2.5"
-          >
-            Đăng ký
-          </Link>
-        </div>
-      }
-    >
-      <HeroCarousel />
-      <ConcertsSection />
-    </SiteShell>
-  );
-}
-
-function AuthenticatedHome() {
-  const router = useRouter();
-  const { logout } = useAuth();
-
-  const handleLogout = async () => {
-    await logout();
-    router.replace("/login");
-  };
-
-  return (
-    <SiteShell
-      active="/"
-      action={
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="tixora-button-primary px-4 py-2 text-sm"
-        >
-          Đăng xuất
-        </button>
-      }
-    >
-      <HeroCarousel />
-      <ConcertsSection />
-    </SiteShell>
-  );
-}
-
 export default function Home() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isLoading } = useAuth();
 
   if (isLoading) {
-    return <LoadingState />;
+    return (
+      <main className="auth-page flex min-h-screen items-center justify-center px-4 bg-slate-950">
+        <div className="flex items-center gap-4 rounded-2xl border border-slate-800 bg-slate-900/60 px-6 py-5">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <p className="text-sm font-semibold text-on-surface-variant">
+            Đang tải Tixora...
+          </p>
+        </div>
+      </main>
+    );
   }
 
-  return isAuthenticated ? <AuthenticatedHome /> : <GuestLanding />;
+  return (
+    <SiteShell active="/">
+      {/* 1. Hero Carousel giữ nguyên */}
+      <HeroCarousel />
+
+      {/* 2. Dữ liệu sự kiện thực tế từ Database */}
+      <Suspense
+        fallback={
+          <div className="mx-auto max-w-7xl px-4 py-12 text-center text-xs text-on-surface-variant/50">
+            Đang tải sự kiện nổi bật...
+          </div>
+        }
+      >
+        <MainHomeContent />
+      </Suspense>
+    </SiteShell>
+  );
 }

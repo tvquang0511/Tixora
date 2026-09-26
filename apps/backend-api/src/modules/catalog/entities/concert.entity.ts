@@ -1,4 +1,4 @@
-﻿import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ConcertEntity {
   @ApiProperty({ example: '0edb0b61-8c91-4d2c-9b7c-9b6e2e3e7cf1' })
@@ -30,6 +30,9 @@ export class ConcertEntity {
 
   @ApiProperty({ example: 'PUBLISHED' })
   status!: string;
+
+  @ApiPropertyOptional({ example: 'CONCERT' })
+  category?: string | null;
 
   constructor(partial: Partial<ConcertEntity> = {}) {
     Object.assign(this, partial);

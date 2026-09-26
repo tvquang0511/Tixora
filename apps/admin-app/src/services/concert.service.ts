@@ -9,6 +9,7 @@ export interface ConcertApiItem {
   svg_map_url: string;
   poster_url?: string;
   status: string;
+  category?: string;
   ticketTiers?: ConcertTicketTier[];
   performers?: string[];
 }
@@ -36,6 +37,7 @@ export interface ConcertDetailResponse {
   svg_map_url: string;
   poster_url?: string;
   status: string;
+  category?: string;
   ticketTiers: ConcertTicketTier[];
   performers?: string[];
 }
@@ -64,6 +66,7 @@ export interface ConcertCardItem {
   price: string;
   minPrice?: number;
   status: string;
+  category?: string;
   genre: string;
   mapUrl: string;
   posterUrl?: string;
@@ -82,6 +85,7 @@ export interface ConcertQuery {
   limit?: number;
   search?: string;
   status?: string;
+  category?: string;
 }
 
 export const DEFAULT_POSTER_URL = "/Mockimg.webp";
@@ -285,6 +289,7 @@ export interface CreateConcertDto {
   svg_map_url: string;
   poster_url: string;
   status: string;
+  category?: string;
   ticketTiers: Array<{
     id?: string;
     name: string;

@@ -82,6 +82,7 @@ model Concert {
   svg_map_url String?  @db.VarChar(500)
   poster_url  String?  @db.VarChar(500)
   status      String   @db.VarChar(50)
+  category    String   @default("CONCERT") @db.VarChar(50)
 
   ticket_categories   TicketCategory[]
   orders              Order[]
@@ -90,6 +91,7 @@ model Concert {
   checker_assignments CheckerAssignment[] @relation("ConcertCheckerAssignments")
   notifications       Notification[]
 
+  @@index([category])
   @@map("concerts")
 }
 

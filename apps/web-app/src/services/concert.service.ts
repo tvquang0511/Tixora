@@ -9,6 +9,7 @@ export interface ConcertApiItem {
   svg_map_url: string;
   poster_url?: string;
   status: string;
+  category?: string;
   ticketTiers?: ConcertTicketTier[];
   performers?: string[];
 }
@@ -36,6 +37,7 @@ export interface ConcertDetailResponse {
   svg_map_url: string;
   poster_url?: string;
   status: string;
+  category?: string;
   ticketTiers: ConcertTicketTier[];
   performers?: string[];
 }
@@ -64,11 +66,13 @@ export interface ConcertCardItem {
   price: string;
   minPrice?: number;
   status: string;
+  category?: string;
   genre: string;
   mapUrl: string;
   posterUrl?: string;
   ticketTiers?: ConcertTicketTier[];
   performers?: string[];
+  startTime?: string;
 }
 
 export interface ConcertDetailItem extends ConcertCardItem {
@@ -82,6 +86,26 @@ export interface ConcertQuery {
   limit?: number;
   search?: string;
   status?: string;
+  category?: string;
+}
+
+export const CONCERT_CATEGORIES = [
+  { code: "ALL", label: "Tất cả", icon: "Ticket" },
+  { code: "LIVE_MUSIC", label: "Nhạc Sống & Band", icon: "Guitar" },
+  { code: "CONCERT", label: "Live Concert", icon: "Mic" },
+  { code: "EDM_NIGHTLIFE", label: "EDM & Party", icon: "Headphones" },
+  { code: "FESTIVAL", label: "Festival & Lễ hội", icon: "Sparkles" },
+  { code: "THEATER_ARTS", label: "Sân khấu & Kịch", icon: "Drama" },
+  { code: "FANMEETING", label: "Fan Meeting", icon: "Star" },
+  { code: "OTHER", label: "Khác", icon: "Compass" },
+] as const;
+
+export type ConcertCategoryCode = (typeof CONCERT_CATEGORIES)[number]["code"];
+
+export function getCategoryLabel(code?: string): string {
+  if (!code || code.toUpperCase() === "ALL") return "Tất cả";
+  const found = CONCERT_CATEGORIES.find((c) => c.code === code.toUpperCase());
+  return found ? found.label : code;
 }
 
 export const DEFAULT_POSTER_URL = "/Mockimg.webp";
@@ -156,11 +180,13 @@ function mapConcert(item: ConcertApiItem): ConcertCardItem {
         : "Xem chi tiết",
     minPrice,
     status: item.status,
-    genre: "Live concert",
+    category: item.category || "CONCERT",
+    genre: getCategoryLabel(item.category),
     mapUrl: item.svg_map_url,
     posterUrl: item.poster_url,
     ticketTiers: tiers,
     performers: item.performers,
+    startTime: item.start_time,
   };
 }
 
@@ -174,6 +200,7 @@ function mapConcertDetail(item: ConcertDetailResponse): ConcertDetailItem {
     svg_map_url: item.svg_map_url,
     poster_url: item.poster_url,
     status: item.status,
+    category: item.category,
     performers: item.performers,
     ticketTiers: item.ticketTiers,
   });
@@ -203,6 +230,10 @@ export async function getConcerts(query: ConcertQuery = {}) {
 
   if (query.status && query.status.trim()) {
     params.set("status", query.status.trim());
+  }
+
+  if (query.category && query.category.trim() && query.category.toUpperCase() !== "ALL") {
+    params.set("category", query.category.trim().toUpperCase());
   }
 
   const isServer = typeof window === "undefined";

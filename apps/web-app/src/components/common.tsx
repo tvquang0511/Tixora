@@ -10,6 +10,14 @@ import {
   Ticket,
   LayoutDashboard,
   LogOut,
+  Guitar,
+  Drama,
+  Mic,
+  Headphones,
+  Sparkles,
+  Star,
+  Compass,
+  Handshake,
 } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -332,6 +340,73 @@ function HeaderSearchInput() {
   );
 }
 
+const SUB_CATEGORIES = [
+  { code: "ALL", label: "Tất cả" },
+  { code: "LIVE_MUSIC", label: "Nhạc Sống & Band" },
+  { code: "CONCERT", label: "Live Concert" },
+  { code: "EDM_NIGHTLIFE", label: "EDM & Party" },
+  { code: "FESTIVAL", label: "Festival & Lễ hội" },
+  { code: "THEATER_ARTS", label: "Sân khấu & Kịch" },
+  { code: "FANMEETING", label: "Fan Meeting" },
+  { code: "OTHER", label: "Khác" },
+] as const;
+
+function CategorySubNavInner() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentCategory =
+    (pathname?.startsWith("/concerts") ? searchParams?.get("category") : null) ||
+    "ALL";
+
+  const handleSelect = (code: string) => {
+    if (code === "ALL") {
+      router.push("/concerts");
+    } else {
+      router.push(`/concerts?category=${code}`);
+    }
+  };
+
+  return (
+    <div className="border-t border-slate-900/80 bg-slate-950/70 backdrop-blur-md">
+      <div className="mx-auto flex w-full max-w-7xl items-center gap-1.5 px-4 py-2 sm:px-6 lg:px-8 overflow-x-auto scrollbar-none">
+        {SUB_CATEGORIES.map((cat) => {
+          const isActive = pathname?.startsWith("/concerts")
+            ? currentCategory.toUpperCase() === cat.code
+            : false;
+
+          return (
+            <button
+              key={cat.code}
+              type="button"
+              onClick={() => handleSelect(cat.code)}
+              className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 whitespace-nowrap cursor-pointer ${
+                isActive
+                  ? "bg-primary text-white shadow-sm shadow-primary/30 scale-[1.02]"
+                  : "text-on-surface-variant/75 hover:bg-slate-900 hover:text-on-surface"
+              }`}
+            >
+              {cat.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function CategorySubNav() {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-9 border-t border-slate-900/80 bg-slate-950/70" />
+      }
+    >
+      <CategorySubNavInner />
+    </Suspense>
+  );
+}
+
 export function SiteShell({
   children,
   action,
@@ -347,6 +422,9 @@ export function SiteShell({
     user?.roles?.some((role) =>
       ["admin", "organizer", "checker"].includes(role.toLowerCase()),
     ) || false;
+
+  const showCategorySubNav =
+    pathname === "/" || pathname === "/concerts" || pathname === "/concerts/";
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950 text-on-surface">
@@ -364,20 +442,28 @@ export function SiteShell({
             <nav className="hidden md:flex items-center gap-6 text-sm font-bold text-on-surface-variant/80">
               <Link
                 href="/concerts"
-                className={`relative transition-colors hover:text-primary ${
-                  pathname?.startsWith("/concerts") ? "text-primary" : ""
-                }`}
+                className={`relative transition-colors hover:text-primary ${pathname?.startsWith("/concerts") ? "text-primary" : ""
+                  }`}
               >
                 Sự kiện
               </Link>
               <Link
                 href="/my-tickets"
-                className={`relative transition-colors hover:text-primary ${
-                  pathname === "/my-tickets" ? "text-primary" : ""
-                }`}
+                className={`relative transition-colors hover:text-primary ${pathname === "/my-tickets" ? "text-primary" : ""
+                  }`}
               >
                 Vé của tôi
               </Link>
+              <a
+                href={
+                  process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3002"
+                }
+                target="_blank"
+                rel="noreferrer"
+                className="relative transition-colors hover:text-primary"
+              >
+                Hợp tác tổ chức
+              </a>
             </nav>
           </div>
 
@@ -461,16 +547,27 @@ export function SiteShell({
               </div>
             ) : (
               action || (
-                <Link
-                  href="/login"
-                  className="flex items-center justify-center rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold px-4 py-2 shadow-sm transition-all duration-200"
-                >
-                  Đăng nhập
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/login"
+                    className="flex items-center justify-center rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold px-4 py-2 shadow-sm transition-all duration-200"
+                  >
+                    Đăng nhập
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="flex items-center justify-center rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-850 hover:border-slate-700 text-on-surface text-xs font-bold px-4 py-2 transition-all duration-200"
+                  >
+                    Đăng ký
+                  </Link>
+                </div>
               )
             )}
           </div>
         </div>
+
+        {/* Sub-header Category Bar (Ticketbox style) - Chỉ hiển thị ở trang chủ và trang tìm kiếm sự kiện */}
+        {showCategorySubNav && <CategorySubNav />}
       </header>
 
       <main className="flex-1">{children}</main>
@@ -489,27 +586,9 @@ export function SiteShell({
               © 2026 Tixora. Bản quyền được bảo lưu.
             </p>
             <span className="hidden sm:inline text-slate-800">|</span>
-            <a
-              href="mailto:tvquang.working@gmail.com"
-              className="text-xs text-white/60 hover:text-primary transition-colors"
-            >
-              Liên hệ: tvquang.working@gmail.com
-            </a>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-semibold text-white/70">
-            <Link
-              href="/concerts"
-              className="hover:text-primary transition-colors duration-150"
-            >
-              Sự kiện
-            </Link>
-            <Link
-              href="/my-tickets"
-              className="hover:text-primary transition-colors duration-150"
-            >
-              Vé của tôi
-            </Link>
             <Link
               href="/support"
               className="hover:text-primary transition-colors duration-150"
@@ -533,11 +612,10 @@ export function SiteShell({
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-2 py-1 text-[10px] font-bold ${
-                pathname === item.href
-                  ? "text-primary"
-                  : "text-on-surface-variant/75"
-              }`}
+              className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-2 py-1 text-[10px] font-bold ${pathname === item.href
+                ? "text-primary"
+                : "text-on-surface-variant/75"
+                }`}
             >
               <span className="material-symbols-outlined text-[20px]">
                 {item.label === "My Tickets"

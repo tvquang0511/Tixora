@@ -13,7 +13,6 @@ import Link from "next/link";
 import {
   Calendar,
   MapPin,
-  ArrowLeft,
   ChevronLeft,
   ChevronRight,
   Search,
@@ -23,6 +22,7 @@ import { SiteShell } from "@/components/common";
 import { useToast } from "@/context/ToastContext";
 import {
   getConcerts,
+  getCategoryLabel,
   type ConcertCardItem,
   type ConcertListMeta,
 } from "@/services/concert.service";
@@ -47,7 +47,19 @@ function ConcertGridCard({ concert }: { concert: ConcertCardItem }) {
           alt={concert.title}
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        {/* Category Badge */}
+        {concert.genre && (
+          <span className="absolute top-2.5 left-2.5 z-10 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/10 px-2.5 py-0.5 text-[10px] font-bold text-primary shadow-md">
+            {concert.genre}
+          </span>
+        )}
+        {/* Date Badge */}
+        {concert.date && (
+          <span className="absolute top-2.5 right-2.5 z-10 rounded-lg bg-slate-950/80 backdrop-blur-md border border-white/10 px-2 py-0.5 text-[10px] font-bold text-white shadow-md">
+            {concert.date}
+          </span>
+        )}
       </div>
       <div className="flex flex-col gap-2 p-2 flex-1 justify-between">
         <h3 className="line-clamp-2 text-sm font-bold text-on-surface transition-colors group-hover:text-primary leading-snug">
@@ -80,6 +92,7 @@ function ConcertList() {
   const status = (searchParams?.get("status") || "PUBLISHED") as
     "PUBLISHED" | "COMPLETED";
   const search = searchParams?.get("q") || "";
+  const category = (searchParams?.get("category") || "ALL").toUpperCase();
 
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<ConcertCardItem[]>([]);
@@ -103,7 +116,7 @@ function ConcertList() {
 
   // Reset to page 1 when filter changes — handled inside the effect via a separate
   // ref that is only read (never mutated) during render, satisfying react-hooks/refs.
-  const filterRef = useRef({ status, search });
+  const filterRef = useRef({ status, search, category });
 
   const handleStatusChange = (newStatus: "PUBLISHED" | "COMPLETED") => {
     const params = new URLSearchParams(searchParams?.toString() || "");
@@ -147,8 +160,11 @@ function ConcertList() {
   useEffect(() => {
     // Detect filter change and reset page
     const prev = filterRef.current;
-    const filterChanged = prev.status !== status || prev.search !== search;
-    filterRef.current = { status, search };
+    const filterChanged =
+      prev.status !== status ||
+      prev.search !== search ||
+      prev.category !== category;
+    filterRef.current = { status, search, category };
     const targetPage = filterChanged ? 1 : page;
     if (filterChanged) setPage(1);
 
@@ -162,6 +178,7 @@ function ConcertList() {
             limit: ITEMS_PER_PAGE,
             status,
             search: search.trim() || undefined,
+            category: category !== "ALL" ? category : undefined,
           });
           if (!isActive) return;
           setItems(r.items);
@@ -182,7 +199,7 @@ function ConcertList() {
       isActive = false;
       clearTimeout(id);
     };
-  }, [page, status, search, showErrorToast]);
+  }, [page, status, search, category, showErrorToast]);
 
   const totalPages = Math.max(meta.totalPages, 1);
 
@@ -191,18 +208,13 @@ function ConcertList() {
       {/* Page header */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <Link
-            href="/"
-            className="mb-3 inline-flex items-center gap-1.5 text-sm font-semibold text-on-surface-variant/60 hover:text-primary transition-colors cursor-pointer"
-          >
-            <ArrowLeft size={14} />
-            Trang chủ
-          </Link>
           <h1 className="font-display text-3xl font-black text-on-surface">
-            Danh sách Sự kiện
+            {category !== "ALL"
+              ? `Sự kiện: ${getCategoryLabel(category)}`
+              : "Danh sách Sự kiện"}
           </h1>
           {search && (
-            <p className="mt-1 text-sm text-on-surface-variant/60">
+            <p className="text-xs text-on-surface-variant/70 mt-2">
               Tìm thấy{" "}
               <span className="font-bold text-primary">{meta.totalItems}</span>{" "}
               kết quả cho &ldquo;{search}&rdquo;

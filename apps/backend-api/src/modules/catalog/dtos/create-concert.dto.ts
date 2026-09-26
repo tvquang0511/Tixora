@@ -1,4 +1,4 @@
-﻿import {
+import {
   IsDateString,
   IsNotEmpty,
   IsOptional,
@@ -65,6 +65,12 @@ export class CreateConcertDto {
   @ApiProperty({ enum: ConcertStatus, example: ConcertStatus.PUBLISHED })
   @IsEnum(ConcertStatus)
   status!: ConcertStatus;
+
+  @ApiPropertyOptional({ example: 'CONCERT', description: 'Category of concert' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  category?: string;
 
   @ApiProperty({ type: [CreateTicketCategoryDto] })
   @IsArray()

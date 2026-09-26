@@ -12,7 +12,7 @@ import { TicketingService } from '../../ticketing/services/ticketing.service';
 @Injectable()
 export class ConcertService {
   private readonly logger = new Logger(ConcertService.name);
-  private readonly cacheTtlSeconds = 60 * 60 * 24;
+  private readonly cacheTtlSeconds = 300; // 5 minutes safety fallback TTL
 
   constructor(
     private readonly concertRepo: ConcertRepository,
@@ -25,7 +25,8 @@ export class ConcertService {
     const limit = query.limit ?? 10;
     const status = query.status;
     const search = query.search?.trim();
-    const cacheKey = this.getConcertListCacheKey(page, limit, status, search);
+    const category = query.category?.trim();
+    const cacheKey = this.getConcertListCacheKey(page, limit, status, search, category);
 
     const cached = await this.redisService.getJson<ConcertListResponseDto>(cacheKey);
     if (cached) {
@@ -35,7 +36,7 @@ export class ConcertService {
 
     this.logger.log(`[DB] getConcerts cache miss key=${cacheKey}`);
 
-    const { items, total } = await this.concertRepo.findManyWithPagination(page, limit, status, search);
+    const { items, total } = await this.concertRepo.findManyWithPagination(page, limit, status, search, category);
     const totalPages = total === 0 ? 0 : Math.ceil(total / limit);
     const meta = new PaginationMetaDto({
       totalItems: total,
@@ -160,11 +161,13 @@ export class ConcertService {
     limit: number,
     status?: string,
     search?: string,
+    category?: string,
   ): string {
     const normalizedStatus = status ?? 'all';
     const normalizedSearch = search?.toLowerCase() ?? 'all';
+    const normalizedCategory = category?.toLowerCase() ?? 'all';
 
-    return `concerts:list:${page}:${limit}:${normalizedStatus}:${normalizedSearch}`;
+    return `concerts:list:${page}:${limit}:${normalizedStatus}:${normalizedSearch}:${normalizedCategory}`;
   }
 
   private getConcertDetailCacheKey(id: string): string {

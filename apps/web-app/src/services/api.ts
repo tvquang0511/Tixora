@@ -55,7 +55,25 @@ export async function refreshAccessToken(): Promise<string | null> {
     } catch (err) {
       tokenStorage.clearTokens();
       if (typeof window !== "undefined") {
-        window.location.href = "/login";
+        const currentPath = window.location.pathname;
+        const publicPaths = [
+          "/",
+          "/concerts",
+          "/login",
+          "/register",
+          "/forgot-password",
+          "/reset-password",
+          "/verify",
+          "/resend-verification",
+          "/support",
+          "/contact-us",
+          "/private-policy",
+        ];
+        const isPublic =
+          publicPaths.includes(currentPath) || currentPath.startsWith("/concerts/");
+        if (!isPublic) {
+          window.location.href = "/login";
+        }
       }
       throw err;
     } finally {
@@ -112,7 +130,25 @@ export async function fetchClient<T>(
           if (isRefreshRequest || _retry) {
             tokenStorage.clearTokens();
             if (typeof window !== "undefined") {
-              window.location.href = "/login";
+              const currentPath = window.location.pathname;
+              const publicPaths = [
+                "/",
+                "/concerts",
+                "/login",
+                "/register",
+                "/forgot-password",
+                "/reset-password",
+                "/verify",
+                "/resend-verification",
+                "/support",
+                "/contact-us",
+                "/private-policy",
+              ];
+              const isPublic =
+                publicPaths.includes(currentPath) || currentPath.startsWith("/concerts/");
+              if (!isPublic) {
+                window.location.href = "/login";
+              }
             }
           }
           throw new FetchError("Unauthorized", response, errorData);

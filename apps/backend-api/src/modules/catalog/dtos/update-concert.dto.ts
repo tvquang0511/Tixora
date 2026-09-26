@@ -1,4 +1,4 @@
-﻿import { IsDateString, IsOptional, IsString, IsEnum, MaxLength, IsArray, ValidateNested, IsUrl } from 'class-validator';
+import { IsDateString, IsOptional, IsString, IsEnum, MaxLength, IsArray, ValidateNested, IsUrl } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsFutureDate } from '../../../shared/validators/is-future-date.decorator';
@@ -55,6 +55,12 @@ export class UpdateConcertDto {
   @IsOptional()
   @IsEnum(ConcertStatus)
   status?: ConcertStatus;
+
+  @ApiPropertyOptional({ example: 'CONCERT', description: 'Category of concert' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  category?: string;
 
   @ApiPropertyOptional({ type: [CreateTicketCategoryDto] })
   @IsOptional()

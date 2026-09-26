@@ -17,6 +17,7 @@ type ConcertListRow = {
   svg_map_url: string | null;
   poster_url: string | null;
   status: string;
+  category?: string | null;
 };
 
 type ConcertTicketCategoryRow = {
@@ -50,11 +51,13 @@ export class ConcertRepository {
     limit: number,
     status?: ConcertListStatus,
     search?: string,
+    category?: string,
   ): Promise<{ items: ConcertListItemDto[]; total: number; page: number; limit: number }> {
     const take = limit;
     const skip = Math.max(0, (page - 1) * limit);
     const trimmedSearch = search?.trim();
-    const where = {
+    const trimmedCategory = category?.trim();
+    const where: Record<string, unknown> = {
       status: status ?? { not: this.deletedStatus },
       ...(trimmedSearch
         ? {
@@ -62,6 +65,11 @@ export class ConcertRepository {
             contains: trimmedSearch,
             mode: 'insensitive' as const,
           },
+        }
+        : {}),
+      ...(trimmedCategory && trimmedCategory.toUpperCase() !== 'ALL'
+        ? {
+          category: trimmedCategory.toUpperCase(),
         }
         : {}),
     };
@@ -80,6 +88,7 @@ export class ConcertRepository {
           svg_map_url: true,
           poster_url: true,
           status: true,
+          category: true,
         },
         orderBy: { start_time: 'desc' },
       }),
@@ -116,6 +125,7 @@ export class ConcertRepository {
         svg_map_url: payload.svg_map_url ?? null,
         poster_url: payload.poster_url ?? null,
         status: payload.status,
+        category: payload.category ?? 'CONCERT',
         ticket_categories: {
           create: (payload.ticketTiers || []).map((category) => ({
             name: category.name,
@@ -228,6 +238,7 @@ export class ConcertRepository {
         svg_map_url: payload.svg_map_url ?? undefined,
         poster_url: payload.poster_url ?? undefined,
         status: payload.status,
+        category: payload.category ?? undefined,
       },
       include: { ticket_categories: true },
     });
@@ -273,6 +284,7 @@ export class ConcertRepository {
       svg_map_url: concert.svg_map_url ?? null,
       poster_url: concert.poster_url ?? null,
       status: concert.status,
+      category: concert.category ?? null,
       ticketTiers,
     });
   }
@@ -288,6 +300,7 @@ export class ConcertRepository {
       svg_map_url: concert.svg_map_url ?? null,
       poster_url: concert.poster_url ?? null,
       status: concert.status,
+      category: concert.category ?? null,
     });
   }
 }

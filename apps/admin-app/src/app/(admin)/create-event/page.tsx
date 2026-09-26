@@ -127,6 +127,7 @@ function EventForm() {
     svg_map_url: "https://cdn.tixora.local/maps/default.svg",
     poster_url: "",
     status: "DRAFT",
+    category: "CONCERT",
     performers: [] as string[],
   });
 
@@ -217,6 +218,7 @@ function EventForm() {
               data.mapUrl || "https://cdn.tixora.local/maps/default.svg",
             poster_url: data.posterUrl || "",
             status: data.status || "DRAFT",
+            category: data.category || "CONCERT",
             performers: data.performers || [],
           });
 
@@ -271,6 +273,7 @@ function EventForm() {
         svg_map_url: formData.svg_map_url,
         poster_url: formData.poster_url,
         status: formData.status,
+        category: formData.category || "CONCERT",
         performers: formData.performers,
         ticketTiers: ticketCategories.map((tc) => ({
           id: tc.id,
@@ -453,6 +456,26 @@ function EventForm() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                 />
+              </div>
+              <div>
+                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
+                  Thể loại sự kiện *
+                </label>
+                <select
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs"
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
+                >
+                  <option value="CONCERT">Live Concert</option>
+                  <option value="LIVE_MUSIC">Nhạc Sống & Band</option>
+                  <option value="EDM_NIGHTLIFE">EDM & Party</option>
+                  <option value="FESTIVAL">Festival & Lễ hội</option>
+                  <option value="THEATER_ARTS">Sân khấu & Kịch</option>
+                  <option value="FANMEETING">Fan Meeting</option>
+                  <option value="OTHER">Khác</option>
+                </select>
               </div>
 
               {/* Performers Input chips */}

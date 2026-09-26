@@ -230,10 +230,6 @@ export default function MyTicketsPage() {
 
           <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/20 border border-primary/30 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary">
-                <Sparkles size={12} />
-                Thư viện vé
-              </span>
               <h1 className="font-display text-3xl font-black tracking-tight sm:text-4xl">
                 Vé Của Tôi
               </h1>
@@ -265,11 +261,10 @@ export default function MyTicketsPage() {
                 key={tab.key}
                 type="button"
                 onClick={() => handleTabChange(tab.key)}
-                className={`whitespace-nowrap px-5 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
-                  activeTab === tab.key
+                className={`whitespace-nowrap px-5 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${activeTab === tab.key
                     ? "bg-primary text-white shadow-md shadow-primary/25 scale-[1.02]"
                     : "text-on-surface-variant/90 hover:text-white hover:bg-slate-800"
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -359,11 +354,10 @@ export default function MyTicketsPage() {
 
             {/* Content Feed with overlay loading indicators */}
             <div
-              className={`mt-8 space-y-6 transition-all duration-300 ${
-                loading
+              className={`mt-8 space-y-6 transition-all duration-300 ${loading
                   ? "opacity-60 blur-[0.5px] pointer-events-none"
                   : "opacity-100 blur-0"
-              }`}
+                }`}
             >
               {filteredOrders.map((order) => {
                 const isPaid = order.status === "PAID";
@@ -379,13 +373,12 @@ export default function MyTicketsPage() {
                   <div
                     key={order.id}
                     onClick={() => router.push(`/orders/${order.id}`)}
-                    className={`group relative flex flex-col md:flex-row w-full rounded-3xl border shadow-lg overflow-hidden transition-all duration-350 hover:-translate-y-[2px] cursor-pointer ${
-                      isPaid
+                    className={`group relative flex flex-col md:flex-row w-full rounded-3xl border shadow-lg overflow-hidden transition-all duration-350 hover:-translate-y-[2px] cursor-pointer ${isPaid
                         ? "border-emerald-500/30 bg-[#16222f] hover:border-emerald-400/80 hover:shadow-lg hover:shadow-emerald-950/20"
                         : isPending
                           ? "border-amber-500/35 bg-[#201d1c] hover:border-amber-400/80 hover:shadow-lg hover:shadow-amber-950/20"
                           : "border-slate-700 bg-[#171b22] hover:border-slate-500 hover:shadow-lg hover:shadow-slate-950/10"
-                    }`}
+                      }`}
                   >
                     {/* Skeuomorphic Perforation Notches */}
                     {/* Desktop top/bottom notches */}
@@ -448,13 +441,12 @@ export default function MyTicketsPage() {
 
                     {/* RIGHT COLUMN: Settlement stub, barcode, and Actions */}
                     <div
-                      className={`w-full md:w-[280px] p-5 md:p-6 flex flex-row md:flex-col justify-between items-center md:pl-8 md:pr-8 z-0 ${
-                        isPaid
+                      className={`w-full md:w-[280px] p-5 md:p-6 flex flex-row md:flex-col justify-between items-center md:pl-8 md:pr-8 z-0 ${isPaid
                           ? "bg-emerald-500/[0.04]"
                           : isPending
                             ? "bg-amber-500/[0.04]"
                             : "bg-slate-950/20"
-                      }`}
+                        }`}
                     >
                       {/* Price information */}
                       <div className="text-left md:text-center md:w-full space-y-0.5">

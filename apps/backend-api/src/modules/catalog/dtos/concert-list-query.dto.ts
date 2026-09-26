@@ -19,4 +19,10 @@ export class ConcertListQueryDto extends PaginationDto {
   @IsString()
   @MaxLength(200)
   search?: string;
+
+  @ApiPropertyOptional({ example: 'LIVE_MUSIC', description: 'Filter by concert category' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  category?: string;
 }
