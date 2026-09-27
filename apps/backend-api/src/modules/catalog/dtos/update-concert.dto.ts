@@ -6,7 +6,8 @@ import {
   MaxLength,
   IsArray,
   ValidateNested,
-  IsUrl,
+  ValidateIf,
+  Matches,
 } from "class-validator";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
@@ -58,16 +59,24 @@ export class UpdateConcertDto {
     example: "https://cdn.tixora.local/maps/anh-trai-say-hi.svg",
   })
   @IsOptional()
+  @ValidateIf((o) => !!o.svg_map_url)
   @IsString()
-  @IsUrl()
+  @Matches(/^(https?:\/\/|\/).+$/, {
+    message:
+      "svg_map_url must be a URL address or relative path starting with /",
+  })
   svg_map_url?: string;
 
   @ApiPropertyOptional({
     example: "https://cdn.tixora.local/posters/anh-trai-say-hi.png",
   })
   @IsOptional()
+  @ValidateIf((o) => !!o.poster_url)
   @IsString()
-  @IsUrl()
+  @Matches(/^(https?:\/\/|\/).+$/, {
+    message:
+      "poster_url must be a URL address or relative path starting with /",
+  })
   poster_url?: string;
 
   @ApiPropertyOptional({

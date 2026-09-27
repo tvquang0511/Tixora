@@ -25,8 +25,7 @@ export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
   @Post("image")
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles("ADMIN", "ORGANIZER")
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiConsumes("multipart/form-data")
   @ApiOperation({ summary: "Upload concert image poster (Admin/Organizer)" })

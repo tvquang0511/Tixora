@@ -92,77 +92,77 @@ export default function OrganizerDashboardPage() {
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+        <div className="p-5 rounded-2xl bg-slate-950/85 border border-slate-700/80 shadow-lg shadow-black/25 space-y-2 hover:border-slate-600 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">
+            <span className="text-xs font-semibold text-slate-300">
               Tổng sự kiện
             </span>
-            <div className="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-teal-500/15 border border-teal-500/25 text-teal-400 flex items-center justify-center">
               <Calendar className="w-4 h-4" />
             </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-white">
             {totalConcerts}
           </div>
-          <div className="text-[11px] text-slate-500">
+          <div className="text-[11px] text-slate-400">
             Tất cả các concert đã tạo
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+        <div className="p-5 rounded-2xl bg-slate-950/85 border border-slate-700/80 shadow-lg shadow-black/25 space-y-2 hover:border-slate-600 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">
+            <span className="text-xs font-semibold text-slate-300">
               Đang mở bán
             </span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 flex items-center justify-center">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-emerald-400">
             {publishedConcerts}
           </div>
-          <div className="text-[11px] text-emerald-500/80">
+          <div className="text-[11px] text-emerald-400/90 font-medium">
             Khán giả đang mua vé
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+        <div className="p-5 rounded-2xl bg-slate-950/85 border border-slate-700/80 shadow-lg shadow-black/25 space-y-2 hover:border-slate-600 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">
+            <span className="text-xs font-semibold text-slate-300">
               Chờ sàn duyệt
             </span>
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-amber-500/15 border border-amber-500/25 text-amber-400 flex items-center justify-center">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-amber-400">
             {pendingConcerts}
           </div>
-          <div className="text-[11px] text-amber-500/80">
+          <div className="text-[11px] text-amber-400/90 font-medium">
             Admin Tixora đang xét duyệt
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-2">
+        <div className="p-5 rounded-2xl bg-slate-950/85 border border-slate-700/80 shadow-lg shadow-black/25 space-y-2 hover:border-slate-600 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-slate-400">
+            <span className="text-xs font-semibold text-slate-300">
               Vé phát hành
             </span>
-            <div className="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-teal-500/15 border border-teal-500/25 text-teal-400 flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-teal-400">
             {new Intl.NumberFormat("vi-VN").format(totalTickets)}
           </div>
-          <div className="text-[11px] text-slate-500">
+          <div className="text-[11px] text-slate-400">
             Tổng tải lượng chỗ ngồi
           </div>
         </div>
       </div>
 
       {/* Recent Events Section */}
-      <div className="bg-slate-900/70 rounded-3xl border border-slate-800 p-6 space-y-6">
+      <div className="bg-slate-950/85 rounded-3xl border border-slate-700/80 p-6 sm:p-8 space-y-6 shadow-xl shadow-black/30">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-bold text-white tracking-tight">
@@ -203,7 +203,7 @@ export default function OrganizerDashboardPage() {
             {concerts.slice(0, 6).map((concert) => (
               <div
                 key={concert.id}
-                className="rounded-2xl border border-slate-800 bg-slate-950/60 overflow-hidden hover:border-slate-700 transition-colors flex flex-col justify-between"
+                className="rounded-2xl border border-slate-700/70 bg-slate-900/90 overflow-hidden hover:border-teal-500/50 hover:shadow-xl shadow-md transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="relative aspect-video w-full overflow-hidden bg-slate-900">

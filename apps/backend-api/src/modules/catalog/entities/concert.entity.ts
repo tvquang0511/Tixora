@@ -49,6 +49,9 @@ export class ConcertEntity {
   @ApiPropertyOptional({ example: "b3f572a1-2139-4dd7-897b-cf10972410a5" })
   organizer_id?: string | null;
 
+  @ApiPropertyOptional({ example: "Tixora Official" })
+  organizer_name?: string | null;
+
   constructor(partial: Partial<ConcertEntity> = {}) {
     Object.assign(this, partial);
   }

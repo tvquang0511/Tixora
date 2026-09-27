@@ -50,6 +50,8 @@ export default function AdminEventsPage() {
   } | null>(null);
   const [selectedWorkerConcert, setSelectedWorkerConcert] =
     useState<ConcertCardItem | null>(null);
+  const [selectedReviewConcert, setSelectedReviewConcert] =
+    useState<ConcertCardItem | null>(null);
   const [isWorkerDrawerOpen, setIsWorkerDrawerOpen] = useState(false);
 
   // Debounce search input
@@ -238,33 +240,50 @@ export default function AdminEventsPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-3 border border-slate-200 rounded-xl shadow-xs flex flex-col md:flex-row gap-3 items-center">
-        <div className="relative w-full md:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-            placeholder="Tìm theo tên sự kiện, ID, địa điểm..."
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+      <div className="bg-white p-3 border border-slate-200 rounded-xl shadow-xs space-y-3">
+        {/* Quick Status Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+          {[
+            { key: "All", label: "Tất cả" },
+            { key: "PENDING_REVIEW", label: "Chờ sàn duyệt" },
+            { key: "PUBLISHED", label: "Đang mở bán" },
+            { key: "DRAFT", label: "Bản nháp" },
+            { key: "COMPLETED", label: "Hoàn tất" },
+            { key: "CANCELLED", label: "Đã hủy" },
+          ].map((tab) => {
+            const isSelected = statusFilter === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => {
+                  setStatusFilter(tab.key);
+                  setPage(1);
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                  isSelected
+                    ? tab.key === "PENDING_REVIEW"
+                      ? "bg-amber-500 text-white shadow-xs"
+                      : "bg-slate-900 text-white shadow-xs"
+                    : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200"
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setPage(1);
-            }}
-            className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 cursor-pointer focus:outline-none focus:border-teal-500 shadow-xs"
-          >
-            <option value="All">Tất cả trạng thái</option>
-            <option value="PENDING_REVIEW">PENDING_REVIEW (Chờ duyệt)</option>
-            <option value="DRAFT">DRAFT (Bản nháp)</option>
-            <option value="PUBLISHED">PUBLISHED (Đã mở bán)</option>
-            <option value="COMPLETED">COMPLETED (Hoàn tất)</option>
-            <option value="CANCELLED">CANCELLED (Đã hủy)</option>
-          </select>
+
+        <div className="flex flex-col md:flex-row gap-2 items-center">
+          <div className="relative w-full md:flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+              placeholder="Tìm theo tên sự kiện, ID, địa điểm..."
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
           <button
             onClick={() => {
               setSearchQuery("");
@@ -287,10 +306,10 @@ export default function AdminEventsPage() {
             <thead>
               <tr className="bg-slate-50/70 border-b border-slate-200 text-slate-500 font-medium uppercase tracking-wider text-[11px]">
                 <th className="px-4 py-3">Sự kiện</th>
-                <th className="px-4 py-3">Thời gian</th>
-                <th className="px-4 py-3">Địa điểm</th>
+                <th className="px-4 py-3">Đơn vị tổ chức</th>
+                <th className="px-4 py-3">Thời gian & Địa điểm</th>
                 <th className="px-4 py-3 text-center">Trạng thái</th>
-                <th className="px-4 py-3 text-center">Thay đổi trạng thái</th>
+                <th className="px-4 py-3 text-center">Duyệt & Phát hành</th>
                 <th className="px-4 py-3 text-right">Thao tác</th>
               </tr>
             </thead>
@@ -339,27 +358,35 @@ export default function AdminEventsPage() {
                         </div>
                       </div>
                     </td>
+
+                    {/* Organizer Column */}
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <div className="font-medium text-slate-900">
-                        {concert.date}
-                      </div>
-                      <div className="text-[11px] text-slate-500">
-                        {concert.time}
-                      </div>
+                      {concert.organizer_name &&
+                      concert.organizer_name !== "Tixora Official" ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                          {concert.organizer_name}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                          Tixora Official
+                        </span>
+                      )}
                     </td>
+
                     <td className="px-4 py-3">
                       <div className="font-medium text-slate-900">
-                        {concert.venue}
+                        {concert.date} {concert.time}
                       </div>
-                      <div className="text-[11px] text-slate-500">
-                        {concert.city}
+                      <div className="text-[11px] text-slate-500 mt-0.5">
+                        {concert.venue || concert.city || "Chưa cập nhật"}
                       </div>
                     </td>
+
                     <td className="px-4 py-3 text-center whitespace-nowrap">
                       <StatusBadge status={concert.status} variant="concert" />
                     </td>
 
-                    {/* Quick 1-Click Status Action Column */}
+                    {/* Status Action Column */}
                     <td className="px-4 py-3 text-center whitespace-nowrap">
                       {updatingStatusId === concert.id ? (
                         <span className="text-[11px] text-slate-400 flex items-center justify-center gap-1">
@@ -367,20 +394,28 @@ export default function AdminEventsPage() {
                           Đang lưu...
                         </span>
                       ) : concert.status === "PENDING_REVIEW" ? (
-                        <button
-                          onClick={() =>
-                            void handleQuickStatusChange(
-                              concert.id,
-                              "PUBLISHED",
-                              concert.title,
-                            )
-                          }
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-[11px] rounded-lg shadow-2xs cursor-pointer transition-colors"
-                          title="Phê duyệt phát hành sự kiện mở bán công khai"
-                        >
-                          <CheckCircle className="w-3 h-3" />
-                          <span>Duyệt phát hành</span>
-                        </button>
+                        <div className="inline-flex items-center gap-1.5">
+                          <button
+                            onClick={() => setSelectedReviewConcert(concert)}
+                            className="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-[11px] rounded-lg shadow-2xs cursor-pointer transition-colors"
+                            title="Xem xét chi tiết và phê duyệt sự kiện"
+                          >
+                            Xem duyệt
+                          </button>
+                          <button
+                            onClick={() =>
+                              void handleQuickStatusChange(
+                                concert.id,
+                                "PUBLISHED",
+                                concert.title,
+                              )
+                            }
+                            className="p-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-2xs cursor-pointer transition-colors"
+                            title="Duyệt nhanh mở bán ngay"
+                          >
+                            <CheckCircle className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       ) : concert.status === "DRAFT" ? (
                         <button
                           onClick={() =>
@@ -558,6 +593,139 @@ export default function AdminEventsPage() {
             : null
         }
       />
+
+      {/* Review Modal for PENDING_REVIEW */}
+      {selectedReviewConcert && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-[250] flex items-center justify-center p-4 select-none">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-start justify-between pb-3 border-b border-slate-100">
+              <div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20 uppercase">
+                  Kiểm duyệt sự kiện
+                </span>
+                <h3 className="text-base font-bold text-slate-900 mt-1">
+                  {selectedReviewConcert.title}
+                </h3>
+              </div>
+              <button
+                onClick={() => setSelectedReviewConcert(null)}
+                className="text-slate-400 hover:text-slate-600 text-lg font-bold leading-none cursor-pointer"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs text-slate-700">
+              <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <div>
+                  <span className="text-slate-400 block text-[11px]">
+                    Đơn vị tổ chức:
+                  </span>
+                  <span className="font-semibold text-slate-900">
+                    {selectedReviewConcert.organizer_name || "Tixora Official"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[11px]">
+                    Thời gian diễn ra:
+                  </span>
+                  <span className="font-semibold text-slate-900">
+                    {selectedReviewConcert.date} ({selectedReviewConcert.time})
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[11px]">
+                    Địa điểm:
+                  </span>
+                  <span className="font-semibold text-slate-900">
+                    {selectedReviewConcert.venue ||
+                      selectedReviewConcert.city ||
+                      "Chưa cập nhật"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-400 block text-[11px]">
+                    Khoảng giá vé:
+                  </span>
+                  <span className="font-semibold text-teal-600">
+                    {selectedReviewConcert.price}
+                  </span>
+                </div>
+              </div>
+
+              {selectedReviewConcert.description && (
+                <div>
+                  <span className="text-slate-400 block text-[11px] mb-1">
+                    Mô tả sự kiện:
+                  </span>
+                  <p className="p-3 bg-slate-50 rounded-xl border border-slate-100 text-slate-600 leading-relaxed max-h-28 overflow-y-auto">
+                    {selectedReviewConcert.description}
+                  </p>
+                </div>
+              )}
+
+              {selectedReviewConcert.ticketTiers &&
+                selectedReviewConcert.ticketTiers.length > 0 && (
+                  <div>
+                    <span className="text-slate-400 block text-[11px] mb-1">
+                      Cấu hình vé ({selectedReviewConcert.ticketTiers.length}{" "}
+                      hạng vé):
+                    </span>
+                    <div className="divide-y divide-slate-100 border border-slate-100 rounded-xl overflow-hidden bg-slate-50">
+                      {selectedReviewConcert.ticketTiers.map((t, idx) => (
+                        <div
+                          key={idx}
+                          className="p-2 flex items-center justify-between text-[11px]"
+                        >
+                          <span className="font-semibold text-slate-800">
+                            {t.name}
+                          </span>
+                          <span className="text-slate-500">
+                            {new Intl.NumberFormat("vi-VN").format(t.price)}đ
+                            &bull; {t.total_quantity} vé
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+            </div>
+
+            <div className="flex items-center justify-between gap-2 pt-3 border-t border-slate-100">
+              <button
+                onClick={() => setSelectedReviewConcert(null)}
+                className="px-3.5 py-2 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                Đóng
+              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async () => {
+                    const id = selectedReviewConcert.id;
+                    const title = selectedReviewConcert.title;
+                    setSelectedReviewConcert(null);
+                    await handleQuickStatusChange(id, "DRAFT", title);
+                  }}
+                  className="px-3.5 py-2 text-xs font-semibold rounded-lg border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
+                >
+                  Yêu cầu sửa (Về nháp)
+                </button>
+                <button
+                  onClick={async () => {
+                    const id = selectedReviewConcert.id;
+                    const title = selectedReviewConcert.title;
+                    setSelectedReviewConcert(null);
+                    await handleQuickStatusChange(id, "PUBLISHED", title);
+                  }}
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-colors cursor-pointer shadow-xs"
+                >
+                  Phê duyệt mở bán
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ConfirmModal
         isOpen={deleteTarget !== null}

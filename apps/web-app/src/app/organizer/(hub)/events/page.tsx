@@ -95,9 +95,9 @@ export default function OrganizerEventsPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-slate-950/85 p-4 rounded-2xl border border-slate-700/80 shadow-md">
         {/* Status Filter Tabs */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-950 rounded-xl overflow-x-auto">
+        <div className="flex items-center gap-1.5 p-1 bg-slate-900 rounded-xl border border-slate-700/70 overflow-x-auto">
           {[
             { key: "ALL", label: "Tất cả" },
             { key: "PUBLISHED", label: "Đang mở bán" },
@@ -123,17 +123,17 @@ export default function OrganizerEventsPage() {
           onSubmit={handleSearchSubmit}
           className="relative flex-1 md:max-w-md"
         >
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Tìm theo tên sự kiện..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-20 py-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white placeholder:text-slate-600 focus:outline-none focus:border-teal-500"
+            className="w-full pl-9 pr-20 py-2 text-xs bg-slate-900 border border-slate-700/80 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-400"
           />
           <button
             type="submit"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors"
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 text-xs font-semibold text-slate-950 bg-teal-400 hover:bg-teal-300 rounded-lg transition-colors font-medium cursor-pointer"
           >
             Tìm
           </button>
@@ -141,7 +141,7 @@ export default function OrganizerEventsPage() {
       </div>
 
       {/* Events Table / Card List */}
-      <div className="bg-slate-900/70 rounded-3xl border border-slate-800 overflow-hidden">
+      <div className="bg-slate-950/85 rounded-3xl border border-slate-700/80 overflow-hidden shadow-xl shadow-black/30">
         {isLoading ? (
           <div className="py-16 text-center text-slate-500">
             <RotateCw className="w-6 h-6 animate-spin mx-auto text-teal-400 mb-2" />
@@ -223,14 +223,20 @@ export default function OrganizerEventsPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 self-end sm:self-center">
+                  <div className="flex items-center gap-2 self-end sm:self-center">
+                    <Link
+                      href={`/organizer/create-event?edit=${concert.id}`}
+                      className="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold transition-colors"
+                    >
+                      Chỉnh sửa
+                    </Link>
                     {concert.status === "PUBLISHED" && (
                       <Link
                         href={`/concerts/${concert.id}`}
                         target="_blank"
-                        className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium inline-flex items-center gap-1 transition-colors"
+                        className="px-3 py-1.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 border border-teal-500/30 text-xs font-semibold inline-flex items-center gap-1 transition-colors"
                       >
-                        Trang bán vé
+                        Xem trang vé
                         <ExternalLink className="w-3 h-3" />
                       </Link>
                     )}

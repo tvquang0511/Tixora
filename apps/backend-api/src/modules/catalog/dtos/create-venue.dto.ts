@@ -5,7 +5,8 @@ import {
   MaxLength,
   IsInt,
   Min,
-  IsUrl,
+  ValidateIf,
+  Matches,
   IsArray,
 } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -69,8 +70,12 @@ export class CreateVenueDto {
     example: "https://cdn.tixora.local/maps/my-dinh-stadium.svg",
   })
   @IsOptional()
+  @ValidateIf((o) => !!o.svg_template_url)
   @IsString()
-  @IsUrl()
+  @Matches(/^(https?:\/\/|\/).+$/, {
+    message:
+      "svg_template_url must be a URL address or relative path starting with /",
+  })
   svg_template_url?: string;
 
   @ApiPropertyOptional({ type: [VenueZonePresetDto] })

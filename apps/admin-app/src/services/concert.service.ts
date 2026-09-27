@@ -13,6 +13,8 @@ export interface ConcertApiItem {
   category?: string;
   ticketTiers?: ConcertTicketTier[];
   performers?: string[];
+  organizer_id?: string | null;
+  organizer_name?: string | null;
 }
 
 export interface ConcertTicketTier {
@@ -74,6 +76,8 @@ export interface ConcertCardItem {
   posterUrl?: string;
   ticketTiers?: ConcertTicketTier[];
   performers?: string[];
+  organizer_id?: string | null;
+  organizer_name?: string | null;
 }
 
 export interface ConcertDetailItem extends ConcertCardItem {
@@ -168,6 +172,10 @@ function mapConcert(item: ConcertApiItem): ConcertCardItem {
     posterUrl: item.poster_url,
     ticketTiers: tiers,
     performers: item.performers,
+    organizer_id: item.organizer_id,
+    organizer_name:
+      item.organizer_name ||
+      (item.organizer_id ? "Đơn vị tổ chức" : "Tixora Official"),
   };
 }
 
@@ -292,7 +300,7 @@ export interface CreateConcertDto {
   ai_bio: string;
   start_time: string;
   svg_map_url: string;
-  poster_url: string;
+  poster_url?: string;
   status: string;
   category?: string;
   performers?: string[];

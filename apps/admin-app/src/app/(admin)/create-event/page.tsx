@@ -50,6 +50,26 @@ const parseFormattedNumber = (value: string): number => {
   return isNaN(num) ? 0 : num;
 };
 
+export function resolveSvgMapUrl(url?: string | null): string {
+  if (!url) return "";
+  if (url === "https://cdn.tixora.local/maps/default.svg") {
+    return "/maps/default.svg";
+  }
+  if (url.startsWith("https://cdn.tixora.local/")) {
+    return url.replace("https://cdn.tixora.local/", "/");
+  }
+  return url;
+}
+
+export function toApiUrl(url?: string | null): string {
+  if (!url || !url.trim()) return "";
+  const trimmed = url.trim();
+  if (trimmed.startsWith("/")) {
+    return `https://cdn.tixora.local${trimmed}`;
+  }
+  return trimmed;
+}
+
 interface ConfirmModalProps {
   isOpen: boolean;
   title: string;
@@ -130,7 +150,7 @@ function EventForm() {
     location: "",
     venue_id: "",
     start_time: "",
-    svg_map_url: "https://cdn.tixora.local/maps/default.svg",
+    svg_map_url: "/maps/default.svg",
     poster_url: "",
     status: "DRAFT",
     category: "CONCERT",
@@ -233,8 +253,7 @@ function EventForm() {
                 : data.venue || "",
             venue_id: data.venue_id || "",
             start_time: formattedDate,
-            svg_map_url:
-              data.mapUrl || "https://cdn.tixora.local/maps/default.svg",
+            svg_map_url: resolveSvgMapUrl(data.mapUrl) || "/maps/default.svg",
             poster_url: data.posterUrl || "",
             status: data.status || "DRAFT",
             category: data.category || "CONCERT",
@@ -277,11 +296,13 @@ function EventForm() {
     const selectedVenue = venues.find((v) => v.id === selectedVenueId);
     if (!selectedVenue) return;
 
+    const resolvedMapUrl = resolveSvgMapUrl(selectedVenue.svg_template_url);
+
     setFormData((prev) => ({
       ...prev,
       venue_id: selectedVenue.id,
       location: `${selectedVenue.name}, ${selectedVenue.address}, ${selectedVenue.city}`,
-      svg_map_url: selectedVenue.svg_template_url || prev.svg_map_url,
+      svg_map_url: resolvedMapUrl || prev.svg_map_url,
     }));
 
     if (
@@ -313,7 +334,7 @@ function EventForm() {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = async (targetStatus?: string) => {
     if (!formData.name || !formData.location || !formData.start_time) {
       warning(
         "Vui lòng điền đầy đủ Tên sự kiện, Địa điểm và Thời gian bắt đầu.",
@@ -329,15 +350,20 @@ function EventForm() {
 
     setIsSaving(true);
     try {
+      const finalStatus = targetStatus || formData.status || "DRAFT";
       const payload = {
         name: formData.name,
         description: formData.description,
         location: formData.location,
         venue_id: formData.venue_id || null,
         start_time: startDate.toISOString(),
-        svg_map_url: formData.svg_map_url,
-        poster_url: formData.poster_url,
-        status: formData.status,
+        svg_map_url:
+          toApiUrl(formData.svg_map_url) ||
+          "https://cdn.tixora.local/maps/default.svg",
+        poster_url: formData.poster_url?.trim()
+          ? toApiUrl(formData.poster_url)
+          : undefined,
+        status: finalStatus,
         category: formData.category || "CONCERT",
         performers: formData.performers,
         ticketTiers: ticketCategories.map((tc) => ({
@@ -361,7 +387,11 @@ function EventForm() {
         success("Cập nhật sự kiện thành công!");
       } else {
         await createConcert({ ...payload, ai_bio: "" });
-        success("Tạo sự kiện mới thành công!");
+        success(
+          finalStatus === "PUBLISHED"
+            ? "Tạo và mở bán sự kiện thành công!"
+            : "Lưu bản nháp sự kiện thành công!",
+        );
       }
       router.push("/events");
     } catch (error: unknown) {
@@ -485,13 +515,12 @@ function EventForm() {
       </header>
 
       {/* Form Wizard */}
-      <div className="max-w-[850px] mx-auto">
+      <div className="max-w-5xl mx-auto">
         <div className="space-y-6">
           {/* Section 1: Basic Info */}
           <section className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-            <h3 className="font-sans text-xs font-semibold uppercase tracking-wider border-b border-slate-100 pb-3 mb-5 flex items-center gap-2 text-slate-900">
-              <Info className="w-4 h-4 text-teal-600" />
-              Thông tin cơ bản sự kiện
+            <h3 className="font-sans text-xs font-bold uppercase tracking-wider border-b border-slate-100 pb-3 mb-5 text-slate-900">
+              1. Thông tin cơ bản sự kiện
             </h3>
             <div className="space-y-4 font-sans text-xs">
               <div>
@@ -508,20 +537,7 @@ function EventForm() {
                   }
                 />
               </div>
-              <div>
-                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
-                  Mô tả ngắn
-                </label>
-                <input
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs"
-                  placeholder="Nhập mô tả ngắn gọn về sự kiện..."
-                  type="text"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                />
-              </div>
+
               <div>
                 <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
                   Thể loại sự kiện *
@@ -595,25 +611,87 @@ function EventForm() {
                 )}
               </div>
 
-              {/* Standard Venue Preset Selector */}
-              <div className="rounded-xl border border-teal-200/80 bg-teal-50/40 p-4 space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-1.5 font-sans text-xs font-semibold text-teal-900">
-                    <Building2 className="w-4 h-4 text-teal-600" />
-                    Địa điểm tiêu chuẩn (Venue Preset)
-                  </label>
-                  <span className="text-[11px] text-teal-700 font-sans hidden sm:inline">
-                    Tự động điền địa chỉ, sơ đồ SVG và các hạng vé chuẩn
-                  </span>
+              <div>
+                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
+                  Mô tả sự kiện
+                </label>
+                <textarea
+                  rows={3}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs"
+                  placeholder="Nhập mô tả về sự kiện, thời gian mở cửa, lưu ý..."
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
+                  Ảnh bìa sự kiện (Poster)
+                </label>
+                {formData.poster_url && (
+                  <div
+                    onClick={() => setLightboxUrl(formData.poster_url)}
+                    className="mb-3 relative w-full h-44 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 cursor-zoom-in group shadow-xs flex items-center justify-center"
+                    title="Click để phóng to ảnh bìa"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={formData.poster_url}
+                      alt="Cover preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div className="flex justify-center rounded-xl border-2 border-dashed border-slate-300 px-6 py-6 hover:border-teal-500 bg-slate-50/50 transition-colors cursor-pointer group relative">
+                  <input
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverImageChange}
+                    disabled={isUploadingImage}
+                  />
+                  <div className="text-center font-sans">
+                    <div className="text-xs text-slate-600">
+                      <span className="font-semibold text-teal-600 underline">
+                        {isUploadingImage
+                          ? "Đang tải ảnh lên..."
+                          : "Tải ảnh bìa mới lên"}
+                      </span>{" "}
+                      {!isUploadingImage && "hoặc kéo thả tập tin vào đây"}
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      PNG, JPG, WEBP tối đa 5MB
+                    </p>
+                  </div>
                 </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 2: Venue & Seating Map */}
+          <section className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+                2. Địa Điểm Tổ Chức & Sơ Đồ Phân Khu
+              </h3>
+              <span className="text-[11px] text-slate-500 font-sans">
+                Chọn mẫu địa điểm có sẵn để tự động tải sơ đồ SVG
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-sans text-xs">
+              <div>
+                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
+                  Chọn mẫu địa điểm có sẵn (Venue Preset)
+                </label>
                 <select
-                  className="w-full rounded-lg border border-teal-200 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans cursor-pointer font-medium"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans cursor-pointer font-medium"
                   value={formData.venue_id}
                   onChange={(e) => handleVenueSelect(e.target.value)}
                 >
-                  <option value="">
-                    -- Nhập thủ công tự do (Không dùng mẫu có sẵn) --
-                  </option>
+                  <option value="">-- Chọn địa điểm từ hệ thống --</option>
                   {venues.map((v) => (
                     <option key={v.id} value={v.id}>
                       {v.name} ({v.city}) - Sức chứa:{" "}
@@ -625,135 +703,110 @@ function EventForm() {
                 </select>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
-                    Địa điểm tổ chức *
-                  </label>
-                  <input
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs"
-                    type="text"
-                    placeholder="Ví dụ: Sân vận động Quân khu 7"
-                    value={formData.location}
-                    onChange={(e) =>
-                      setFormData({ ...formData, location: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
-                    Thời gian bắt đầu *
-                  </label>
-                  <input
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans"
-                    type="datetime-local"
-                    value={formData.start_time}
-                    onChange={(e) =>
-                      setFormData({ ...formData, start_time: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
-                    Trạng thái sự kiện
-                  </label>
-                  <select
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans cursor-pointer font-medium"
-                    value={formData.status}
-                    onChange={(e) =>
-                      setFormData({ ...formData, status: e.target.value })
-                    }
-                  >
-                    <option value="DRAFT">DRAFT (Bản nháp)</option>
-                    <option value="PUBLISHED">PUBLISHED (Phát hành)</option>
-                    <option value="COMPLETED">COMPLETED (Hoàn tất)</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
+                  Thời gian bắt đầu biểu diễn{" "}
+                  <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans"
+                  type="datetime-local"
+                  value={formData.start_time}
+                  onChange={(e) =>
+                    setFormData({ ...formData, start_time: e.target.value })
+                  }
+                />
               </div>
 
-              <div>
-                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
-                  Ảnh bìa sự kiện (Poster)
+              <div className="sm:col-span-2">
+                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
+                  Địa điểm tổ chức cụ thể{" "}
+                  <span className="text-rose-500">*</span>
                 </label>
-                {formData.poster_url && (
-                  <div
-                    onClick={() => setLightboxUrl(formData.poster_url)}
-                    className="mb-3 relative w-full h-44 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 cursor-zoom-in group shadow-xs"
-                    title="Click để phóng to ảnh bìa"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={formData.poster_url}
-                      alt="Cover preview"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <div className="flex justify-center rounded-xl border-2 border-dashed border-slate-300 px-6 py-8 hover:border-teal-500 bg-slate-50/50 transition-colors cursor-pointer group relative">
-                  <input
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleCoverImageChange}
-                    disabled={isUploadingImage}
-                  />
-                  <div className="text-center font-sans">
-                    <ImagePlus className="w-8 h-8 mx-auto text-slate-400 group-hover:text-teal-600 transition-colors mb-2" />
-                    <div className="text-xs text-slate-600">
-                      <span className="font-semibold text-teal-600 underline">
-                        {isUploadingImage
-                          ? "Đang tải ảnh lên..."
-                          : "Chọn tập tin ảnh"}
-                      </span>{" "}
-                      {!isUploadingImage && "hoặc kéo thả vào đây"}
+                <input
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs"
+                  type="text"
+                  placeholder="Ví dụ: Sân vận động Quốc gia Mỹ Đình, Lê Đức Thọ, Hà Nội"
+                  value={formData.location}
+                  onChange={(e) =>
+                    setFormData({ ...formData, location: e.target.value })
+                  }
+                />
+              </div>
+
+              {/* Sơ đồ phân khu SVG Map & Preview Container */}
+              <div className="sm:col-span-2 space-y-4 pt-2">
+                <div className="flex items-center justify-between">
+                  <label className="block font-sans text-xs font-semibold text-slate-700">
+                    Sơ đồ phân khu ghế ngồi (SVG Map)
+                  </label>
+                  {formData.svg_map_url && (
+                    <span className="text-[11px] text-teal-600 font-medium">
+                      Đã tải sơ đồ
+                    </span>
+                  )}
+                </div>
+
+                {/* SƠ ĐỒ PHÂN KHU XEM TRƯỚC (Preview Box) */}
+                {formData.svg_map_url && (
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-800">
+                        Xem trước sơ đồ phân khu đã chọn
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setLightboxUrl(resolveSvgMapUrl(formData.svg_map_url))
+                        }
+                        className="text-xs text-teal-600 hover:text-teal-700 font-semibold cursor-pointer underline"
+                      >
+                        Phóng to toàn màn hình
+                      </button>
                     </div>
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      PNG, JPG, WEBP tối đa 5MB
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
-                  Sơ đồ phân khu ghế ngồi (SVG Map)
-                </label>
-                {formData.svg_map_url &&
-                  formData.svg_map_url !==
-                    "https://cdn.tixora.local/maps/default.svg" && (
                     <div
-                      onClick={() => setLightboxUrl(formData.svg_map_url)}
-                      className="mb-3 relative w-full h-56 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center p-4 cursor-zoom-in group shadow-xs"
-                      title="Click để phóng to sơ đồ ghế ngồi"
+                      onClick={() =>
+                        setLightboxUrl(resolveSvgMapUrl(formData.svg_map_url))
+                      }
+                      className="w-full h-64 bg-white border border-slate-200 rounded-lg flex items-center justify-center p-3 cursor-zoom-in group shadow-2xs overflow-hidden"
+                      title="Nhấp để phóng to sơ đồ ghế ngồi"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={formData.svg_map_url}
+                        src={resolveSvgMapUrl(formData.svg_map_url)}
                         alt="Sơ đồ ghế ngồi"
-                        className="max-w-full max-h-full object-contain"
+                        className="max-w-full max-h-full object-contain transition-transform group-hover:scale-102"
                       />
                     </div>
-                  )}
-                <div className="flex justify-center rounded-xl border-2 border-dashed border-slate-300 px-6 py-8 hover:border-teal-500 bg-slate-50/50 transition-colors cursor-pointer group relative">
+                  </div>
+                )}
+
+                {/* Upload SVG file */}
+                <div className="relative border-2 border-dashed border-slate-300 hover:border-teal-500 rounded-xl p-5 bg-slate-50/50 transition-colors text-center cursor-pointer group">
                   <input
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     type="file"
                     accept=".svg,image/svg+xml,image/*"
                     onChange={handleSvgMapChange}
                     disabled={isUploadingSvg}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                   <div className="text-center font-sans">
-                    <ImagePlus className="w-8 h-8 mx-auto text-slate-400 group-hover:text-teal-600 transition-colors mb-2" />
-                    <div className="text-xs text-slate-600">
-                      <span className="font-semibold text-teal-600 underline">
-                        {isUploadingSvg
-                          ? "Đang tải sơ đồ lên..."
-                          : "Chọn tập tin sơ đồ"}
-                      </span>{" "}
-                      {!isUploadingSvg && "hoặc kéo thả vào đây"}
-                    </div>
+                    <p className="text-xs text-slate-700 font-medium">
+                      {isUploadingSvg ? (
+                        <span className="text-teal-600 animate-pulse font-semibold">
+                          Đang tải sơ đồ lên...
+                        </span>
+                      ) : (
+                        <>
+                          <span className="font-semibold text-teal-600 underline">
+                            Nhấp để tải sơ đồ SVG mới lên
+                          </span>{" "}
+                          hoặc kéo thả tập tin vào đây
+                        </>
+                      )}
+                    </p>
                     <p className="text-[11px] text-slate-500 mt-1">
-                      Hỗ trợ SVG, PNG, JPG, WEBP dung lượng tối đa 5MB
+                      Hỗ trợ tệp SVG, PNG, JPG (tối đa 5MB)
                     </p>
                   </div>
                 </div>
@@ -761,12 +814,11 @@ function EventForm() {
             </div>
           </section>
 
-          {/* Section 2: Ticketing */}
+          {/* Section 3: Ticketing */}
           <section className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
             <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-5">
-              <h3 className="font-sans text-xs font-semibold uppercase tracking-wider flex items-center gap-2 text-slate-900">
-                <Ticket className="w-4 h-4 text-teal-600" />
-                Cấu hình các hạng vé
+              <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+                3. Cấu hình các hạng vé & giá bán
               </h3>
               <button
                 onClick={handleAddTier}
@@ -925,25 +977,40 @@ function EventForm() {
       </div>
 
       {/* Sticky Bottom Actions Bar */}
-      <div className="fixed bottom-0 left-0 right-0 md:left-64 bg-white/95 backdrop-blur-xs border-t border-slate-200 p-4 flex justify-end gap-2 z-30 select-none shadow-md">
+      <div className="fixed bottom-0 left-0 right-0 md:left-64 bg-white/95 backdrop-blur-xs border-t border-slate-200 p-4 flex items-center justify-between z-30 select-none shadow-md">
         <button
           type="button"
           onClick={handleCancelClick}
-          className="px-5 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors font-sans text-xs font-medium cursor-pointer"
+          className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors font-sans text-xs font-medium cursor-pointer"
         >
           Hủy bỏ
         </button>
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="px-6 py-2 rounded-lg bg-teal-600 text-white font-sans text-xs font-medium hover:bg-teal-700 transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
-        >
-          {isSaving
-            ? "Đang lưu dữ liệu..."
-            : isEditing
-              ? "Lưu thay đổi"
-              : "Hoàn tất tạo sự kiện"}
-        </button>
+        <div className="flex items-center gap-2">
+          {!isEditing && (
+            <button
+              type="button"
+              onClick={() => handleSave("DRAFT")}
+              disabled={isSaving}
+              className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 font-sans text-xs font-medium hover:bg-slate-50 transition-colors disabled:opacity-50 cursor-pointer shadow-xs"
+            >
+              Lưu bản nháp
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() =>
+              handleSave(isEditing ? formData.status : "PUBLISHED")
+            }
+            disabled={isSaving}
+            className="px-5 py-2 rounded-lg bg-teal-600 text-white font-sans text-xs font-medium hover:bg-teal-700 transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
+          >
+            {isSaving
+              ? "Đang lưu dữ liệu..."
+              : isEditing
+                ? "Lưu thay đổi"
+                : "Phát hành & Mở bán"}
+          </button>
+        </div>
       </div>
 
       {/* Reusable Confirm Modals */}

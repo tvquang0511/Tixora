@@ -20,6 +20,12 @@ type ConcertListRow = {
   category?: string | null;
   venue_id?: string | null;
   organizer_id?: string | null;
+  organizer?: {
+    full_name?: string | null;
+    organizer_profile?: {
+      organization_name?: string | null;
+    } | null;
+  } | null;
 };
 
 type ConcertTicketCategoryRow = {
@@ -100,6 +106,16 @@ export class ConcertRepository {
           category: true,
           venue_id: true,
           organizer_id: true,
+          organizer: {
+            select: {
+              full_name: true,
+              organizer_profile: {
+                select: {
+                  organization_name: true,
+                },
+              },
+            },
+          },
         },
         orderBy: { start_time: "desc" },
       }),
@@ -122,7 +138,19 @@ export class ConcertRepository {
       : { id, status: { not: this.deletedStatus } };
     const concert = await this.prisma.concert.findFirst({
       where,
-      include: { ticket_categories: true },
+      include: {
+        ticket_categories: true,
+        organizer: {
+          select: {
+            full_name: true,
+            organizer_profile: {
+              select: {
+                organization_name: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!concert) return null;
@@ -328,6 +356,10 @@ export class ConcertRepository {
       category: concert.category ?? null,
       venue_id: concert.venue_id ?? null,
       organizer_id: concert.organizer_id ?? null,
+      organizer_name:
+        concert.organizer?.organizer_profile?.organization_name ||
+        concert.organizer?.full_name ||
+        (concert.organizer_id ? "Đơn vị tổ chức" : "Tixora Official"),
       ticketTiers,
     });
   }
@@ -346,6 +378,10 @@ export class ConcertRepository {
       category: concert.category ?? null,
       venue_id: concert.venue_id ?? null,
       organizer_id: concert.organizer_id ?? null,
+      organizer_name:
+        concert.organizer?.organizer_profile?.organization_name ||
+        concert.organizer?.full_name ||
+        (concert.organizer_id ? "Đơn vị tổ chức" : "Tixora Official"),
     });
   }
 }

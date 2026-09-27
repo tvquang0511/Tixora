@@ -8,16 +8,13 @@ import {
   organizerService,
   OrganizerProfileResponse,
 } from "@/services/organizer.service";
+import { uploadImage } from "@/services/upload.service";
 import {
-  Building2,
   CheckCircle,
   Clock,
   XCircle,
-  CreditCard,
-  FileText,
   RotateCw,
   ArrowRight,
-  HelpCircle,
 } from "lucide-react";
 
 export default function OrganizerApplyPage() {
@@ -39,10 +36,31 @@ export default function OrganizerApplyPage() {
   const [bankNumber, setBankNumber] = useState("");
   const [bankHolder, setBankHolder] = useState("");
   const [licenseUrl, setLicenseUrl] = useState("");
+  const [isUploadingLicense, setIsUploadingLicense] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const handleLicenseFileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setIsUploadingLicense(true);
+      setErrorMessage(null);
+      const res = await uploadImage(file);
+      setLicenseUrl(res.url);
+    } catch (err: unknown) {
+      console.error("Upload license failed", err);
+      setErrorMessage(
+        err instanceof Error ? err.message : "Tải ảnh giấy phép lên thất bại",
+      );
+    } finally {
+      setIsUploadingLicense(false);
+    }
+  };
 
   // Auto redirect if user is already an approved Organizer
   useEffect(() => {
@@ -215,8 +233,8 @@ export default function OrganizerApplyPage() {
 
             {/* 3 Bước Hợp Tác Dành Cho Đối Tác */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 font-black text-sm">
+              <div className="p-6 rounded-2xl bg-slate-950/85 border border-slate-700/80 shadow-lg shadow-black/25 space-y-3 hover:border-slate-600 transition-all">
+                <div className="w-10 h-10 rounded-xl bg-teal-500/15 border border-teal-500/25 flex items-center justify-center text-teal-400 font-black text-sm">
                   01
                 </div>
                 <h4 className="font-bold text-base text-white">
@@ -228,8 +246,8 @@ export default function OrganizerApplyPage() {
                 </p>
               </div>
 
-              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 font-black text-sm">
+              <div className="p-6 rounded-2xl bg-slate-950/85 border border-slate-700/80 shadow-lg shadow-black/25 space-y-3 hover:border-slate-600 transition-all">
+                <div className="w-10 h-10 rounded-xl bg-teal-500/15 border border-teal-500/25 flex items-center justify-center text-teal-400 font-black text-sm">
                   02
                 </div>
                 <h4 className="font-bold text-base text-white">
@@ -241,8 +259,8 @@ export default function OrganizerApplyPage() {
                 </p>
               </div>
 
-              <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 font-black text-sm">
+              <div className="p-6 rounded-2xl bg-slate-950/85 border border-slate-700/80 shadow-lg shadow-black/25 space-y-3 hover:border-slate-600 transition-all">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-emerald-400 font-black text-sm">
                   03
                 </div>
                 <h4 className="font-bold text-base text-white">
@@ -346,10 +364,9 @@ export default function OrganizerApplyPage() {
             )}
 
             {/* Form Registration */}
-            <div className="bg-slate-900/80 rounded-3xl border border-slate-800 p-6 sm:p-10 shadow-xl space-y-8">
+            <div className="bg-slate-950/85 rounded-3xl border border-slate-700/80 p-6 sm:p-10 shadow-xl shadow-black/30 space-y-8">
               <div>
                 <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-teal-400" />
                   Thông Tin Đăng Ký Đối Tác
                 </h2>
                 <p className="text-xs text-slate-400 mt-1">
@@ -376,8 +393,7 @@ export default function OrganizerApplyPage() {
                 {/* Section 1: Entity Info */}
                 <div className="space-y-4">
                   <h3 className="text-sm font-semibold text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <Building2 className="w-4 h-4" /> 1. Thông Tin Ban Tổ Chức /
-                    Doanh Nghiệp
+                    1. Thông Tin Ban Tổ Chức / Doanh Nghiệp
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -391,7 +407,7 @@ export default function OrganizerApplyPage() {
                         placeholder="Ví dụ: Công ty TNHH Sự Kiện Sài Gòn"
                         value={orgName}
                         onChange={(e) => setOrgName(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-teal-500 transition-colors"
+                        className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-400 transition-colors"
                       />
                     </div>
 
@@ -406,7 +422,7 @@ export default function OrganizerApplyPage() {
                         placeholder="Ví dụ: 0314889922 hoặc 079098001234"
                         value={taxCode}
                         onChange={(e) => setTaxCode(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-teal-500 transition-colors"
+                        className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-400 transition-colors"
                       />
                     </div>
 
@@ -421,7 +437,7 @@ export default function OrganizerApplyPage() {
                         placeholder="Ví dụ: 0987654321"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-teal-500 transition-colors"
+                        className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-400 transition-colors"
                       />
                     </div>
 
@@ -434,7 +450,7 @@ export default function OrganizerApplyPage() {
                         placeholder="https://facebook.com/your-fanpage"
                         value={portfolioUrl}
                         onChange={(e) => setPortfolioUrl(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-teal-500 transition-colors"
+                        className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-400 transition-colors"
                       />
                     </div>
                   </div>
@@ -443,8 +459,7 @@ export default function OrganizerApplyPage() {
                 {/* Section 2: Bank Account Info */}
                 <div className="space-y-4 pt-4 border-t border-slate-800">
                   <h3 className="text-sm font-semibold text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <CreditCard className="w-4 h-4" /> 2. Tài Khoản Ngân Hàng
-                    Nhận Quyết Toán Doanh Thu
+                    2. Tài Khoản Ngân Hàng
                   </h3>
                   <p className="text-xs text-slate-400">
                     Doanh thu bán vé sẽ được chuyển về tài khoản này sau khi
@@ -460,7 +475,7 @@ export default function OrganizerApplyPage() {
                         placeholder="Ví dụ: Vietcombank, Techcombank..."
                         value={bankName}
                         onChange={(e) => setBankName(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-teal-500 transition-colors"
+                        className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-400 transition-colors"
                       />
                     </div>
 
@@ -473,7 +488,7 @@ export default function OrganizerApplyPage() {
                         placeholder="Ví dụ: 190345678910"
                         value={bankNumber}
                         onChange={(e) => setBankNumber(e.target.value)}
-                        className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-teal-500 transition-colors"
+                        className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-400 transition-colors"
                       />
                     </div>
 
@@ -492,27 +507,104 @@ export default function OrganizerApplyPage() {
                   </div>
                 </div>
 
-                {/* Section 3: Business License Link */}
+                {/* Section 3: Business License */}
                 <div className="space-y-4 pt-4 border-t border-slate-800">
-                  <h3 className="text-sm font-semibold text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <FileText className="w-4 h-4" /> 3. Hồ Sơ Pháp Lý Đính Kèm
+                  <h3 className="text-sm font-semibold text-teal-400 uppercase tracking-wider">
+                    3. Hồ Sơ Pháp Lý Đính Kèm
                   </h3>
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Link xem Giấy phép kinh doanh / Giấy phép biểu diễn
-                      (Google Drive / Dropbox / PDF)
+                      Giấy phép kinh doanh / Giấy phép biểu diễn (Tải ảnh hoặc
+                      dán link)
                     </label>
+
+                    {/* Direct Image Upload Box */}
+                    <div className="mb-3">
+                      {licenseUrl &&
+                      (licenseUrl.match(/\.(jpeg|jpg|png|webp)($|\?)/i) ||
+                        licenseUrl.startsWith("http")) ? (
+                        <div className="relative mb-2 p-3 bg-slate-900 border border-slate-700/80 rounded-xl flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3 overflow-hidden">
+                            <div className="w-12 h-12 rounded-lg bg-slate-950 border border-slate-700/70 overflow-hidden shrink-0 flex items-center justify-center">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={licenseUrl}
+                                alt="Giấy phép"
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  (e.target as HTMLElement).style.display =
+                                    "none";
+                                }}
+                              />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs text-white font-medium truncate">
+                                Tài liệu đã tải lên
+                              </p>
+                              <a
+                                href={licenseUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[11px] text-teal-400 hover:underline truncate block"
+                              >
+                                {licenseUrl}
+                              </a>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setLicenseUrl("")}
+                            className="px-2.5 py-1 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+                          >
+                            Xóa
+                          </button>
+                        </div>
+                      ) : null}
+
+                      <div className="relative border-2 border-dashed border-slate-700 hover:border-teal-400/80 rounded-xl p-4 bg-slate-900/60 transition-colors text-center cursor-pointer group">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleLicenseFileUpload}
+                          disabled={isUploadingLicense}
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        />
+                        <p className="text-xs text-slate-300 font-medium">
+                          {isUploadingLicense ? (
+                            <span className="text-teal-400 animate-pulse">
+                              Đang tải ảnh giấy phép lên...
+                            </span>
+                          ) : (
+                            <>
+                              <span className="text-teal-400 font-semibold underline">
+                                Nhấp để tải ảnh giấy phép lên
+                              </span>{" "}
+                              hoặc kéo thả tập tin vào đây
+                            </>
+                          )}
+                        </p>
+                        <p className="text-[10px] text-slate-500 mt-1">
+                          Hỗ trợ định dạng PNG, JPG, WEBP (tối đa 5MB)
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 my-2 text-slate-600 text-xs">
+                      <span className="flex-1 h-px bg-slate-800" />
+                      <span>Hoặc dán liên kết tài liệu trực tuyến</span>
+                      <span className="flex-1 h-px bg-slate-800" />
+                    </div>
+
                     <input
                       type="url"
                       placeholder="https://drive.google.com/file/d/your-license-pdf"
                       value={licenseUrl}
                       onChange={(e) => setLicenseUrl(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-teal-500 transition-colors"
+                      className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-400 transition-colors"
                     />
-                    <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-                      <HelpCircle className="w-3.5 h-3.5" />
-                      Đảm bảo link tài liệu ở chế độ xem công khai để ban quản
-                      trị có thể kiểm tra.
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Lưu ý: Nếu dùng link Google Drive / Dropbox, vui lòng đảm
+                      bảo tài liệu ở chế độ xem công khai.
                     </p>
                   </div>
                 </div>

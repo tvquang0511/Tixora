@@ -82,6 +82,7 @@ export interface ConcertDetailItem extends ConcertCardItem {
   aiBio: string;
   ticketTiers: ConcertTicketTier[];
   startTime: string;
+  location?: string;
 }
 
 export interface ConcertQuery {
@@ -218,6 +219,7 @@ function mapConcertDetail(item: ConcertDetailResponse): ConcertDetailItem {
 
   return {
     ...mapped,
+    location: item.location,
     aiBio: item.ai_bio,
     ticketTiers: tiers,
     startTime: item.start_time,
@@ -337,8 +339,11 @@ export interface CreateConcertDto {
   ai_bio: string;
   start_time: string;
   svg_map_url: string;
-  poster_url: string;
+  poster_url?: string;
   status: string;
+  category?: string;
+  venue_id?: string | null;
+  performers?: string[];
   ticketTiers: Array<{
     id?: string;
     name: string;
