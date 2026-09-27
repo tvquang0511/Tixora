@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+
 export function ConcertHeroIllustration() {
   return (
     <div className="relative h-full overflow-hidden bg-[radial-gradient(circle_at_top,rgba(99,102,241,0.25),transparent_40%),linear-gradient(135deg,#090b11_0%,#1e1b4b_50%,#312e81_100%)] p-10 flex flex-col justify-between">
@@ -7,11 +10,16 @@ export function ConcertHeroIllustration() {
       <div className="absolute left-8 top-12 h-24 w-24 rounded-full border border-white/5 bg-white/5 backdrop-blur-sm animate-pulse" />
       <div className="absolute right-12 top-1/4 h-32 w-32 -rotate-12 rounded-[24px] border border-white/5 bg-white/5 shadow-2xl backdrop-blur-md" />
 
-      {/* Top Brand Tagline */}
+      {/* Top Brand / Nav to Homepage */}
       <div className="relative z-10">
-        <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-indigo-300">
-          Âm Nhạc Đích Thực
-        </span>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-500/15 hover:bg-indigo-500/25 px-4 py-2 text-xs font-bold text-indigo-200 transition-all hover:scale-105 active:scale-95 shadow-md shadow-indigo-950/40 cursor-pointer group"
+          title="Chuyển hướng đến trang chủ sự kiện"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+          <span>Trang sự kiện</span>
+        </Link>
       </div>
 
       {/* Main Poster Info */}

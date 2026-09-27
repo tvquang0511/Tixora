@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { Suspense, useState, useEffect } from "react";
@@ -17,7 +17,11 @@ import {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const returnUrl = searchParams?.get("returnUrl") || "/";
+  const rawReturnUrl =
+    searchParams?.get("returnUrl") || searchParams?.get("redirect") || "/";
+  const returnUrl = rawReturnUrl.startsWith("/")
+    ? rawReturnUrl
+    : `/${rawReturnUrl}`;
   const verified = searchParams?.get("verified") === "1";
   const reset = searchParams?.get("reset") === "1";
   const registered = searchParams?.get("registered") === "1";
@@ -58,7 +62,19 @@ function LoginForm() {
       const response = await authService.login(email, password);
       login(response.user);
       showSuccessToast("Đăng nhập thành công!");
-      router.replace(returnUrl);
+
+      const isOrganizer = response.user?.roles?.some(
+        (role) => role.toLowerCase() === "organizer",
+      );
+
+      if (
+        isOrganizer &&
+        (returnUrl === "/" || returnUrl === "/organizer/apply")
+      ) {
+        router.replace("/organizer/dashboard");
+      } else {
+        router.replace(returnUrl);
+      }
     } catch (err: unknown) {
       const errorMsg = getAuthErrorMessage(err, "login");
       showErrorToast(errorMsg);
@@ -80,7 +96,13 @@ function LoginForm() {
       description="Đăng nhập tài khoản của bạn để quản lý vé, xem sự kiện và thông tin cá nhân."
       sidebar={<ConcertHeroIllustration />}
       footerLinks={[
-        { label: "Chưa có tài khoản? Đăng ký ngay", href: "/register" },
+        {
+          label: "Chưa có tài khoản? Đăng ký ngay",
+          href:
+            returnUrl && returnUrl !== "/"
+              ? `/register?returnUrl=${encodeURIComponent(returnUrl)}`
+              : "/register",
+        },
       ]}
     >
       <form className="space-y-5" onSubmit={onSubmit}>

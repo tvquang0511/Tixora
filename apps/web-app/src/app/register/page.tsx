@@ -1,7 +1,8 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { TixoraAuthShell } from "@/components/tixora-auth-shell";
 import { ConcertHeroIllustration } from "@/components/tixora-illustrations";
 import { authService } from "@/services/auth.service";
@@ -9,7 +10,16 @@ import { getAuthErrorMessage } from "@/utils/error.utils";
 import { useToast } from "@/context/ToastContext";
 import { Input, Button } from "@/components/common";
 
-export default function RegisterPage() {
+function RegisterForm() {
+  const searchParams = useSearchParams();
+  const rawReturnUrl =
+    searchParams?.get("returnUrl") || searchParams?.get("redirect");
+  const returnUrl = rawReturnUrl
+    ? rawReturnUrl.startsWith("/")
+      ? rawReturnUrl
+      : `/${rawReturnUrl}`
+    : undefined;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -41,6 +51,10 @@ export default function RegisterPage() {
   };
 
   if (success) {
+    const loginTargetUrl = `/login?registered=1&email=${encodeURIComponent(email)}${
+      returnUrl ? `&returnUrl=${encodeURIComponent(returnUrl)}` : ""
+    }`;
+
     return (
       <TixoraAuthShell
         title="Kiểm tra email của bạn"
@@ -53,10 +67,7 @@ export default function RegisterPage() {
             tra hộp thư và nhấn vào liên kết để kích hoạt tài khoản của bạn
             trước khi đăng nhập.
           </p>
-          <Button
-            href={`/login?registered=1&email=${encodeURIComponent(email)}`}
-            className="mt-4 w-full sm:w-auto"
-          >
+          <Button href={loginTargetUrl} className="mt-4 w-full sm:w-auto">
             Quay lại đăng nhập
           </Button>
           <Link
@@ -70,13 +81,17 @@ export default function RegisterPage() {
     );
   }
 
+  const loginHref = returnUrl
+    ? `/login?returnUrl=${encodeURIComponent(returnUrl)}`
+    : "/login";
+
   return (
     <TixoraAuthShell
       title="Đăng ký tài khoản"
       description="Tham gia Tixora để khám phá và sở hữu vé tham gia những sự kiện âm nhạc đỉnh cao."
       sidebar={<ConcertHeroIllustration />}
       footerLinks={[
-        { label: "Đã có tài khoản? Đăng nhập ngay", href: "/login" },
+        { label: "Đã có tài khoản? Đăng nhập ngay", href: loginHref },
       ]}
     >
       <form className="space-y-5" onSubmit={onSubmit}>
@@ -162,5 +177,22 @@ export default function RegisterPage() {
         </Button>
       </form>
     </TixoraAuthShell>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-slate-950">
+          <div className="flex items-center gap-4 px-6 py-5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300">
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            <p className="text-sm font-medium">Đang tải...</p>
+          </div>
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
   );
 }

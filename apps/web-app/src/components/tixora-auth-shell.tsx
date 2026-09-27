@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BrandMark, Button } from "./common";
+import { ArrowLeft } from "lucide-react";
+import { BrandMark } from "./common";
 
 type ShellProps = {
   eyebrow?: string;
@@ -28,33 +29,6 @@ export function TixoraAuthShell({
 }: ShellProps) {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      {/* Sleek Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-outline-variant bg-background/80 backdrop-blur-xl shadow-[0_1px_0_0_rgba(0,0,0,0.03)]">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link
-            href="/"
-            className="shrink-0 transition-opacity hover:opacity-80"
-          >
-            <BrandMark compact />
-          </Link>
-          <nav className="flex items-center gap-6 text-sm font-semibold text-on-surface-variant">
-            <Link
-              href="/"
-              className="hidden hover:text-primary transition-colors sm:block"
-            >
-              Sự kiện
-            </Link>
-            <Button
-              href="/login"
-              variant="soft"
-              className="px-4 py-2 text-xs rounded-lg"
-            >
-              Đăng nhập
-            </Button>
-          </nav>
-        </div>
-      </header>
-
       {/* Main Container */}
       <main
         className={`flex-grow flex items-center justify-center ${compact ? "py-10 sm:py-14" : "py-12 sm:py-16 lg:py-20"}`}
@@ -75,6 +49,23 @@ export function TixoraAuthShell({
             className={`mx-auto w-full max-w-md p-6 sm:p-8 flex flex-col justify-center rounded-3xl border border-outline-variant/40 bg-surface/20 backdrop-blur-lg shadow-2xl`}
           >
             <div className="mb-6">
+              {/* Mobile Back to Events button & Brand */}
+              <div className="flex items-center justify-between mb-4 lg:hidden">
+                <Link
+                  href="/"
+                  className="shrink-0 transition-opacity hover:opacity-80"
+                >
+                  <BrandMark compact />
+                </Link>
+                <Link
+                  href="/"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-outline-variant/60 bg-surface/50 text-xs font-bold text-on-surface hover:text-primary transition-colors"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Trang sự kiện
+                </Link>
+              </div>
+
               {eyebrow && (
                 <span className="mb-3 inline-block rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold text-primary uppercase tracking-[0.12em]">
                   {eyebrow}
