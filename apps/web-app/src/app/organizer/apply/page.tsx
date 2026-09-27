@@ -131,7 +131,7 @@ export default function OrganizerApplyPage() {
 
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center text-slate-400">
         <div className="animate-spin w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full" />
       </div>
     );
@@ -139,7 +139,7 @@ export default function OrganizerApplyPage() {
 
   if (isAuthenticated && isOrganizer) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
         <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-4 shadow-2xl">
           <div className="w-14 h-14 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center mx-auto">
             <CheckCircle className="w-7 h-7" />
@@ -153,7 +153,7 @@ export default function OrganizerApplyPage() {
           <div className="pt-2">
             <Link
               href="/organizer/dashboard"
-              className="w-full py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-lg shadow-primary/25 inline-flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-sm font-bold shadow-lg shadow-teal-500/25 inline-flex items-center justify-center gap-2"
             >
               Vào Kênh Ban Tổ Chức ngay
               <ArrowRight className="w-4 h-4" />
@@ -165,13 +165,13 @@ export default function OrganizerApplyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-on-surface py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-900 text-on-surface py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-12">
         {/* Hero Banner */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-900/40 via-slate-900 to-slate-900 border border-teal-500/20 p-8 sm:p-12 text-center space-y-4 shadow-2xl">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white font-display">
             Hợp Tác Tổ Chức & Phân Phối Vé Cùng{" "}
-            <span className="text-primary">Tixora</span>
+            <span className="text-teal-400">Tixora</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto font-body">
             Nền tảng công nghệ bán vé tốc độ cao, hỗ trợ sơ đồ ghế trực quan,
@@ -199,7 +199,7 @@ export default function OrganizerApplyPage() {
               <div className="flex flex-wrap items-center gap-3 shrink-0">
                 <Link
                   href="/login?returnUrl=/organizer/apply"
-                  className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-bold shadow-lg shadow-primary/25 transition-transform active:scale-95 inline-flex items-center gap-1.5"
+                  className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs sm:text-sm font-bold shadow-lg shadow-teal-500/25 transition-transform active:scale-95 inline-flex items-center gap-1.5"
                 >
                   Đăng nhập ngay
                   <ArrowRight className="w-4 h-4" />
@@ -229,7 +229,7 @@ export default function OrganizerApplyPage() {
               </div>
 
               <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-black text-sm">
+                <div className="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 font-black text-sm">
                   02
                 </div>
                 <h4 className="font-bold text-base text-white">
@@ -307,7 +307,7 @@ export default function OrganizerApplyPage() {
                     </div>
                     <Link
                       href="/organizer/dashboard"
-                      className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-lg shadow-primary/20 inline-flex items-center gap-2 self-start sm:self-center transition-transform active:scale-95"
+                      className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold shadow-lg shadow-teal-500/20 inline-flex items-center gap-2 self-start sm:self-center transition-transform active:scale-95"
                     >
                       Vào Kênh Ban Tổ Chức
                       <ArrowRight className="w-4 h-4" />
@@ -522,7 +522,7 @@ export default function OrganizerApplyPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-8 py-3.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-lg shadow-primary/25 cursor-pointer transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                    className="px-8 py-3.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-sm font-bold shadow-lg shadow-teal-500/25 cursor-pointer transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
                   >
                     {isSubmitting ? (
                       <>

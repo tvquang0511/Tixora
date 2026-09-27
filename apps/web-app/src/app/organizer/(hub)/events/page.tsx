@@ -9,8 +9,6 @@ import {
   getConcertPosterUrl,
 } from "@/services/concert.service";
 import {
-  Calendar,
-  PlusCircle,
   Search,
   MapPin,
   Clock,
@@ -79,8 +77,7 @@ export default function OrganizerEventsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-            <Calendar className="w-6 h-6 text-teal-400" />
+          <h1 className="text-2xl font-bold text-white tracking-tight">
             Sự Kiện Của Tôi
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -91,10 +88,9 @@ export default function OrganizerEventsPage() {
 
         <Link
           href="/organizer/create-event"
-          className="px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-md shadow-primary/20 inline-flex items-center gap-2 self-start sm:self-auto transition-transform active:scale-95"
+          className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs sm:text-sm font-bold shadow-md shadow-teal-500/20 inline-flex items-center self-start sm:self-auto transition-transform active:scale-95"
         >
-          <PlusCircle className="w-4 h-4" />
-          Tạo Sự Kiện Mới
+          Tạo sự kiện mới
         </Link>
       </div>
 
@@ -159,9 +155,8 @@ export default function OrganizerEventsPage() {
             </p>
             <Link
               href="/organizer/create-event"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold"
+              className="inline-flex items-center px-4 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold shadow-md shadow-teal-500/20 transition-transform active:scale-95"
             >
-              <PlusCircle className="w-4 h-4" />
               Tạo sự kiện mới
             </Link>
           </div>
@@ -220,7 +215,7 @@ export default function OrganizerEventsPage() {
                           {concert.date} - {concert.time}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Ticket className="w-3.5 h-3.5 text-purple-400" />
+                          <Ticket className="w-3.5 h-3.5 text-teal-400" />
                           {concert.ticketTiers?.length || 0} hạng vé (
                           {totalQuantity} ghế)
                         </span>

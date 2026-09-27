@@ -11,7 +11,6 @@ import {
 import {
   Building2,
   Calendar,
-  PlusCircle,
   TrendingUp,
   Clock,
   CheckCircle2,
@@ -71,12 +70,11 @@ export default function OrganizerDashboardPage() {
       {/* Welcome Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-teal-950/60 via-slate-900 to-slate-900 border border-teal-500/20 shadow-xl">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-400 text-xs font-semibold">
-            <Building2 className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/25 text-teal-400 text-xs font-semibold">
             Không gian làm việc Ban Tổ Chức
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-display">
-            Xin chào, {user?.fullName}!
+            Xin chào, {user?.fullName || "Organizer"}!
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 font-body">
             Theo dõi tình trạng phê duyệt, doanh số và vận hành các show diễn
@@ -86,10 +84,9 @@ export default function OrganizerDashboardPage() {
 
         <Link
           href="/organizer/create-event"
-          className="px-5 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-lg shadow-primary/25 inline-flex items-center gap-2 self-start sm:self-auto transition-transform active:scale-95"
+          className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs sm:text-sm font-bold shadow-md shadow-teal-500/20 inline-flex items-center self-start sm:self-auto transition-transform active:scale-95"
         >
-          <PlusCircle className="w-4 h-4" />
-          Tạo Sự Kiện Mới
+          Tạo sự kiện mới
         </Link>
       </div>
 
@@ -151,11 +148,11 @@ export default function OrganizerDashboardPage() {
             <span className="text-xs font-medium text-slate-400">
               Vé phát hành
             </span>
-            <div className="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-teal-500/10 text-teal-400 flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-purple-400">
+          <div className="text-2xl sm:text-3xl font-black text-teal-400">
             {new Intl.NumberFormat("vi-VN").format(totalTickets)}
           </div>
           <div className="text-[11px] text-slate-500">
@@ -168,8 +165,7 @@ export default function OrganizerDashboardPage() {
       <div className="bg-slate-900/70 rounded-3xl border border-slate-800 p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-teal-400" />
+            <h2 className="text-lg font-bold text-white tracking-tight">
               Sự Kiện Của Bạn
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -197,9 +193,8 @@ export default function OrganizerDashboardPage() {
             <p className="text-sm text-slate-400">Bạn chưa tạo sự kiện nào.</p>
             <Link
               href="/organizer/create-event"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold"
+              className="inline-flex items-center px-4 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold shadow-md shadow-teal-500/20 transition-transform active:scale-95"
             >
-              <PlusCircle className="w-4 h-4" />
               Bắt đầu tạo sự kiện đầu tiên
             </Link>
           </div>
@@ -259,14 +254,14 @@ export default function OrganizerDashboardPage() {
                 </div>
 
                 <div className="p-4 pt-0 border-t border-slate-850 mt-2 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-primary">
+                  <span className="font-bold text-teal-400">
                     {concert.price}
                   </span>
                   {concert.status === "PUBLISHED" ? (
                     <Link
                       href={`/concerts/${concert.id}`}
                       target="_blank"
-                      className="text-slate-400 hover:text-white inline-flex items-center gap-1"
+                      className="text-slate-400 hover:text-teal-400 inline-flex items-center gap-1 transition-colors"
                     >
                       Trang đặt vé <ExternalLink className="w-3 h-3" />
                     </Link>

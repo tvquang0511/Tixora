@@ -424,7 +424,7 @@ export function SiteShell({
     pathname === "/" || pathname === "/concerts" || pathname === "/concerts/";
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950 text-on-surface">
+    <div className="flex min-h-screen flex-col bg-slate-900 text-on-surface">
       <header className="sticky top-0 z-50 border-b border-slate-900 bg-slate-950/80 backdrop-blur-md shadow-sm">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
           {/* Brand & Left Navigation */}
@@ -654,7 +654,7 @@ export function SiteShell({
 
 export function CheckoutShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-slate-900">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-5 sm:px-6 lg:px-8">
         <Link href="/" className="shrink-0">
           <BrandMark compact />

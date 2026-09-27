@@ -184,7 +184,7 @@ export default function RegisterPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-slate-950">
+        <div className="flex min-h-screen items-center justify-center bg-slate-900">
           <div className="flex items-center gap-4 px-6 py-5 rounded-2xl bg-slate-900 border border-slate-800 text-slate-300">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
             <p className="text-sm font-medium">Đang tải...</p>

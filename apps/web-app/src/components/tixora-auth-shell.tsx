@@ -28,7 +28,7 @@ export function TixoraAuthShell({
   compact = false,
 }: ShellProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="flex min-h-screen flex-col bg-slate-900 text-foreground">
       {/* Main Container */}
       <main
         className={`flex-grow flex items-center justify-center ${compact ? "py-10 sm:py-14" : "py-12 sm:py-16 lg:py-20"}`}

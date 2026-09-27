@@ -452,7 +452,7 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <main className="auth-page flex min-h-screen items-center justify-center px-4 bg-slate-950">
+      <main className="auth-page flex min-h-screen items-center justify-center px-4 bg-slate-900">
         <div className="flex items-center gap-4 rounded-2xl border border-slate-800 bg-slate-900/60 px-6 py-5">
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
           <p className="text-sm font-semibold text-on-surface-variant">

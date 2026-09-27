@@ -145,7 +145,7 @@ export function HeroCarousel() {
   const priceLabel = featuredConcert?.price ?? "Xem chi tiết";
 
   return (
-    <section className="group relative overflow-hidden bg-slate-950 text-white min-h-[500px] sm:min-h-[550px] lg:min-h-[600px] flex items-center py-16">
+    <section className="group relative overflow-hidden bg-slate-900 text-white min-h-[500px] sm:min-h-[550px] lg:min-h-[600px] flex items-center py-16">
       {/* Background ambient glow blur */}
       {previousConcert && (
         /* eslint-disable-next-line @next/next/no-img-element */

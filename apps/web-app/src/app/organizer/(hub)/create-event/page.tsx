@@ -6,7 +6,6 @@ import Link from "next/link";
 import { getVenues, VenueItem, ZonePreset } from "@/services/venue.service";
 import { createConcert, CONCERT_CATEGORIES } from "@/services/concert.service";
 import {
-  Building2,
   Plus,
   Trash2,
   RotateCw,
@@ -14,8 +13,6 @@ import {
   AlertCircle,
   ArrowRight,
   ArrowLeft,
-  Sparkles,
-  Ticket,
 } from "lucide-react";
 
 interface TicketTierForm {
@@ -182,8 +179,7 @@ export default function OrganizerCreateEventPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-            <Plus className="w-6 h-6 text-teal-400" />
+          <h1 className="text-2xl font-bold text-white tracking-tight">
             Tạo Sự Kiện Mới
           </h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -211,8 +207,8 @@ export default function OrganizerCreateEventPage() {
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Section 1: Thông tin sự kiện */}
         <div className="p-6 rounded-3xl bg-slate-900/70 border border-slate-800 space-y-6">
-          <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4" /> 1. Thông Tin Chung Sự Kiện
+          <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-wider">
+            1. Thông Tin Chung Sự Kiện
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -293,9 +289,8 @@ export default function OrganizerCreateEventPage() {
         {/* Section 2: Địa điểm & Sơ đồ Venue Presets */}
         <div className="p-6 rounded-3xl bg-slate-900/70 border border-slate-800 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
-              <Building2 className="w-4 h-4" /> 2. Địa Điểm Tổ Chức & Sơ Đồ Phân
-              Khu
+            <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-wider">
+              2. Địa Điểm Tổ Chức & Sơ Đồ Phân Khu
             </h2>
             <span className="text-xs text-slate-400">
               Chọn mẫu sân vận động có sẵn để tự động tải sơ đồ SVG
@@ -355,8 +350,8 @@ export default function OrganizerCreateEventPage() {
         <div className="p-6 rounded-3xl bg-slate-900/70 border border-slate-800 space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Ticket className="w-4 h-4" /> 3. Danh Sách Các Hạng Vé Phân Khu
+              <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-wider">
+                3. Danh Sách Các Hạng Vé Phân Khu
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
                 Định giá vé, số lượng phát hành và cổng soát vé tương ứng
@@ -479,7 +474,7 @@ export default function OrganizerCreateEventPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-8 py-3.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-lg shadow-primary/25 cursor-pointer inline-flex items-center gap-2 active:scale-95 disabled:opacity-50"
+            className="px-8 py-3.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-sm font-bold shadow-lg shadow-teal-500/25 cursor-pointer inline-flex items-center gap-2 active:scale-95 disabled:opacity-50"
           >
             {isSubmitting ? (
               <>
@@ -519,7 +514,7 @@ export default function OrganizerCreateEventPage() {
             <div className="pt-2 flex flex-col gap-2">
               <button
                 onClick={() => router.push("/organizer/events")}
-                className="w-full py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold shadow-lg shadow-primary/25 inline-flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold shadow-lg shadow-teal-500/25 inline-flex items-center justify-center gap-2"
               >
                 Quản lý sự kiện của tôi
                 <ArrowRight className="w-4 h-4" />
