@@ -70,13 +70,13 @@ export function ConcertRevenueTable({
   };
 
   return (
-    <section className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm space-y-4">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <section className="bg-white rounded-lg border border-slate-200 p-3.5 sm:p-4 shadow-2xs space-y-3">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-teal-50 rounded-lg border border-teal-100 text-teal-700">
-            <Building2 className="w-4 h-4" />
+          <div className="p-1.5 bg-teal-50 rounded border border-teal-200 text-teal-700">
+            <Building2 className="w-3.5 h-3.5" />
           </div>
-          <h3 className="font-sans text-xs font-semibold uppercase tracking-wider text-slate-900">
+          <h3 className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-900">
             Doanh thu theo sự kiện
           </h3>
           <span className="text-xs font-sans text-slate-500">
@@ -84,7 +84,7 @@ export function ConcertRevenueTable({
           </span>
         </div>
         <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
           <input
             type="text"
             placeholder="Tìm theo tên sự kiện..."
@@ -93,33 +93,33 @@ export function ConcertRevenueTable({
               onSearchChange(e.target.value);
               onPageChange(1);
             }}
-            className="pl-9 pr-3 py-1.5 border border-slate-300 rounded-lg bg-white font-sans text-xs w-full focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-slate-900 placeholder:text-slate-400"
+            className="pl-8 pr-2.5 py-1.5 border border-slate-200 rounded-md bg-white font-sans text-xs w-full focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-slate-900 placeholder:text-slate-400 transition-colors duration-75"
           />
         </div>
       </div>
 
       <div className="overflow-x-auto w-full">
         {isConcertsLoading ? (
-          <div className="py-16 text-center text-slate-500 font-sans text-xs flex items-center justify-center gap-2">
-            <div className="h-5 w-5 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
+          <div className="py-12 text-center text-slate-500 font-sans text-xs flex items-center justify-center gap-2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
             <span>Đang tải số liệu doanh thu sự kiện...</span>
           </div>
         ) : filteredConcerts.length === 0 ? (
-          <div className="py-16 text-center text-slate-500 font-sans text-xs border border-slate-100 rounded-lg bg-slate-50">
+          <div className="py-12 text-center text-slate-500 font-sans text-xs border border-slate-100 rounded-md bg-slate-50">
             Không tìm thấy sự kiện nào khớp bộ lọc.
           </div>
         ) : (
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-y border-slate-100 bg-slate-50/70 font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider">
-                <th className="p-3">Sự kiện</th>
-                <th className="p-3 text-center">Trạng thái</th>
-                <th className="p-3">Thời gian</th>
-                <th className="p-3 text-right">Doanh số (GMV)</th>
-                <th className="p-3 text-right">Phí sàn (5%)</th>
-                <th className="p-3 text-right">Thực nhận BTC</th>
-                <th className="p-3 text-center">Vé bán</th>
-                <th className="p-3 text-center">Thao tác</th>
+              <tr className="border-y border-slate-200 bg-slate-50/80 font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider">
+                <th className="p-2.5">Sự kiện</th>
+                <th className="p-2.5 text-center">Trạng thái</th>
+                <th className="p-2.5">Thời gian</th>
+                <th className="p-2.5 text-right">Doanh số (GMV)</th>
+                <th className="p-2.5 text-right">Phí sàn (5%)</th>
+                <th className="p-2.5 text-right">Thực nhận BTC</th>
+                <th className="p-2.5 text-center">Vé bán</th>
+                <th className="p-2.5 text-center">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -129,11 +129,11 @@ export function ConcertRevenueTable({
                 return (
                   <tr
                     key={item.concert_id}
-                    className="hover:bg-slate-50/80 transition-colors"
+                    className="hover:bg-slate-50/70 transition-colors duration-75"
                   >
-                    <td className="p-3 font-medium text-slate-900">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200 relative">
+                    <td className="p-2.5 font-medium text-slate-900">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded overflow-hidden shrink-0 bg-slate-100 border border-slate-200 relative">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={getConcertPosterUrl(item.poster_url)}
@@ -156,28 +156,32 @@ export function ConcertRevenueTable({
                         </div>
                       </div>
                     </td>
-                    <td className="p-3 text-center">
-                      <StatusBadge status={item.status} variant="concert" />
+                    <td className="p-2.5 text-center">
+                      <StatusBadge
+                        status={item.status}
+                        variant="concert"
+                        size="xs"
+                      />
                     </td>
-                    <td className="p-3 text-slate-600 font-sans text-[11px]">
+                    <td className="p-2.5 text-slate-600 font-mono tabular-nums text-xs">
                       {formatConcertDate(item.start_time)}
                     </td>
-                    <td className="p-3 text-right font-medium text-slate-900 font-mono text-xs">
+                    <td className="p-2.5 text-right font-bold text-slate-900 font-mono tabular-nums text-xs">
                       {formatVND(item.revenue)}
                     </td>
-                    <td className="p-3 text-right font-medium text-rose-600 font-mono text-xs">
+                    <td className="p-2.5 text-right font-medium text-rose-700 font-mono tabular-nums text-xs">
                       - {formatVND(platformFee)}
                     </td>
-                    <td className="p-3 text-right font-bold text-teal-800 font-mono text-xs">
+                    <td className="p-2.5 text-right font-bold text-teal-800 font-mono tabular-nums text-xs">
                       {formatVND(netPayout)}
                     </td>
-                    <td className="p-3 text-center font-medium text-slate-900 font-mono">
+                    <td className="p-2.5 text-center font-medium text-slate-900 font-mono tabular-nums text-xs">
                       {item.tickets_sold.toLocaleString("vi-VN")}
                     </td>
-                    <td className="p-3 text-center">
+                    <td className="p-2.5 text-center">
                       <button
                         onClick={() => onViewDetail(item.concert_id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 text-slate-700 hover:text-teal-700 font-sans text-xs font-medium transition-colors cursor-pointer shadow-xs"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 border border-slate-200 rounded bg-white hover:bg-slate-50 text-slate-700 hover:text-teal-700 font-sans text-xs font-medium transition-colors duration-75 cursor-pointer shadow-2xs"
                       >
                         Chi tiết
                       </button>

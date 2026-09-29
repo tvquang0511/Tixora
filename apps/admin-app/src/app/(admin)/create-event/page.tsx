@@ -12,7 +12,7 @@ import {
 import { getVenues, type VenueItem } from "@/services/venue.service";
 import { uploadImage, uploadSvg } from "@/services/upload.service";
 import { getErrorMessage } from "@/utils/error.utils";
-import { ChevronRight, PlusCircle, Trash2 } from "lucide-react";
+import { ChevronRight, PlusCircle, Trash2, Loader2 } from "lucide-react";
 
 type TicketCategory = {
   id?: string;
@@ -785,7 +785,8 @@ function EventForm() {
                   <div className="text-center font-sans">
                     <p className="text-xs text-slate-700 font-medium">
                       {isUploadingSvg ? (
-                        <span className="text-teal-600 animate-pulse font-semibold">
+                        <span className="text-teal-600 font-semibold inline-flex items-center gap-1.5">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
                           Đang tải sơ đồ lên...
                         </span>
                       ) : (

@@ -79,10 +79,10 @@ export function RevenueChart({
   formatValueVND,
 }: RevenueChartProps) {
   return (
-    <section className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex flex-col min-h-[460px]">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+    <section className="lg:col-span-2 bg-white rounded-lg border border-slate-200 p-3.5 sm:p-4 shadow-2xs flex flex-col min-h-[440px]">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3.5 pb-3 border-b border-slate-100">
         <div>
-          <h3 className="font-sans text-xs font-semibold uppercase tracking-wider text-slate-900">
+          <h3 className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-900">
             Biểu đồ doanh thu theo chu kỳ
           </h3>
           <p className="text-xs text-slate-500 font-sans mt-0.5">
@@ -91,30 +91,30 @@ export function RevenueChart({
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-xs text-slate-600 font-sans">
-            <span className="w-2.5 h-2.5 rounded-full bg-teal-600 inline-block" />
-            <span>Doanh thu (VND)</span>
+            <span className="w-2 h-2 rounded-full bg-teal-600 inline-block" />
+            <span className="font-medium">Doanh thu (VND)</span>
           </div>
           <button
             onClick={onExportCsv}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-sans text-xs font-medium transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-slate-200 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-sans text-xs font-medium transition-colors duration-75 cursor-pointer shadow-2xs"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
-            Xuất CSV
+            <span>Xuất CSV</span>
           </button>
         </div>
       </div>
 
       {/* Filters Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end mb-5 pb-4 border-b border-slate-100">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-end mb-3.5 pb-3 border-b border-slate-100">
         <div className="md:col-span-5 flex flex-col gap-1">
-          <span className="text-[11px] font-sans font-semibold text-slate-600 uppercase tracking-wider">
+          <span className="text-[10px] font-sans font-semibold text-slate-600 uppercase tracking-wider">
             Khoảng thời gian
           </span>
           <div
             onClick={() => fromDateRef.current?.showPicker()}
-            className="flex items-center gap-2 bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 transition-colors cursor-pointer w-full focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-500"
+            className="flex items-center gap-2 bg-white border border-slate-200 rounded-md px-2.5 py-1 text-xs text-slate-900 transition-colors duration-75 cursor-pointer w-full focus-within:ring-1 focus-within:ring-teal-500 focus-within:border-teal-500"
           >
-            <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
+            <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <div className="flex items-center justify-between grow">
               <input
                 ref={fromDateRef}
@@ -125,9 +125,9 @@ export function RevenueChart({
                   fromDateRef.current?.showPicker();
                 }}
                 onChange={(e) => onTempFromDateChange(e.target.value)}
-                className="bg-transparent text-slate-900 focus:outline-none w-[95px] min-w-0 font-sans text-xs cursor-pointer text-center font-medium"
+                className="bg-transparent text-slate-900 focus:outline-none w-[95px] min-w-0 font-mono tabular-nums text-xs cursor-pointer text-center font-medium"
               />
-              <span className="text-slate-400 font-sans font-medium text-xs select-none px-1">
+              <span className="text-slate-400 font-mono text-xs select-none px-1">
                 →
               </span>
               <input
@@ -139,14 +139,14 @@ export function RevenueChart({
                   toDateRef.current?.showPicker();
                 }}
                 onChange={(e) => onTempToDateChange(e.target.value)}
-                className="bg-transparent text-slate-900 focus:outline-none w-[95px] min-w-0 font-sans text-xs cursor-pointer text-center font-medium"
+                className="bg-transparent text-slate-900 focus:outline-none w-[95px] min-w-0 font-mono tabular-nums text-xs cursor-pointer text-center font-medium"
               />
             </div>
           </div>
         </div>
 
         <div className="md:col-span-3 flex flex-col gap-1">
-          <span className="text-[11px] font-sans font-semibold text-slate-600 uppercase tracking-wider">
+          <span className="text-[10px] font-sans font-semibold text-slate-600 uppercase tracking-wider">
             Gom nhóm
           </span>
           <div className="relative">
@@ -155,13 +155,13 @@ export function RevenueChart({
               onChange={(e) =>
                 onTempGroupByChange(e.target.value as "day" | "week" | "month")
               }
-              className="appearance-none bg-white border border-slate-300 rounded-lg pl-3 pr-8 py-2 text-xs font-sans font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full transition-colors cursor-pointer"
+              className="appearance-none bg-white border border-slate-200 rounded-md pl-2.5 pr-7 py-1 text-xs font-sans font-medium text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 w-full transition-colors duration-75 cursor-pointer"
             >
               <option value="day">Theo ngày</option>
               <option value="week">Theo tuần</option>
               <option value="month">Theo tháng</option>
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-400">
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
               <svg
                 className="w-3.5 h-3.5"
                 fill="none"
@@ -179,16 +179,16 @@ export function RevenueChart({
           </div>
         </div>
 
-        <div className="md:col-span-4 flex items-center gap-2">
+        <div className="md:col-span-4 flex items-center gap-1.5">
           <button
             onClick={onApply}
-            className="flex-1 py-2 px-3 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-sans text-xs font-medium transition-colors cursor-pointer shadow-sm"
+            className="flex-1 py-1.5 px-3 bg-teal-600 hover:bg-teal-700 text-white rounded-md font-sans text-xs font-semibold transition-colors duration-75 cursor-pointer shadow-2xs"
           >
             Áp dụng
           </button>
           <button
             onClick={onReset}
-            className="py-2 px-3 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-sans text-xs font-medium transition-colors cursor-pointer"
+            className="py-1.5 px-2.5 border border-slate-200 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-sans text-xs font-medium transition-colors duration-75 cursor-pointer shadow-2xs"
           >
             Mặc định
           </button>
@@ -323,7 +323,7 @@ export function RevenueChart({
 
             {hoveredIndex !== null && points[hoveredIndex] && (
               <div
-                className="absolute z-20 bg-slate-900 border border-slate-800 p-2.5 rounded-lg shadow-lg pointer-events-none transition-all duration-75 text-xs text-white"
+                className="absolute z-20 bg-slate-900 border border-slate-800 p-2 rounded-md shadow-md pointer-events-none text-xs text-white"
                 style={{
                   left: `${(points[hoveredIndex].x / svgWidth) * 100}%`,
                   top: `${(points[hoveredIndex].y / svgHeight) * 100 - 10}%`,
@@ -333,7 +333,7 @@ export function RevenueChart({
                 <div className="font-sans text-slate-300 text-[10px]">
                   {formatDateSubtext(points[hoveredIndex].item.period)}
                 </div>
-                <div className="font-sans font-bold mt-0.5 text-white">
+                <div className="font-mono tabular-nums font-bold mt-0.5 text-white">
                   Doanh thu:{" "}
                   {new Intl.NumberFormat("vi-VN").format(
                     points[hoveredIndex].item.revenue,
@@ -348,16 +348,16 @@ export function RevenueChart({
 
       {/* Bottom Stats */}
       {!isLoadingRevenue && revenueData.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 border-t border-slate-100 mt-4 pt-4 gap-3 sm:gap-0">
-          <div className="flex flex-col items-start sm:px-3 pb-2 sm:pb-0">
+        <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 border-t border-slate-100 mt-3 pt-3 gap-2 sm:gap-0">
+          <div className="flex flex-col items-start sm:px-2.5 pb-2 sm:pb-0">
             <span className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
               Tổng doanh thu
             </span>
-            <span className="text-base font-sans font-bold text-slate-900 mt-0.5">
+            <span className="text-sm font-mono tabular-nums font-bold text-slate-900 mt-0.5">
               {formatValueVND(totalRevenue)}
             </span>
           </div>
-          <div className="flex flex-col items-start sm:px-3 py-2 sm:py-0">
+          <div className="flex flex-col items-start sm:px-2.5 py-2 sm:py-0">
             <span className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
               Trung bình /{" "}
               {groupBy === "day"
@@ -366,11 +366,11 @@ export function RevenueChart({
                   ? "tuần"
                   : "tháng"}
             </span>
-            <span className="text-base font-sans font-bold text-slate-900 mt-0.5">
+            <span className="text-sm font-mono tabular-nums font-bold text-slate-900 mt-0.5">
               {formatValueVND(averageRevenue)}
             </span>
           </div>
-          <div className="flex flex-col items-start sm:px-3 py-2 sm:py-0">
+          <div className="flex flex-col items-start sm:px-2.5 py-2 sm:py-0">
             <span className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
               Cao nhất (
               {groupBy === "day"
@@ -382,7 +382,7 @@ export function RevenueChart({
             </span>
             {highestItem && (
               <>
-                <span className="text-base font-sans font-bold text-slate-900 mt-0.5">
+                <span className="text-sm font-mono tabular-nums font-bold text-slate-900 mt-0.5">
                   {formatValueVND(highestItem.revenue)}
                 </span>
                 <span className="text-[10px] font-sans text-slate-500">
@@ -391,7 +391,7 @@ export function RevenueChart({
               </>
             )}
           </div>
-          <div className="flex flex-col items-start sm:px-3 pt-2 sm:pt-0">
+          <div className="flex flex-col items-start sm:px-2.5 pt-2 sm:pt-0">
             <span className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
               Thấp nhất (
               {groupBy === "day"
@@ -403,7 +403,7 @@ export function RevenueChart({
             </span>
             {lowestItem && (
               <>
-                <span className="text-base font-sans font-bold text-slate-900 mt-0.5">
+                <span className="text-sm font-mono tabular-nums font-bold text-slate-900 mt-0.5">
                   {formatValueVND(lowestItem.revenue)}
                 </span>
                 <span className="text-[10px] font-sans text-slate-500">

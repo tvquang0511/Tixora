@@ -223,7 +223,7 @@ export function ConcertDetailDrawer({
                               <td className="p-2.5 text-center font-mono text-slate-500">
                                 {tier.gate_number !== null
                                   ? `Cổng ${tier.gate_number}`
-                                  : "—"}
+                                  : "-"}
                               </td>
                             </tr>
                           ))}
@@ -232,7 +232,7 @@ export function ConcertDetailDrawer({
                               Tổng cộng
                             </td>
                             <td className="p-2.5 text-right text-slate-400">
-                              —
+                              -
                             </td>
                             <td className="p-2.5 text-center text-slate-900">
                               {tierTotals.total_quantity.toLocaleString(
@@ -251,7 +251,7 @@ export function ConcertDetailDrawer({
                               {formatVND(tierTotals.revenue)}
                             </td>
                             <td className="p-2.5 text-center text-slate-400">
-                              —
+                              -
                             </td>
                           </tr>
                         </tbody>

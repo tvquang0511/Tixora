@@ -455,21 +455,21 @@ export function ConcertWorkerDrawer({
                       Mã tác vụ: #{importJob.id.slice(0, 8)}
                     </span>
                     <span
-                      className={`text-[11px] font-medium px-2.5 py-0.5 rounded-full border ${
+                      className={`text-[11px] font-medium px-2 py-0.5 rounded border ${
                         importJob.status === "COMPLETED"
                           ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                           : importJob.status === "FAILED"
                             ? "bg-rose-50 text-rose-700 border-rose-200"
-                            : "bg-amber-50 text-amber-700 border-amber-200 animate-pulse"
+                            : "bg-amber-50 text-amber-700 border-amber-200"
                       }`}
                     >
                       {importJob.status}
                     </span>
                   </div>
 
-                  <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
                     <div
-                      className="bg-teal-600 h-full rounded-full transition-all duration-500"
+                      className="bg-teal-600 h-full rounded-full transition-all duration-100"
                       style={{ width: `${importJob.progress_percentage}%` }}
                     />
                   </div>

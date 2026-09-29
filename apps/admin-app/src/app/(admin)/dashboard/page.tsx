@@ -78,14 +78,14 @@ export default function AdminDashboardPage() {
   const isRefreshing = isLoadingSummary || isLoadingOrders || isLoadingRevenue;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Enterprise Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wider text-teal-600">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-teal-700">
             Hệ thống Quản trị / Giám sát
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 mt-1">
+          <h1 className="text-lg font-bold tracking-tight text-slate-900 mt-0.5">
             Bảng điều khiển hệ thống
           </h1>
           <p className="text-xs text-slate-500 font-sans mt-0.5">
@@ -97,7 +97,7 @@ export default function AdminDashboardPage() {
           <button
             onClick={reloadDashboard}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-1.5 px-3 py-2 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 border border-slate-200 rounded-md bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 transition-colors duration-75 disabled:opacity-50 cursor-pointer shadow-2xs"
             title="Tải lại toàn bộ dữ liệu thống kê"
           >
             <RefreshCw
@@ -117,7 +117,7 @@ export default function AdminDashboardPage() {
         formatSummaryNumber={formatSummaryNumber}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <RevenueChart
           revenueData={revenueData}
           isLoadingRevenue={isLoadingRevenue}

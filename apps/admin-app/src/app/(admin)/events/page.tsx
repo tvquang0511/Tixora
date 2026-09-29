@@ -241,9 +241,9 @@ export default function AdminEventsPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-3 border border-slate-200 rounded-xl shadow-xs space-y-3">
+      <div className="bg-white p-2.5 border border-slate-200 rounded-lg shadow-2xs space-y-2.5">
         {/* Quick Status Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5">
           {[
             { key: "All", label: "Tất cả" },
             { key: "PENDING_REVIEW", label: "Chờ sàn duyệt" },
@@ -260,12 +260,12 @@ export default function AdminEventsPage() {
                   setStatusFilter(tab.key);
                   setPage(1);
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                className={`px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition-colors duration-75 cursor-pointer ${
                   isSelected
                     ? tab.key === "PENDING_REVIEW"
-                      ? "bg-amber-500 text-white shadow-xs"
-                      : "bg-slate-900 text-white shadow-xs"
-                    : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200"
+                      ? "bg-amber-600 text-white shadow-2xs"
+                      : "bg-teal-700 text-white shadow-2xs"
+                    : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
                 }`}
               >
                 {tab.label}
@@ -276,9 +276,9 @@ export default function AdminEventsPage() {
 
         <div className="flex flex-col md:flex-row gap-2 items-center">
           <div className="relative w-full md:flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
             <input
-              className="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+              className="w-full pl-8 pr-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors duration-75"
               placeholder="Tìm theo tên sự kiện, ID, địa điểm..."
               type="text"
               value={searchQuery}
@@ -291,7 +291,7 @@ export default function AdminEventsPage() {
               setStatusFilter("All");
               setPage(1);
             }}
-            className="px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-lg text-xs font-medium flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
+            className="px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-md text-xs font-medium flex items-center gap-1 cursor-pointer transition-colors duration-75 shadow-2xs"
             title="Đặt lại bộ lọc"
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -301,34 +301,34 @@ export default function AdminEventsPage() {
       </div>
 
       {/* Table Data Container */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-lg shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-slate-50/70 border-b border-slate-200 text-slate-500 font-medium uppercase tracking-wider text-[11px]">
-                <th className="px-4 py-3">Sự kiện</th>
-                <th className="px-4 py-3">Đơn vị tổ chức</th>
-                <th className="px-4 py-3">Thời gian & Địa điểm</th>
-                <th className="px-4 py-3 text-center">Trạng thái</th>
-                <th className="px-4 py-3 text-center">Duyệt & Phát hành</th>
-                <th className="px-4 py-3 text-right">Thao tác</th>
+              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+                <th className="px-3 py-2">Sự kiện</th>
+                <th className="px-3 py-2">Đơn vị tổ chức</th>
+                <th className="px-3 py-2">Thời gian & Địa điểm</th>
+                <th className="px-3 py-2 text-center">Trạng thái</th>
+                <th className="px-3 py-2 text-center">Duyệt & Phát hành</th>
+                <th className="px-3 py-2 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-800">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="p-10 text-center text-slate-500">
+                  <td colSpan={6} className="p-8 text-center text-slate-500">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <RotateCw className="w-5 h-5 animate-spin text-teal-600" />
+                      <RotateCw className="w-4 h-4 animate-spin text-teal-600" />
                       <p className="text-xs">Đang tải dữ liệu sự kiện...</p>
                     </div>
                   </td>
                 </tr>
               ) : concerts.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-10 text-center text-slate-500">
+                  <td colSpan={6} className="p-8 text-center text-slate-500">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <CalendarOff className="w-8 h-8 text-slate-300" />
+                      <CalendarOff className="w-6 h-6 text-slate-300" />
                       <p className="text-xs font-medium">
                         Không tìm thấy sự kiện nào.
                       </p>
@@ -339,12 +339,12 @@ export default function AdminEventsPage() {
                 concerts.map((concert) => (
                   <tr
                     key={concert.id}
-                    className="hover:bg-slate-50/70 transition-colors"
+                    className="hover:bg-slate-50/70 transition-colors duration-75"
                   >
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
+                    <td className="px-3 py-2.5">
+                      <div className="flex items-center gap-2.5">
                         <div
-                          className="w-10 h-10 border border-slate-200 bg-slate-100 shrink-0 bg-cover bg-center rounded-lg shadow-2xs"
+                          className="w-9 h-9 border border-slate-200 bg-slate-100 shrink-0 bg-cover bg-center rounded shadow-2xs"
                           style={{
                             backgroundImage: `url('${getConcertPosterUrl(concert.posterUrl)}')`,
                           }}
@@ -353,7 +353,7 @@ export default function AdminEventsPage() {
                           <div className="font-semibold text-slate-900 leading-snug">
                             {concert.title}
                           </div>
-                          <div className="text-[11px] text-slate-400 mt-0.5">
+                          <div className="text-[10px] font-mono text-slate-400 mt-0.5">
                             ID: {concert.id.slice(0, 8)}...
                           </div>
                         </div>
@@ -361,21 +361,21 @@ export default function AdminEventsPage() {
                     </td>
 
                     {/* Organizer Column */}
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="px-3 py-2.5 whitespace-nowrap">
                       {concert.organizer_name &&
                       concert.organizer_name !== "Tixora Official" ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-800 border border-slate-200">
                           {concert.organizer_name}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-teal-50 text-teal-800 border border-teal-200">
                           Tixora Official
                         </span>
                       )}
                     </td>
 
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-slate-900">
+                    <td className="px-3 py-2.5">
+                      <div className="font-mono tabular-nums text-xs font-medium text-slate-900">
                         {concert.date} {concert.time}
                       </div>
                       <div className="text-[11px] text-slate-500 mt-0.5">
@@ -383,22 +383,26 @@ export default function AdminEventsPage() {
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 text-center whitespace-nowrap">
-                      <StatusBadge status={concert.status} variant="concert" />
+                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                      <StatusBadge
+                        status={concert.status}
+                        variant="concert"
+                        size="xs"
+                      />
                     </td>
 
                     {/* Status Action Column */}
-                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
                       {updatingStatusId === concert.id ? (
                         <span className="text-[11px] text-slate-400 flex items-center justify-center gap-1">
                           <RotateCw className="w-3 h-3 animate-spin text-teal-600" />{" "}
                           Đang lưu...
                         </span>
                       ) : concert.status === "PENDING_REVIEW" ? (
-                        <div className="inline-flex items-center gap-1.5">
+                        <div className="inline-flex items-center gap-1">
                           <button
                             onClick={() => setSelectedReviewConcert(concert)}
-                            className="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-[11px] rounded-lg shadow-2xs cursor-pointer transition-colors"
+                            className="px-2 py-0.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-[11px] rounded transition-colors duration-75 shadow-2xs cursor-pointer"
                             title="Xem xét chi tiết và phê duyệt sự kiện"
                           >
                             Xem duyệt
@@ -411,7 +415,7 @@ export default function AdminEventsPage() {
                                 concert.title,
                               )
                             }
-                            className="p-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-2xs cursor-pointer transition-colors"
+                            className="p-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded transition-colors duration-75 shadow-2xs cursor-pointer"
                             title="Duyệt nhanh mở bán ngay"
                           >
                             <CheckCircle className="w-3.5 h-3.5" />
@@ -426,7 +430,7 @@ export default function AdminEventsPage() {
                               concert.title,
                             )
                           }
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-600 hover:bg-teal-700 text-white font-medium text-[11px] rounded-lg shadow-2xs cursor-pointer transition-colors"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-teal-600 hover:bg-teal-700 text-white font-medium text-[11px] rounded transition-colors duration-75 shadow-2xs cursor-pointer"
                           title="Phát hành ngay để mở bán vé"
                         >
                           <Send className="w-3 h-3" />
@@ -441,22 +445,24 @@ export default function AdminEventsPage() {
                               concert.title,
                             )
                           }
-                          className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 font-medium text-[11px] rounded-lg border border-slate-200 shadow-2xs cursor-pointer transition-colors"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-white hover:bg-slate-50 text-slate-700 font-medium text-[11px] rounded border border-slate-200 transition-colors duration-75 shadow-2xs cursor-pointer"
                           title="Tạm ngưng về trạng thái bản nháp"
                         >
                           <Pause className="w-3 h-3 text-slate-500" />
                           <span>Tạm ngưng</span>
                         </button>
                       ) : (
-                        <span className="text-slate-400 text-[11px]">—</span>
+                        <span className="text-slate-400 text-xs font-mono">
+                          -
+                        </span>
                       )}
                     </td>
 
-                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                    <td className="px-3 py-2.5 text-right whitespace-nowrap">
                       <div className="inline-flex items-center gap-1">
                         <Link
                           href={`/create-event?edit=${concert.id}`}
-                          className="p-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 rounded-lg shadow-2xs transition-colors"
+                          className="p-1 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 rounded transition-colors duration-75 shadow-2xs"
                           title="Chỉnh sửa nội dung & vé"
                         >
                           <Pencil className="w-3.5 h-3.5" />
@@ -464,7 +470,7 @@ export default function AdminEventsPage() {
                         <Link
                           href={`/concerts/${concert.id}`}
                           target="_blank"
-                          className="p-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 rounded-lg shadow-2xs transition-colors"
+                          className="p-1 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 rounded transition-colors duration-75 shadow-2xs"
                           title="Xem trang công khai"
                         >
                           <Eye className="w-3.5 h-3.5" />

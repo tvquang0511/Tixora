@@ -67,41 +67,41 @@ export function AdminShell({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen bg-slate-50 text-slate-900 font-body">
       {/* Desktop Sidebar */}
       <nav className="hidden md:flex flex-col h-screen w-64 bg-white border-r border-slate-200 shrink-0 sticky top-0 z-40">
-        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div className="px-4 py-4 border-b border-slate-100 flex items-center justify-between">
           <Link href="/dashboard" className="block">
             <BrandMark compact />
           </Link>
-          <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
+          <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">
             Admin
           </span>
         </div>
 
         {/* Grouped Navigation */}
-        <div className="flex flex-col gap-5 p-3 grow overflow-y-auto">
+        <div className="flex flex-col gap-4 p-3 grow overflow-y-auto">
           {navGroups.map((group) => (
             <div key={group.title} className="space-y-1">
               <div className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                 {group.title}
               </div>
-              <ul className="space-y-0.5">
+              <ul className="space-y-1">
                 {group.items.map((item) => {
                   const isActive = pathname?.startsWith(item.href);
                   return (
                     <li key={item.href}>
                       <Link
                         href={item.href}
-                        className={`flex items-center gap-3 px-3 py-2 text-sm transition-all rounded-lg ${
+                        className={`flex items-center gap-3 px-3 py-2.5 text-sm transition-colors duration-75 rounded-lg ${
                           isActive
-                            ? "bg-teal-50 text-teal-900 font-semibold shadow-2xs border-l-3 border-teal-600 pl-2.5"
-                            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-medium"
+                            ? "bg-teal-50 text-teal-900 font-semibold border-l-[3px] border-teal-600 pl-2.5 shadow-xs"
+                            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium"
                         }`}
                       >
                         <item.icon
-                          className={`w-4.5 h-4.5 shrink-0 ${
+                          className={`w-5 h-5 shrink-0 ${
                             isActive ? "text-teal-600" : "text-slate-400"
                           }`}
                         />
-                        <span>{item.label}</span>
+                        <span className="truncate">{item.label}</span>
                       </Link>
                     </li>
                   );
@@ -110,34 +110,34 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </div>
           ))}
 
-          {/* Technical Monitoring Link (Subtle) */}
-          <div className="pt-2 border-t border-slate-100 space-y-1">
+          {/* Technical Monitoring Link */}
+          <div className="pt-3 border-t border-slate-100 space-y-1.5">
             <div className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               KỸ THUẬT & GIÁM SÁT
             </div>
-            <div className="grid grid-cols-2 gap-1 px-1">
+            <div className="grid grid-cols-2 gap-2 px-1">
               <Link
                 href="/jobs"
-                className={`flex items-center justify-center gap-1.5 py-1.5 px-2 text-xs rounded-md transition-colors border ${
+                className={`flex items-center justify-center gap-2 py-2 px-2.5 text-xs rounded-lg transition-colors duration-75 border ${
                   pathname?.startsWith("/jobs")
-                    ? "bg-slate-100 text-slate-900 border-slate-300 font-semibold"
-                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 border-slate-200/80"
+                    ? "bg-slate-100 text-slate-900 border-slate-300 font-semibold shadow-xs"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 border-slate-200 font-medium"
                 }`}
                 title="Giám sát tiến trình nền BullMQ"
               >
-                <Cpu className="w-3.5 h-3.5 text-slate-400" />
+                <Cpu className="w-4 h-4 text-slate-500" />
                 <span>Jobs</span>
               </Link>
               <Link
                 href="/notifications"
-                className={`flex items-center justify-center gap-1.5 py-1.5 px-2 text-xs rounded-md transition-colors border ${
+                className={`flex items-center justify-center gap-2 py-2 px-2.5 text-xs rounded-lg transition-colors duration-75 border ${
                   pathname?.startsWith("/notifications")
-                    ? "bg-slate-100 text-slate-900 border-slate-300 font-semibold"
-                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 border-slate-200/80"
+                    ? "bg-slate-100 text-slate-900 border-slate-300 font-semibold shadow-xs"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50 border-slate-200 font-medium"
                 }`}
                 title="Nhật ký gửi thông báo"
               >
-                <Bell className="w-3.5 h-3.5 text-slate-400" />
+                <Bell className="w-4 h-4 text-slate-500" />
                 <span>Logs</span>
               </Link>
             </div>
@@ -145,35 +145,35 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </div>
 
         {/* User Info Bar at bottom of sidebar */}
-        <div className="p-3.5 border-t border-slate-100 bg-slate-50/50 space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-teal-600 text-white flex items-center justify-center font-semibold text-sm shrink-0 shadow-2xs">
+        <div className="p-3.5 border-t border-slate-100 bg-slate-50/60 space-y-2.5">
+          <div className="flex items-center gap-2.5">
+            <div className="h-9 w-9 rounded-full bg-teal-600 text-white flex items-center justify-center font-semibold text-xs shrink-0 shadow-xs">
               {user?.fullName?.charAt(0).toUpperCase() || "A"}
             </div>
             <div className="min-w-0 flex-1">
               <div className="font-semibold text-slate-900 truncate text-sm leading-tight">
                 {user?.fullName || "Quản trị viên"}
               </div>
-              <div className="text-slate-500 truncate text-xs mt-0.5">
+              <div className="text-slate-500 truncate text-xs">
                 {user?.email || ""}
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 pt-1 border-t border-slate-200/60">
+          <div className="flex items-center gap-2 pt-1 border-t border-slate-200/60">
             <a
               href={webAppUrl}
               target="_blank"
               rel="noreferrer"
-              className="flex-1 flex items-center justify-center gap-1 text-[11px] font-medium py-1.5 px-2 bg-white hover:bg-slate-100 text-slate-700 rounded-lg border border-slate-200 transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 text-xs font-medium py-1.5 px-2 bg-white hover:bg-slate-100 text-slate-700 rounded-md border border-slate-200 transition-colors duration-75"
             >
               <span>Xem Web</span>
-              <ExternalLink size={11} className="text-slate-400" />
+              <ExternalLink size={12} className="text-slate-400" />
             </a>
             <button
               onClick={() => {
                 void logout().then(() => router.replace("/login"));
               }}
-              className="flex items-center justify-center gap-1 text-[11px] font-medium py-1.5 px-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg border border-rose-200 transition-colors cursor-pointer"
+              className="flex items-center justify-center gap-1.5 text-xs font-medium py-1.5 px-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-md border border-rose-200 transition-colors duration-75 cursor-pointer"
               title="Đăng xuất"
             >
               <LogOut size={12} />
@@ -186,27 +186,27 @@ export function AdminShell({ children }: { children: ReactNode }) {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-h-screen overflow-x-hidden">
         {/* Page Content */}
-        <div className="p-6 md:p-8 grow max-w-[1600px] w-full mx-auto">
+        <div className="p-4 sm:p-5 grow max-w-[1600px] w-full mx-auto">
           {children}
         </div>
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-15 bg-white border-t border-slate-200">
+      <nav className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 bg-white border-t border-slate-200 shadow-md">
         {mobileNavItems.map((item) => {
           const isActive = pathname?.startsWith(item.href);
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center text-xs font-medium w-full h-full ${
+              className={`flex flex-col items-center justify-center text-xs font-medium w-full h-full py-1 ${
                 isActive
-                  ? "text-teal-700 bg-teal-50 font-semibold"
+                  ? "text-teal-700 bg-teal-50/80 font-semibold"
                   : "text-slate-600 hover:bg-slate-50"
               }`}
             >
-              <item.icon className="w-4.5 h-4.5 mb-1" />
-              <span>{item.label}</span>
+              <item.icon className="w-5 h-5 mb-1" />
+              <span className="text-[11px]">{item.label}</span>
             </Link>
           );
         })}

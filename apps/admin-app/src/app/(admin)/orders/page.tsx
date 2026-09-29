@@ -122,11 +122,11 @@ export default function AdminOrdersPage() {
   };
 
   return (
-    <div className="space-y-4 max-w-7xl mx-auto">
+    <div className="space-y-3.5 max-w-[1600px] w-full mx-auto">
       {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-lg font-bold text-slate-900 tracking-tight">
             Quản lý Đơn hàng
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
@@ -138,11 +138,11 @@ export default function AdminOrdersPage() {
           <button
             onClick={() => void fetchOrders()}
             disabled={isLoading}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-xs cursor-pointer transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-md shadow-2xs cursor-pointer transition-colors duration-75 disabled:opacity-50"
             title="Làm mới danh sách đơn hàng"
           >
             <RotateCw
-              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`}
+              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-teal-600" : ""}`}
             />
             <span>Làm mới</span>
           </button>
@@ -150,11 +150,11 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Filters Bar */}
-      <div className="p-3 bg-white border border-slate-200 rounded-xl shadow-xs flex flex-col sm:flex-row gap-3 items-center justify-between">
+      <div className="p-2.5 bg-white border border-slate-200 rounded-lg shadow-2xs flex flex-col sm:flex-row gap-2.5 items-center justify-between">
         <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
           <input
-            className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg bg-white text-slate-900 text-xs w-full focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 placeholder:text-slate-400 transition-colors"
+            className="pl-8 pr-2.5 py-1.5 border border-slate-200 rounded-md bg-white text-slate-900 text-xs w-full focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 placeholder:text-slate-400 transition-colors duration-75"
             placeholder="Tìm theo mã đơn, người mua, email..."
             type="text"
             value={search}
@@ -162,7 +162,7 @@ export default function AdminOrdersPage() {
           />
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
-          <span className="text-xs text-slate-500 font-medium select-none">
+          <span className="text-xs text-slate-600 font-medium select-none">
             Trạng thái:
           </span>
           <select
@@ -171,42 +171,42 @@ export default function AdminOrdersPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="px-3 py-1.5 border border-slate-200 rounded-lg bg-white text-xs font-medium text-slate-700 cursor-pointer focus:outline-none focus:border-teal-500 shadow-2xs"
+            className="px-2.5 py-1.5 border border-slate-200 rounded-md bg-white text-xs font-medium text-slate-700 cursor-pointer focus:outline-none focus:border-teal-500 shadow-2xs transition-colors duration-75"
           >
             <option value="">Tất cả trạng thái</option>
-            <option value="PAID">PAID (Đã thanh toán)</option>
-            <option value="PENDING">PENDING (Chờ thanh toán)</option>
-            <option value="CANCELLED">CANCELLED (Đã hủy)</option>
+            <option value="PAID">Đã thanh toán</option>
+            <option value="PENDING">Chờ thanh toán</option>
+            <option value="CANCELLED">Đã hủy</option>
           </select>
         </div>
       </div>
 
       {/* Main Table Card */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
+      <div className="bg-white border border-slate-200 rounded-lg shadow-2xs overflow-hidden">
         {isLoading ? (
-          <div className="py-20 text-center text-slate-500">
+          <div className="py-16 text-center text-slate-500">
             <div className="flex flex-col items-center justify-center gap-2">
-              <RotateCw className="h-6 w-6 animate-spin text-teal-600" />
+              <RotateCw className="h-5 w-5 animate-spin text-teal-600" />
               <span className="text-xs">Đang tải danh sách đơn hàng...</span>
             </div>
           </div>
         ) : orders.length === 0 ? (
-          <div className="py-20 text-center text-slate-500 text-xs font-medium">
+          <div className="py-16 text-center text-slate-500 text-xs font-medium">
             Không tìm thấy đơn hàng nào khớp với bộ lọc.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[900px] text-xs">
               <thead>
-                <tr className="bg-slate-50/70 border-b border-slate-200 text-slate-500 font-medium uppercase tracking-wider text-[11px] select-none">
-                  <th className="p-3">Mã đơn hàng</th>
-                  <th className="p-3">Khách hàng</th>
-                  <th className="p-3">Sự kiện</th>
-                  <th className="p-3 text-center">Số vé</th>
-                  <th className="p-3">Số tiền</th>
-                  <th className="p-3">Trạng thái</th>
-                  <th className="p-3">Ngày tạo</th>
-                  <th className="p-3 text-center">Hành động</th>
+                <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px] select-none">
+                  <th className="p-2.5">Mã đơn hàng</th>
+                  <th className="p-2.5">Khách hàng</th>
+                  <th className="p-2.5">Sự kiện</th>
+                  <th className="p-2.5 text-center">Số vé</th>
+                  <th className="p-2.5 text-right">Số tiền</th>
+                  <th className="p-2.5 text-center">Trạng thái</th>
+                  <th className="p-2.5">Ngày tạo</th>
+                  <th className="p-2.5 text-center">Hành động</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-800">
@@ -214,17 +214,17 @@ export default function AdminOrdersPage() {
                   <tr
                     key={order.id}
                     onClick={() => router.push(`/orders/${order.id}`)}
-                    className="hover:bg-slate-50/70 transition-colors cursor-pointer"
+                    className="hover:bg-slate-50/70 transition-colors duration-75 cursor-pointer"
                   >
-                    <td className="p-3">
+                    <td className="p-2.5">
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="font-mono text-[11px] font-semibold text-slate-900 break-all">
+                        <span className="font-mono text-xs font-semibold text-slate-900 break-all">
                           {order.id.slice(0, 8)}...
                         </span>
                         <CopyButton text={order.id} />
                       </div>
                     </td>
-                    <td className="p-3">
+                    <td className="p-2.5">
                       <div className="font-semibold text-slate-900">
                         {order.user_name || "Khách hàng ẩn danh"}
                       </div>
@@ -232,23 +232,27 @@ export default function AdminOrdersPage() {
                         {order.user_email || "N/A"}
                       </div>
                     </td>
-                    <td className="p-3 font-medium text-slate-900">
+                    <td className="p-2.5 font-medium text-slate-900">
                       {order.concert_name}
                     </td>
-                    <td className="p-3 text-center font-bold text-slate-900">
+                    <td className="p-2.5 text-center font-bold text-slate-900 font-mono tabular-nums">
                       {order.ticket_count}
                     </td>
-                    <td className="p-3 font-semibold text-slate-900 whitespace-nowrap">
+                    <td className="p-2.5 font-bold text-slate-900 font-mono tabular-nums text-right whitespace-nowrap">
                       {formatConcertCurrency(Number(order.total_amount))}
                     </td>
-                    <td className="p-3">
-                      <StatusBadge status={order.status} variant="order" />
+                    <td className="p-2.5 text-center">
+                      <StatusBadge
+                        status={order.status}
+                        variant="order"
+                        size="xs"
+                      />
                     </td>
-                    <td className="p-3 text-slate-500 whitespace-nowrap text-[11px]">
+                    <td className="p-2.5 text-slate-600 font-mono tabular-nums whitespace-nowrap text-xs">
                       {new Date(order.created_at).toLocaleString("vi-VN")}
                     </td>
-                    <td className="p-3 text-center">
-                      <span className="inline-block px-2.5 py-1 bg-white border border-slate-200 text-slate-700 text-[11px] font-medium rounded-lg shadow-2xs hover:bg-slate-50">
+                    <td className="p-2.5 text-center">
+                      <span className="inline-block px-2 py-0.5 bg-white border border-slate-200 text-slate-700 text-[10px] font-medium rounded shadow-2xs hover:bg-slate-50 transition-colors duration-75">
                         Chi tiết
                       </span>
                     </td>

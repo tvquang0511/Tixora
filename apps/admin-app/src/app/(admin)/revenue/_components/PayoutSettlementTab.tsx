@@ -31,7 +31,7 @@ const formatVND = (value: number) =>
 
 const formatShortDate = (dateStr: string) => {
   const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return "—";
+  if (isNaN(d.getTime())) return "-";
   return d.toLocaleDateString("vi-VN", {
     day: "2-digit",
     month: "2-digit",
@@ -72,82 +72,82 @@ export function PayoutSettlementTab({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Financial Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Card 1: Ready for Payout */}
-        <div className="p-4 bg-white rounded-xl border border-emerald-200/80 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between text-xs font-semibold text-emerald-800 uppercase tracking-wider mb-2">
+        <div className="p-3.5 sm:p-4 bg-white rounded-lg border border-emerald-200 shadow-2xs relative overflow-hidden">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-emerald-800 uppercase tracking-wider mb-1.5">
             <span>Sẵn sàng giải ngân</span>
-            <div className="p-1.5 bg-emerald-100/70 text-emerald-700 rounded-lg">
-              <CheckCircle2 className="w-4 h-4" />
+            <div className="p-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded">
+              <CheckCircle2 className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-bold text-slate-900">
+          <div className="text-lg sm:text-xl tabular-nums font-bold text-slate-900">
             {formatVND(summary?.ready_for_payout ?? 0)}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">
+          <p className="text-[11px] text-slate-500 mt-0.5">
             Các sự kiện đã kết thúc an toàn, sẵn sàng chuyển khoản cho BTC
           </p>
         </div>
 
         {/* Card 2: Holding Escrow */}
-        <div className="p-4 bg-white rounded-xl border border-amber-200/80 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between text-xs font-semibold text-amber-800 uppercase tracking-wider mb-2">
+        <div className="p-3.5 sm:p-4 bg-white rounded-lg border border-amber-200 shadow-2xs relative overflow-hidden">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-amber-800 uppercase tracking-wider mb-1.5">
             <span>Tiền bảo chứng (Escrow)</span>
-            <div className="p-1.5 bg-amber-100/70 text-amber-700 rounded-lg">
-              <Lock className="w-4 h-4" />
+            <div className="p-1 bg-amber-50 text-amber-700 border border-amber-200 rounded">
+              <Lock className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-bold text-slate-900">
+          <div className="text-lg sm:text-xl tabular-nums font-bold text-slate-900">
             {formatVND(summary?.holding_escrow ?? 0)}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">
+          <p className="text-[11px] text-slate-500 mt-0.5">
             Tiền vé các sự kiện chưa diễn ra, được sàn giữ hộ an toàn
           </p>
         </div>
 
         {/* Card 3: Platform Fee */}
-        <div className="p-4 bg-white rounded-xl border border-teal-200/80 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between text-xs font-semibold text-teal-800 uppercase tracking-wider mb-2">
+        <div className="p-3.5 sm:p-4 bg-white rounded-lg border border-teal-200 shadow-2xs relative overflow-hidden">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-teal-800 uppercase tracking-wider mb-1.5">
             <span>Doanh thu phí sàn Tixora (5%)</span>
-            <div className="p-1.5 bg-teal-100/70 text-teal-700 rounded-lg">
-              <ShieldCheck className="w-4 h-4" />
+            <div className="p-1 bg-teal-50 text-teal-700 border border-teal-200 rounded">
+              <ShieldCheck className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-bold text-teal-700">
+          <div className="text-lg sm:text-xl tabular-nums font-bold text-teal-800">
             {formatVND(summary?.total_platform_fee ?? 0)}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">
+          <p className="text-[11px] text-slate-500 mt-0.5">
             Khoản phí dịch vụ nền tảng thực thu từ bán vé
           </p>
         </div>
 
         {/* Card 4: Total GMV */}
-        <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-xs relative overflow-hidden">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+        <div className="p-3.5 sm:p-4 bg-white rounded-lg border border-slate-200 shadow-2xs relative overflow-hidden">
+          <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1.5">
             <span>Tổng giá trị giao dịch (GMV)</span>
-            <div className="p-1.5 bg-slate-100 text-slate-600 rounded-lg">
-              <CreditCard className="w-4 h-4" />
+            <div className="p-1 bg-slate-50 text-slate-600 border border-slate-200 rounded">
+              <CreditCard className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-bold text-slate-900">
+          <div className="text-lg sm:text-xl tabular-nums font-bold text-slate-900">
             {formatVND(summary?.total_gmv ?? 0)}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">
+          <p className="text-[11px] text-slate-500 mt-0.5">
             Tổng tiền vé khán giả đã thanh toán trên hệ thống
           </p>
         </div>
       </div>
 
       {/* Filter and Table Container */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <div className="bg-white rounded-lg border border-slate-200 p-3.5 sm:p-4 shadow-2xs space-y-3">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5">
           <div>
-            <h3 className="font-bold text-slate-900 text-base">
+            <h3 className="font-bold text-slate-900 text-sm">
               Danh sách đối soát & giải ngân sự kiện
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-[11px] text-slate-500">
               Quản lý nghĩa vụ thanh toán cho các Ban tổ chức theo chu kỳ
             </p>
           </div>
@@ -155,13 +155,13 @@ export function PayoutSettlementTab({
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             {/* Search */}
             <div className="relative grow sm:grow-0">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2" />
               <input
                 type="text"
                 placeholder="Tìm tên concert, BTC..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-teal-500 w-full sm:w-56"
+                className="pl-8 pr-2.5 py-1 text-xs bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-teal-500 w-full sm:w-56 transition-colors duration-75"
               />
             </div>
 
@@ -169,7 +169,7 @@ export function PayoutSettlementTab({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="text-xs py-1.5 px-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-teal-500 cursor-pointer"
+              className="text-xs py-1 px-2.5 bg-white border border-slate-200 rounded-md text-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer transition-colors duration-75"
             >
               <option value="ALL">Tất cả trạng thái</option>
               <option value="READY_FOR_SETTLEMENT">Sẵn sàng quyết toán</option>
@@ -180,28 +180,28 @@ export function PayoutSettlementTab({
             {/* Refresh button */}
             <button
               onClick={onRefresh}
-              className="p-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 rounded-lg transition-colors cursor-pointer"
+              className="p-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 rounded-md transition-colors duration-75 cursor-pointer shadow-2xs"
               title="Tải lại dữ liệu"
             >
               <RefreshCw
-                className={`w-4 h-4 ${isLoading ? "animate-spin text-teal-600" : ""}`}
+                className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-teal-600" : ""}`}
               />
             </button>
           </div>
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto border border-slate-100 rounded-lg">
+        <div className="overflow-x-auto border border-slate-200 rounded-md">
           <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase tracking-wider text-[11px]">
+            <thead className="bg-slate-50/80 text-slate-600 font-semibold border-b border-slate-200 uppercase tracking-wider text-[11px]">
               <tr>
-                <th className="py-3 px-4">Sự kiện & Ngày</th>
-                <th className="py-3 px-4">Ban tổ chức & Tài khoản</th>
-                <th className="py-3 px-4 text-right">Doanh số (GMV)</th>
-                <th className="py-3 px-4 text-right">Phí sàn (5%)</th>
-                <th className="py-3 px-4 text-right">Thực chuyển (Net)</th>
-                <th className="py-3 px-4 text-center">Trạng thái</th>
-                <th className="py-3 px-4 text-right">Thao tác</th>
+                <th className="py-2.5 px-3">Sự kiện & Ngày</th>
+                <th className="py-2.5 px-3">Ban tổ chức & Tài khoản</th>
+                <th className="py-2.5 px-3 text-right">Doanh số (GMV)</th>
+                <th className="py-2.5 px-3 text-right">Phí sàn (5%)</th>
+                <th className="py-2.5 px-3 text-right">Thực chuyển (Net)</th>
+                <th className="py-2.5 px-3 text-center">Trạng thái</th>
+                <th className="py-2.5 px-3 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -225,22 +225,22 @@ export function PayoutSettlementTab({
                   return (
                     <tr
                       key={item.concert_id}
-                      className="hover:bg-slate-50/80 transition-colors"
+                      className="hover:bg-slate-50/70 transition-colors duration-75"
                     >
                       {/* Event */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-3">
                         <div className="font-semibold text-slate-900 line-clamp-1">
                           {item.concert_name}
                         </div>
-                        <div className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
-                          <Calendar className="w-3 h-3" />
+                        <div className="text-[11px] text-slate-500 font-mono flex items-center gap-1 mt-0.5">
+                          <Calendar className="w-3 h-3 text-slate-400" />
                           <span>{formatShortDate(item.start_time)}</span>
                           <span>• {item.tickets_sold} vé bán</span>
                         </div>
                       </td>
 
                       {/* Organizer & Bank */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-3">
                         <div className="font-medium text-slate-800 line-clamp-1">
                           {item.organizer.organization_name}
                         </div>
@@ -251,7 +251,7 @@ export function PayoutSettlementTab({
                               {item.organizer.bank_account_number}
                             </span>
                           ) : (
-                            <span className="text-amber-600 font-sans">
+                            <span className="text-amber-700 font-sans">
                               Chưa có tài khoản
                             </span>
                           )}
@@ -259,35 +259,35 @@ export function PayoutSettlementTab({
                       </td>
 
                       {/* GMV */}
-                      <td className="py-3 px-4 text-right font-medium text-slate-900">
+                      <td className="py-2.5 px-3 text-right font-bold text-slate-900 font-mono tabular-nums text-xs">
                         {formatVND(item.gmv)}
                       </td>
 
                       {/* Platform Fee */}
-                      <td className="py-3 px-4 text-right text-rose-600 font-medium">
+                      <td className="py-2.5 px-3 text-right text-rose-700 font-mono tabular-nums text-xs font-medium">
                         - {formatVND(item.platform_fee)}
                       </td>
 
                       {/* Net Payout */}
-                      <td className="py-3 px-4 text-right font-bold text-teal-800 text-sm">
+                      <td className="py-2.5 px-3 text-right font-bold text-teal-800 font-mono tabular-nums text-xs">
                         {formatVND(item.net_payout)}
                       </td>
 
                       {/* Status */}
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-2.5 px-3 text-center">
                         {isSettled ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-300">
                             <CheckCircle2 className="w-3 h-3" />
                             <span>Đã chuyển ({refCode})</span>
                           </span>
                         ) : item.settlement_status ===
                           "READY_FOR_SETTLEMENT" ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200">
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-teal-50 text-teal-800 border border-teal-300">
                             <ArrowUpRight className="w-3 h-3" />
                             <span>Sẵn sàng quyết toán</span>
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-800 border border-amber-300">
                             <Lock className="w-3 h-3" />
                             <span>Bảo chứng (Chờ diễn ra)</span>
                           </span>
@@ -295,7 +295,7 @@ export function PayoutSettlementTab({
                       </td>
 
                       {/* Action */}
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-2.5 px-3 text-right">
                         {isSettled ? (
                           <span className="text-xs text-slate-400">
                             Hoàn tất
@@ -303,7 +303,7 @@ export function PayoutSettlementTab({
                         ) : (
                           <button
                             onClick={() => setSelectedPayoutItem(item)}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white shadow-2xs transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-teal-600 hover:bg-teal-700 text-white shadow-2xs transition-colors duration-75 cursor-pointer"
                           >
                             <CreditCard className="w-3.5 h-3.5" />
                             <span>Quyết toán</span>

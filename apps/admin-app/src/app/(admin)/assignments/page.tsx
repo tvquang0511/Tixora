@@ -43,9 +43,9 @@ const DEFAULT_META: PaginationMeta = {
 };
 
 function formatConcertTime(value?: string) {
-  if (!value) return "—";
+  if (!value) return "-";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
+  if (Number.isNaN(date.getTime())) return "-";
 
   return new Intl.DateTimeFormat("vi-VN", {
     month: "long",
@@ -59,7 +59,7 @@ function formatConcertTime(value?: string) {
 
 function formatShortDate(value: string) {
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
+  if (Number.isNaN(date.getTime())) return "-";
 
   return new Intl.DateTimeFormat("vi-VN", {
     month: "long",
@@ -88,8 +88,8 @@ function AssignmentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs select-none">
-      <div className="w-full max-w-xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl relative z-10 flex flex-col max-h-[90vh]">
-        <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50/50 px-5 py-4">
+      <div className="w-full max-w-xl overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl relative z-10 flex flex-col max-h-[90vh]">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50/50 px-4 py-3">
           <div>
             <span className="text-xs font-semibold text-teal-600 uppercase tracking-wider block font-sans">
               Phân công soát vé
@@ -133,7 +133,7 @@ function ConfirmDeleteModal({
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs select-none">
-      <div className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl p-5 space-y-4 relative z-10">
+      <div className="w-full max-w-md overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl p-4 space-y-3 relative z-10">
         <div className="space-y-1.5 font-sans text-xs">
           <h3 className="font-sans text-sm font-semibold text-slate-900">
             {title}
@@ -172,17 +172,17 @@ function SummaryCard({
   icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex items-center justify-between">
+    <div className="bg-white rounded-lg border border-slate-200 p-3 sm:p-3.5 shadow-xs flex items-center justify-between">
       <div>
-        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-sans">
+        <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider font-sans">
           {label}
         </p>
-        <p className="mt-1 font-sans text-2xl font-bold text-slate-900">
+        <p className="mt-0.5 tabular-nums text-xl sm:text-2xl font-bold text-slate-900">
           {value}
         </p>
       </div>
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-teal-100 bg-teal-50 text-teal-700">
-        <Icon className="h-5 w-5" />
+      <div className="flex h-9 w-9 items-center justify-center rounded-md border border-teal-100 bg-teal-50 text-teal-700">
+        <Icon className="h-4 w-4" />
       </div>
     </div>
   );
@@ -537,20 +537,20 @@ function AssignmentsContent() {
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-        <div className="flex flex-col gap-1.5 md:col-span-5">
-          <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider font-sans">
+      <div className="bg-white rounded-lg border border-slate-200 p-3 shadow-xs grid grid-cols-1 md:grid-cols-12 gap-2.5 items-end">
+        <div className="flex flex-col gap-1 md:col-span-5">
+          <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider font-sans">
             Lọc theo sự kiện
           </span>
           <div className="relative">
-            <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <CalendarDays className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <select
               value={concertFilter}
               onChange={(e) => {
                 setConcertFilter(e.target.value);
                 setPage(1);
               }}
-              className="pl-9 pr-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 font-sans text-xs w-full h-10 transition-colors text-slate-900 cursor-pointer font-medium"
+              className="pl-8 pr-3 py-1.5 border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 font-sans text-xs w-full h-9 transition-colors text-slate-900 cursor-pointer font-medium"
             >
               <option value="">Tất cả sự kiện</option>
               {concerts.map((concert) => (
@@ -562,19 +562,19 @@ function AssignmentsContent() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-1.5 md:col-span-5">
-          <span className="text-xs font-semibold text-slate-600 uppercase tracking-wider font-sans">
+        <div className="flex flex-col gap-1 md:col-span-5">
+          <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider font-sans">
             Lọc theo nhân viên soát vé
           </span>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <select
               value={checkerFilter}
               onChange={(e) => {
                 setCheckerFilter(e.target.value);
                 setPage(1);
               }}
-              className="pl-9 pr-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 font-sans text-xs w-full h-10 transition-colors text-slate-900 cursor-pointer font-medium"
+              className="pl-8 pr-3 py-1.5 border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 font-sans text-xs w-full h-9 transition-colors text-slate-900 cursor-pointer font-medium"
             >
               <option value="">Tất cả nhân viên</option>
               {checkers.map((checker) => (
@@ -592,16 +592,16 @@ function AssignmentsContent() {
             setCheckerFilter("");
             setPage(1);
           }}
-          className="rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-sans text-xs font-medium h-10 transition-colors cursor-pointer md:col-span-2 w-full text-center"
+          className="rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-sans text-xs font-medium h-9 transition-colors cursor-pointer md:col-span-2 w-full text-center"
         >
           Xóa bộ lọc
         </button>
       </div>
 
       {/* Main Content Table Card */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-          <h2 className="font-sans text-xs font-semibold uppercase tracking-wider text-slate-900">
+      <div className="bg-white border border-slate-200 rounded-lg shadow-xs overflow-hidden">
+        <div className="px-3.5 py-2.5 border-b border-slate-100 bg-slate-50/50">
+          <h2 className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-900">
             Danh sách phân công soát vé
           </h2>
         </div>
@@ -610,12 +610,12 @@ function AssignmentsContent() {
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-slate-50/70 font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider border-b border-slate-100">
-                <th className="p-3">Nhân viên</th>
-                <th className="p-3">Sự kiện</th>
-                <th className="p-3">Cổng phụ trách</th>
-                <th className="p-3">Thời gian diễn ra</th>
-                <th className="p-3">Ngày tạo</th>
-                <th className="p-3 text-right">Thao tác</th>
+                <th className="px-3 py-2.5">Nhân viên</th>
+                <th className="px-3 py-2.5">Sự kiện</th>
+                <th className="px-3 py-2.5">Cổng phụ trách</th>
+                <th className="px-3 py-2.5">Thời gian diễn ra</th>
+                <th className="px-3 py-2.5">Ngày tạo</th>
+                <th className="px-3 py-2.5 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-sans">
@@ -623,10 +623,10 @@ function AssignmentsContent() {
                 <tr>
                   <td
                     colSpan={6}
-                    className="py-16 text-center text-slate-500 font-sans text-xs"
+                    className="py-12 text-center text-slate-500 font-sans text-xs"
                   >
                     <div className="flex items-center justify-center gap-2">
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
                       <span>Đang tải danh sách phân công...</span>
                     </div>
                   </td>
@@ -635,7 +635,7 @@ function AssignmentsContent() {
                 <tr>
                   <td
                     colSpan={6}
-                    className="py-16 text-center text-slate-500 font-sans text-xs"
+                    className="py-12 text-center text-slate-500 font-sans text-xs"
                   >
                     Không tìm thấy lượt phân công nào phù hợp.
                   </td>
@@ -648,7 +648,7 @@ function AssignmentsContent() {
                       key={assignment.id}
                       className="hover:bg-slate-50/80 transition-colors"
                     >
-                      <td className="p-3 font-medium text-slate-900">
+                      <td className="px-3 py-2.5 font-medium text-slate-900">
                         <div className="font-semibold text-slate-900 text-xs">
                           {assignment.checker.full_name}
                         </div>
@@ -656,7 +656,7 @@ function AssignmentsContent() {
                           {assignment.checker.email}
                         </div>
                       </td>
-                      <td className="p-3 font-medium text-slate-900">
+                      <td className="px-3 py-2.5 font-medium text-slate-900">
                         <div className="font-semibold text-xs">
                           {assignment.concert.name}
                         </div>
@@ -666,30 +666,33 @@ function AssignmentsContent() {
                           </div>
                         )}
                       </td>
-                      <td className="p-3">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 border border-teal-200 bg-teal-50 font-sans text-xs font-medium text-teal-700 rounded-full">
+                      <td className="px-3 py-2.5">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-teal-200 bg-teal-50 font-sans text-xs font-medium text-teal-700 rounded">
                           <ShieldCheck className="h-3 w-3 text-teal-600" />
-                          Cổng {assignment.gate_number}
+                          Cổng{" "}
+                          <span className="font-mono tabular-nums">
+                            {assignment.gate_number}
+                          </span>
                         </span>
                       </td>
-                      <td className="p-3 font-sans text-[11px] text-slate-700">
+                      <td className="px-3 py-2.5 font-mono tabular-nums text-[11px] text-slate-700">
                         {formatConcertTime(concertDetails?.start_time)}
                       </td>
-                      <td className="p-3 font-sans text-[11px] text-slate-500">
+                      <td className="px-3 py-2.5 font-mono tabular-nums text-[11px] text-slate-500">
                         {formatShortDate(assignment.created_at)}
                       </td>
-                      <td className="p-3 text-right">
+                      <td className="px-3 py-2.5 text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => void handleOpenEdit(assignment)}
-                            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-teal-700 px-2.5 py-1 rounded-lg text-xs font-sans font-medium flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
+                            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-teal-700 px-2.5 py-1 rounded-md text-xs font-sans font-medium flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
                           >
                             <Pencil size={12} /> Sửa
                           </button>
                           <button
                             onClick={() => setDeleteTarget(assignment)}
                             disabled={deletingId === assignment.id}
-                            className="bg-white border border-rose-200 hover:bg-rose-50 text-rose-700 px-2.5 py-1 rounded-lg text-xs font-sans font-medium flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
+                            className="bg-white border border-rose-200 hover:bg-rose-50 text-rose-700 px-2.5 py-1 rounded-md text-xs font-sans font-medium flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
                           >
                             <Trash2 size={12} /> Xóa
                           </button>
@@ -876,7 +879,7 @@ function AssignmentsContent() {
                 </p>
               </div>
 
-              <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+              <div className="rounded-lg border border-slate-100 bg-slate-50/70 p-3">
                 <p className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
                   Sự kiện
                 </p>
@@ -884,7 +887,7 @@ function AssignmentsContent() {
                   {editTarget.concert.name}
                 </p>
                 <p className="text-[11px] text-slate-500 font-sans">
-                  {concertMap.get(editTarget.concert_id)?.location || "—"}
+                  {concertMap.get(editTarget.concert_id)?.location || "-"}
                 </p>
               </div>
             </div>

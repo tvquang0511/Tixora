@@ -143,15 +143,18 @@ export default function OrganizerRequestsPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+    <div className="space-y-4 max-w-7xl mx-auto pb-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Building2 className="w-7 h-7 text-teal-600" />
+          <div className="text-xs font-semibold text-teal-700">
+            Quản trị &bull; Phê duyệt đối tác
+          </div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2 mt-1">
+            <Building2 className="w-5 h-5 text-teal-600" />
             Xét Duyệt Hồ Sơ Ban Tổ Chức
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-xs text-slate-600 mt-0.5">
             Kiểm tra thông tin pháp nhân, hồ sơ năng lực và cấp quyền Organizer
             cho đối tác
           </p>
@@ -159,10 +162,10 @@ export default function OrganizerRequestsPage() {
         <button
           onClick={() => fetchRequests()}
           disabled={isLoading}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-2xs self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-md hover:bg-slate-50 transition-colors shadow-xs self-start sm:self-auto cursor-pointer"
         >
           <RotateCw
-            className={`w-4 h-4 ${isLoading ? "animate-spin text-teal-600" : ""}`}
+            className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-teal-600" : ""}`}
           />
           Làm mới
         </button>
@@ -170,14 +173,14 @@ export default function OrganizerRequestsPage() {
 
       {/* Notifications */}
       {actionSuccess && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm flex items-center justify-between">
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-xs flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
+            <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{actionSuccess}</span>
           </div>
           <button
             onClick={() => setActionSuccess(null)}
-            className="text-emerald-600 hover:text-emerald-800 text-xs font-semibold"
+            className="text-emerald-600 hover:text-emerald-800 text-xs font-semibold cursor-pointer"
           >
             Đóng
           </button>
@@ -185,14 +188,14 @@ export default function OrganizerRequestsPage() {
       )}
 
       {actionError && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-sm flex items-center justify-between">
+        <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-800 text-xs flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
             <span>{actionError}</span>
           </div>
           <button
             onClick={() => setActionError(null)}
-            className="text-rose-600 hover:text-rose-800 text-xs font-semibold"
+            className="text-rose-600 hover:text-rose-800 text-xs font-semibold cursor-pointer"
           >
             Đóng
           </button>
@@ -200,7 +203,7 @@ export default function OrganizerRequestsPage() {
       )}
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
         {/* Status Tabs */}
         <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-lg overflow-x-auto">
           {[
@@ -237,11 +240,11 @@ export default function OrganizerRequestsPage() {
             placeholder="Tìm theo tên đơn vị, email, MST..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-20 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors"
+            className="w-full pl-9 pr-20 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 transition-colors h-9"
           />
           <button
             type="submit"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-md transition-colors"
+            className="absolute right-1 top-1/2 -translate-y-1/2 px-2.5 py-1 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 rounded transition-colors cursor-pointer"
           >
             Tìm kiếm
           </button>
@@ -249,33 +252,33 @@ export default function OrganizerRequestsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+      <div className="bg-white rounded-lg border border-slate-200 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm border-collapse">
+          <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                <th className="py-3.5 px-4">Tên đơn vị / Doanh nghiệp</th>
-                <th className="py-3.5 px-4">Đại diện / Liên hệ</th>
-                <th className="py-3.5 px-4">Mã số thuế / CCCD</th>
-                <th className="py-3.5 px-4">Tài khoản thanh toán</th>
-                <th className="py-3.5 px-4">Hồ sơ đính kèm</th>
-                <th className="py-3.5 px-4">Trạng thái</th>
-                <th className="py-3.5 px-4">Ngày nộp</th>
-                <th className="py-3.5 px-4 text-right">Thao tác</th>
+              <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-600 uppercase tracking-wider">
+                <th className="py-2.5 px-3">Tên đơn vị / Doanh nghiệp</th>
+                <th className="py-2.5 px-3">Đại diện / Liên hệ</th>
+                <th className="py-2.5 px-3">Mã số thuế / CCCD</th>
+                <th className="py-2.5 px-3">Tài khoản thanh toán</th>
+                <th className="py-2.5 px-3">Hồ sơ đính kèm</th>
+                <th className="py-2.5 px-3">Trạng thái</th>
+                <th className="py-2.5 px-3">Ngày nộp</th>
+                <th className="py-2.5 px-3 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {isLoading ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-slate-400">
-                    <RotateCw className="w-6 h-6 animate-spin mx-auto text-teal-600 mb-2" />
+                    <RotateCw className="w-5 h-5 animate-spin mx-auto text-teal-600 mb-2" />
                     Đang tải dữ liệu hồ sơ...
                   </td>
                 </tr>
               ) : requests.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-slate-500">
-                    <Building2 className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+                    <Building2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
                     Không tìm thấy hồ sơ đối tác nào phù hợp.
                   </td>
                 </tr>
@@ -286,43 +289,43 @@ export default function OrganizerRequestsPage() {
                     className="hover:bg-slate-50/70 transition-colors"
                   >
                     {/* Organization Name */}
-                    <td className="py-4 px-4">
-                      <div className="font-semibold text-slate-900">
+                    <td className="py-2.5 px-3">
+                      <div className="font-semibold text-slate-900 text-xs">
                         {item.organization_name}
                       </div>
-                      <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                      <div className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5 font-mono tabular-nums">
                         <Phone className="w-3 h-3 text-slate-400" />
                         {item.phone_number}
                       </div>
                     </td>
 
                     {/* Contact User */}
-                    <td className="py-4 px-4">
-                      <div className="font-medium text-slate-800">
+                    <td className="py-2.5 px-3">
+                      <div className="font-medium text-slate-800 text-xs">
                         {item.user?.full_name || "N/A"}
                       </div>
-                      <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                      <div className="text-[11px] text-slate-500 flex items-center gap-1 mt-0.5 font-mono">
                         <Mail className="w-3 h-3 text-slate-400" />
                         {item.user?.email}
                       </div>
                     </td>
 
                     {/* Tax Code */}
-                    <td className="py-4 px-4 font-mono text-xs text-slate-700 font-semibold">
+                    <td className="py-2.5 px-3 font-mono tabular-nums text-xs text-slate-700 font-semibold">
                       {item.tax_code_or_id}
                     </td>
 
                     {/* Bank Info */}
-                    <td className="py-4 px-4">
+                    <td className="py-2.5 px-3">
                       {item.bank_name ? (
                         <div className="text-xs">
                           <span className="font-semibold text-slate-800">
                             {item.bank_name}
                           </span>
-                          <div className="font-mono text-slate-600 mt-0.5">
+                          <div className="font-mono tabular-nums text-slate-600 mt-0.5 text-[11px]">
                             {item.bank_account_number}
                           </div>
-                          <div className="text-[11px] text-slate-400 uppercase truncate max-w-[150px]">
+                          <div className="text-[10px] text-slate-400 uppercase truncate max-w-[150px]">
                             {item.bank_account_name}
                           </div>
                         </div>
@@ -334,7 +337,7 @@ export default function OrganizerRequestsPage() {
                     </td>
 
                     {/* Documents */}
-                    <td className="py-4 px-4">
+                    <td className="py-2.5 px-3">
                       <div className="flex flex-col gap-1">
                         {item.business_license_url ? (
                           <a
@@ -353,7 +356,7 @@ export default function OrganizerRequestsPage() {
                             href={item.portfolio_url}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                            className="inline-flex items-center gap-1 text-xs text-teal-700 hover:text-teal-900 font-medium"
                           >
                             <ExternalLink className="w-3 h-3" />
                             Portfolio
@@ -368,22 +371,22 @@ export default function OrganizerRequestsPage() {
                     </td>
 
                     {/* Status */}
-                    <td className="py-4 px-4">
+                    <td className="py-2.5 px-3">
                       {item.status === "PENDING" && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                           Chờ duyệt
                         </span>
                       )}
                       {item.status === "APPROVED" && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                           <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
                           Đã phê duyệt
                         </span>
                       )}
                       {item.status === "REJECTED" && (
                         <div>
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
                             <XCircle className="w-3.5 h-3.5 text-rose-500" />
                             Bị từ chối
                           </span>
@@ -400,7 +403,7 @@ export default function OrganizerRequestsPage() {
                     </td>
 
                     {/* Created Date */}
-                    <td className="py-4 px-4 text-xs text-slate-500 whitespace-nowrap">
+                    <td className="py-2.5 px-3 text-[11px] font-mono tabular-nums text-slate-500 whitespace-nowrap">
                       {new Date(item.created_at).toLocaleDateString("vi-VN", {
                         year: "numeric",
                         month: "2-digit",
@@ -411,14 +414,14 @@ export default function OrganizerRequestsPage() {
                     </td>
 
                     {/* Actions */}
-                    <td className="py-4 px-4 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="py-2.5 px-3 text-right whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => {
                             setSelectedRequest(item);
                             setIsDetailOpen(true);
                           }}
-                          className="px-2.5 py-1 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors"
+                          className="px-2.5 py-1 text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-md transition-colors shadow-xs cursor-pointer"
                         >
                           Chi tiết
                         </button>
@@ -431,7 +434,7 @@ export default function OrganizerRequestsPage() {
                                 setActionError(null);
                                 setIsApproveOpen(true);
                               }}
-                              className="px-2.5 py-1 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors shadow-2xs"
+                              className="px-2.5 py-1 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors shadow-xs cursor-pointer"
                             >
                               Duyệt
                             </button>
@@ -442,7 +445,7 @@ export default function OrganizerRequestsPage() {
                                 setRejectionReason("");
                                 setIsRejectOpen(true);
                               }}
-                              className="px-2.5 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-md transition-colors"
+                              className="px-2.5 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-md transition-colors cursor-pointer"
                             >
                               Từ chối
                             </button>
@@ -458,8 +461,8 @@ export default function OrganizerRequestsPage() {
         </div>
 
         {/* Pagination */}
-        <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
-          <div>
+        <div className="px-3.5 py-2.5 bg-slate-50/50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+          <div className="font-mono tabular-nums">
             Hiển thị{" "}
             <span className="font-semibold text-slate-800">
               {requests.length}
@@ -471,17 +474,17 @@ export default function OrganizerRequestsPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="px-3 py-1 bg-white border border-slate-200 rounded-md disabled:opacity-50 hover:bg-slate-50"
+              className="px-2.5 py-1 bg-white border border-slate-200 rounded-md disabled:opacity-50 hover:bg-slate-50 transition-colors shadow-xs cursor-pointer font-medium"
             >
               Trang trước
             </button>
-            <span className="px-2 py-1 font-semibold text-slate-700">
+            <span className="px-2 py-1 font-mono font-semibold text-slate-700">
               Trang {page}
             </span>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={requests.length < limit}
-              className="px-3 py-1 bg-white border border-slate-200 rounded-md disabled:opacity-50 hover:bg-slate-50"
+              className="px-2.5 py-1 bg-white border border-slate-200 rounded-md disabled:opacity-50 hover:bg-slate-50 transition-colors shadow-xs cursor-pointer font-medium"
             >
               Trang sau
             </button>
@@ -491,10 +494,10 @@ export default function OrganizerRequestsPage() {
 
       {/* Modal Detail */}
       {isDetailOpen && selectedRequest && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-xl border border-slate-100 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-xl w-full p-5 shadow-xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
+              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-teal-600" />
                 Thông Tin Đối Tác Chi Tiết
               </h3>
@@ -620,10 +623,10 @@ export default function OrganizerRequestsPage() {
 
       {/* Modal Approve Confirmation */}
       {isApproveOpen && selectedRequest && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
-              <CheckCircle className="w-6 h-6" />
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-xl border border-slate-200 space-y-4">
+            <div className="w-10 h-10 rounded-md bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center mx-auto">
+              <CheckCircle className="w-5 h-5" />
             </div>
             <div className="text-center">
               <h3 className="font-bold text-lg text-slate-900">
@@ -667,10 +670,10 @@ export default function OrganizerRequestsPage() {
 
       {/* Modal Reject Confirmation */}
       {isRejectOpen && selectedRequest && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 space-y-4">
-            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
-              <XCircle className="w-6 h-6" />
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-xl border border-slate-200 space-y-4">
+            <div className="w-10 h-10 rounded-md bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center mx-auto">
+              <XCircle className="w-5 h-5" />
             </div>
             <div className="text-center">
               <h3 className="font-bold text-lg text-slate-900">
