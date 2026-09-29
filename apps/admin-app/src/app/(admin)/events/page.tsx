@@ -6,7 +6,6 @@ import { useToast } from "@/context/ToastContext";
 import {
   getConcerts,
   updateConcert,
-  deleteConcert,
   getConcertPosterUrl,
   type ConcertCardItem,
 } from "@/services/concert.service";
@@ -16,21 +15,76 @@ import {
   Search,
   SlidersHorizontal,
   CalendarOff,
-  Pencil,
-  Eye,
-  Trash2,
-  Hourglass,
   Sparkles,
   ChevronLeft,
   ChevronRight,
   RotateCw,
-  Send,
-  Pause,
-  CheckCircle,
   ClipboardCheck,
+  AlertTriangle,
+  ChevronDown,
 } from "lucide-react";
+
 import { ConcertWorkerDrawer } from "./_components/ConcertWorkerDrawer";
-import { StatusBadge } from "../_components/StatusBadge";
+import {
+  ConcertEditDrawer,
+  VALID_STATUS_TRANSITIONS,
+  STATUS_LABELS,
+  STATUS_WARNING_MESSAGES,
+} from "./_components/ConcertEditDrawer";
+
+const CONCERT_STATUS_STYLES: Record<
+  string,
+  { bg: string; text: string; border: string; dot: string }
+> = {
+  PUBLISHED: {
+    bg: "bg-emerald-50 hover:bg-emerald-100/90",
+    text: "text-emerald-800",
+    border: "border-emerald-300",
+    dot: "bg-emerald-500",
+  },
+  PAUSED: {
+    bg: "bg-amber-50 hover:bg-amber-100/90",
+    text: "text-amber-800",
+    border: "border-amber-300",
+    dot: "bg-amber-500",
+  },
+  PENDING_REVIEW: {
+    bg: "bg-amber-50 hover:bg-amber-100/90",
+    text: "text-amber-800",
+    border: "border-amber-300",
+    dot: "bg-amber-500",
+  },
+  APPROVED: {
+    bg: "bg-teal-50 hover:bg-teal-100/90",
+    text: "text-teal-800",
+    border: "border-teal-300",
+    dot: "bg-teal-500",
+  },
+  DRAFT: {
+    bg: "bg-slate-100 hover:bg-slate-200/90",
+    text: "text-slate-700",
+    border: "border-slate-300",
+    dot: "bg-slate-500",
+  },
+  COMPLETED: {
+    bg: "bg-teal-50 hover:bg-teal-100/90",
+    text: "text-teal-800",
+    border: "border-teal-300",
+    dot: "bg-teal-600",
+  },
+  CANCELLED: {
+    bg: "bg-rose-50 hover:bg-rose-100/90",
+    text: "text-rose-800",
+    border: "border-rose-300",
+    dot: "bg-rose-500",
+  },
+  REJECTED: {
+    bg: "bg-rose-50 hover:bg-rose-100/90",
+    text: "text-rose-800",
+    border: "border-rose-300",
+    dot: "bg-rose-500",
+  },
+};
 
 export default function AdminEventsPage() {
   const { success, error: toastError, warning } = useToast();
@@ -39,15 +93,21 @@ export default function AdminEventsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [openStatusDropdownId, setOpenStatusDropdownId] = useState<
+    string | null
+  >(null);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<{
-    id: string;
-    name: string;
+  const [editingConcertId, setEditingConcertId] = useState<string | null>(null);
+  const [statusConfirmTarget, setStatusConfirmTarget] = useState<{
+    concertId: string;
+    concertTitle: string;
+    currentStatus: string;
+    nextStatus: string;
   } | null>(null);
   const [selectedWorkerConcert, setSelectedWorkerConcert] =
     useState<ConcertCardItem | null>(null);
@@ -72,6 +132,7 @@ export default function AdminEventsPage() {
         limit,
         search: debouncedSearch || undefined,
         status: statusFilter === "All" ? undefined : statusFilter,
+        category: categoryFilter === "All" ? undefined : categoryFilter,
       });
       setConcerts(response.items);
       setTotalPages(response.meta.totalPages);
@@ -82,7 +143,7 @@ export default function AdminEventsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [page, limit, debouncedSearch, statusFilter, toastError]);
+  }, [page, limit, debouncedSearch, statusFilter, categoryFilter, toastError]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -103,13 +164,44 @@ export default function AdminEventsPage() {
       setConcerts((prev) =>
         prev.map((c) => (c.id === id ? { ...c, status: newStatus } : c)),
       );
-      success(`Đã chuyển trạng thái sự kiện "${title}" sang ${newStatus}!`);
-    } catch (err) {
+      success(
+        `Đã chuyển trạng thái sự kiện "${title}" sang ${STATUS_LABELS[newStatus] || newStatus}!`,
+      );
+    } catch (err: unknown) {
       console.error("Failed to update status", err);
-      toastError("Cập nhật trạng thái sự kiện thất bại.");
+      const errorObj = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      toastError(
+        errorObj?.response?.data?.message ||
+          errorObj?.message ||
+          "Cập nhật trạng thái sự kiện thất bại.",
+      );
     } finally {
       setUpdatingStatusId(null);
     }
+  };
+
+  const requestStatusChange = (
+    concertId: string,
+    concertTitle: string,
+    currentStatus: string,
+    nextStatus: string,
+  ) => {
+    setStatusConfirmTarget({
+      concertId,
+      concertTitle,
+      currentStatus,
+      nextStatus,
+    });
+  };
+
+  const confirmStatusChange = async () => {
+    if (!statusConfirmTarget) return;
+    const { concertId, nextStatus, concertTitle } = statusConfirmTarget;
+    setStatusConfirmTarget(null);
+    await handleQuickStatusChange(concertId, nextStatus, concertTitle);
   };
 
   const getPageNumbers = () => {
@@ -133,27 +225,6 @@ export default function AdminEventsPage() {
       }
     }
     return pages;
-  };
-
-  const handleDelete = (id: string, name: string) => {
-    setDeleteTarget({ id, name });
-  };
-
-  const confirmDelete = async () => {
-    if (!deleteTarget) return;
-    const { id } = deleteTarget;
-    setIsDeleting(id);
-    setDeleteTarget(null);
-    try {
-      await deleteConcert(id);
-      setConcerts((prev) => prev.filter((c) => c.id !== id));
-      success("Xóa sự kiện thành công!");
-    } catch (error) {
-      console.error("Failed to delete concert", error);
-      toastError("Xóa sự kiện thất bại. Sự kiện có thể đã có đơn hàng.");
-    } finally {
-      setIsDeleting(null);
-    }
   };
 
   const handleExport = () => {
@@ -223,6 +294,14 @@ export default function AdminEventsPage() {
             />
             <span>Làm mới</span>
           </button>
+          <Link
+            href="/assignments"
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-xs cursor-pointer transition-colors"
+            title="Quản lý và phân công cổng soát vé"
+          >
+            <ClipboardCheck className="w-3.5 h-3.5 text-teal-600" />
+            <span>Phân công soát vé</span>
+          </Link>
           <button
             onClick={handleExport}
             className="hidden md:flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-xs cursor-pointer transition-colors"
@@ -230,6 +309,7 @@ export default function AdminEventsPage() {
             <Download className="w-3.5 h-3.5" />
             <span>Xuất CSV</span>
           </button>
+
           <Link
             href="/create-event"
             className="bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-2 font-medium text-xs rounded-lg shadow-xs flex items-center justify-center gap-1.5 transition-colors"
@@ -248,6 +328,7 @@ export default function AdminEventsPage() {
             { key: "All", label: "Tất cả" },
             { key: "PENDING_REVIEW", label: "Chờ sàn duyệt" },
             { key: "PUBLISHED", label: "Đang mở bán" },
+            { key: "PAUSED", label: "Tạm ngưng" },
             { key: "DRAFT", label: "Bản nháp" },
             { key: "COMPLETED", label: "Hoàn tất" },
             { key: "CANCELLED", label: "Đã hủy" },
@@ -285,13 +366,36 @@ export default function AdminEventsPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
+
+          {/* Category Filter Dropdown */}
+          <div className="w-full md:w-56">
+            <select
+              value={categoryFilter}
+              onChange={(e) => {
+                setCategoryFilter(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-2.5 py-1.5 bg-white border border-slate-200 hover:border-teal-500 rounded-md text-xs font-medium text-slate-700 cursor-pointer shadow-2xs focus:outline-none focus:border-teal-500 transition-colors"
+            >
+              <option value="All">Tất cả thể loại</option>
+              <option value="CONCERT">Live Concert</option>
+              <option value="LIVE_MUSIC">Nhạc Sống & Band</option>
+              <option value="FESTIVAL">Festival & Lễ hội</option>
+              <option value="THEATER_ARTS">Sân khấu & Kịch</option>
+              <option value="FANMEETING">Fan Meeting</option>
+              <option value="WORKSHOP">Hội thảo & Workshop</option>
+              <option value="OTHER">Khác</option>
+            </select>
+          </div>
+
           <button
             onClick={() => {
               setSearchQuery("");
               setStatusFilter("All");
+              setCategoryFilter("All");
               setPage(1);
             }}
-            className="px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-md text-xs font-medium flex items-center gap-1 cursor-pointer transition-colors duration-75 shadow-2xs"
+            className="px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-md text-xs font-medium flex items-center gap-1 cursor-pointer transition-colors duration-75 shadow-2xs shrink-0"
             title="Đặt lại bộ lọc"
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -301,8 +405,8 @@ export default function AdminEventsPage() {
       </div>
 
       {/* Table Data Container */}
-      <div className="bg-white border border-slate-200 rounded-lg shadow-2xs overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="bg-white border border-slate-200 rounded-lg shadow-2xs overflow-visible">
+        <div className="overflow-x-auto min-h-[320px]">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
@@ -310,14 +414,13 @@ export default function AdminEventsPage() {
                 <th className="px-3 py-2">Đơn vị tổ chức</th>
                 <th className="px-3 py-2">Thời gian & Địa điểm</th>
                 <th className="px-3 py-2 text-center">Trạng thái</th>
-                <th className="px-3 py-2 text-center">Duyệt & Phát hành</th>
                 <th className="px-3 py-2 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-800">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-slate-500">
+                  <td colSpan={5} className="p-8 text-center text-slate-500">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <RotateCw className="w-4 h-4 animate-spin text-teal-600" />
                       <p className="text-xs">Đang tải dữ liệu sự kiện...</p>
@@ -326,7 +429,7 @@ export default function AdminEventsPage() {
                 </tr>
               ) : concerts.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-slate-500">
+                  <td colSpan={5} className="p-8 text-center text-slate-500">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <CalendarOff className="w-6 h-6 text-slate-300" />
                       <p className="text-xs font-medium">
@@ -336,180 +439,217 @@ export default function AdminEventsPage() {
                   </td>
                 </tr>
               ) : (
-                concerts.map((concert) => (
-                  <tr
-                    key={concert.id}
-                    className="hover:bg-slate-50/70 transition-colors duration-75"
-                  >
-                    <td className="px-3 py-2.5">
-                      <div className="flex items-center gap-2.5">
+                concerts.map((concert) => {
+                  const validTransitions =
+                    VALID_STATUS_TRANSITIONS[concert.status] || [];
+
+                  return (
+                    <tr
+                      key={concert.id}
+                      onClick={() => setEditingConcertId(concert.id)}
+                      className="hover:bg-slate-50/80 transition-colors duration-75 cursor-pointer group"
+                      title="Bấm vào hàng để mở bảng chỉnh sửa sự kiện"
+                    >
+                      {/* Event Column */}
+                      <td className="px-3 py-2.5">
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className="w-9 h-9 border border-slate-200 bg-slate-100 shrink-0 bg-cover bg-center rounded shadow-2xs group-hover:ring-2 group-hover:ring-teal-500 transition-all"
+                            style={{
+                              backgroundImage: `url('${getConcertPosterUrl(concert.posterUrl)}')`,
+                            }}
+                          />
+                          <div>
+                            <div className="font-semibold text-slate-900 leading-snug group-hover:text-teal-700 transition-colors">
+                              {concert.title}
+                            </div>
+                            <div className="text-[10px] font-mono text-slate-400 mt-0.5">
+                              ID: {concert.id.slice(0, 8)}... (Bấm để sửa)
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Organizer Column */}
+                      <td className="px-3 py-2.5 whitespace-nowrap">
+                        {concert.organizer_name &&
+                        concert.organizer_name !== "Tixora Official" ? (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-800 border border-slate-200">
+                            {concert.organizer_name}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-teal-50 text-teal-800 border border-teal-200">
+                            Tixora Official
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="px-3 py-2.5">
+                        <div className="font-mono tabular-nums text-xs font-medium text-slate-900">
+                          {concert.date} {concert.time}
+                        </div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">
+                          {concert.venue || concert.city || "Chưa cập nhật"}
+                        </div>
+                      </td>
+
+                      {/* Status Column with clear interactive affordance */}
+                      <td className="px-3 py-2.5 text-center whitespace-nowrap">
                         <div
-                          className="w-9 h-9 border border-slate-200 bg-slate-100 shrink-0 bg-cover bg-center rounded shadow-2xs"
-                          style={{
-                            backgroundImage: `url('${getConcertPosterUrl(concert.posterUrl)}')`,
-                          }}
-                        />
-                        <div>
-                          <div className="font-semibold text-slate-900 leading-snug">
-                            {concert.title}
-                          </div>
-                          <div className="text-[10px] font-mono text-slate-400 mt-0.5">
-                            ID: {concert.id.slice(0, 8)}...
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* Organizer Column */}
-                    <td className="px-3 py-2.5 whitespace-nowrap">
-                      {concert.organizer_name &&
-                      concert.organizer_name !== "Tixora Official" ? (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-800 border border-slate-200">
-                          {concert.organizer_name}
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-teal-50 text-teal-800 border border-teal-200">
-                          Tixora Official
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="px-3 py-2.5">
-                      <div className="font-mono tabular-nums text-xs font-medium text-slate-900">
-                        {concert.date} {concert.time}
-                      </div>
-                      <div className="text-[11px] text-slate-500 mt-0.5">
-                        {concert.venue || concert.city || "Chưa cập nhật"}
-                      </div>
-                    </td>
-
-                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                      <StatusBadge
-                        status={concert.status}
-                        variant="concert"
-                        size="xs"
-                      />
-                    </td>
-
-                    {/* Status Action Column */}
-                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                      {updatingStatusId === concert.id ? (
-                        <span className="text-[11px] text-slate-400 flex items-center justify-center gap-1">
-                          <RotateCw className="w-3 h-3 animate-spin text-teal-600" />{" "}
-                          Đang lưu...
-                        </span>
-                      ) : concert.status === "PENDING_REVIEW" ? (
-                        <div className="inline-flex items-center gap-1">
-                          <button
-                            onClick={() => setSelectedReviewConcert(concert)}
-                            className="px-2 py-0.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-[11px] rounded transition-colors duration-75 shadow-2xs cursor-pointer"
-                            title="Xem xét chi tiết và phê duyệt sự kiện"
-                          >
-                            Xem duyệt
-                          </button>
-                          <button
-                            onClick={() =>
-                              void handleQuickStatusChange(
-                                concert.id,
-                                "PUBLISHED",
-                                concert.title,
-                              )
-                            }
-                            className="p-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded transition-colors duration-75 shadow-2xs cursor-pointer"
-                            title="Duyệt nhanh mở bán ngay"
-                          >
-                            <CheckCircle className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ) : concert.status === "DRAFT" ? (
-                        <button
-                          onClick={() =>
-                            void handleQuickStatusChange(
-                              concert.id,
-                              "PUBLISHED",
-                              concert.title,
-                            )
-                          }
-                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-teal-600 hover:bg-teal-700 text-white font-medium text-[11px] rounded transition-colors duration-75 shadow-2xs cursor-pointer"
-                          title="Phát hành ngay để mở bán vé"
+                          className="relative inline-block text-center"
+                          onClick={(e) => e.stopPropagation()}
                         >
-                          <Send className="w-3 h-3" />
-                          <span>Phát hành</span>
-                        </button>
-                      ) : concert.status === "PUBLISHED" ? (
-                        <button
-                          onClick={() =>
-                            void handleQuickStatusChange(
-                              concert.id,
-                              "DRAFT",
-                              concert.title,
-                            )
-                          }
-                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-white hover:bg-slate-50 text-slate-700 font-medium text-[11px] rounded border border-slate-200 transition-colors duration-75 shadow-2xs cursor-pointer"
-                          title="Tạm ngưng về trạng thái bản nháp"
-                        >
-                          <Pause className="w-3 h-3 text-slate-500" />
-                          <span>Tạm ngưng</span>
-                        </button>
-                      ) : (
-                        <span className="text-slate-400 text-xs font-mono">
-                          -
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="px-3 py-2.5 text-right whitespace-nowrap">
-                      <div className="inline-flex items-center gap-1">
-                        <Link
-                          href={`/create-event?edit=${concert.id}`}
-                          className="p-1 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 rounded transition-colors duration-75 shadow-2xs"
-                          title="Chỉnh sửa nội dung & vé"
-                        >
-                          <Pencil className="w-3.5 h-3.5" />
-                        </Link>
-                        <Link
-                          href={`/concerts/${concert.id}`}
-                          target="_blank"
-                          className="p-1 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 rounded transition-colors duration-75 shadow-2xs"
-                          title="Xem trang công khai"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                        </Link>
-                        <Link
-                          href={`/assignments?concertId=${concert.id}`}
-                          className="p-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 rounded-lg shadow-2xs transition-colors"
-                          title="Phân công nhân sự soát vé theo cổng"
-                        >
-                          <ClipboardCheck className="w-3.5 h-3.5 text-sky-600" />
-                        </Link>
-                        <button
-                          onClick={() => {
-                            setSelectedWorkerConcert(concert);
-                            setIsWorkerDrawerOpen(true);
-                          }}
-                          className="p-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 rounded-lg shadow-2xs transition-colors cursor-pointer"
-                          title="Tác vụ AI & Danh sách khách"
-                        >
-                          <Sparkles className="w-3.5 h-3.5 text-teal-600" />
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleDelete(concert.id, concert.title)
-                          }
-                          disabled={isDeleting === concert.id}
-                          className="p-1.5 border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 rounded-lg shadow-2xs transition-colors disabled:opacity-50 cursor-pointer"
-                          title="Xóa sự kiện"
-                        >
-                          {isDeleting === concert.id ? (
-                            <Hourglass className="w-3.5 h-3.5 animate-spin" />
+                          {updatingStatusId === concert.id ? (
+                            <span className="text-xs text-slate-400 flex items-center justify-center gap-1.5 font-medium px-3 py-1.5">
+                              <RotateCw className="w-3.5 h-3.5 animate-spin text-teal-600" />
+                              Đang lưu...
+                            </span>
+                          ) : validTransitions.length > 0 ? (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setOpenStatusDropdownId((prev) =>
+                                  prev === concert.id ? null : concert.id,
+                                );
+                              }}
+                              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold shadow-2xs hover:shadow-xs transition-all cursor-pointer group/status hover:scale-[1.02] active:scale-[0.98] ${
+                                CONCERT_STATUS_STYLES[concert.status]?.bg ||
+                                "bg-slate-100 hover:bg-slate-200/90"
+                              } ${
+                                CONCERT_STATUS_STYLES[concert.status]?.text ||
+                                "text-slate-700"
+                              } ${
+                                CONCERT_STATUS_STYLES[concert.status]?.border ||
+                                "border-slate-300"
+                              }`}
+                              title="Bấm để mở danh mục đổi trạng thái sự kiện"
+                            >
+                              <span
+                                className={`w-2 h-2 rounded-full shrink-0 ${
+                                  CONCERT_STATUS_STYLES[concert.status]?.dot ||
+                                  "bg-current"
+                                }`}
+                              />
+                              <span>
+                                {STATUS_LABELS[concert.status] ||
+                                  concert.status}
+                              </span>
+                              <ChevronDown className="w-3.5 h-3.5 opacity-60 group-hover/status:opacity-100 group-hover/status:translate-y-0.5 transition-all ml-0.5" />
+                            </button>
                           ) : (
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <span
+                              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold select-none ${
+                                CONCERT_STATUS_STYLES[concert.status]?.bg ||
+                                "bg-slate-100"
+                              } ${
+                                CONCERT_STATUS_STYLES[concert.status]?.text ||
+                                "text-slate-700"
+                              } ${
+                                CONCERT_STATUS_STYLES[concert.status]?.border ||
+                                "border-slate-300"
+                              }`}
+                              title="Trạng thái kết thúc, không thể thay đổi"
+                            >
+                              <span
+                                className={`w-2 h-2 rounded-full shrink-0 ${
+                                  CONCERT_STATUS_STYLES[concert.status]?.dot ||
+                                  "bg-current"
+                                }`}
+                              />
+                              <span>
+                                {STATUS_LABELS[concert.status] ||
+                                  concert.status}
+                              </span>
+                            </span>
                           )}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+
+                          {/* Sleek status change popup menu */}
+                          {openStatusDropdownId === concert.id && (
+                            <>
+                              <div
+                                className="fixed inset-0 z-30"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenStatusDropdownId(null);
+                                }}
+                              />
+                              <div
+                                className="absolute z-40 left-1/2 -translate-x-1/2 mt-1.5 w-48 bg-white border border-slate-200/90 rounded-xl shadow-xl ring-1 ring-black/5 p-1.5 text-left animate-in fade-in zoom-in-95 duration-100"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                  Chuyển trạng thái
+                                </div>
+                                <div className="space-y-0.5 mt-0.5">
+                                  {validTransitions.map((nextSt) => {
+                                    const style = CONCERT_STATUS_STYLES[
+                                      nextSt
+                                    ] || {
+                                      dot: "bg-slate-400",
+                                    };
+                                    return (
+                                      <button
+                                        key={nextSt}
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setOpenStatusDropdownId(null);
+                                          requestStatusChange(
+                                            concert.id,
+                                            concert.title,
+                                            concert.status,
+                                            nextSt,
+                                          );
+                                        }}
+                                        className="w-full px-2.5 py-1.5 hover:bg-slate-50 rounded-lg flex items-center gap-2.5 text-left text-xs font-medium transition-colors cursor-pointer group/item"
+                                      >
+                                        <span
+                                          className={`w-2 h-2 rounded-full shrink-0 ${style.dot}`}
+                                        />
+                                        <span className="text-slate-700 group-hover/item:text-slate-900 font-semibold">
+                                          {STATUS_LABELS[nextSt] || nextSt}
+                                        </span>
+                                      </button>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Action Column - EXACTLY 2 Actions: Phân công and AI */}
+                      <td className="px-3 py-2.5 text-right whitespace-nowrap">
+                        <div
+                          className="inline-flex items-center gap-1.5"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Link
+                            href={`/assignments?concertId=${concert.id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-sky-600 rounded-lg shadow-2xs transition-colors"
+                            title="Phân công nhân sự soát vé theo cổng"
+                          >
+                            <ClipboardCheck className="w-3.5 h-3.5 text-sky-600" />
+                          </Link>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedWorkerConcert(concert);
+                              setIsWorkerDrawerOpen(true);
+                            }}
+                            className="p-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-teal-600 rounded-lg shadow-2xs transition-colors cursor-pointer"
+                            title="Tác vụ AI & Danh sách khách"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -714,22 +854,32 @@ export default function AdminEventsPage() {
               </button>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={async () => {
+                  onClick={() => {
                     const id = selectedReviewConcert.id;
                     const title = selectedReviewConcert.title;
                     setSelectedReviewConcert(null);
-                    await handleQuickStatusChange(id, "DRAFT", title);
+                    requestStatusChange(
+                      id,
+                      title,
+                      "PENDING_REVIEW",
+                      "REJECTED",
+                    );
                   }}
                   className="px-3.5 py-2 text-xs font-semibold rounded-lg border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
                 >
-                  Yêu cầu sửa (Về nháp)
+                  Yêu cầu sửa (Từ chối)
                 </button>
                 <button
-                  onClick={async () => {
+                  onClick={() => {
                     const id = selectedReviewConcert.id;
                     const title = selectedReviewConcert.title;
                     setSelectedReviewConcert(null);
-                    await handleQuickStatusChange(id, "PUBLISHED", title);
+                    requestStatusChange(
+                      id,
+                      title,
+                      "PENDING_REVIEW",
+                      "PUBLISHED",
+                    );
                   }}
                   className="px-4 py-2 text-xs font-semibold rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-colors cursor-pointer shadow-xs"
                 >
@@ -741,59 +891,100 @@ export default function AdminEventsPage() {
         </div>
       )}
 
-      <ConfirmModal
-        isOpen={deleteTarget !== null}
-        title="Xác nhận xóa sự kiện"
-        message={`Bạn có chắc chắn muốn xóa sự kiện "${deleteTarget?.name}" không? Hành động này sẽ xóa dữ liệu và không thể hoàn tác.`}
-        confirmLabel="Xóa sự kiện"
-        cancelLabel="Hủy bỏ"
-        onConfirm={confirmDelete}
-        onCancel={() => setDeleteTarget(null)}
-      />
-    </div>
-  );
-}
+      {/* Confirmation Modal for Quick Status Change */}
+      {statusConfirmTarget && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[260] flex items-center justify-center p-4 select-none animate-in fade-in duration-100">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3.5">
+            <div className="flex items-center gap-2.5 text-amber-600">
+              <AlertTriangle className="w-5 h-5 shrink-0" />
+              <h3 className="text-sm font-bold text-slate-900">
+                Xác nhận đổi trạng thái sự kiện
+              </h3>
+            </div>
 
-interface ConfirmModalProps {
-  isOpen: boolean;
-  title: string;
-  message: string;
-  confirmLabel: string;
-  cancelLabel: string;
-  onConfirm: () => void;
-  onCancel: () => void;
-}
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Bạn có chắc chắn muốn chuyển trạng thái sự kiện{" "}
+              <strong>&quot;{statusConfirmTarget.concertTitle}&quot;</strong> từ{" "}
+              <span className="font-semibold text-slate-900">
+                {STATUS_LABELS[statusConfirmTarget.currentStatus] ||
+                  statusConfirmTarget.currentStatus}
+              </span>{" "}
+              sang{" "}
+              <span className="font-semibold text-teal-700">
+                {STATUS_LABELS[statusConfirmTarget.nextStatus] ||
+                  statusConfirmTarget.nextStatus}
+              </span>{" "}
+              không?
+            </p>
 
-function ConfirmModal({
-  isOpen,
-  title,
-  message,
-  confirmLabel,
-  cancelLabel,
-  onConfirm,
-  onCancel,
-}: ConfirmModalProps) {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 bg-slate-900/40 z-[250] flex items-center justify-center p-4 select-none backdrop-blur-xs">
-      <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-xl space-y-3">
-        <h3 className="text-base font-bold text-slate-900">{title}</h3>
-        <p className="text-xs text-slate-600 leading-relaxed">{message}</p>
-        <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-          <button
-            onClick={onCancel}
-            className="px-3.5 py-2 text-xs font-medium rounded-lg border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 transition-colors cursor-pointer shadow-2xs"
-          >
-            {cancelLabel}
-          </button>
-          <button
-            onClick={onConfirm}
-            className="px-3.5 py-2 text-xs font-medium rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition-colors cursor-pointer shadow-2xs"
-          >
-            {confirmLabel}
-          </button>
+            <div className="p-3 bg-amber-50/80 border border-amber-200/80 rounded-xl text-[11px] text-amber-900 leading-relaxed">
+              {STATUS_WARNING_MESSAGES[statusConfirmTarget.nextStatus] ||
+                "Trạng thái sự kiện sẽ được áp dụng ngay sau khi xác nhận."}
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setStatusConfirmTarget(null)}
+                className="px-3.5 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer shadow-2xs"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => void confirmStatusChange()}
+                className="px-4 py-1.5 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-xs transition-colors cursor-pointer"
+              >
+                Xác nhận chuyển
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Backdrop for closing open status dropdown */}
+      {openStatusDropdownId && (
+        <div
+          className="fixed inset-0 z-30 cursor-default"
+          onClick={() => setOpenStatusDropdownId(null)}
+        />
+      )}
+
+      {/* Slide-over Concert Edit Drawer */}
+      <ConcertEditDrawer
+        isOpen={editingConcertId !== null}
+        onClose={() => setEditingConcertId(null)}
+        concertId={editingConcertId}
+        onDeleteSuccess={(deletedId) => {
+          setConcerts((prev) => prev.filter((c) => c.id !== deletedId));
+          setTotalItems((prev: number) => Math.max(0, prev - 1));
+        }}
+        onSuccess={(updated) => {
+          setConcerts((prev) =>
+            prev.map((c) =>
+              c.id === updated.id
+                ? {
+                    ...c,
+                    title:
+                      typeof updated.title === "string"
+                        ? updated.title
+                        : c.title,
+                    status:
+                      typeof updated.status === "string"
+                        ? updated.status
+                        : c.status,
+                    venue:
+                      typeof updated.venue === "string"
+                        ? updated.venue
+                        : c.venue,
+                    date:
+                      typeof updated.date === "string" ? updated.date : c.date,
+                  }
+                : c,
+            ),
+          );
+        }}
+      />
     </div>
   );
 }

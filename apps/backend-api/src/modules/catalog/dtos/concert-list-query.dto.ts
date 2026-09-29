@@ -8,7 +8,9 @@ export enum ConcertListStatus {
   APPROVED = "APPROVED",
   REJECTED = "REJECTED",
   PUBLISHED = "PUBLISHED",
+  PAUSED = "PAUSED",
   COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
 }
 
 export class ConcertListQueryDto extends PaginationDto {

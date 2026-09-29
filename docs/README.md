@@ -73,8 +73,10 @@ Chứa các bản vẽ kiến trúc, thiết kế dữ liệu và giải pháp c
 
 ### 2. [02-modules/](./02-modules/README.md) — Đặc Tả Nghiệp Vụ Các Module
 Đặc tả chi tiết đầu vào/đầu ra, API contracts, DTOs và luồng xử lý nội bộ:
+- **[EVENT_LIFECYCLE.md](./EVENT_LIFECYCLE.md):** Chuẩn hóa toàn bộ vòng đời sự kiện, máy trạng thái 8 bước, ý nghĩa trạng thái `PAUSED` (tạm ngưng), phân quyền Admin vs Organizer và quy tắc bất di bất dịch giữa Hủy (`CANCELLED`) vs Xóa (`DELETE`).
 - **[AUTH_RBAC.md](./02-modules/AUTH_RBAC.md):** Quản lý định danh, Stateless JWT, phân quyền Role-Based Access Control (Admin, Organizer, Checker, Audience).
 - **[CATALOG_EVENTS.md](./02-modules/CATALOG_EVENTS.md):** Quản lý concert, hạng vé, sơ đồ ghế, tối ưu tốc độ đọc bằng Redis Cache-aside.
+
 - **[TICKETING_RESERVATION.md](./02-modules/TICKETING_RESERVATION.md):** Luồng giữ vé RAM nguyên tử, chống bán quá số lượng (Zero Oversell), giới hạn per-user và cơ chế hủy đơn quá hạn.
 - **[PAYMENT_TRANSACTIONS.md](./02-modules/PAYMENT_TRANSACTIONS.md):** Tích hợp PayOS, chữ ký Webhook bảo mật, khóa lũy đẳng (Idempotency Key) chống trừ tiền hai lần.
 - **[CHECKIN_OFFLINE.md](./02-modules/CHECKIN_OFFLINE.md):** Giải pháp soát vé di động khi mất kết nối Internet, phân luồng Gate Segregation tránh xung đột và bulk-sync khi có mạng.

@@ -1,9 +1,11 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
 } from "@nestjs/common";
+
 import { ConcertRepository } from "../repositories/concert.repository";
 import { ConcertResponseDto } from "../entities/concert-response.dto";
 import { CreateConcertDto } from "../dtos/create-concert.dto";
@@ -189,7 +191,12 @@ export class ConcertService {
       payload.organizer_id = existing.organizer_id ?? currentUser?.sub;
     }
 
+    if (payload.status && payload.status !== existing.status) {
+      this.validateStatusTransition(existing.status, payload.status);
+    }
+
     const updated = await this.concertRepo.update(id, payload);
+
     await this.redisService.setJson(
       this.getConcertDetailCacheKey(id),
       updated,
@@ -308,5 +315,57 @@ export class ConcertService {
 
   private async invalidateConcertListCaches(): Promise<void> {
     await this.redisService.deleteByPattern("concerts:list:*");
+  }
+
+  private validateStatusTransition(
+    currentStatus: string,
+    nextStatus: string,
+  ): void {
+    if (currentStatus === nextStatus) return;
+
+    // Terminal states cannot be changed
+    if (
+      currentStatus === ConcertStatus.CANCELLED ||
+      currentStatus === ConcertStatus.COMPLETED
+    ) {
+      throw new BadRequestException(
+        `Không thể thay đổi trạng thái khi sự kiện đã ở trạng thái ${currentStatus}.`,
+      );
+    }
+
+    // PUBLISHED or PAUSED events cannot revert to DRAFT
+    if (
+      (currentStatus === ConcertStatus.PUBLISHED ||
+        currentStatus === ConcertStatus.PAUSED) &&
+      nextStatus === ConcertStatus.DRAFT
+    ) {
+      throw new BadRequestException(
+        "Không thể chuyển sự kiện đã mở bán về bản nháp (DRAFT). Vui lòng sử dụng trạng thái Tạm ngưng (PAUSED) hoặc Hủy (CANCELLED).",
+      );
+    }
+
+    // PUBLISHED or PAUSED cannot revert to PENDING_REVIEW or REJECTED
+    if (
+      (currentStatus === ConcertStatus.PUBLISHED ||
+        currentStatus === ConcertStatus.PAUSED) &&
+      (nextStatus === ConcertStatus.PENDING_REVIEW ||
+        nextStatus === ConcertStatus.REJECTED)
+    ) {
+      throw new BadRequestException(
+        `Không thể chuyển sự kiện từ ${currentStatus} sang ${nextStatus}.`,
+      );
+    }
+
+    // DRAFT cannot jump directly to COMPLETED, CANCELLED, or PAUSED
+    if (
+      currentStatus === ConcertStatus.DRAFT &&
+      (nextStatus === ConcertStatus.COMPLETED ||
+        nextStatus === ConcertStatus.CANCELLED ||
+        nextStatus === ConcertStatus.PAUSED)
+    ) {
+      throw new BadRequestException(
+        `Sự kiện bản nháp chưa mở bán không thể chuyển sang trạng thái ${nextStatus}.`,
+      );
+    }
   }
 }

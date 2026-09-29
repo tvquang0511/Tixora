@@ -10,6 +10,7 @@ import { RedisService } from "../../../shared/redis";
 import { PrismaService } from "../../../shared/prisma.service";
 import { RabbitMqService } from "../../../shared/rabbitmq";
 import { ReserveTicketDto } from "../dtos/reserve-ticket.dto";
+import { ConcertStatus } from "../../catalog/constants/concert-status.enum";
 
 const RESERVE_TICKET_LUA = `
 local user_key = KEYS[1]
@@ -167,6 +168,20 @@ export class TicketingService implements OnModuleInit {
   async reserveTicket(userId: string, dto: ReserveTicketDto) {
     const { concert_id, items } = dto;
     const userKey = `user:${userId}:reservations`;
+    if (this.prisma.concert) {
+      const concert = await this.prisma.concert.findUnique({
+        where: { id: concert_id },
+        select: { status: true },
+      });
+      if (concert) {
+        if (concert.status === ConcertStatus.PAUSED) {
+          throw new BadRequestException("Sự kiện này đang tạm ngưng bán vé.");
+        }
+        if (concert.status !== ConcertStatus.PUBLISHED) {
+          throw new BadRequestException("Sự kiện này hiện không mở bán vé.");
+        }
+      }
+    }
 
     // Check if any category has not started sales yet
     for (const item of items) {

@@ -167,7 +167,8 @@ function mapConcert(item: ConcertApiItem): ConcertCardItem {
         : "Xem chi tiết",
     minPrice,
     status: item.status,
-    genre: "Live concert",
+    category: item.category || undefined,
+    genre: item.category || "Live concert",
     mapUrl: item.svg_map_url,
     posterUrl: item.poster_url,
     ticketTiers: tiers,
@@ -189,6 +190,7 @@ function mapConcertDetail(item: ConcertDetailResponse): ConcertDetailItem {
     svg_map_url: item.svg_map_url,
     poster_url: item.poster_url,
     status: item.status,
+    category: item.category,
     performers: item.performers,
     ticketTiers: item.ticketTiers,
   });
@@ -217,8 +219,20 @@ export async function getConcerts(query: ConcertQuery = {}) {
     params.set("search", query.search.trim());
   }
 
-  if (query.status && query.status.trim()) {
+  if (
+    query.status &&
+    query.status.trim() &&
+    query.status.toUpperCase() !== "ALL"
+  ) {
     params.set("status", query.status.trim());
+  }
+
+  if (
+    query.category &&
+    query.category.trim() &&
+    query.category.toUpperCase() !== "ALL"
+  ) {
+    params.set("category", query.category.trim());
   }
 
   const isServer = typeof window === "undefined";
@@ -236,13 +250,68 @@ export async function getConcerts(query: ConcertQuery = {}) {
 
   const response = await fetch(url);
 
+  const pageNumber = query.page ?? 1;
+  const limit = query.limit ?? 10;
+
   if (!response.ok) {
+    // If status filter or category filter causes 400 from remote backend,
+    // fallback to fetching all concerts and filtering client-side
+    if (response.status === 400) {
+      try {
+        const fallbackParams = new URLSearchParams();
+        fallbackParams.set("page", "1");
+        fallbackParams.set("limit", "100");
+        if (query.search?.trim())
+          fallbackParams.set("search", query.search.trim());
+        const fallbackUrl = `${baseUrl}/concerts?${fallbackParams.toString()}`;
+        const fallbackRes = await fetch(fallbackUrl);
+        if (fallbackRes.ok) {
+          const fallbackData = await fallbackRes.json();
+          let allItems = (fallbackData.data ?? []).map(mapConcert);
+          if (query.status && query.status.toUpperCase() !== "ALL") {
+            allItems = allItems.filter(
+              (c: ConcertCardItem) => c.status === query.status,
+            );
+          }
+          if (query.category && query.category.toUpperCase() !== "ALL") {
+            allItems = allItems.filter(
+              (c: ConcertCardItem) =>
+                c.category?.toUpperCase() === query.category?.toUpperCase() ||
+                c.genre?.toUpperCase() === query.category?.toUpperCase(),
+            );
+          }
+          const totalItems = allItems.length;
+          const startIndex = (pageNumber - 1) * limit;
+          const pagedItems = allItems.slice(startIndex, startIndex + limit);
+          return {
+            items: pagedItems,
+            meta: {
+              totalItems,
+              itemCount: pagedItems.length,
+              itemsPerPage: limit,
+              totalPages: Math.ceil(totalItems / limit) || 1,
+              currentPage: pageNumber,
+            },
+          };
+        }
+      } catch (fallbackErr) {
+        console.error("Fallback client filtering error:", fallbackErr);
+      }
+      return {
+        items: [],
+        meta: {
+          totalItems: 0,
+          itemCount: 0,
+          itemsPerPage: limit,
+          totalPages: 1,
+          currentPage: pageNumber,
+        },
+      };
+    }
     throw new Error(`Failed to load concerts (${response.status})`);
   }
 
   const payload = (await response.json()) as Partial<ConcertListResponse>;
-  const pageNumber = query.page ?? 1;
-  const limit = query.limit ?? 10;
   const meta = payload.meta ?? {
     totalItems: payload.data?.length ?? 0,
     itemCount: payload.data?.length ?? 0,

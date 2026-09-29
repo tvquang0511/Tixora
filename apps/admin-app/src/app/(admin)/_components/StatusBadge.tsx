@@ -15,6 +15,7 @@ const userStatusClasses: Record<string, string> = {
 
 const concertStatusClasses: Record<string, string> = {
   PUBLISHED: "bg-emerald-50 text-emerald-800 border-emerald-300",
+  PAUSED: "bg-amber-50 text-amber-800 border-amber-300",
   COMPLETED: "bg-teal-50 text-teal-800 border-teal-300",
   COMING_SOON: "bg-amber-50 text-amber-800 border-amber-300",
   CANCELLED: "bg-rose-50 text-rose-800 border-rose-300",
@@ -35,6 +36,7 @@ const labelMap: Record<string, string> = {
   PENDING: "Chờ thanh toán",
   CANCELLED: "Đã hủy",
   PUBLISHED: "Đang mở bán",
+  PAUSED: "Tạm ngưng",
   DRAFT: "Bản nháp",
   PENDING_REVIEW: "Chờ duyệt",
   APPROVED: "Đã phê duyệt",

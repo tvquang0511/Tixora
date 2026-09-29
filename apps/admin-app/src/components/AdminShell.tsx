@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import {
   LayoutDashboard,
   Calendar,
+  ClipboardCheck,
   DollarSign,
   Users,
   LogOut,
@@ -27,9 +28,15 @@ const navGroups = [
     title: "SỰ KIỆN & VÉ",
     items: [
       { href: "/events", label: "Quản lý sự kiện", icon: Calendar },
+      {
+        href: "/assignments",
+        label: "Phân công soát vé",
+        icon: ClipboardCheck,
+      },
       { href: "/orders", label: "Đơn hàng", icon: Receipt },
     ],
   },
+
   {
     title: "TÀI CHÍNH & QUYẾT TOÁN",
     items: [
@@ -52,6 +59,7 @@ const navGroups = [
 const mobileNavItems = [
   { href: "/dashboard", label: "Tổng quan", icon: LayoutDashboard },
   { href: "/events", label: "Sự kiện", icon: Calendar },
+  { href: "/assignments", label: "Phân công", icon: ClipboardCheck },
   { href: "/orders", label: "Đơn hàng", icon: Receipt },
   { href: "/revenue", label: "Doanh thu", icon: DollarSign },
   { href: "/organizer-requests", label: "Duyệt BTC", icon: Building2 },

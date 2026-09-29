@@ -419,3 +419,45 @@ test("reserveTicket throws BadRequestException when sales_start_at is in the fut
     },
   );
 });
+
+test("reserveTicket throws BadRequestException when concert is PAUSED", async () => {
+  const { service, mockPrisma } = createService();
+  (mockPrisma as any).concert = {
+    findUnique: fn().mockResolvedValue({ status: "PAUSED" }),
+  };
+
+  await assert.rejects(
+    async () => {
+      await service.reserveTicket("user-1", {
+        concert_id: "concert-1",
+        items: [{ category_id: "category-1", quantity: 2 }],
+      });
+    },
+    (err: any) => {
+      assert.equal(err.name, "BadRequestException");
+      assert.equal(err.message, "Sự kiện này đang tạm ngưng bán vé.");
+      return true;
+    },
+  );
+});
+
+test("reserveTicket throws BadRequestException when concert is not PUBLISHED", async () => {
+  const { service, mockPrisma } = createService();
+  (mockPrisma as any).concert = {
+    findUnique: fn().mockResolvedValue({ status: "DRAFT" }),
+  };
+
+  await assert.rejects(
+    async () => {
+      await service.reserveTicket("user-1", {
+        concert_id: "concert-1",
+        items: [{ category_id: "category-1", quantity: 2 }],
+      });
+    },
+    (err: any) => {
+      assert.equal(err.name, "BadRequestException");
+      assert.equal(err.message, "Sự kiện này hiện không mở bán vé.");
+      return true;
+    },
+  );
+});

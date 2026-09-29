@@ -12,7 +12,14 @@ import {
 import { getVenues, type VenueItem } from "@/services/venue.service";
 import { uploadImage, uploadSvg } from "@/services/upload.service";
 import { getErrorMessage } from "@/utils/error.utils";
-import { ChevronRight, PlusCircle, Trash2, Loader2 } from "lucide-react";
+import {
+  ChevronRight,
+  PlusCircle,
+  Trash2,
+  Upload,
+  Maximize2,
+} from "lucide-react";
+import { SYSTEM_SVG_MAPS } from "../events/_components/ConcertEditDrawer";
 
 type TicketCategory = {
   id?: string;
@@ -662,28 +669,33 @@ function EventForm() {
             </div>
           </section>
 
-          {/* Section 2: Venue & Seating Map */}
-          <section className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-              <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
-                2. Địa Điểm Tổ Chức & Sơ Đồ Phân Khu
-              </h3>
-              <span className="text-[11px] text-slate-500 font-sans">
-                Chọn mẫu địa điểm có sẵn để tự động tải sơ đồ SVG
-              </span>
+          {/* Section 2: Venue & Timing */}
+          <section className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+                  2. Địa Điểm & Thời Gian Tổ Chức
+                </h3>
+                <p className="text-[11px] text-slate-500 font-sans mt-0.5">
+                  Chọn địa điểm từ danh sách cơ sở có sẵn hoặc nhập địa chỉ sự
+                  kiện
+                </p>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-sans text-xs">
               <div>
                 <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
-                  Chọn mẫu địa điểm có sẵn (Venue Preset)
+                  Chọn cơ sở / địa điểm có sẵn (Venue Preset)
                 </label>
                 <select
                   className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans cursor-pointer font-medium"
                   value={formData.venue_id}
                   onChange={(e) => handleVenueSelect(e.target.value)}
                 >
-                  <option value="">-- Chọn địa điểm từ hệ thống --</option>
+                  <option value="">
+                    -- Chọn địa điểm từ hệ thống (nếu có) --
+                  </option>
                   {venues.map((v) => (
                     <option key={v.id} value={v.id}>
                       {v.name} ({v.city}) - Sức chứa:{" "}
@@ -725,93 +737,144 @@ function EventForm() {
                   }
                 />
               </div>
-
-              {/* Sơ đồ phân khu SVG Map & Preview Container */}
-              <div className="sm:col-span-2 space-y-4 pt-2">
-                <div className="flex items-center justify-between">
-                  <label className="block font-sans text-xs font-semibold text-slate-700">
-                    Sơ đồ phân khu ghế ngồi (SVG Map)
-                  </label>
-                  {formData.svg_map_url && (
-                    <span className="text-[11px] text-teal-600 font-medium">
-                      Đã tải sơ đồ
-                    </span>
-                  )}
-                </div>
-
-                {/* SƠ ĐỒ PHÂN KHU XEM TRƯỚC (Preview Box) */}
-                {formData.svg_map_url && (
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-slate-800">
-                        Xem trước sơ đồ phân khu đã chọn
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setLightboxUrl(resolveSvgMapUrl(formData.svg_map_url))
-                        }
-                        className="text-xs text-teal-600 hover:text-teal-700 font-semibold cursor-pointer underline"
-                      >
-                        Phóng to toàn màn hình
-                      </button>
-                    </div>
-                    <div
-                      onClick={() =>
-                        setLightboxUrl(resolveSvgMapUrl(formData.svg_map_url))
-                      }
-                      className="w-full h-64 bg-white border border-slate-200 rounded-lg flex items-center justify-center p-3 cursor-zoom-in group shadow-2xs overflow-hidden"
-                      title="Nhấp để phóng to sơ đồ ghế ngồi"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={resolveSvgMapUrl(formData.svg_map_url)}
-                        alt="Sơ đồ ghế ngồi"
-                        className="max-w-full max-h-full object-contain transition-transform group-hover:scale-102"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Upload SVG file */}
-                <div className="relative border-2 border-dashed border-slate-300 hover:border-teal-500 rounded-xl p-5 bg-slate-50/50 transition-colors text-center cursor-pointer group">
-                  <input
-                    type="file"
-                    accept=".svg,image/svg+xml,image/*"
-                    onChange={handleSvgMapChange}
-                    disabled={isUploadingSvg}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  <div className="text-center font-sans">
-                    <p className="text-xs text-slate-700 font-medium">
-                      {isUploadingSvg ? (
-                        <span className="text-teal-600 font-semibold inline-flex items-center gap-1.5">
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          Đang tải sơ đồ lên...
-                        </span>
-                      ) : (
-                        <>
-                          <span className="font-semibold text-teal-600 underline">
-                            Nhấp để tải sơ đồ SVG mới lên
-                          </span>{" "}
-                          hoặc kéo thả tập tin vào đây
-                        </>
-                      )}
-                    </p>
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      Hỗ trợ tệp SVG, PNG, JPG (tối đa 5MB)
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
           </section>
 
-          {/* Section 3: Ticketing */}
+          {/* Section 3: Seating Map & Stage */}
+          <section className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <div>
+                <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+                  3. Sơ Đồ Ghế & Sân Khấu
+                </h3>
+                <p className="text-[11px] text-slate-500 font-sans mt-0.5">
+                  Sơ đồ trực quan định vị sân khấu, các khán đài và phân khu chỗ
+                  ngồi
+                </p>
+              </div>
+              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 font-medium rounded-lg text-xs cursor-pointer shadow-2xs transition-colors self-start sm:self-auto">
+                <Upload className="w-3.5 h-3.5 text-slate-500" />
+                <span>
+                  {isUploadingSvg ? "Đang tải lên..." : "Tải sơ đồ SVG mới"}
+                </span>
+                <input
+                  type="file"
+                  accept=".svg,image/svg+xml,image/*"
+                  onChange={handleSvgMapChange}
+                  disabled={isUploadingSvg}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            <div className="space-y-4 font-sans text-xs">
+              {/* Dropdown for system preset SVG maps */}
+              <div>
+                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
+                  Chọn sơ đồ mẫu chuẩn hệ thống
+                </label>
+                <select
+                  value={
+                    SYSTEM_SVG_MAPS.some(
+                      (m) => m.value === formData.svg_map_url,
+                    )
+                      ? formData.svg_map_url
+                      : formData.svg_map_url
+                        ? "__custom__"
+                        : ""
+                  }
+                  onChange={(e) => {
+                    if (e.target.value !== "__custom__") {
+                      setFormData((prev) => ({
+                        ...prev,
+                        svg_map_url: e.target.value,
+                      }));
+                    }
+                  }}
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans cursor-pointer font-medium"
+                >
+                  <option value="">-- Chọn mẫu sơ đồ từ hệ thống --</option>
+                  {SYSTEM_SVG_MAPS.map((mapPreset) => (
+                    <option key={mapPreset.value} value={mapPreset.value}>
+                      {mapPreset.label}
+                    </option>
+                  ))}
+                  {formData.svg_map_url &&
+                    !SYSTEM_SVG_MAPS.some(
+                      (m) => m.value === formData.svg_map_url,
+                    ) && (
+                      <option value="__custom__">
+                        Sơ đồ tùy chỉnh / Đường dẫn riêng (
+                        {formData.svg_map_url.slice(0, 35)}...)
+                      </option>
+                    )}
+                </select>
+              </div>
+
+              {/* Visual Preview Box */}
+              {formData.svg_map_url ? (
+                <div className="p-3.5 bg-slate-50/60 border border-slate-200 rounded-xl space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-block w-2 h-2 rounded-full bg-teal-500" />
+                      <span className="text-xs font-semibold text-slate-800">
+                        Mặt bằng phân khu khán giả & Sân khấu
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setLightboxUrl(resolveSvgMapUrl(formData.svg_map_url))
+                      }
+                      className="inline-flex items-center gap-1.5 text-xs text-teal-600 hover:text-teal-700 font-semibold cursor-pointer"
+                    >
+                      <Maximize2 className="w-3.5 h-3.5" />
+                      <span>Phóng to toàn màn hình</span>
+                    </button>
+                  </div>
+
+                  <div
+                    onClick={() =>
+                      setLightboxUrl(resolveSvgMapUrl(formData.svg_map_url))
+                    }
+                    className="w-full h-64 bg-white border border-slate-200 rounded-lg flex items-center justify-center p-4 cursor-zoom-in group shadow-2xs overflow-hidden relative"
+                    title="Nhấp để phóng to toàn màn hình"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={resolveSvgMapUrl(formData.svg_map_url)}
+                      alt="Sơ đồ ghế ngồi và sân khấu"
+                      className="max-w-full max-h-full object-contain transition-transform group-hover:scale-[1.02]"
+                    />
+                    <div className="absolute bottom-2 right-2 px-2 py-1 bg-white/90 backdrop-blur-xs border border-slate-200 rounded text-[11px] text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                      Nhấp để phóng to
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-slate-500 italic">
+                    💡 Sơ đồ này sẽ hiển thị trực quan cho khán giả khi chọn khu
+                    vực và đặt vé.
+                  </p>
+                </div>
+              ) : (
+                <div className="border border-dashed border-slate-200 rounded-xl p-6 text-center bg-slate-50/40">
+                  <p className="text-xs text-slate-500 font-medium">
+                    Chưa có sơ đồ ghế
+                  </p>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Chọn một mẫu từ hệ thống ở trên hoặc tải file SVG để hiển
+                    thị sơ đồ phân khu
+                  </p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Section 4: Ticketing */}
           <section className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
             <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-5">
               <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
-                3. Cấu hình các hạng vé & giá bán
+                4. Cấu hình các hạng vé & giá bán
               </h3>
               <button
                 onClick={handleAddTier}

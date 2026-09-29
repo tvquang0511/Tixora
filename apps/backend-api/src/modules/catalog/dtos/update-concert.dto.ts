@@ -11,7 +11,6 @@ import {
 } from "class-validator";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsFutureDate } from "../../../shared/validators/is-future-date.decorator";
 import { ConcertStatus } from "../constants/concert-status.enum";
 import { CreateTicketCategoryDto } from "./create-ticket-category.dto";
 
@@ -52,7 +51,6 @@ export class UpdateConcertDto {
   })
   @IsOptional()
   @IsDateString()
-  @IsFutureDate()
   start_time?: string;
 
   @ApiPropertyOptional({

@@ -242,3 +242,69 @@ test("ConcertService.getConcerts: throws ForbiddenException if Organizer queries
     ForbiddenException,
   );
 });
+
+test("ConcertService.updateConcert: throws BadRequestException when changing from PUBLISHED to DRAFT", async () => {
+  const { service, concertRepo } = createConcertService();
+
+  concertRepo.findById.mockResolvedValue({
+    id: "concert-1",
+    organizer_id: "admin-1",
+    status: ConcertStatus.PUBLISHED,
+  });
+
+  await assert.rejects(
+    () =>
+      service.updateConcert("concert-1", {
+        status: ConcertStatus.DRAFT,
+      } as any),
+    (err: any) => {
+      assert.equal(err.name, "BadRequestException");
+      assert.match(err.message, /bản nháp/i);
+      return true;
+    },
+  );
+});
+
+test("ConcertService.updateConcert: throws BadRequestException when changing from PAUSED to DRAFT", async () => {
+  const { service, concertRepo } = createConcertService();
+
+  concertRepo.findById.mockResolvedValue({
+    id: "concert-1",
+    organizer_id: "admin-1",
+    status: ConcertStatus.PAUSED,
+  });
+
+  await assert.rejects(
+    () =>
+      service.updateConcert("concert-1", {
+        status: ConcertStatus.DRAFT,
+      } as any),
+    (err: any) => {
+      assert.equal(err.name, "BadRequestException");
+      assert.match(err.message, /bản nháp/i);
+      return true;
+    },
+  );
+});
+
+test("ConcertService.updateConcert: throws BadRequestException when changing from CANCELLED to any status", async () => {
+  const { service, concertRepo } = createConcertService();
+
+  concertRepo.findById.mockResolvedValue({
+    id: "concert-1",
+    organizer_id: "admin-1",
+    status: ConcertStatus.CANCELLED,
+  });
+
+  await assert.rejects(
+    () =>
+      service.updateConcert("concert-1", {
+        status: ConcertStatus.PUBLISHED,
+      } as any),
+    (err: any) => {
+      assert.equal(err.name, "BadRequestException");
+      assert.match(err.message, /đã ở trạng thái/i);
+      return true;
+    },
+  );
+});
