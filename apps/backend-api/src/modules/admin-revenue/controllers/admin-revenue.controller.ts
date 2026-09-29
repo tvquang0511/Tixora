@@ -63,4 +63,14 @@ export class AdminRevenueController {
   ) {
     return this.revenueService.getConcertDetail(concertId, query);
   }
+
+  @Get("settlements")
+  @ApiOperation({
+    summary:
+      "Get concert payout settlements, platform fee, and organizer bank details",
+  })
+  @ApiOkResponse({ description: "Concert settlements list and summary" })
+  getSettlements(@Query() query: RevenueRangeQueryDto) {
+    return this.revenueService.getSettlements(query);
+  }
 }

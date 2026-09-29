@@ -242,3 +242,49 @@ test("getConcertDetail throws when concert does not exist", async () => {
   );
   assert.equal(mockPrisma.order.findMany.mock.calls.length, 0);
 });
+
+test("getSettlements calculates GMV, 5% platform fee, and organizer payout", async () => {
+  const { service, mockPrisma } = createService();
+  const pastDate = new Date("2025-01-01T00:00:00.000Z");
+
+  mockPrisma.concert.findMany.mockResolvedValue([
+    {
+      id: "concert-1",
+      name: "Rock Fest",
+      status: "COMPLETED",
+      start_time: pastDate,
+      poster_url: null,
+      location: "TP.HCM",
+      organizer: {
+        id: "org-user-1",
+        full_name: "Nguyen Van A",
+        email: "org@example.com",
+        organizer_profile: {
+          organization_name: "Rock Company",
+          bank_name: "Vietcombank",
+          bank_account_number: "0123456789",
+          bank_account_name: "CONG TY ROCK",
+          phone_number: "0901234567",
+          tax_code_or_id: "0312345678",
+        },
+      },
+      orders: [
+        {
+          total_amount: "10000000",
+          tickets: [{ id: "t1" }, { id: "t2" }],
+        },
+      ],
+    },
+  ]);
+
+  const result = await service.getSettlements({});
+
+  assert.equal(result.summary.total_gmv, 10000000);
+  assert.equal(result.summary.total_platform_fee, 500000); // 5% of 10M
+  assert.equal(result.summary.total_net_payout, 9500000); // 95% of 10M
+  assert.equal(result.summary.ready_for_payout, 9500000);
+  assert.equal(result.items.length, 1);
+  assert.equal(result.items[0].settlement_status, "READY_FOR_SETTLEMENT");
+  assert.equal(result.items[0].organizer.bank_name, "Vietcombank");
+  assert.equal(result.items[0].organizer.bank_account_number, "0123456789");
+});

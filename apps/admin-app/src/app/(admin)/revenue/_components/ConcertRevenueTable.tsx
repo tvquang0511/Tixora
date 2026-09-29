@@ -115,68 +115,76 @@ export function ConcertRevenueTable({
                 <th className="p-3">Sự kiện</th>
                 <th className="p-3 text-center">Trạng thái</th>
                 <th className="p-3">Thời gian</th>
-                <th className="p-3 text-right">Doanh thu</th>
-                <th className="p-3 text-center">Đơn hoàn tất</th>
-                <th className="p-3 text-center">Vé bán ra</th>
+                <th className="p-3 text-right">Doanh số (GMV)</th>
+                <th className="p-3 text-right">Phí sàn (5%)</th>
+                <th className="p-3 text-right">Thực nhận BTC</th>
+                <th className="p-3 text-center">Vé bán</th>
                 <th className="p-3 text-center">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {paginatedConcerts.map((item) => (
-                <tr
-                  key={item.concert_id}
-                  className="hover:bg-slate-50/80 transition-colors"
-                >
-                  <td className="p-3 font-medium text-slate-900">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200 relative">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={getConcertPosterUrl(item.poster_url)}
-                          alt={item.concert_name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div>
-                        <div className="text-xs font-semibold text-slate-900 leading-tight">
-                          {item.concert_name}
+              {paginatedConcerts.map((item) => {
+                const platformFee = Math.round(item.revenue * 0.05);
+                const netPayout = item.revenue - platformFee;
+                return (
+                  <tr
+                    key={item.concert_id}
+                    className="hover:bg-slate-50/80 transition-colors"
+                  >
+                    <td className="p-3 font-medium text-slate-900">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-slate-100 border border-slate-200 relative">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={getConcertPosterUrl(item.poster_url)}
+                            alt={item.concert_name}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                        {item.location && (
-                          <div className="flex items-center gap-1 mt-0.5 text-[11px] text-slate-500 font-sans">
-                            <MapPin className="w-3 h-3 shrink-0 text-slate-400" />
-                            <span className="line-clamp-1">
-                              {item.location}
-                            </span>
+                        <div>
+                          <div className="text-xs font-semibold text-slate-900 leading-tight">
+                            {item.concert_name}
                           </div>
-                        )}
+                          {item.location && (
+                            <div className="flex items-center gap-1 mt-0.5 text-[11px] text-slate-500 font-sans">
+                              <MapPin className="w-3 h-3 shrink-0 text-slate-400" />
+                              <span className="line-clamp-1">
+                                {item.location}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="p-3 text-center">
-                    <StatusBadge status={item.status} variant="concert" />
-                  </td>
-                  <td className="p-3 text-slate-600 font-sans text-[11px]">
-                    {formatConcertDate(item.start_time)}
-                  </td>
-                  <td className="p-3 text-right font-medium text-slate-900 font-mono text-xs">
-                    {formatVND(item.revenue)}
-                  </td>
-                  <td className="p-3 text-center font-medium text-slate-900 font-mono">
-                    {item.paid_orders.toLocaleString("vi-VN")}
-                  </td>
-                  <td className="p-3 text-center font-medium text-slate-900 font-mono">
-                    {item.tickets_sold.toLocaleString("vi-VN")}
-                  </td>
-                  <td className="p-3 text-center">
-                    <button
-                      onClick={() => onViewDetail(item.concert_id)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 text-slate-700 hover:text-teal-700 font-sans text-xs font-medium transition-colors cursor-pointer shadow-xs"
-                    >
-                      Chi tiết
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="p-3 text-center">
+                      <StatusBadge status={item.status} variant="concert" />
+                    </td>
+                    <td className="p-3 text-slate-600 font-sans text-[11px]">
+                      {formatConcertDate(item.start_time)}
+                    </td>
+                    <td className="p-3 text-right font-medium text-slate-900 font-mono text-xs">
+                      {formatVND(item.revenue)}
+                    </td>
+                    <td className="p-3 text-right font-medium text-rose-600 font-mono text-xs">
+                      - {formatVND(platformFee)}
+                    </td>
+                    <td className="p-3 text-right font-bold text-teal-800 font-mono text-xs">
+                      {formatVND(netPayout)}
+                    </td>
+                    <td className="p-3 text-center font-medium text-slate-900 font-mono">
+                      {item.tickets_sold.toLocaleString("vi-VN")}
+                    </td>
+                    <td className="p-3 text-center">
+                      <button
+                        onClick={() => onViewDetail(item.concert_id)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 text-slate-700 hover:text-teal-700 font-sans text-xs font-medium transition-colors cursor-pointer shadow-xs"
+                      >
+                        Chi tiết
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}

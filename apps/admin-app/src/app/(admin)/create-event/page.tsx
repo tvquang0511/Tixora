@@ -12,15 +12,7 @@ import {
 import { getVenues, type VenueItem } from "@/services/venue.service";
 import { uploadImage, uploadSvg } from "@/services/upload.service";
 import { getErrorMessage } from "@/utils/error.utils";
-import {
-  ChevronRight,
-  Info,
-  ImagePlus,
-  Ticket,
-  PlusCircle,
-  Trash2,
-  Building2,
-} from "lucide-react";
+import { ChevronRight, PlusCircle, Trash2 } from "lucide-react";
 
 type TicketCategory = {
   id?: string;

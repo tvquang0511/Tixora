@@ -5,9 +5,12 @@ import {
   getRevenueTrend,
   getRevenueByConcert,
   getConcertRevenueDetail,
+  getSettlements,
   type RevenueTrendItem,
   type RevenueByConcertItem,
   type ConcertRevenueDetailResponse,
+  type SettlementItem,
+  type SettlementSummary,
 } from "@/services/revenue.service";
 
 export function useAdminRevenue() {
@@ -18,6 +21,11 @@ export function useAdminRevenue() {
     from: from || undefined,
     to: to ? `${to}T23:59:59.999Z` : undefined,
   });
+
+  // Tab state: "analytics" | "settlements"
+  const [activeTab, setActiveTab] = useState<"analytics" | "settlements">(
+    "analytics",
+  );
 
   // Applied filter state
   const [fromDate, setFromDate] = useState<string>(initialFromDate);
@@ -40,6 +48,13 @@ export function useAdminRevenue() {
   const [concertItems, setConcertItems] = useState<RevenueByConcertItem[]>([]);
   const [isTrendLoading, setIsTrendLoading] = useState<boolean>(true);
   const [isConcertsLoading, setIsConcertsLoading] = useState<boolean>(true);
+
+  // Settlements data states
+  const [settlements, setSettlements] = useState<SettlementItem[]>([]);
+  const [settlementSummary, setSettlementSummary] =
+    useState<SettlementSummary | null>(null);
+  const [isSettlementsLoading, setIsSettlementsLoading] =
+    useState<boolean>(true);
 
   // Table search and pagination
   const [tableSearch, setTableSearch] = useState<string>("");
@@ -104,15 +119,37 @@ export function useAdminRevenue() {
     [],
   );
 
+  // Fetch settlements
+  const fetchSettlementsData = useCallback(
+    async (fromVal?: string, toVal?: string) => {
+      try {
+        setIsSettlementsLoading(true);
+        const range = normalizeDateRangeForQuery(fromVal, toVal);
+        const res = await getSettlements({
+          from: range.from,
+          to: range.to,
+        });
+        setSettlements(res.items || []);
+        setSettlementSummary(res.summary || null);
+      } catch (err) {
+        console.error("Failed to fetch settlements:", err);
+      } finally {
+        setIsSettlementsLoading(false);
+      }
+    },
+    [],
+  );
+
   // Initial load
   useEffect(() => {
     const timer = setTimeout(() => {
       const today = getTodayDate();
       void fetchTrendData(initialFromDate, today, "day");
       void fetchConcertsData(initialFromDate, today, "All");
+      void fetchSettlementsData(initialFromDate, today);
     }, 0);
     return () => clearTimeout(timer);
-  }, [fetchTrendData, fetchConcertsData]);
+  }, [fetchTrendData, fetchConcertsData, fetchSettlementsData]);
 
   // Fetch detail on concert selection
   useEffect(() => {
@@ -141,9 +178,11 @@ export function useAdminRevenue() {
   const reloadRevenue = useCallback(() => {
     void fetchTrendData(fromDate, toDate, groupBy);
     void fetchConcertsData(fromDate, toDate, tempStatus);
+    void fetchSettlementsData(fromDate, toDate);
   }, [
     fetchTrendData,
     fetchConcertsData,
+    fetchSettlementsData,
     fromDate,
     toDate,
     groupBy,
@@ -156,6 +195,7 @@ export function useAdminRevenue() {
     setGroupBy(tempGroupBy);
     void fetchTrendData(tempFromDate, tempToDate, tempGroupBy);
     void fetchConcertsData(tempFromDate, tempToDate, tempStatus);
+    void fetchSettlementsData(tempFromDate, tempToDate);
   };
 
   const handleReset = () => {
@@ -168,6 +208,7 @@ export function useAdminRevenue() {
     setGroupBy("day");
     void fetchTrendData("", "", "day");
     void fetchConcertsData("", "", "All");
+    void fetchSettlementsData("", "");
   };
 
   // Derived data
@@ -197,6 +238,8 @@ export function useAdminRevenue() {
   };
 
   return {
+    activeTab,
+    setActiveTab,
     fromDate,
     toDate,
     groupBy,
@@ -214,6 +257,10 @@ export function useAdminRevenue() {
     concertItems,
     isTrendLoading,
     isConcertsLoading,
+    settlements,
+    settlementSummary,
+    isSettlementsLoading,
+    fetchSettlementsData,
     tableSearch,
     setTableSearch,
     currentPage,

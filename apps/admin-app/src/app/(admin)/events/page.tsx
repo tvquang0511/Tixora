@@ -27,6 +27,7 @@ import {
   Send,
   Pause,
   CheckCircle,
+  ClipboardCheck,
 } from "lucide-react";
 import { ConcertWorkerDrawer } from "./_components/ConcertWorkerDrawer";
 import { StatusBadge } from "../_components/StatusBadge";
@@ -467,6 +468,13 @@ export default function AdminEventsPage() {
                           title="Xem trang công khai"
                         >
                           <Eye className="w-3.5 h-3.5" />
+                        </Link>
+                        <Link
+                          href={`/assignments?concertId=${concert.id}`}
+                          className="p-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 rounded-lg shadow-2xs transition-colors"
+                          title="Phân công nhân sự soát vé theo cổng"
+                        >
+                          <ClipboardCheck className="w-3.5 h-3.5 text-sky-600" />
                         </Link>
                         <button
                           onClick={() => {

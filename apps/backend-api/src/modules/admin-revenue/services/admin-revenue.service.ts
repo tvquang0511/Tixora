@@ -237,6 +237,125 @@ export class AdminRevenueService {
     };
   }
 
+  async getSettlements(query: RevenueRangeQueryDto) {
+    const createdAt = this.getDateFilter(query);
+    const now = new Date();
+
+    const concerts = await this.prisma.concert.findMany({
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        start_time: true,
+        poster_url: true,
+        location: true,
+        organizer: {
+          select: {
+            id: true,
+            full_name: true,
+            email: true,
+            organizer_profile: {
+              select: {
+                organization_name: true,
+                bank_name: true,
+                bank_account_number: true,
+                bank_account_name: true,
+                phone_number: true,
+                tax_code_or_id: true,
+              },
+            },
+          },
+        },
+        orders: {
+          where: {
+            status: "PAID",
+            ...(createdAt ? { created_at: createdAt } : {}),
+          },
+          select: {
+            total_amount: true,
+            tickets: {
+              select: { id: true },
+            },
+          },
+        },
+      },
+      orderBy: { start_time: "desc" },
+    });
+
+    const feeRate = 0.05; // 5% platform take-rate
+    let totalGmv = 0;
+    let totalPlatformFee = 0;
+    let totalNetPayout = 0;
+    let holdingEscrow = 0;
+    let readyForPayout = 0;
+
+    const items = concerts.map((concert) => {
+      const gmv = this.sumRevenue(concert.orders);
+      const ticketsSold = this.sumTickets(concert.orders);
+      const paidOrders = concert.orders.length;
+      const platformFee = Math.round(gmv * feeRate);
+      const netPayout = gmv - platformFee;
+
+      const isFinished =
+        concert.start_time <= now || concert.status === "COMPLETED";
+      const settlementStatus = isFinished ? "READY_FOR_SETTLEMENT" : "HOLDING";
+
+      totalGmv += gmv;
+      totalPlatformFee += platformFee;
+      totalNetPayout += netPayout;
+
+      if (isFinished) {
+        readyForPayout += netPayout;
+      } else {
+        holdingEscrow += netPayout;
+      }
+
+      const orgProfile = concert.organizer?.organizer_profile;
+
+      return {
+        concert_id: concert.id,
+        concert_name: concert.name,
+        status: concert.status,
+        start_time: concert.start_time,
+        poster_url: concert.poster_url,
+        location: concert.location,
+        gmv,
+        platform_fee: platformFee,
+        net_payout: netPayout,
+        fee_rate: feeRate,
+        paid_orders: paidOrders,
+        tickets_sold: ticketsSold,
+        settlement_status: settlementStatus,
+        organizer: {
+          user_id: concert.organizer?.id ?? null,
+          contact_name: concert.organizer?.full_name ?? "Ban tổ chức",
+          email: concert.organizer?.email ?? "",
+          organization_name:
+            orgProfile?.organization_name ||
+            concert.organizer?.full_name ||
+            "Chưa cập nhật",
+          bank_name: orgProfile?.bank_name ?? null,
+          bank_account_number: orgProfile?.bank_account_number ?? null,
+          bank_account_name: orgProfile?.bank_account_name ?? null,
+          phone_number: orgProfile?.phone_number ?? null,
+          tax_code_or_id: orgProfile?.tax_code_or_id ?? null,
+        },
+      };
+    });
+
+    return {
+      summary: {
+        total_gmv: totalGmv,
+        total_platform_fee: totalPlatformFee,
+        total_net_payout: totalNetPayout,
+        holding_escrow: holdingEscrow,
+        ready_for_payout: readyForPayout,
+        platform_fee_rate: feeRate,
+      },
+      items,
+    };
+  }
+
   private getDateFilter(
     query: RevenueRangeQueryDto,
   ): Prisma.DateTimeFilter | undefined {

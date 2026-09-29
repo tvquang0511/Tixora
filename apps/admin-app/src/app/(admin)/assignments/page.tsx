@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   CalendarDays,
   ClipboardCheck,
@@ -187,7 +188,10 @@ function SummaryCard({
   );
 }
 
-export default function AdminAssignmentsPage() {
+function AssignmentsContent() {
+  const searchParams = useSearchParams();
+  const paramConcertId = searchParams.get("concertId") || "";
+
   const {
     success: toastSuccess,
     error: toastError,
@@ -202,7 +206,7 @@ export default function AdminAssignmentsPage() {
   const [bootstrapping, setBootstrapping] = useState(true);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [concertFilter, setConcertFilter] = useState("");
+  const [concertFilter, setConcertFilter] = useState(paramConcertId);
   const [checkerFilter, setCheckerFilter] = useState("");
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -961,5 +965,19 @@ export default function AdminAssignmentsPage() {
         isDeleting={deletingId === deleteTarget?.id}
       />
     </div>
+  );
+}
+
+export default function AdminAssignmentsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-64 items-center justify-center">
+          <div className="h-6 w-6 animate-spin border-2 border-teal-600 border-t-transparent rounded-full" />
+        </div>
+      }
+    >
+      <AssignmentsContent />
+    </Suspense>
   );
 }

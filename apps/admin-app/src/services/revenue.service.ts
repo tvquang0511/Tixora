@@ -105,3 +105,60 @@ export async function getConcertRevenueDetail(
   const endpoint = `/admin/revenue/concerts/${concertId}/detail${queryString ? `?${queryString}` : ""}`;
   return apiClient.get<ConcertRevenueDetailResponse>(endpoint);
 }
+
+export interface SettlementOrganizer {
+  user_id: string | null;
+  contact_name: string;
+  email: string;
+  organization_name: string;
+  bank_name: string | null;
+  bank_account_number: string | null;
+  bank_account_name: string | null;
+  phone_number: string | null;
+  tax_code_or_id: string | null;
+}
+
+export interface SettlementItem {
+  concert_id: string;
+  concert_name: string;
+  status: string;
+  start_time: string;
+  poster_url: string | null;
+  location: string | null;
+  gmv: number;
+  platform_fee: number;
+  net_payout: number;
+  fee_rate: number;
+  paid_orders: number;
+  tickets_sold: number;
+  settlement_status:
+    "HOLDING" | "READY_FOR_SETTLEMENT" | "COMPLETED" | "DISPUTED";
+  organizer: SettlementOrganizer;
+}
+
+export interface SettlementSummary {
+  total_gmv: number;
+  total_platform_fee: number;
+  total_net_payout: number;
+  holding_escrow: number;
+  ready_for_payout: number;
+  platform_fee_rate: number;
+}
+
+export interface SettlementsResponse {
+  summary: SettlementSummary;
+  items: SettlementItem[];
+}
+
+export async function getSettlements(params?: {
+  from?: string;
+  to?: string;
+}): Promise<SettlementsResponse> {
+  const query = new URLSearchParams();
+  if (params?.from) query.append("from", params.from);
+  if (params?.to) query.append("to", params.to);
+
+  const queryString = query.toString();
+  const endpoint = `/admin/revenue/settlements${queryString ? `?${queryString}` : ""}`;
+  return apiClient.get<SettlementsResponse>(endpoint);
+}

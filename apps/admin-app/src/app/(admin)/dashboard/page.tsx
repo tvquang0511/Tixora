@@ -2,6 +2,7 @@
 
 import { RefreshCw } from "lucide-react";
 import { useAdminDashboard } from "./_hooks/useAdminDashboard";
+import { ActionRequiredSection } from "./_components/ActionRequiredSection";
 import { DashboardSummaryCards } from "./_components/DashboardSummaryCards";
 import { RevenueChart } from "./_components/RevenueChart";
 import { RecentOrdersList } from "./_components/RecentOrdersList";
@@ -106,6 +107,9 @@ export default function AdminDashboardPage() {
           </button>
         </div>
       </div>
+
+      {/* Action Required Section */}
+      <ActionRequiredSection />
 
       <DashboardSummaryCards
         summary={summary}
