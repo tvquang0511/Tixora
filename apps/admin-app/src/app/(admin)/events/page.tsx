@@ -134,9 +134,9 @@ export default function AdminEventsPage() {
         status: statusFilter === "All" ? undefined : statusFilter,
         category: categoryFilter === "All" ? undefined : categoryFilter,
       });
-      setConcerts(response.items);
-      setTotalPages(response.meta.totalPages);
-      setTotalItems(response.meta.totalItems);
+      setConcerts(response.items || []);
+      setTotalPages(response.meta?.totalPages ?? 1);
+      setTotalItems(response.meta?.totalItems ?? 0);
     } catch (error) {
       console.error("Failed to load concerts", error);
       toastError("Không thể tải danh sách sự kiện.");
