@@ -38,6 +38,24 @@ import {
 export class AdminRevenueController {
   constructor(private readonly revenueService: AdminRevenueService) {}
 
+  @Get("summary")
+  @ApiOperation({
+    summary: "Get system executive revenue KPI summary with growth metrics",
+  })
+  @ApiOkResponse({ description: "Revenue executive KPI summary" })
+  getSummary(@Query() query: RevenueRangeQueryDto) {
+    return this.revenueService.getSummary(query);
+  }
+
+  @Get("by-organizer")
+  @ApiOperation({
+    summary: "Get revenue metrics and rankings grouped by organizer",
+  })
+  @ApiOkResponse({ description: "Organizer revenue list and rankings" })
+  getByOrganizer(@Query() query: RevenueRangeQueryDto) {
+    return this.revenueService.getByOrganizer(query);
+  }
+
   @Get("trend")
   @ApiOperation({
     summary: "Get system revenue trend grouped by day, week, or month",

@@ -15,19 +15,6 @@ type RevenueOrderRow = {
   tickets: Array<{ id: string }>;
 };
 
-type RevenueConcertRow = {
-  id: string;
-  name: string;
-  status: string;
-  start_time: Date;
-  poster_url: string | null;
-  location: string | null;
-  orders: Array<{
-    total_amount: MoneyLike;
-    tickets: Array<{ id: string }>;
-  }>;
-};
-
 type RevenueConcertDetailRow = {
   id: string;
   name: string;
@@ -47,10 +34,186 @@ type RevenueConcertDetailRow = {
 export class AdminRevenueService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async getSummary(query: RevenueRangeQueryDto) {
+    const to = query.to ? new Date(query.to) : new Date();
+    const from = query.from ? new Date(query.from) : this.daysBefore(to, 30);
+    const durationMs = Math.max(to.getTime() - from.getTime(), 1000);
+    const prevTo = new Date(from.getTime());
+    const prevFrom = new Date(prevTo.getTime() - durationMs);
+
+    const concertWhere = query.organizer_id
+      ? { concert: { organizer_id: query.organizer_id } }
+      : {};
+
+    const [currentOrders, prevOrders] = await Promise.all([
+      this.prisma.order.findMany({
+        where: {
+          status: "PAID",
+          created_at: {
+            gte: from,
+            lte: to,
+          },
+          ...concertWhere,
+        },
+        select: {
+          total_amount: true,
+          tickets: {
+            select: { id: true },
+          },
+        },
+      }),
+      this.prisma.order.findMany({
+        where: {
+          status: "PAID",
+          created_at: {
+            gte: prevFrom,
+            lte: prevTo,
+          },
+          ...concertWhere,
+        },
+        select: {
+          total_amount: true,
+          tickets: {
+            select: { id: true },
+          },
+        },
+      }),
+    ]);
+
+    const totalGmv = this.sumRevenue(currentOrders);
+    const paidOrders = currentOrders.length;
+    const totalTicketsSold = this.sumTickets(currentOrders);
+    const feeRate = 0.05;
+    const totalPlatformFee = Math.round(totalGmv * feeRate);
+    const aov = paidOrders > 0 ? Math.round(totalGmv / paidOrders) : 0;
+
+    const prevGmv = this.sumRevenue(prevOrders);
+    const prevPaidOrders = prevOrders.length;
+    const prevTicketsSold = this.sumTickets(prevOrders);
+    const prevPlatformFee = Math.round(prevGmv * feeRate);
+    const prevAov =
+      prevPaidOrders > 0 ? Math.round(prevGmv / prevPaidOrders) : 0;
+
+    const calcGrowth = (curr: number, prev: number): number => {
+      if (prev === 0) return curr > 0 ? 100 : 0;
+      return Math.round(((curr - prev) / prev) * 1000) / 10;
+    };
+
+    return {
+      from,
+      to,
+      total_gmv: totalGmv,
+      total_platform_fee: totalPlatformFee,
+      platform_fee_rate: feeRate,
+      paid_orders: paidOrders,
+      total_tickets_sold: totalTicketsSold,
+      aov,
+      growth: {
+        gmv: calcGrowth(totalGmv, prevGmv),
+        platform_fee: calcGrowth(totalPlatformFee, prevPlatformFee),
+        tickets_sold: calcGrowth(totalTicketsSold, prevTicketsSold),
+        paid_orders: calcGrowth(paidOrders, prevPaidOrders),
+        aov: calcGrowth(aov, prevAov),
+      },
+    };
+  }
+
+  async getByOrganizer(query: RevenueRangeQueryDto) {
+    const createdAt = this.getDateFilter(query);
+
+    const organizers = await this.prisma.user.findMany({
+      where: {
+        OR: [
+          { organizer_profile: { isNot: null } },
+          { organized_concerts: { some: {} } },
+          { user_roles: { some: { role: { name: "ORGANIZER" } } } },
+        ],
+      },
+      select: {
+        id: true,
+        full_name: true,
+        email: true,
+        organizer_profile: {
+          select: {
+            organization_name: true,
+            phone_number: true,
+            bank_name: true,
+            bank_account_number: true,
+          },
+        },
+        organized_concerts: {
+          select: {
+            id: true,
+            name: true,
+            status: true,
+            orders: {
+              where: {
+                status: "PAID",
+                ...(createdAt ? { created_at: createdAt } : {}),
+              },
+              select: {
+                total_amount: true,
+                tickets: { select: { id: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const feeRate = 0.05;
+    let totalPlatformGmv = 0;
+
+    const rawItems = organizers.map((org) => {
+      const allOrders = org.organized_concerts.flatMap((c) => c.orders);
+      const gmv = this.sumRevenue(allOrders);
+      const ticketsSold = this.sumTickets(allOrders);
+      const paidOrders = allOrders.length;
+      const platformFee = Math.round(gmv * feeRate);
+
+      totalPlatformGmv += gmv;
+
+      return {
+        organizer_id: org.id,
+        organization_name:
+          org.organizer_profile?.organization_name ||
+          org.full_name ||
+          "Ban tổ chức",
+        contact_name: org.full_name,
+        email: org.email,
+        phone_number: org.organizer_profile?.phone_number || null,
+        total_concerts: org.organized_concerts.length,
+        gmv,
+        platform_fee: platformFee,
+        paid_orders: paidOrders,
+        tickets_sold: ticketsSold,
+      };
+    });
+
+    const items = rawItems
+      .map((item) => ({
+        ...item,
+        market_share:
+          totalPlatformGmv > 0
+            ? Math.round((item.gmv / totalPlatformGmv) * 1000) / 10
+            : 0,
+      }))
+      .sort((a, b) => b.gmv - a.gmv);
+
+    return {
+      total_platform_gmv: totalPlatformGmv,
+      items,
+    };
+  }
+
   async getTrend(query: RevenueTrendQueryDto) {
     const to = query.to ? new Date(query.to) : new Date();
     const from = query.from ? new Date(query.from) : this.daysBefore(to, 30);
     const groupBy = query.group_by ?? "day";
+
+    const concertWhere = query.organizer_id
+      ? { concert: { organizer_id: query.organizer_id } }
+      : {};
 
     const orders = await this.prisma.order.findMany({
       where: {
@@ -59,6 +222,7 @@ export class AdminRevenueService {
           gte: from,
           lte: to,
         },
+        ...concertWhere,
       },
       select: {
         total_amount: true,
@@ -75,6 +239,7 @@ export class AdminRevenueService {
       {
         period: string;
         revenue: number;
+        platform_fee: number;
         paid_orders: number;
         tickets_sold: number;
       }
@@ -85,11 +250,13 @@ export class AdminRevenueService {
       const current = buckets.get(period) ?? {
         period,
         revenue: 0,
+        platform_fee: 0,
         paid_orders: 0,
         tickets_sold: 0,
       };
 
       current.revenue += this.toNumber(order.total_amount);
+      current.platform_fee = Math.round(current.revenue * 0.05);
       current.paid_orders += 1;
       current.tickets_sold += order.tickets.length;
       buckets.set(period, current);
@@ -110,7 +277,10 @@ export class AdminRevenueService {
     const limit = query.limit ?? 50;
 
     const concerts = await this.prisma.concert.findMany({
-      where: query.status ? { status: query.status } : {},
+      where: {
+        ...(query.status ? { status: query.status } : {}),
+        ...(query.organizer_id ? { organizer_id: query.organizer_id } : {}),
+      },
       select: {
         id: true,
         name: true,
@@ -118,6 +288,18 @@ export class AdminRevenueService {
         start_time: true,
         poster_url: true,
         location: true,
+        organizer_id: true,
+        organizer: {
+          select: {
+            id: true,
+            full_name: true,
+            organizer_profile: {
+              select: {
+                organization_name: true,
+              },
+            },
+          },
+        },
         orders: {
           where: {
             status: "PAID",
@@ -136,13 +318,18 @@ export class AdminRevenueService {
     });
 
     return {
-      items: (concerts as RevenueConcertRow[]).map((concert) => ({
+      items: concerts.map((concert: any) => ({
         concert_id: concert.id,
         concert_name: concert.name,
         status: concert.status,
         start_time: concert.start_time,
         poster_url: concert.poster_url,
         location: concert.location,
+        organizer_id: concert.organizer_id,
+        organizer_name:
+          concert.organizer?.organizer_profile?.organization_name ||
+          concert.organizer?.full_name ||
+          "Ban tổ chức",
         revenue: this.sumRevenue(concert.orders),
         paid_orders: concert.orders.length,
         tickets_sold: this.sumTickets(concert.orders),

@@ -5,6 +5,7 @@ import {
   IsIn,
   IsInt,
   IsOptional,
+  IsUUID,
   Max,
   Min,
 } from "class-validator";
@@ -20,6 +21,11 @@ export class RevenueRangeQueryDto {
   @IsDateString()
   @IsOptional()
   to?: string;
+
+  @ApiPropertyOptional({ example: "f47ac10b-58cc-4372-a567-0e02b2c3d479" })
+  @IsUUID()
+  @IsOptional()
+  organizer_id?: string;
 }
 
 export class RevenueTrendQueryDto extends RevenueRangeQueryDto {

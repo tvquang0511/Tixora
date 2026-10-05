@@ -61,12 +61,14 @@ test("getTrend returns grouped system revenue with range metadata", async () => 
       {
         period: "2026-07-01",
         revenue: 150000,
+        platform_fee: 7500,
         paid_orders: 2,
         tickets_sold: 3,
       },
       {
         period: "2026-07-02",
         revenue: 75000,
+        platform_fee: 3750,
         paid_orders: 1,
         tickets_sold: 0,
       },
@@ -129,6 +131,8 @@ test("getByConcert returns revenue metrics for each concert", async () => {
         start_time: startTime,
         poster_url: "https://example.com/poster.png",
         location: "Hanoi",
+        organizer_id: undefined,
+        organizer_name: "Ban tổ chức",
         revenue: 350000,
         paid_orders: 2,
         tickets_sold: 3,
