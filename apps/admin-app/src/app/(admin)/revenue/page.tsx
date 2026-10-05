@@ -61,29 +61,26 @@ export default function AdminRevenuePage() {
   return (
     <div className="space-y-6">
       {/* Enterprise Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="head stickyhead">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wider text-teal-600">
-            Tài chính & Quyết toán
+          <div className="flex items-center gap-2">
+            <h1 className="htcaa-h1">Trung tâm tài chính & Doanh thu</h1>
+            <span className="htcaa-badge-count-pill">Báo cáo tài chính</span>
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 mt-1">
-            Trung tâm tài chính & Doanh thu
-          </h1>
-          <p className="text-xs text-slate-500 font-sans mt-0.5">
-            Quản trị dòng tiền bán vé, phân bổ phí sàn Tixora và đối soát giải
-            ngân cho Ban tổ chức
+          <p className="sub">
+            Quản trị dòng tiền bán vé, phân bổ phí sàn Tixora và đối soát giải ngân cho Ban tổ chức
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="head-actions">
           <button
             onClick={reloadRevenue}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-1.5 px-3 py-2 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 transition-colors disabled:opacity-50 cursor-pointer shadow-xs"
+            className="btn btn-secondary btn-sm"
             title="Tải lại toàn bộ dữ liệu tài chính"
           >
             <RefreshCw
-              className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-teal-600" : "text-slate-500"}`}
+              className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#0052ff]" : "text-slate-500"}`}
             />
             <span>Làm mới</span>
           </button>
@@ -91,31 +88,23 @@ export default function AdminRevenuePage() {
       </div>
 
       {/* Tabs Switcher */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-px">
+      <div className="htcaa-segmented self-start">
         <button
           onClick={() => setActiveTab("analytics")}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all border-b-2 cursor-pointer ${
-            activeTab === "analytics"
-              ? "border-teal-600 text-teal-900 bg-teal-50/50"
-              : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
-          }`}
+          className={activeTab === "analytics" ? "active" : ""}
         >
-          <TrendingUp className="w-4 h-4" />
-          <span>Phân tích Doanh thu & Phí sàn</span>
+          <TrendingUp className="w-3.5 h-3.5 inline mr-1" />
+          Phân tích Doanh thu & Phí sàn
         </button>
 
         <button
           onClick={() => setActiveTab("settlements")}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all border-b-2 cursor-pointer ${
-            activeTab === "settlements"
-              ? "border-teal-600 text-teal-900 bg-teal-50/50"
-              : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
-          }`}
+          className={activeTab === "settlements" ? "active" : ""}
         >
-          <CreditCard className="w-4 h-4" />
-          <span>Đối soát & Quyết toán Payout</span>
+          <CreditCard className="w-3.5 h-3.5 inline mr-1" />
+          Đối soát & Quyết toán Payout
           {readyPayoutCount > 0 && (
-            <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800">
+            <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800">
               {readyPayoutCount}
             </span>
           )}

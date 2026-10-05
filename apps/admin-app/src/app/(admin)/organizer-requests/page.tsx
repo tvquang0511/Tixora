@@ -145,30 +145,30 @@ export default function OrganizerRequestsPage() {
   return (
     <div className="space-y-4 max-w-7xl mx-auto pb-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
+      <div className="head stickyhead">
         <div>
-          <div className="text-xs font-semibold text-teal-700">
-            Quản trị &bull; Phê duyệt đối tác
+          <div className="flex items-center gap-2">
+            <h1 className="htcaa-h1">Hồ sơ đối tác BTC</h1>
+            <span className="htcaa-badge-count-pill">
+              {totalItems} hồ sơ
+            </span>
           </div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2 mt-1">
-            <Building2 className="w-5 h-5 text-teal-600" />
-            Xét Duyệt Hồ Sơ Ban Tổ Chức
-          </h1>
-          <p className="text-xs text-slate-600 mt-0.5">
-            Kiểm tra thông tin pháp nhân, hồ sơ năng lực và cấp quyền Organizer
-            cho đối tác
+          <p className="sub">
+            Kiểm tra thông tin pháp nhân, hồ sơ năng lực và cấp quyền Organizer cho đối tác
           </p>
         </div>
-        <button
-          onClick={() => fetchRequests()}
-          disabled={isLoading}
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-md hover:bg-slate-50 transition-colors shadow-xs self-start sm:self-auto cursor-pointer"
-        >
-          <RotateCw
-            className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-teal-600" : ""}`}
-          />
-          Làm mới
-        </button>
+        <div className="head-actions">
+          <button
+            onClick={() => fetchRequests()}
+            disabled={isLoading}
+            className="btn btn-secondary btn-sm"
+          >
+            <RotateCw
+              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-[#0052ff]" : ""}`}
+            />
+            Làm mới
+          </button>
+        </div>
       </div>
 
       {/* Notifications */}
@@ -203,9 +203,9 @@ export default function OrganizerRequestsPage() {
       )}
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-xs">
+      <div className="filters">
         {/* Status Tabs */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-lg overflow-x-auto">
+        <div className="htcaa-segmented">
           {[
             { key: "ALL", label: "Tất cả" },
             { key: "PENDING", label: "Chờ duyệt" },
@@ -218,11 +218,7 @@ export default function OrganizerRequestsPage() {
                 setStatusFilter(tab.key);
                 setPage(1);
               }}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all whitespace-nowrap ${
-                statusFilter === tab.key
-                  ? "bg-white text-slate-900 shadow-2xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
+              className={statusFilter === tab.key ? "active" : ""}
             >
               {tab.label}
             </button>
@@ -232,19 +228,18 @@ export default function OrganizerRequestsPage() {
         {/* Search Input */}
         <form
           onSubmit={handleSearchSubmit}
-          className="relative flex-1 md:max-w-md"
+          className="search-box flex-1 max-w-md"
         >
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 shrink-0" />
           <input
             type="text"
             placeholder="Tìm theo tên đơn vị, email, MST..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-20 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 transition-colors h-9"
           />
           <button
             type="submit"
-            className="absolute right-1 top-1/2 -translate-y-1/2 px-2.5 py-1 text-xs font-medium text-white bg-teal-600 hover:bg-teal-700 rounded transition-colors cursor-pointer"
+            className="btn btn-primary btn-sm !py-1 !px-2.5 ml-1"
           >
             Tìm kiếm
           </button>
@@ -252,26 +247,27 @@ export default function OrganizerRequestsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-slate-200 shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
+      {/* Table */}
+      <div className="htcaa-table-wrap">
+        <div className="overflow-x-auto min-h-[320px]">
+          <table className="htcaa-table">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-600 uppercase tracking-wider">
-                <th className="py-2.5 px-3">Tên đơn vị / Doanh nghiệp</th>
-                <th className="py-2.5 px-3">Đại diện / Liên hệ</th>
-                <th className="py-2.5 px-3">Mã số thuế / CCCD</th>
-                <th className="py-2.5 px-3">Tài khoản thanh toán</th>
-                <th className="py-2.5 px-3">Hồ sơ đính kèm</th>
-                <th className="py-2.5 px-3">Trạng thái</th>
-                <th className="py-2.5 px-3">Ngày nộp</th>
-                <th className="py-2.5 px-3 text-right">Thao tác</th>
+              <tr>
+                <th>Tên đơn vị / Doanh nghiệp</th>
+                <th>Đại diện / Liên hệ</th>
+                <th>Mã số thuế / CCCD</th>
+                <th>Tài khoản thanh toán</th>
+                <th>Hồ sơ đính kèm</th>
+                <th>Trạng thái</th>
+                <th>Ngày nộp</th>
+                <th style={{ textAlign: "right" }}>Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody>
               {isLoading ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-slate-400">
-                    <RotateCw className="w-5 h-5 animate-spin mx-auto text-teal-600 mb-2" />
+                    <RotateCw className="w-5 h-5 animate-spin mx-auto text-[#0052ff] mb-2" />
                     Đang tải dữ liệu hồ sơ...
                   </td>
                 </tr>
@@ -286,10 +282,10 @@ export default function OrganizerRequestsPage() {
                 requests.map((item) => (
                   <tr
                     key={item.id}
-                    className="hover:bg-slate-50/70 transition-colors"
+                    className="row-click group"
                   >
                     {/* Organization Name */}
-                    <td className="py-2.5 px-3">
+                    <td>
                       <div className="font-semibold text-slate-900 text-xs">
                         {item.organization_name}
                       </div>
@@ -300,7 +296,7 @@ export default function OrganizerRequestsPage() {
                     </td>
 
                     {/* Contact User */}
-                    <td className="py-2.5 px-3">
+                    <td>
                       <div className="font-medium text-slate-800 text-xs">
                         {item.user?.full_name || "N/A"}
                       </div>
@@ -311,12 +307,12 @@ export default function OrganizerRequestsPage() {
                     </td>
 
                     {/* Tax Code */}
-                    <td className="py-2.5 px-3 font-mono tabular-nums text-xs text-slate-700 font-semibold">
+                    <td className="font-mono tabular-nums text-xs text-slate-700 font-semibold">
                       {item.tax_code_or_id}
                     </td>
 
                     {/* Bank Info */}
-                    <td className="py-2.5 px-3">
+                    <td>
                       {item.bank_name ? (
                         <div className="text-xs">
                           <span className="font-semibold text-slate-800">
@@ -337,14 +333,14 @@ export default function OrganizerRequestsPage() {
                     </td>
 
                     {/* Documents */}
-                    <td className="py-2.5 px-3">
+                    <td>
                       <div className="flex flex-col gap-1">
                         {item.business_license_url ? (
                           <a
                             href={item.business_license_url}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1 text-xs text-teal-600 hover:text-teal-800 font-medium"
+                            className="inline-flex items-center gap-1 text-xs text-[#0052ff] hover:text-[#0e54a3] font-medium"
                           >
                             <FileText className="w-3 h-3" />
                             Giấy phép KD
@@ -356,7 +352,7 @@ export default function OrganizerRequestsPage() {
                             href={item.portfolio_url}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1 text-xs text-teal-700 hover:text-teal-900 font-medium"
+                            className="inline-flex items-center gap-1 text-xs text-[#0052ff] hover:text-[#0e54a3] font-medium"
                           >
                             <ExternalLink className="w-3 h-3" />
                             Portfolio
@@ -371,22 +367,22 @@ export default function OrganizerRequestsPage() {
                     </td>
 
                     {/* Status */}
-                    <td className="py-2.5 px-3">
+                    <td>
                       {item.status === "PENDING" && (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                           <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                           Chờ duyệt
                         </span>
                       )}
                       {item.status === "APPROVED" && (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                           <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
                           Đã phê duyệt
                         </span>
                       )}
                       {item.status === "REJECTED" && (
                         <div>
-                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
                             <XCircle className="w-3.5 h-3.5 text-rose-500" />
                             Bị từ chối
                           </span>
@@ -403,7 +399,7 @@ export default function OrganizerRequestsPage() {
                     </td>
 
                     {/* Created Date */}
-                    <td className="py-2.5 px-3 text-[11px] font-mono tabular-nums text-slate-500 whitespace-nowrap">
+                    <td className="text-[11px] font-mono tabular-nums text-slate-500 whitespace-nowrap">
                       {new Date(item.created_at).toLocaleDateString("vi-VN", {
                         year: "numeric",
                         month: "2-digit",
@@ -414,14 +410,14 @@ export default function OrganizerRequestsPage() {
                     </td>
 
                     {/* Actions */}
-                    <td className="py-2.5 px-3 text-right whitespace-nowrap">
+                    <td className="text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => {
                             setSelectedRequest(item);
                             setIsDetailOpen(true);
                           }}
-                          className="px-2.5 py-1 text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-md transition-colors shadow-xs cursor-pointer"
+                          className="btn btn-secondary btn-sm"
                         >
                           Chi tiết
                         </button>
@@ -434,7 +430,7 @@ export default function OrganizerRequestsPage() {
                                 setActionError(null);
                                 setIsApproveOpen(true);
                               }}
-                              className="px-2.5 py-1 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-md transition-colors shadow-xs cursor-pointer"
+                              className="btn btn-primary btn-sm"
                             >
                               Duyệt
                             </button>
@@ -445,7 +441,7 @@ export default function OrganizerRequestsPage() {
                                 setRejectionReason("");
                                 setIsRejectOpen(true);
                               }}
-                              className="px-2.5 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-md transition-colors cursor-pointer"
+                              className="btn btn-danger btn-sm"
                             >
                               Từ chối
                             </button>
@@ -474,7 +470,7 @@ export default function OrganizerRequestsPage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="px-2.5 py-1 bg-white border border-slate-200 rounded-md disabled:opacity-50 hover:bg-slate-50 transition-colors shadow-xs cursor-pointer font-medium"
+              className="btn btn-secondary btn-sm disabled:opacity-50"
             >
               Trang trước
             </button>
@@ -484,7 +480,7 @@ export default function OrganizerRequestsPage() {
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={requests.length < limit}
-              className="px-2.5 py-1 bg-white border border-slate-200 rounded-md disabled:opacity-50 hover:bg-slate-50 transition-colors shadow-xs cursor-pointer font-medium"
+              className="btn btn-secondary btn-sm disabled:opacity-50"
             >
               Trang sau
             </button>
@@ -495,15 +491,15 @@ export default function OrganizerRequestsPage() {
       {/* Modal Detail */}
       {isDetailOpen && selectedRequest && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-xl w-full p-5 shadow-xl border border-slate-200 space-y-4">
+          <div className="card max-w-xl w-full p-6 shadow-xl border border-slate-200 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-teal-600" />
+                <Building2 className="w-5 h-5 text-[#0052ff]" />
                 Thông Tin Đối Tác Chi Tiết
               </h3>
               <button
                 onClick={() => setIsDetailOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-lg leading-none"
+                className="text-slate-400 hover:text-slate-600 text-lg leading-none cursor-pointer"
               >
                 ✕
               </button>
@@ -548,7 +544,7 @@ export default function OrganizerRequestsPage() {
             {/* Bank Card Box */}
             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 space-y-2">
               <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                <CreditCard className="w-4 h-4 text-teal-600" />
+                <CreditCard className="w-4 h-4 text-[#0052ff]" />
                 Thông Tin Tài Khoản Nhận Thanh Toán (Escrow)
               </div>
               <div className="grid grid-cols-3 gap-2 text-xs pt-1">
@@ -584,7 +580,7 @@ export default function OrganizerRequestsPage() {
                     href={selectedRequest.business_license_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-teal-50 border border-teal-200 rounded-lg text-xs font-medium text-teal-700 hover:bg-teal-100 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-xs font-medium text-[#0052ff] hover:bg-blue-100 transition-colors"
                   >
                     <FileText className="w-4 h-4" />
                     Xem Giấy phép kinh doanh
@@ -600,7 +596,7 @@ export default function OrganizerRequestsPage() {
                     href={selectedRequest.portfolio_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-indigo-50 border border-indigo-200 rounded-lg text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Xem Hồ sơ năng lực / Website
@@ -612,7 +608,7 @@ export default function OrganizerRequestsPage() {
             <div className="flex justify-end pt-3 border-t border-slate-100">
               <button
                 onClick={() => setIsDetailOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                className="btn btn-secondary btn-sm"
               >
                 Đóng
               </button>
@@ -624,7 +620,7 @@ export default function OrganizerRequestsPage() {
       {/* Modal Approve Confirmation */}
       {isApproveOpen && selectedRequest && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-xl border border-slate-200 space-y-4">
+          <div className="card max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4">
             <div className="w-10 h-10 rounded-md bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center mx-auto">
               <CheckCircle className="w-5 h-5" />
             </div>
@@ -642,7 +638,7 @@ export default function OrganizerRequestsPage() {
                   {selectedRequest.organization_name}
                 </span>{" "}
                 sẽ được cấp vai trò{" "}
-                <span className="font-bold text-teal-600">Organizer</span> và mở
+                <span className="font-bold text-[#0052ff]">Organizer</span> và mở
                 quyền tạo sự kiện bán vé.
               </p>
             </div>
@@ -651,14 +647,14 @@ export default function OrganizerRequestsPage() {
               <button
                 onClick={() => setIsApproveOpen(false)}
                 disabled={isSubmitting}
-                className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                className="btn btn-plain btn-sm"
               >
                 Hủy bỏ
               </button>
               <button
                 onClick={handleApprove}
                 disabled={isSubmitting}
-                className="px-4 py-2 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors shadow-2xs inline-flex items-center gap-2"
+                className="btn btn-primary btn-sm inline-flex items-center gap-2"
               >
                 {isSubmitting && <RotateCw className="w-4 h-4 animate-spin" />}
                 Xác nhận phê duyệt
@@ -671,7 +667,7 @@ export default function OrganizerRequestsPage() {
       {/* Modal Reject Confirmation */}
       {isRejectOpen && selectedRequest && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-5 shadow-xl border border-slate-200 space-y-4">
+          <div className="card max-w-md w-full p-6 shadow-xl border border-slate-200 space-y-4">
             <div className="w-10 h-10 rounded-md bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center mx-auto">
               <XCircle className="w-5 h-5" />
             </div>
@@ -702,14 +698,14 @@ export default function OrganizerRequestsPage() {
               <button
                 onClick={() => setIsRejectOpen(false)}
                 disabled={isSubmitting}
-                className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                className="btn btn-plain btn-sm"
               >
                 Hủy bỏ
               </button>
               <button
                 onClick={handleReject}
                 disabled={isSubmitting}
-                className="px-4 py-2 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg transition-colors shadow-2xs inline-flex items-center gap-2"
+                className="btn btn-danger btn-sm inline-flex items-center gap-2"
               >
                 {isSubmitting && <RotateCw className="w-4 h-4 animate-spin" />}
                 Xác nhận từ chối

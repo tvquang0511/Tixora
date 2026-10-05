@@ -160,10 +160,10 @@ export function RevenueTrendChart({
   };
 
   return (
-    <section className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex flex-col min-h-[480px]">
+    <div className="card p-5 flex flex-col min-h-[480px]">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 pb-4 border-b border-slate-100">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-teal-50 rounded-lg border border-teal-100 text-teal-700">
+          <div className="p-1.5 bg-blue-50 rounded-lg border border-blue-100 text-[#0052ff]">
             <TrendingUp className="w-4 h-4" />
           </div>
           <h3 className="font-sans text-xs font-semibold uppercase tracking-wider text-slate-900">
@@ -174,8 +174,8 @@ export function RevenueTrendChart({
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-sans">
-          <div className="flex items-center gap-1.5 text-teal-700 font-medium">
-            <span className="w-2.5 h-1 rounded-full bg-teal-600 inline-block" />
+          <div className="flex items-center gap-1.5 text-[#0052ff] font-medium">
+            <span className="w-2.5 h-1 rounded-full bg-[#0052ff] inline-block" />
             Doanh thu (VND)
           </div>
           <div className="flex items-center gap-1.5 text-emerald-700 font-medium">
@@ -192,7 +192,7 @@ export function RevenueTrendChart({
       <div className="grow relative min-h-[300px] w-full select-none">
         {isTrendLoading ? (
           <div className="absolute inset-0 flex items-center justify-center font-sans text-xs text-slate-500 gap-2">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#0052ff] border-t-transparent" />
             Đang tải dữ liệu xu hướng...
           </div>
         ) : trendItems.length === 0 ? (
@@ -213,8 +213,8 @@ export function RevenueTrendChart({
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="0%" stopColor="#0d9488" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#0d9488" stopOpacity="0.0" />
+                  <stop offset="0%" stopColor="#0052ff" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="#0052ff" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
 
@@ -283,7 +283,7 @@ export function RevenueTrendChart({
               <text
                 x={paddingLeft - 10}
                 y={paddingTop - 15}
-                fill="#0d9488"
+                fill="#0052ff"
                 fontSize={9}
                 fontWeight="600"
                 textAnchor="end"
@@ -321,7 +321,7 @@ export function RevenueTrendChart({
                 <path
                   d={revenuePath}
                   fill="none"
-                  stroke="#0d9488"
+                  stroke="#0052ff"
                   strokeWidth={2.5}
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -369,8 +369,8 @@ export function RevenueTrendChart({
                       cx={x}
                       cy={getY(item.revenue, maxRevenue)}
                       r={isHovered ? 5 : 3.5}
-                      fill={isHovered ? "#0d9488" : "#ffffff"}
-                      stroke="#0d9488"
+                      fill={isHovered ? "#0052ff" : "#ffffff"}
+                      stroke="#0052ff"
                       strokeWidth={2}
                     />
                     <circle
@@ -448,7 +448,7 @@ export function RevenueTrendChart({
                   {formatFullPeriod(trendItems[hoveredIndex].period)}
                 </div>
                 <div className="space-y-1 font-sans text-[11px]">
-                  <div className="flex items-center justify-between gap-4 text-teal-400 font-semibold">
+                  <div className="flex items-center justify-between gap-4 text-blue-400 font-semibold">
                     <span>Doanh thu:</span>
                     <span>{formatVND(trendItems[hoveredIndex].revenue)}</span>
                   </div>
@@ -474,6 +474,6 @@ export function RevenueTrendChart({
           </>
         )}
       </div>
-    </section>
+    </div>
   );
 }

@@ -55,17 +55,17 @@ export function ActionRequiredSection() {
   const totalActions = pendingOrgCount + readySettlementCount;
 
   return (
-    <section className="bg-white rounded-lg border border-slate-200 p-3.5 sm:p-4 shadow-2xs space-y-3">
+    <section className="card space-y-3">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-1 bg-amber-50 text-amber-800 rounded border border-amber-200">
-            <AlertCircle className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#0052ff] border border-blue-200 flex items-center justify-center">
+            <AlertCircle className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h2 className="over font-bold text-slate-900">
               Nhiệm vụ cần xử lý ngay
             </h2>
-            <p className="text-[11px] text-slate-500">
+            <p className="sub">
               Các yêu cầu và nghiệp vụ cần phê duyệt từ quản trị viên
             </p>
           </div>
@@ -73,14 +73,14 @@ export function ActionRequiredSection() {
 
         <div>
           {isLoading ? (
-            <div className="h-5 w-20 bg-slate-100 rounded animate-pulse" />
+            <div className="h-6 w-24 bg-slate-100 rounded-full animate-pulse" />
           ) : totalActions > 0 ? (
-            <span className="px-2 py-0.5 text-[11px] font-semibold rounded bg-rose-50 text-rose-800 border border-rose-200">
+            <span className="htcaa-badge-count-pill text-rose-700 bg-rose-50 border-rose-200">
               {totalActions} việc đang chờ
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
-              <CheckCircle2 className="w-3 h-3" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               <span>Hệ thống bình thường</span>
             </span>
           )}
@@ -91,17 +91,17 @@ export function ActionRequiredSection() {
         {/* Item 1: Pending Organizers */}
         <Link
           href="/organizer-requests"
-          className="group flex items-center justify-between p-3 rounded-lg border border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-teal-400 transition-colors duration-75"
+          className="group flex items-center justify-between p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-[#0052ff] hover:shadow-xs transition-all duration-150"
         >
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white border border-slate-200 group-hover:border-teal-400 group-hover:text-teal-600 rounded text-slate-600 shadow-2xs transition-colors duration-75">
+            <div className="p-2 bg-white border border-slate-200 group-hover:border-[#0052ff] group-hover:text-[#0052ff] rounded-lg text-slate-600 shadow-2xs transition-colors">
               <Building2 className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-bold text-slate-900 group-hover:text-teal-900 transition-colors duration-75">
+              <div className="text-xs font-bold text-slate-900 group-hover:text-[#0052ff] transition-colors">
                 Hồ sơ Ban tổ chức chờ duyệt
               </div>
-              <div className="text-[11px] text-slate-500 mt-0.5">
+              <div className="sub mt-0.5">
                 {pendingOrgCount > 0 ? (
                   <span className="text-rose-700 font-semibold">
                     Có {pendingOrgCount} hồ sơ đối tác mới cần thẩm định
@@ -112,27 +112,26 @@ export function ActionRequiredSection() {
               </div>
             </div>
           </div>
-          <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-teal-600 transition-colors duration-75" />
+          <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-[#0052ff] group-hover:translate-x-0.5 transition-all" />
         </Link>
 
         {/* Item 2: Ready for Settlement */}
         <Link
           href="/revenue"
-          className="group flex items-center justify-between p-3 rounded-lg border border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-teal-400 transition-colors duration-75"
+          className="group flex items-center justify-between p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-[#0052ff] hover:shadow-xs transition-all duration-150"
         >
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white border border-slate-200 group-hover:border-teal-400 group-hover:text-teal-600 rounded text-slate-600 shadow-2xs transition-colors duration-75">
+            <div className="p-2 bg-white border border-slate-200 group-hover:border-[#0052ff] group-hover:text-[#0052ff] rounded-lg text-slate-600 shadow-2xs transition-colors">
               <CreditCard className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-bold text-slate-900 group-hover:text-teal-900 transition-colors duration-75">
+              <div className="text-xs font-bold text-slate-900 group-hover:text-[#0052ff] transition-colors">
                 Sự kiện chờ quyết toán giải ngân
               </div>
-              <div className="text-[11px] text-slate-500 mt-0.5">
+              <div className="sub mt-0.5">
                 {readySettlementCount > 0 ? (
                   <span className="text-amber-800 font-semibold">
-                    Có {readySettlementCount} sự kiện đã kết thúc sẵn sàng
-                    chuyển tiền
+                    Có {readySettlementCount} sự kiện đã kết thúc sẵn sàng chuyển tiền
                   </span>
                 ) : (
                   <span>Không có sự kiện tồn đọng chuyển khoản</span>
@@ -140,7 +139,7 @@ export function ActionRequiredSection() {
               </div>
             </div>
           </div>
-          <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-teal-600 transition-colors duration-75" />
+          <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-[#0052ff] group-hover:translate-x-0.5 transition-all" />
         </Link>
       </div>
     </section>

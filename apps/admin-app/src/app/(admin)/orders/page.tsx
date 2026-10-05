@@ -122,72 +122,105 @@ export default function AdminOrdersPage() {
   };
 
   return (
-    <div className="space-y-3.5 max-w-[1600px] w-full mx-auto">
-      {/* Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200">
-        <div>
-          <h1 className="text-lg font-bold text-slate-900 tracking-tight">
-            Quản lý Đơn hàng
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Duyệt, tìm kiếm và kiểm tra tất cả các giao dịch thanh toán vé trong
-            hệ thống.
-          </p>
+    <div className="space-y-4">
+      {/* HTCAA Page Header */}
+      <div className="head stickyhead flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="htcaa-h1 m-0">Đơn hàng</h1>
+          <span className="htcaa-badge-count-pill">
+            {totalItems > 0 ? `${totalItems} đơn hàng` : "0 đơn hàng"}
+          </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="head-actions flex items-center gap-2">
           <button
             onClick={() => void fetchOrders()}
             disabled={isLoading}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-md shadow-2xs cursor-pointer transition-colors duration-75 disabled:opacity-50"
+            className="btn"
             title="Làm mới danh sách đơn hàng"
           >
             <RotateCw
-              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-teal-600" : ""}`}
+              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-[#0052ff]" : "text-slate-500"}`}
             />
-            <span>Làm mới</span>
+            <span>{isLoading ? "Đang tải…" : "Làm mới"}</span>
           </button>
         </div>
       </div>
 
-      {/* Filters Bar */}
-      <div className="p-2.5 bg-white border border-slate-200 rounded-lg shadow-2xs flex flex-col sm:flex-row gap-2.5 items-center justify-between">
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+      {/* HTCAA Filters Bar */}
+      <div className="filters">
+        <div className="search-box">
+          <Search size={14} className="text-slate-400 shrink-0" />
           <input
-            className="pl-8 pr-2.5 py-1.5 border border-slate-200 rounded-md bg-white text-slate-900 text-xs w-full focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 placeholder:text-slate-400 transition-colors duration-75"
+            className="w-full"
             placeholder="Tìm theo mã đơn, người mua, email..."
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              className="text-slate-400 hover:text-slate-600 text-xs px-1"
+            >
+              ✕
+            </button>
+          )}
         </div>
-        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 justify-end">
-          <span className="text-xs text-slate-600 font-medium select-none">
-            Trạng thái:
-          </span>
+        <select
+          value={String(limit)}
+          onChange={(e) => {
+            setLimit(Number(e.target.value));
+            setPage(1);
+          }}
+          className="select-trigger"
+          style={{ width: "150px" }}
+          aria-label="Số dòng mỗi trang"
+        >
+          <option value="10">10 dòng/trang</option>
+          <option value="20">20 dòng/trang</option>
+          <option value="50">50 dòng/trang</option>
+        </select>
+      </div>
+
+      {/* Subtitle & Status Select Bar */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          flexWrap: "wrap",
+          marginBottom: 12,
+        }}
+      >
+        <div className="sub">Danh sách giao dịch thanh toán vé.</div>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <span className="over">Trạng thái</span>
           <select
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="px-2.5 py-1.5 border border-slate-200 rounded-md bg-white text-xs font-medium text-slate-700 cursor-pointer focus:outline-none focus:border-teal-500 shadow-2xs transition-colors duration-75"
+            className="select-trigger"
+            style={{ width: "180px" }}
+            aria-label="Lọc theo trạng thái"
           >
             <option value="">Tất cả trạng thái</option>
             <option value="PAID">Đã thanh toán</option>
             <option value="PENDING">Chờ thanh toán</option>
             <option value="CANCELLED">Đã hủy</option>
           </select>
-        </div>
+        </label>
       </div>
 
-      {/* Main Table Card */}
-      <div className="bg-white border border-slate-200 rounded-lg shadow-2xs overflow-hidden">
+      {/* Main HTCAA Table */}
+      <div className="htcaa-table-wrap">
         {isLoading ? (
           <div className="py-16 text-center text-slate-500">
             <div className="flex flex-col items-center justify-center gap-2">
-              <RotateCw className="h-5 w-5 animate-spin text-teal-600" />
-              <span className="text-xs">Đang tải danh sách đơn hàng...</span>
+              <RotateCw className="h-5 w-5 animate-spin text-[#0052ff]" />
+              <span className="text-xs">Đang tải danh sách đơn hàng…</span>
             </div>
           </div>
         ) : orders.length === 0 ? (
@@ -195,66 +228,77 @@ export default function AdminOrdersPage() {
             Không tìm thấy đơn hàng nào khớp với bộ lọc.
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[900px] text-xs">
+          <div className="overflow-x-auto min-h-[320px]">
+            <table className="htcaa-table">
               <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px] select-none">
-                  <th className="p-2.5">Mã đơn hàng</th>
-                  <th className="p-2.5">Khách hàng</th>
-                  <th className="p-2.5">Sự kiện</th>
-                  <th className="p-2.5 text-center">Số vé</th>
-                  <th className="p-2.5 text-right">Số tiền</th>
-                  <th className="p-2.5 text-center">Trạng thái</th>
-                  <th className="p-2.5">Ngày tạo</th>
-                  <th className="p-2.5 text-center">Hành động</th>
+                <tr>
+                  <th>MÃ ĐƠN HÀNG</th>
+                  <th>KHÁCH HÀNG</th>
+                  <th>SỰ KIỆN</th>
+                  <th style={{ textAlign: "center" }}>SỐ VÉ</th>
+                  <th style={{ textAlign: "right" }}>SỐ TIỀN</th>
+                  <th style={{ textAlign: "center" }}>TRẠNG THÁI</th>
+                  <th>NGÀY TẠO</th>
+                  <th style={{ width: 44, textAlign: "right" }}></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-800">
+              <tbody>
                 {orders.map((order) => (
                   <tr
                     key={order.id}
                     onClick={() => router.push(`/orders/${order.id}`)}
-                    className="hover:bg-slate-50/70 transition-colors duration-75 cursor-pointer"
+                    className="row-click group"
                   >
-                    <td className="p-2.5">
+                    <td>
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="font-mono text-xs font-semibold text-slate-900 break-all">
-                          {order.id.slice(0, 8)}...
+                        <span className="font-mono text-xs font-semibold text-[#0052ff]">
+                          #{order.id.slice(0, 8).toUpperCase()}
                         </span>
                         <CopyButton text={order.id} />
                       </div>
                     </td>
-                    <td className="p-2.5">
+                    <td>
                       <div className="font-semibold text-slate-900">
                         {order.user_name || "Khách hàng ẩn danh"}
                       </div>
-                      <div className="text-[11px] text-slate-500">
+                      <div className="row-sub">
                         {order.user_email || "N/A"}
                       </div>
                     </td>
-                    <td className="p-2.5 font-medium text-slate-900">
-                      {order.concert_name}
+                    <td>
+                      <div className="font-semibold text-slate-900 group-hover:text-[#0052ff] transition-colors">
+                        {order.concert_name}
+                      </div>
                     </td>
-                    <td className="p-2.5 text-center font-bold text-slate-900 font-mono tabular-nums">
+                    <td style={{ textAlign: "center", fontVariantNumeric: "tabular-nums" }} className="font-bold text-slate-900 font-mono">
                       {order.ticket_count}
                     </td>
-                    <td className="p-2.5 font-bold text-slate-900 font-mono tabular-nums text-right whitespace-nowrap">
+                    <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }} className="font-bold text-slate-900 font-mono text-xs">
                       {formatConcertCurrency(Number(order.total_amount))}
                     </td>
-                    <td className="p-2.5 text-center">
+                    <td style={{ textAlign: "center" }}>
                       <StatusBadge
                         status={order.status}
                         variant="order"
                         size="xs"
                       />
                     </td>
-                    <td className="p-2.5 text-slate-600 font-mono tabular-nums whitespace-nowrap text-xs">
-                      {new Date(order.created_at).toLocaleString("vi-VN")}
+                    <td>
+                      <div className="val-strong">
+                        {new Date(order.created_at).toLocaleDateString("vi-VN")}
+                      </div>
+                      <div className="row-sub">
+                        {new Date(order.created_at).toLocaleTimeString("vi-VN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </div>
                     </td>
-                    <td className="p-2.5 text-center">
-                      <span className="inline-block px-2 py-0.5 bg-white border border-slate-200 text-slate-700 text-[10px] font-medium rounded shadow-2xs hover:bg-slate-50 transition-colors duration-75">
-                        Chi tiết
-                      </span>
+                    <td style={{ textAlign: "right", color: "#94a3b8" }}>
+                      <ChevronRight
+                        size={16}
+                        className="text-slate-400 ml-auto group-hover:text-[#0052ff] group-hover:translate-x-0.5 transition-all"
+                      />
                     </td>
                   </tr>
                 ))}
@@ -273,7 +317,7 @@ export default function AdminOrdersPage() {
                 <strong className="text-slate-900">{totalItems}</strong> đơn)
               </span>
               <div className="flex items-center gap-1.5">
-                <span className="text-[11px] text-slate-500">Hiển thị:</span>
+                <span className="over text-[10px]">Hiển thị:</span>
                 <select
                   value={limit}
                   onChange={(e) => {
@@ -316,7 +360,7 @@ export default function AdminOrdersPage() {
                     onClick={() => setPage(p as number)}
                     className={`min-w-7 h-7 text-xs font-medium rounded-lg border transition-colors cursor-pointer flex items-center justify-center ${
                       isCurrent
-                        ? "bg-teal-600 border-teal-600 text-white shadow-2xs"
+                        ? "bg-[#0052ff] border-[#0052ff] text-white shadow-2xs font-bold"
                         : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-2xs"
                     }`}
                   >

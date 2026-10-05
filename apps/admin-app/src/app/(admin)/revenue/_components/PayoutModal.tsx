@@ -81,7 +81,7 @@ export function PayoutModal({
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-teal-100/70 text-teal-800 rounded-lg">
+            <div className="p-2 bg-blue-100/70 text-[#0052ff] rounded-lg">
               <CreditCard className="w-5 h-5" />
             </div>
             <div>
@@ -105,7 +105,7 @@ export function PayoutModal({
         <div className="p-6 overflow-y-auto space-y-5 grow">
           {/* Concert & Organizer Header */}
           <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 space-y-2">
-            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+            <div className="over">
               Sự kiện thanh toán
             </div>
             <div className="font-bold text-slate-900 text-base">
@@ -124,7 +124,7 @@ export function PayoutModal({
           <div className="rounded-xl border border-slate-200 p-4 space-y-2.5 bg-white">
             <div className="flex justify-between items-center text-sm text-slate-600">
               <span>Tổng doanh số bán vé (GMV):</span>
-              <span className="font-medium text-slate-900">
+              <span className="font-medium text-slate-900 tabular-nums">
                 {formatVND(item.gmv)}
               </span>
             </div>
@@ -132,7 +132,7 @@ export function PayoutModal({
               <span className="flex items-center gap-1.5">
                 <span>Phí dịch vụ sàn Tixora (5%):</span>
               </span>
-              <span className="font-medium text-rose-600">
+              <span className="font-medium text-rose-600 tabular-nums">
                 - {formatVND(item.platform_fee)}
               </span>
             </div>
@@ -140,7 +140,7 @@ export function PayoutModal({
               <span className="font-bold text-slate-900 text-sm">
                 Số tiền thực chuyển (Net Payout):
               </span>
-              <span className="font-extrabold text-teal-700 text-lg">
+              <span className="font-extrabold text-[#0052ff] text-lg tabular-nums">
                 {formatVND(item.net_payout)}
               </span>
             </div>
@@ -149,10 +149,10 @@ export function PayoutModal({
           {/* Bank Account Info & VietQR */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              <div className="over">
                 Thông tin tài khoản nhận tiền
               </div>
-              <span className="text-[11px] text-teal-700 font-medium">
+              <span className="text-[11px] text-[#0052ff] font-medium">
                 Đã thẩm định hồ sơ
               </span>
             </div>
@@ -169,7 +169,7 @@ export function PayoutModal({
                   <div className="flex items-center justify-between">
                     <span className="text-slate-500">Số tài khoản:</span>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-teal-800 text-sm">
+                      <span className="font-mono font-bold text-[#0052ff] text-sm">
                         {item.organizer.bank_account_number}
                       </span>
                       <button
@@ -221,8 +221,8 @@ export function PayoutModal({
                 </div>
 
                 {qrUrl && (
-                  <div className="flex flex-col items-center justify-center p-3 bg-teal-50/50 rounded-xl border border-teal-100 text-center">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-teal-800 mb-2">
+                  <div className="flex flex-col items-center justify-center p-3 bg-blue-50/50 rounded-xl border border-blue-100 text-center">
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-[#0052ff] mb-2">
                       <QrCode className="w-4 h-4" />
                       <span>Quét mã VietQR chuyển khoản nhanh</span>
                     </div>
@@ -259,7 +259,7 @@ export function PayoutModal({
                   placeholder="Ví dụ: FT2609887192 hoặc MB991823"
                   value={refCode}
                   onChange={(e) => setRefCode(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-teal-500"
+                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#0052ff]"
                 />
                 <p className="text-[11px] text-slate-400 mt-1">
                   Nhập mã biên lai hoặc mã giao dịch sau khi kế toán đã chuyển
@@ -271,14 +271,14 @@ export function PayoutModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+                  className="btn btn-secondary btn-sm"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
                   disabled={!refCode.trim() || isSuccess}
-                  className="px-4 py-2 text-xs font-semibold bg-teal-600 hover:bg-teal-700 text-white rounded-lg shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+                  className="btn btn-primary btn-sm inline-flex items-center gap-1.5 disabled:opacity-50"
                 >
                   {isSuccess ? (
                     <>

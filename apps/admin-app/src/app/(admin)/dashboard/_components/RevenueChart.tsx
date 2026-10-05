@@ -79,26 +79,26 @@ export function RevenueChart({
   formatValueVND,
 }: RevenueChartProps) {
   return (
-    <section className="lg:col-span-2 bg-white rounded-lg border border-slate-200 p-3.5 sm:p-4 shadow-2xs flex flex-col min-h-[440px]">
+    <section className="lg:col-span-2 card flex flex-col min-h-[440px]">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3.5 pb-3 border-b border-slate-100">
         <div>
-          <h3 className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-900">
+          <h3 className="over font-bold text-slate-900">
             Biểu đồ doanh thu theo chu kỳ
           </h3>
-          <p className="text-xs text-slate-500 font-sans mt-0.5">
+          <p className="sub mt-0.5">
             Dữ liệu doanh thu bán vé đã xác nhận thanh toán
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-slate-600 font-sans">
-            <span className="w-2 h-2 rounded-full bg-teal-600 inline-block" />
-            <span className="font-medium">Doanh thu (VND)</span>
+          <div className="flex items-center gap-1.5 text-xs text-slate-600">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#0052ff] inline-block" />
+            <span className="font-semibold text-slate-700">Doanh thu (VND)</span>
           </div>
           <button
             onClick={onExportCsv}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-slate-200 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-sans text-xs font-medium transition-colors duration-75 cursor-pointer shadow-2xs"
+            className="btn btn-sm"
           >
-            <Download className="w-3.5 h-3.5 text-slate-500" />
+            <Download size={14} className="text-slate-500" />
             <span>Xuất CSV</span>
           </button>
         </div>
@@ -107,14 +107,14 @@ export function RevenueChart({
       {/* Filters Bar */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-end mb-3.5 pb-3 border-b border-slate-100">
         <div className="md:col-span-5 flex flex-col gap-1">
-          <span className="text-[10px] font-sans font-semibold text-slate-600 uppercase tracking-wider">
+          <span className="over text-[10px]">
             Khoảng thời gian
           </span>
           <div
             onClick={() => fromDateRef.current?.showPicker()}
-            className="flex items-center gap-2 bg-white border border-slate-200 rounded-md px-2.5 py-1 text-xs text-slate-900 transition-colors duration-75 cursor-pointer w-full focus-within:ring-1 focus-within:ring-teal-500 focus-within:border-teal-500"
+            className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 transition-all cursor-pointer w-full focus-within:ring-2 focus-within:ring-[#0052ff]/10 focus-within:border-[#0052ff]"
           >
-            <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <Calendar size={14} className="text-slate-400 shrink-0" />
             <div className="flex items-center justify-between grow">
               <input
                 ref={fromDateRef}
@@ -146,49 +146,33 @@ export function RevenueChart({
         </div>
 
         <div className="md:col-span-3 flex flex-col gap-1">
-          <span className="text-[10px] font-sans font-semibold text-slate-600 uppercase tracking-wider">
+          <span className="over text-[10px]">
             Gom nhóm
           </span>
-          <div className="relative">
-            <select
-              value={tempGroupBy}
-              onChange={(e) =>
-                onTempGroupByChange(e.target.value as "day" | "week" | "month")
-              }
-              className="appearance-none bg-white border border-slate-200 rounded-md pl-2.5 pr-7 py-1 text-xs font-sans font-medium text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 w-full transition-colors duration-75 cursor-pointer"
-            >
-              <option value="day">Theo ngày</option>
-              <option value="week">Theo tuần</option>
-              <option value="month">Theo tháng</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                />
-              </svg>
-            </div>
-          </div>
+          <select
+            value={tempGroupBy}
+            onChange={(e) =>
+              onTempGroupByChange(e.target.value as "day" | "week" | "month")
+            }
+            className="select-trigger w-full"
+            style={{ height: "36px" }}
+          >
+            <option value="day">Theo ngày</option>
+            <option value="week">Theo tuần</option>
+            <option value="month">Theo tháng</option>
+          </select>
         </div>
 
-        <div className="md:col-span-4 flex items-center gap-1.5">
+        <div className="md:col-span-4 flex items-center gap-2">
           <button
             onClick={onApply}
-            className="flex-1 py-1.5 px-3 bg-teal-600 hover:bg-teal-700 text-white rounded-md font-sans text-xs font-semibold transition-colors duration-75 cursor-pointer shadow-2xs"
+            className="btn btn-primary btn-sm flex-1"
           >
             Áp dụng
           </button>
           <button
             onClick={onReset}
-            className="py-1.5 px-2.5 border border-slate-200 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-sans text-xs font-medium transition-colors duration-75 cursor-pointer shadow-2xs"
+            className="btn btn-sm"
           >
             Mặc định
           </button>
@@ -199,7 +183,7 @@ export function RevenueChart({
       <div className="relative w-full overflow-x-auto grow flex items-center justify-center min-h-[220px]">
         {isLoadingRevenue ? (
           <div className="py-16 text-center text-slate-500 font-sans text-xs flex items-center gap-2">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#0052ff] border-t-transparent" />
             Đang tải dữ liệu biểu đồ...
           </div>
         ) : revenueData.length === 0 ? (
@@ -214,8 +198,8 @@ export function RevenueChart({
             >
               <defs>
                 <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#0d9488" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#0d9488" stopOpacity="0.0" />
+                  <stop offset="0%" stopColor="#0052ff" stopOpacity="0.2" />
+                  <stop offset="100%" stopColor="#0052ff" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
 
@@ -251,7 +235,7 @@ export function RevenueChart({
                 <path
                   d={linePath}
                   fill="none"
-                  stroke="#0d9488"
+                  stroke="#0052ff"
                   strokeWidth={2.5}
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -264,7 +248,7 @@ export function RevenueChart({
                   y1={paddingTop}
                   x2={points[hoveredIndex].x}
                   y2={paddingTop + chartHeight}
-                  stroke="#0d9488"
+                  stroke="#0052ff"
                   strokeWidth={1}
                   strokeDasharray="3 3"
                 />
@@ -276,8 +260,8 @@ export function RevenueChart({
                   cx={pt.x}
                   cy={pt.y}
                   r={hoveredIndex === idx ? 5 : 3.5}
-                  fill={hoveredIndex === idx ? "#0d9488" : "#ffffff"}
-                  stroke="#0d9488"
+                  fill={hoveredIndex === idx ? "#0052ff" : "#ffffff"}
+                  stroke="#0052ff"
                   strokeWidth={2}
                 />
               ))}
@@ -350,7 +334,7 @@ export function RevenueChart({
       {!isLoadingRevenue && revenueData.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 border-t border-slate-100 mt-3 pt-3 gap-2 sm:gap-0">
           <div className="flex flex-col items-start sm:px-2.5 pb-2 sm:pb-0">
-            <span className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="over text-[10px]">
               Tổng doanh thu
             </span>
             <span className="text-sm font-mono tabular-nums font-bold text-slate-900 mt-0.5">
@@ -358,7 +342,7 @@ export function RevenueChart({
             </span>
           </div>
           <div className="flex flex-col items-start sm:px-2.5 py-2 sm:py-0">
-            <span className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="over text-[10px]">
               Trung bình /{" "}
               {groupBy === "day"
                 ? "ngày"
@@ -371,7 +355,7 @@ export function RevenueChart({
             </span>
           </div>
           <div className="flex flex-col items-start sm:px-2.5 py-2 sm:py-0">
-            <span className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="over text-[10px]">
               Cao nhất (
               {groupBy === "day"
                 ? "ngày"
@@ -392,7 +376,7 @@ export function RevenueChart({
             )}
           </div>
           <div className="flex flex-col items-start sm:px-2.5 pt-2 sm:pt-0">
-            <span className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="over text-[10px]">
               Thấp nhất (
               {groupBy === "day"
                 ? "ngày"

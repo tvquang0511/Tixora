@@ -69,10 +69,10 @@ export function ConcertDetailDrawer({
           >
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
               <div>
-                <span className="text-xs font-semibold text-teal-600 uppercase tracking-wider block font-sans">
+                <span className="over block text-[#0052ff]">
                   Chi tiết tài chính
                 </span>
-                <h3 className="font-sans text-sm font-semibold text-slate-900">
+                <h3 className="font-bold text-sm text-slate-900">
                   Báo cáo doanh thu sự kiện
                 </h3>
               </div>
@@ -88,7 +88,7 @@ export function ConcertDetailDrawer({
             <div className="flex-1 overflow-y-auto p-5 space-y-5">
               {isDetailLoading ? (
                 <div className="py-20 text-center text-slate-500 font-sans text-xs flex flex-col items-center justify-center gap-2">
-                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#0052ff] border-t-transparent" />
                   <span>Đang tải thông tin chi tiết sự kiện...</span>
                 </div>
               ) : !detailData ? (
@@ -133,7 +133,7 @@ export function ConcertDetailDrawer({
 
                   {/* Date Range Indicator */}
                   <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600 bg-slate-50 py-2 px-3 rounded-lg border border-slate-100 font-sans">
-                    <Calendar className="w-3.5 h-3.5 text-teal-600" />
+                    <Calendar className="w-3.5 h-3.5 text-[#0052ff]" />
                     <span>Khoảng thời gian:</span>
                     <span className="text-slate-900 font-semibold">
                       {fromDate
@@ -150,27 +150,27 @@ export function ConcertDetailDrawer({
 
                   {/* Quick Stats */}
                   <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-col gap-1 shadow-sm">
-                      <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-sans">
+                    <div className="card p-3.5 flex flex-col gap-1">
+                      <span className="over">
                         Tổng doanh thu
                       </span>
-                      <span className="text-sm sm:text-base font-bold text-slate-900 truncate font-sans">
+                      <span className="text-sm sm:text-base font-bold text-slate-900 truncate tabular-nums font-mono">
                         {formatVND(detailData.total_revenue)}
                       </span>
                     </div>
-                    <div className="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-col gap-1 shadow-sm">
-                      <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-sans">
+                    <div className="card p-3.5 flex flex-col gap-1">
+                      <span className="over">
                         Đơn hoàn tất
                       </span>
-                      <span className="text-sm sm:text-base font-bold text-slate-900 font-sans">
+                      <span className="text-sm sm:text-base font-bold text-slate-900 tabular-nums font-mono">
                         {detailData.paid_orders.toLocaleString("vi-VN")}
                       </span>
                     </div>
-                    <div className="bg-white border border-slate-200 rounded-xl p-3.5 flex flex-col gap-1 shadow-sm">
-                      <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-sans">
+                    <div className="card p-3.5 flex flex-col gap-1">
+                      <span className="over">
                         Vé đã bán
                       </span>
-                      <span className="text-sm sm:text-base font-bold text-slate-900 font-sans">
+                      <span className="text-sm sm:text-base font-bold text-slate-900 tabular-nums font-mono">
                         {detailData.tickets_sold.toLocaleString("vi-VN")}
                       </span>
                     </div>
@@ -178,10 +178,10 @@ export function ConcertDetailDrawer({
 
                   {/* Tier Breakdown */}
                   <div className="space-y-2">
-                    <h4 className="font-sans text-xs font-semibold uppercase tracking-wider text-slate-900">
+                    <span className="sub">
                       Phân tích theo từng hạng vé
-                    </h4>
-                    <div className="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-xs">
+                    </span>
+                    <div className="htcaa-table-wrap">
                       <table className="w-full text-left border-collapse text-xs">
                         <thead>
                           <tr className="bg-slate-50/70 font-sans text-[11px] font-semibold text-slate-600 border-b border-slate-100 uppercase tracking-wider">

@@ -71,7 +71,7 @@ export function UserDetailDrawer({
             {/* Header */}
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
               <div className="flex gap-3 items-center">
-                <div className="w-10 h-10 rounded-full bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center font-bold text-base">
+                <div className="w-10 h-10 rounded-full bg-blue-50 text-[#0052ff] border border-blue-200 flex items-center justify-center font-bold text-base">
                   {detailData?.full_name?.charAt(0).toUpperCase() || "U"}
                 </div>
                 <div>
@@ -96,7 +96,7 @@ export function UserDetailDrawer({
             <div className="flex-1 overflow-y-auto p-5 space-y-5">
               {isDetailLoading ? (
                 <div className="py-20 text-center text-slate-500 font-sans text-xs flex flex-col items-center justify-center gap-2">
-                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#0052ff] border-t-transparent" />
                   <span>Đang tải thông tin chi tiết hồ sơ...</span>
                 </div>
               ) : !detailData ? (
@@ -108,21 +108,21 @@ export function UserDetailDrawer({
                   {/* Stat Metrics */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div className="bg-slate-50/70 border border-slate-100 rounded-xl p-3 text-center">
-                      <ShoppingBag className="w-4 h-4 text-teal-600 mx-auto mb-1" />
-                      <p className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+                      <ShoppingBag className="w-4 h-4 text-[#0052ff] mx-auto mb-1" />
+                      <p className="over">
                         Đơn hàng
                       </p>
-                      <p className="text-base font-bold text-slate-900 font-sans mt-1">
+                      <p className="text-base font-bold text-slate-900 font-sans mt-1 tabular-nums">
                         {detailData.stats.order_count.toLocaleString("vi-VN")}
                       </p>
                     </div>
 
                     <div className="bg-slate-50/70 border border-slate-100 rounded-xl p-3 text-center">
                       <CheckCircle className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
-                      <p className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+                      <p className="over">
                         Hoàn tất
                       </p>
-                      <p className="text-base font-bold text-emerald-700 font-sans mt-1">
+                      <p className="text-base font-bold text-emerald-700 font-sans mt-1 tabular-nums">
                         {detailData.stats.paid_order_count.toLocaleString(
                           "vi-VN",
                         )}
@@ -130,11 +130,11 @@ export function UserDetailDrawer({
                     </div>
 
                     <div className="bg-slate-50/70 border border-slate-100 rounded-xl p-3 text-center">
-                      <Ticket className="w-4 h-4 text-teal-600 mx-auto mb-1" />
-                      <p className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+                      <Ticket className="w-4 h-4 text-[#0052ff] mx-auto mb-1" />
+                      <p className="over">
                         Số vé mua
                       </p>
-                      <p className="text-base font-bold text-slate-900 font-sans mt-1">
+                      <p className="text-base font-bold text-slate-900 font-sans mt-1 tabular-nums">
                         {detailData.stats.ticket_count.toLocaleString("vi-VN")}
                       </p>
                     </div>
@@ -162,14 +162,14 @@ export function UserDetailDrawer({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Status */}
                       <div className="space-y-1.5">
-                        <label className="font-sans text-xs font-semibold uppercase tracking-wider text-slate-600 block">
+                        <label className="over block">
                           Trạng thái hoạt động
                         </label>
                         <select
                           disabled={isSavingDraft || !canEditTarget}
                           value={draftStatus}
                           onChange={(e) => onDraftStatusChange(e.target.value)}
-                          className="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-sans font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full h-10 transition-colors cursor-pointer disabled:opacity-50"
+                          className="select-trigger w-full h-10 disabled:opacity-50"
                         >
                           <option value="ACTIVE">ACTIVE</option>
                           <option value="INACTIVE">INACTIVE</option>
@@ -180,14 +180,14 @@ export function UserDetailDrawer({
 
                       {/* Roles */}
                       <div className="space-y-1.5">
-                        <label className="font-sans text-xs font-semibold uppercase tracking-wider text-slate-600 block">
+                        <label className="over block">
                           Vai trò người dùng
                         </label>
                         <select
                           disabled={isSavingDraft || !canEditTarget}
                           value={draftRoles[0] || "Audience"}
                           onChange={(e) => onDraftRolesChange([e.target.value])}
-                          className="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-sans font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full h-10 transition-colors cursor-pointer disabled:opacity-50"
+                          className="select-trigger w-full h-10 disabled:opacity-50"
                         >
                           <option value="Audience">Audience</option>
                           {isCurrentSuperAdmin && (
@@ -208,7 +208,7 @@ export function UserDetailDrawer({
                           type="button"
                           onClick={onCancelDraft}
                           disabled={isSavingDraft}
-                          className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-sans text-xs font-medium py-2 px-3.5 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                          className="btn btn-secondary btn-sm"
                         >
                           Hủy
                         </button>
@@ -216,7 +216,7 @@ export function UserDetailDrawer({
                           type="button"
                           onClick={onSaveChanges}
                           disabled={isSavingDraft}
-                          className="bg-teal-600 hover:bg-teal-700 text-white font-sans text-xs font-medium py-2 px-4 rounded-lg shadow-sm transition-colors cursor-pointer disabled:opacity-50"
+                          className="btn btn-primary btn-sm"
                         >
                           {isSavingDraft ? "Đang lưu..." : "Lưu thay đổi"}
                         </button>

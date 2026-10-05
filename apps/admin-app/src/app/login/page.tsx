@@ -65,15 +65,22 @@ function AdminLoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 relative">
-      <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative z-10">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#0a3a78] relative overflow-hidden">
+      {/* Subtle background glow */}
+      <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#0052ff]/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-[#0e54a3]/40 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-md card p-8 shadow-2xl relative z-10 border border-slate-200">
         <div className="flex flex-col items-center mb-8 text-center">
           <BrandMark showIcon={false} size="large" />
+          <p className="text-xs text-slate-500 mt-2 font-medium">
+            Cổng Quản trị Vận hành & Phát hành Vé
+          </p>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4 font-sans">
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
               Email Quản trị viên
             </label>
             <div className="relative">
@@ -84,13 +91,13 @@ function AdminLoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@tixora.local"
-                className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+                className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0052ff] focus:ring-2 focus:ring-[#0052ff]/20 transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
               Mật khẩu
             </label>
             <div className="relative">
@@ -101,7 +108,7 @@ function AdminLoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+                className="w-full bg-white border border-slate-200 rounded-lg pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#0052ff] focus:ring-2 focus:ring-[#0052ff]/20 transition-colors"
               />
             </div>
           </div>
@@ -109,7 +116,7 @@ function AdminLoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-4 bg-teal-600 hover:bg-teal-700 text-white font-medium py-2.5 px-4 rounded-lg shadow-xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50 cursor-pointer text-xs"
+            className="btn btn-primary w-full py-2.5 mt-2 flex items-center justify-center gap-2 cursor-pointer text-xs"
           >
             {loading ? (
               <>
@@ -125,7 +132,7 @@ function AdminLoginForm() {
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-slate-200 text-center text-xs text-slate-500">
+        <div className="mt-8 pt-6 border-t border-slate-100 text-center text-xs text-slate-400">
           Chỉ nhân sự được ủy quyền mới có thể truy cập hệ thống này.
         </div>
       </div>
@@ -137,8 +144,8 @@ export default function AdminLoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-slate-50">
-          <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+        <div className="min-h-screen flex items-center justify-center bg-[#0a3a78]">
+          <Loader2 className="w-8 h-8 animate-spin text-[#0052ff]" />
         </div>
       }
     >

@@ -34,7 +34,7 @@ const TX_STATUS_CLASSES: Record<string, string> = {
   SUCCESS: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
   PENDING: "bg-amber-50 text-amber-700 border-amber-200/80",
   FAILED: "bg-rose-50 text-rose-700 border-rose-200/80",
-  REFUNDED: "bg-teal-50 text-teal-700 border-teal-200/80",
+  REFUNDED: "bg-blue-50 text-[#0052ff] border-blue-200/80",
 };
 
 interface TicketBreakdownItem {
@@ -234,7 +234,7 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-teal-600 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0052ff] border-t-transparent" />
           <span className="font-body text-xs text-slate-500">
             Đang tải chi tiết đơn hàng #{orderId}...
           </span>
@@ -252,13 +252,13 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
         <div className="flex items-center gap-3">
           <button
             onClick={() => void fetchOrder()}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold cursor-pointer shadow-2xs transition-colors"
+            className="btn btn-primary"
           >
             <RotateCw size={13} /> Thử lại
           </button>
           <Link
             href="/orders"
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 transition-colors shadow-2xs"
+            className="btn"
           >
             <ChevronLeft size={14} /> Quay lại danh sách
           </Link>
@@ -314,10 +314,10 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
           <button
             onClick={() => void fetchOrder()}
             disabled={isLoading}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-xs cursor-pointer transition-colors"
+            className="btn"
             title="Tải lại chi tiết"
           >
-            <RotateCw size={13} className={isLoading ? "animate-spin" : ""} />
+            <RotateCw size={13} className={isLoading ? "animate-spin text-[#0052ff]" : ""} />
             <span>Làm mới</span>
           </button>
           <span
@@ -413,9 +413,9 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
           }
         >
           {/* Concert Info */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-xs">
+          <div className="card space-y-4">
             <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-              <Calendar className="w-4 h-4 text-teal-600" />
+              <Calendar className="w-4 h-4 text-[#0052ff]" />
               <h3 className="font-semibold text-sm text-slate-900">
                 Thông tin Sự kiện & Hóa đơn
               </h3>
@@ -464,9 +464,9 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
               const metadata =
                 order.ticket_metadata as unknown as TicketMetadata;
               return (
-                <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-2xs">
+                <div className="card space-y-4">
                   <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-                    <div className="p-1 rounded-md bg-teal-50 text-teal-700 border border-teal-100">
+                    <div className="p-1 rounded-md bg-blue-50 text-[#0052ff] border border-blue-200">
                       <FileText className="w-3.5 h-3.5" />
                     </div>
                     <h3 className="text-sm font-bold text-slate-900">
@@ -580,9 +580,9 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
             })()}
 
           {/* Detailed tickets code list */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-2xs">
+          <div className="card space-y-4">
             <div className="flex items-center gap-2 pb-3 border-b border-slate-100 select-none">
-              <div className="p-1 rounded-md bg-teal-50 text-teal-700 border border-teal-100">
+              <div className="p-1 rounded-md bg-blue-50 text-[#0052ff] border border-blue-200">
                 <Ticket className="w-3.5 h-3.5" />
               </div>
               <h3 className="text-sm font-bold text-slate-900">
@@ -679,9 +679,9 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
           </div>
 
           {/* Payment Transactions Log */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-2xs">
+          <div className="card space-y-4">
             <div className="flex items-center gap-2 pb-3 border-b border-slate-100 select-none">
-              <div className="p-1 rounded-md bg-teal-50 text-teal-700 border border-teal-100">
+              <div className="p-1 rounded-md bg-blue-50 text-[#0052ff] border border-blue-200">
                 <CreditCard className="w-3.5 h-3.5" />
               </div>
               <h3 className="text-sm font-bold text-slate-900">
@@ -827,15 +827,15 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
         {/* Right column (1/3) - Customer details */}
         {hasCustomerInfo && (
           <div className="space-y-6">
-            <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-sm">
+            <div className="card space-y-4">
               <div className="flex items-center gap-2 pb-3 border-b border-slate-100 select-none">
-                <User className="w-4 h-4 text-teal-600" />
-                <h3 className="font-sans text-xs font-semibold text-slate-900 uppercase tracking-wider">
+                <User className="w-4 h-4 text-[#0052ff]" />
+                <h3 className="over font-bold text-slate-900">
                   Thông tin Khách hàng
                 </h3>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-teal-50 text-teal-700 border border-teal-200 flex items-center justify-center font-bold text-sm shrink-0 select-none">
+                <div className="w-10 h-10 rounded-full bg-blue-50 text-[#0052ff] border border-blue-200 flex items-center justify-center font-bold text-sm shrink-0 select-none">
                   {order.user_name?.charAt(0).toUpperCase() || "U"}
                 </div>
                 <div className="space-y-0.5 min-w-0">
@@ -875,11 +875,11 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
             </div>
 
             <form onSubmit={handleResolveRefund} className="space-y-4">
-              <div className="p-3 bg-teal-50/50 rounded-lg border border-teal-100 space-y-1">
-                <p className="text-[10px] text-teal-800 uppercase tracking-wider font-semibold">
+              <div className="p-3 bg-blue-50/50 rounded-lg border border-blue-100 space-y-1">
+                <p className="text-[10px] text-[#0052ff] uppercase tracking-wider font-semibold">
                   Thông tin giao dịch lỗi:
                 </p>
-                <p className="font-bold text-teal-900 text-sm">
+                <p className="font-bold text-[#0052ff] text-sm">
                   Số tiền: {formatConcertCurrency(Number(expiredPaidTx.amount))}
                 </p>
                 <p className="text-slate-600 text-[11px] font-mono">
@@ -897,7 +897,7 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                   value={refundTxId}
                   onChange={(e) => setRefundTxId(e.target.value)}
                   placeholder="Nhập mã giao dịch ngân hàng (Ví dụ: FT123456)..."
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 h-9 transition-colors"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] h-9 transition-colors"
                 />
               </label>
 
@@ -910,7 +910,7 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                   onChange={(e) => setRefundNote(e.target.value)}
                   placeholder="Nhập thông tin tài khoản đã nhận hoàn tiền hoặc lý do..."
                   rows={3}
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors resize-none"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] transition-colors resize-none"
                 />
               </label>
 
@@ -922,14 +922,14 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
                     setRefundTxId("");
                     setRefundNote("");
                   }}
-                  className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-medium py-2 px-4 rounded-lg text-xs transition-colors cursor-pointer"
+                  className="btn btn-secondary btn-sm cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingRefund}
-                  className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-5 rounded-lg text-xs transition-colors flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-sm"
+                  className="btn btn-primary btn-sm cursor-pointer inline-flex items-center gap-1.5"
                 >
                   {isSubmittingRefund && (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />

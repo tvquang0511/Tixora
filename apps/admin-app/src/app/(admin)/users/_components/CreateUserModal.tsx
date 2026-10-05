@@ -90,8 +90,8 @@ export function CreateUserModal({
               {/* Header */}
               <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                 <div className="flex items-center gap-2 text-slate-900">
-                  <UserIcon className="w-4 h-4 text-teal-600" />
-                  <h3 className="font-sans text-sm font-semibold text-slate-900">
+                  <UserIcon className="w-4 h-4 text-[#0052ff]" />
+                  <h3 className="font-bold text-sm text-slate-900">
                     Tạo tài khoản người dùng
                   </h3>
                 </div>
@@ -129,7 +129,7 @@ export function CreateUserModal({
                       placeholder="Nguyễn Văn A"
                       value={newFullName}
                       onChange={(e) => onFullNameChange(e.target.value)}
-                      className="pl-9 pr-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full transition-colors text-slate-900 font-sans text-xs"
+                      className="pl-9 pr-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] w-full transition-colors text-slate-900 font-sans text-xs"
                     />
                   </div>
                 </div>
@@ -147,7 +147,7 @@ export function CreateUserModal({
                       placeholder="example@email.com"
                       value={newEmail}
                       onChange={(e) => onEmailChange(e.target.value)}
-                      className="pl-9 pr-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full transition-colors text-slate-900 font-sans text-xs"
+                      className="pl-9 pr-3 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] w-full transition-colors text-slate-900 font-sans text-xs"
                     />
                   </div>
                 </div>
@@ -165,7 +165,7 @@ export function CreateUserModal({
                       placeholder="••••••••"
                       value={newPassword}
                       onChange={(e) => onPasswordChange(e.target.value)}
-                      className="pl-9 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full transition-colors text-slate-900 text-xs font-mono"
+                      className="pl-9 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] w-full transition-colors text-slate-900 text-xs font-mono"
                     />
                     <button
                       type="button"
@@ -194,7 +194,7 @@ export function CreateUserModal({
                       placeholder="••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="pl-9 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full transition-colors text-slate-900 text-xs font-mono"
+                      className="pl-9 pr-10 py-2 border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] w-full transition-colors text-slate-900 text-xs font-mono"
                     />
                     <button
                       type="button"
@@ -218,7 +218,7 @@ export function CreateUserModal({
                   <select
                     value={newRoles[0] || "Audience"}
                     onChange={(e) => onRolesChange([e.target.value])}
-                    className="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-sans font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-full h-10 transition-colors cursor-pointer"
+                    className="select-trigger w-full h-10"
                   >
                     <option value="Audience">Audience (Khách hàng)</option>
                     {isSuperAdmin && (
@@ -239,14 +239,14 @@ export function CreateUserModal({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-sans text-xs font-medium py-2 px-3.5 rounded-lg transition-colors cursor-pointer"
+                    className="btn btn-secondary btn-sm"
                   >
                     Hủy bỏ
                   </button>
                   <button
                     type="submit"
                     disabled={isCreating}
-                    className="bg-teal-600 hover:bg-teal-700 text-white font-sans text-xs font-medium py-2 px-4 rounded-lg shadow-sm transition-colors cursor-pointer disabled:opacity-50"
+                    className="btn btn-primary btn-sm"
                   >
                     {isCreating ? "Đang tạo..." : "Lưu tài khoản"}
                   </button>

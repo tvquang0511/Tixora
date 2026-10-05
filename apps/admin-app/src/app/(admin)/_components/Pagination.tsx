@@ -66,7 +66,7 @@ export function Pagination({
                   onLimitChange(Number(e.target.value));
                   onPageChange(1);
                 }}
-                className="appearance-none pl-2.5 pr-7 py-1 border border-slate-200 rounded-lg bg-white text-xs focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 text-slate-700 font-medium cursor-pointer shadow-xs"
+                className="appearance-none pl-2.5 pr-7 py-1 border border-slate-200 rounded-lg bg-white text-xs focus:outline-none focus:border-[#0b63e5] focus:ring-1 focus:ring-[#0b63e5] text-slate-700 font-medium cursor-pointer shadow-xs"
               >
                 <option value={10}>10 {itemLabel}</option>
                 <option value={20}>20 {itemLabel}</option>
@@ -122,7 +122,7 @@ export function Pagination({
                 onClick={() => onPageChange(pageNumber as number)}
                 className={`min-w-7 h-7 px-2.5 text-xs font-medium rounded-lg border transition-colors cursor-pointer flex items-center justify-center ${
                   isSelected
-                    ? "bg-teal-600 border-teal-600 text-white shadow-xs"
+                    ? "bg-[#0b63e5] border-[#0b63e5] text-white shadow-xs"
                     : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-xs"
                 }`}
               >

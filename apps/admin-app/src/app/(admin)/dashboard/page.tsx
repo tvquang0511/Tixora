@@ -79,28 +79,23 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-4">
-      {/* Enterprise Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
-        <div>
-          <h1 className="text-lg font-bold tracking-tight text-slate-900 mt-0.5">
-            Bảng điều khiển hệ thống
-          </h1>
-          <p className="text-xs text-slate-500 font-sans mt-0.5">
-            Tổng hợp chỉ số doanh thu, giao dịch và sự kiện thời gian thực
-          </p>
+      {/* HTCAA Page Header */}
+      <div className="head stickyhead flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="htcaa-h1 m-0">Bảng điều khiển</h1>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="head-actions flex items-center gap-2">
           <button
             onClick={reloadDashboard}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 border border-slate-200 rounded-md bg-white hover:bg-slate-50 text-xs font-medium text-slate-700 transition-colors duration-75 disabled:opacity-50 cursor-pointer shadow-2xs"
+            className="btn"
             title="Tải lại toàn bộ dữ liệu thống kê"
           >
             <RefreshCw
-              className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-teal-600" : "text-slate-500"}`}
+              className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#0052ff]" : "text-slate-500"}`}
             />
-            <span>Làm mới</span>
+            <span>{isRefreshing ? "Đang tải…" : "Làm mới"}</span>
           </button>
         </div>
       </div>

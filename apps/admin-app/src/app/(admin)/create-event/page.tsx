@@ -91,23 +91,23 @@ function ConfirmModal({
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[250] flex items-center justify-center p-4 select-none">
-      <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-4">
+      <div className="card max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-200">
         <h3 className="font-sans text-sm font-semibold text-slate-900">
           {title}
         </h3>
         <p className="font-sans text-xs text-slate-600 leading-relaxed">
           {message}
         </p>
-        <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
           <button
             onClick={onCancel}
-            className="px-3.5 py-1.5 text-xs font-sans font-medium rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+            className="btn btn-secondary btn-sm cursor-pointer"
           >
             {cancelLabel}
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-1.5 text-xs font-sans font-medium rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition-colors cursor-pointer shadow-sm"
+            className="btn btn-danger btn-sm cursor-pointer"
           >
             {confirmLabel}
           </button>
@@ -484,560 +484,560 @@ function EventForm() {
   return (
     <div className="space-y-6 pb-28">
       {/* Header */}
-      <header className="pb-4 border-b border-slate-200">
-        <nav
-          aria-label="Breadcrumb"
-          className="flex text-slate-500 font-sans text-xs font-medium mb-1"
-        >
-          <ol className="inline-flex items-center space-x-1 md:space-x-2">
-            <li className="inline-flex items-center">
-              <Link
-                className="hover:text-teal-600 transition-colors"
-                href="/events"
-              >
-                Sự kiện
-              </Link>
-            </li>
-            <li>
-              <div className="flex items-center">
-                <ChevronRight className="w-3.5 h-3.5 mx-1 text-slate-400" />
-                <span className="text-teal-600 font-semibold">
-                  {isEditing ? "Chỉnh sửa" : "Tạo mới"}
-                </span>
-              </div>
-            </li>
-          </ol>
-        </nav>
-        <h2 className="font-sans text-xl font-bold text-slate-900">
-          {isEditing ? "Chỉnh sửa thông tin sự kiện" : "Thiết lập sự kiện mới"}
-        </h2>
-      </header>
-
-      {/* Form Wizard */}
-      <div className="max-w-5xl mx-auto">
-        <div className="space-y-6">
-          {/* Section 1: Basic Info */}
-          <section className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-            <h3 className="font-sans text-xs font-bold uppercase tracking-wider border-b border-slate-100 pb-3 mb-5 text-slate-900">
-              1. Thông tin cơ bản sự kiện
-            </h3>
-            <div className="space-y-4 font-sans text-xs">
-              <div>
-                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
-                  Tên sự kiện *
-                </label>
-                <input
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs"
-                  placeholder="Ví dụ: Mắt Nhắm Mắt Mở 2026"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                />
-              </div>
-
-              <div>
-                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
-                  Thể loại sự kiện *
-                </label>
-                <select
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs"
-                  value={formData.category}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category: e.target.value })
-                  }
+      <div className="head stickyhead">
+        <div>
+          <nav
+            aria-label="Breadcrumb"
+            className="flex text-slate-400 font-sans text-xs font-medium mb-1"
+          >
+            <ol className="inline-flex items-center space-x-1 md:space-x-2">
+              <li className="inline-flex items-center">
+                <Link
+                  className="hover:text-[#0052ff] transition-colors"
+                  href="/events"
                 >
-                  <option value="CONCERT">Live Concert</option>
-                  <option value="LIVE_MUSIC">Nhạc Sống & Band</option>
-                  <option value="EDM_NIGHTLIFE">EDM & Party</option>
-                  <option value="FESTIVAL">Festival & Lễ hội</option>
-                  <option value="THEATER_ARTS">Sân khấu & Kịch</option>
-                  <option value="FANMEETING">Fan Meeting</option>
-                  <option value="OTHER">Khác</option>
-                </select>
-              </div>
-
-              {/* Performers Input chips */}
-              <div>
-                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
-                  Nghệ sĩ biểu diễn
-                </label>
-                <div className="flex gap-2 mb-2">
-                  <input
-                    className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans"
-                    placeholder="Nhập tên nghệ sĩ và nhấn Thêm (hoặc Enter)"
-                    type="text"
-                    value={newPerformer}
-                    onChange={(e) => setNewPerformer(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleAddPerformer(e);
-                      }
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddPerformer}
-                    className="px-4 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-sans font-medium rounded-lg transition-colors cursor-pointer shrink-0 shadow-xs"
-                  >
-                    Thêm
-                  </button>
+                  Sự kiện
+                </Link>
+              </li>
+              <li>
+                <div className="flex items-center">
+                  <ChevronRight className="w-3.5 h-3.5 mx-1 text-slate-400" />
+                  <span className="text-[#0052ff] font-semibold">
+                    {isEditing ? "Chỉnh sửa" : "Tạo mới"}
+                  </span>
                 </div>
-                {formData.performers.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5 p-3 bg-slate-50/70 border border-slate-100 rounded-lg">
-                    {formData.performers.map((p) => (
-                      <span
-                        key={p}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-teal-50 border border-teal-200 text-teal-700 rounded-full text-xs font-sans font-medium select-none"
-                      >
-                        {p}
-                        <button
-                          type="button"
-                          onClick={() => handleRemovePerformer(p)}
-                          className="hover:text-rose-600 text-teal-500 transition-colors font-bold cursor-pointer"
-                        >
-                          &times;
-                        </button>
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-[11px] text-slate-500 font-sans italic">
-                    Chưa cấu hình nghệ sĩ nào cho sự kiện.
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
-                  Mô tả sự kiện
-                </label>
-                <textarea
-                  rows={3}
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs"
-                  placeholder="Nhập mô tả về sự kiện, thời gian mở cửa, lưu ý..."
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                />
-              </div>
-
-              <div>
-                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
-                  Ảnh bìa sự kiện (Poster)
-                </label>
-                {formData.poster_url && (
-                  <div
-                    onClick={() => setLightboxUrl(formData.poster_url)}
-                    className="mb-3 relative w-full h-44 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 cursor-zoom-in group shadow-xs flex items-center justify-center"
-                    title="Click để phóng to ảnh bìa"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={formData.poster_url}
-                      alt="Cover preview"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <div className="flex justify-center rounded-xl border-2 border-dashed border-slate-300 px-6 py-6 hover:border-teal-500 bg-slate-50/50 transition-colors cursor-pointer group relative">
-                  <input
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleCoverImageChange}
-                    disabled={isUploadingImage}
-                  />
-                  <div className="text-center font-sans">
-                    <div className="text-xs text-slate-600">
-                      <span className="font-semibold text-teal-600 underline">
-                        {isUploadingImage
-                          ? "Đang tải ảnh lên..."
-                          : "Tải ảnh bìa mới lên"}
-                      </span>{" "}
-                      {!isUploadingImage && "hoặc kéo thả tập tin vào đây"}
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      PNG, JPG, WEBP tối đa 5MB
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Section 2: Venue & Timing */}
-          <section className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
-                  2. Địa Điểm & Thời Gian Tổ Chức
-                </h3>
-                <p className="text-[11px] text-slate-500 font-sans mt-0.5">
-                  Chọn địa điểm từ danh sách cơ sở có sẵn hoặc nhập địa chỉ sự
-                  kiện
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-sans text-xs">
-              <div>
-                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
-                  Chọn cơ sở / địa điểm có sẵn (Venue Preset)
-                </label>
-                <select
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans cursor-pointer font-medium"
-                  value={formData.venue_id}
-                  onChange={(e) => handleVenueSelect(e.target.value)}
-                >
-                  <option value="">
-                    -- Chọn địa điểm từ hệ thống (nếu có) --
-                  </option>
-                  {venues.map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.name} ({v.city}) - Sức chứa:{" "}
-                      {v.capacity
-                        ? v.capacity.toLocaleString()
-                        : "Chưa xác định"}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
-                  Thời gian bắt đầu biểu diễn{" "}
-                  <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans"
-                  type="datetime-local"
-                  value={formData.start_time}
-                  onChange={(e) =>
-                    setFormData({ ...formData, start_time: e.target.value })
-                  }
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
-                  Địa điểm tổ chức cụ thể{" "}
-                  <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs"
-                  type="text"
-                  placeholder="Ví dụ: Sân vận động Quốc gia Mỹ Đình, Lê Đức Thọ, Hà Nội"
-                  value={formData.location}
-                  onChange={(e) =>
-                    setFormData({ ...formData, location: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* Section 3: Seating Map & Stage */}
-          <section className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
-                  3. Sơ Đồ Ghế & Sân Khấu
-                </h3>
-                <p className="text-[11px] text-slate-500 font-sans mt-0.5">
-                  Sơ đồ trực quan định vị sân khấu, các khán đài và phân khu chỗ
-                  ngồi
-                </p>
-              </div>
-              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 font-medium rounded-lg text-xs cursor-pointer shadow-2xs transition-colors self-start sm:self-auto">
-                <Upload className="w-3.5 h-3.5 text-slate-500" />
-                <span>
-                  {isUploadingSvg ? "Đang tải lên..." : "Tải sơ đồ SVG mới"}
-                </span>
-                <input
-                  type="file"
-                  accept=".svg,image/svg+xml,image/*"
-                  onChange={handleSvgMapChange}
-                  disabled={isUploadingSvg}
-                  className="hidden"
-                />
-              </label>
-            </div>
-
-            <div className="space-y-4 font-sans text-xs">
-              {/* Dropdown for system preset SVG maps */}
-              <div>
-                <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
-                  Chọn sơ đồ mẫu chuẩn hệ thống
-                </label>
-                <select
-                  value={
-                    SYSTEM_SVG_MAPS.some(
-                      (m) => m.value === formData.svg_map_url,
-                    )
-                      ? formData.svg_map_url
-                      : formData.svg_map_url
-                        ? "__custom__"
-                        : ""
-                  }
-                  onChange={(e) => {
-                    if (e.target.value !== "__custom__") {
-                      setFormData((prev) => ({
-                        ...prev,
-                        svg_map_url: e.target.value,
-                      }));
-                    }
-                  }}
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans cursor-pointer font-medium"
-                >
-                  <option value="">-- Chọn mẫu sơ đồ từ hệ thống --</option>
-                  {SYSTEM_SVG_MAPS.map((mapPreset) => (
-                    <option key={mapPreset.value} value={mapPreset.value}>
-                      {mapPreset.label}
-                    </option>
-                  ))}
-                  {formData.svg_map_url &&
-                    !SYSTEM_SVG_MAPS.some(
-                      (m) => m.value === formData.svg_map_url,
-                    ) && (
-                      <option value="__custom__">
-                        Sơ đồ tùy chỉnh / Đường dẫn riêng (
-                        {formData.svg_map_url.slice(0, 35)}...)
-                      </option>
-                    )}
-                </select>
-              </div>
-
-              {/* Visual Preview Box */}
-              {formData.svg_map_url ? (
-                <div className="p-3.5 bg-slate-50/60 border border-slate-200 rounded-xl space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="inline-block w-2 h-2 rounded-full bg-teal-500" />
-                      <span className="text-xs font-semibold text-slate-800">
-                        Mặt bằng phân khu khán giả & Sân khấu
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setLightboxUrl(resolveSvgMapUrl(formData.svg_map_url))
-                      }
-                      className="inline-flex items-center gap-1.5 text-xs text-teal-600 hover:text-teal-700 font-semibold cursor-pointer"
-                    >
-                      <Maximize2 className="w-3.5 h-3.5" />
-                      <span>Phóng to toàn màn hình</span>
-                    </button>
-                  </div>
-
-                  <div
-                    onClick={() =>
-                      setLightboxUrl(resolveSvgMapUrl(formData.svg_map_url))
-                    }
-                    className="w-full h-64 bg-white border border-slate-200 rounded-lg flex items-center justify-center p-4 cursor-zoom-in group shadow-2xs overflow-hidden relative"
-                    title="Nhấp để phóng to toàn màn hình"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={resolveSvgMapUrl(formData.svg_map_url)}
-                      alt="Sơ đồ ghế ngồi và sân khấu"
-                      className="max-w-full max-h-full object-contain transition-transform group-hover:scale-[1.02]"
-                    />
-                    <div className="absolute bottom-2 right-2 px-2 py-1 bg-white/90 backdrop-blur-xs border border-slate-200 rounded text-[11px] text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                      Nhấp để phóng to
-                    </div>
-                  </div>
-
-                  <p className="text-[11px] text-slate-500 italic">
-                    💡 Sơ đồ này sẽ hiển thị trực quan cho khán giả khi chọn khu
-                    vực và đặt vé.
-                  </p>
-                </div>
-              ) : (
-                <div className="border border-dashed border-slate-200 rounded-xl p-6 text-center bg-slate-50/40">
-                  <p className="text-xs text-slate-500 font-medium">
-                    Chưa có sơ đồ ghế
-                  </p>
-                  <p className="text-[11px] text-slate-400 mt-1">
-                    Chọn một mẫu từ hệ thống ở trên hoặc tải file SVG để hiển
-                    thị sơ đồ phân khu
-                  </p>
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* Section 4: Ticketing */}
-          <section className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-5">
-              <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
-                4. Cấu hình các hạng vé & giá bán
-              </h3>
-              <button
-                onClick={handleAddTier}
-                className="px-3 py-1.5 rounded-lg border border-teal-200 bg-teal-50 hover:bg-teal-100 text-teal-700 transition-colors font-sans text-xs font-medium flex items-center gap-1.5 cursor-pointer shadow-xs"
-              >
-                <PlusCircle className="w-3.5 h-3.5" /> Thêm hạng vé
-              </button>
-            </div>
-
-            {ticketCategories.map((tier, index) => (
-              <div
-                key={index}
-                className="border border-slate-200 rounded-xl p-4 mb-4 bg-slate-50/70 relative shadow-xs"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <input
-                    className="font-sans text-sm font-semibold bg-white border border-slate-300 px-3 py-1.5 w-2/3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 rounded-lg"
-                    placeholder="Tên hạng vé (ví dụ: VIP, GA, SVIP...)"
-                    type="text"
-                    value={tier.name}
-                    onChange={(e) =>
-                      handleTierChange(index, "name", e.target.value)
-                    }
-                  />
-                  <button
-                    onClick={() => handleRemoveTier(index)}
-                    className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
-                    title="Xóa hạng vé"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-3 font-sans">
-                  <div>
-                    <label className="block font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                      Giá vé (VNĐ)
-                    </label>
-                    <input
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs text-right font-mono"
-                      type="text"
-                      value={formatNumberString(tier.price)}
-                      onChange={(e) => {
-                        const rawVal = parseFormattedNumber(e.target.value);
-                        handleTierChange(index, "price", rawVal);
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                      Tổng số lượng vé
-                    </label>
-                    <input
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs text-right font-mono"
-                      type="text"
-                      value={formatNumberString(tier.total_quantity)}
-                      onChange={(e) => {
-                        const rawVal = parseFormattedNumber(e.target.value);
-                        handleTierChange(index, "total_quantity", rawVal);
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                      Tối đa / Người mua
-                    </label>
-                    <input
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-mono"
-                      type="number"
-                      value={tier.max_per_user}
-                      onChange={(e) =>
-                        handleTierChange(
-                          index,
-                          "max_per_user",
-                          Number(e.target.value),
-                        )
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
-                      Số cổng vào
-                    </label>
-                    <input
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-mono"
-                      type="number"
-                      placeholder="Ví dụ: 1"
-                      value={tier.gate_number ?? ""}
-                      onChange={(e) =>
-                        handleTierChange(
-                          index,
-                          "gate_number",
-                          e.target.value ? Number(e.target.value) : null,
-                        )
-                      }
-                    />
-                  </div>
-                </div>
-
-                {/* Additional parameters */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-slate-200/60 pt-3 font-sans">
-                  <div>
-                    <label className="block font-sans text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                      Thứ tự hiển thị
-                    </label>
-                    <input
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-mono"
-                      type="number"
-                      value={tier.position}
-                      onChange={(e) =>
-                        handleTierChange(
-                          index,
-                          "position",
-                          Number(e.target.value),
-                        )
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-sans text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                      Thời gian mở bán
-                    </label>
-                    <input
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans"
-                      type="datetime-local"
-                      value={tier.sales_start_at}
-                      onChange={(e) =>
-                        handleTierChange(
-                          index,
-                          "sales_start_at",
-                          e.target.value,
-                        )
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-sans text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                      Trạng thái bán vé
-                    </label>
-                    <select
-                      className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 text-xs font-sans cursor-pointer font-medium"
-                      value={tier.status}
-                      onChange={(e) =>
-                        handleTierChange(index, "status", e.target.value)
-                      }
-                    >
-                      <option value="book_now">BOOK NOW (Đang mở bán)</option>
-                      <option value="sold_out">SOLD OUT (Hết vé)</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </section>
+              </li>
+            </ol>
+          </nav>
+          <h1 className="htcaa-h1">
+            {isEditing ? "Chỉnh sửa thông tin sự kiện" : "Thiết lập sự kiện mới"}
+          </h1>
+          <p className="sub">
+            {isEditing
+              ? "Cập nhật nội dung, sơ đồ sân khấu và thiết lập các hạng vé"
+              : "Khởi tạo sự kiện ca nhạc, địa điểm tổ chức và phân hạng bán vé"}
+          </p>
         </div>
       </div>
 
+      {/* Form Wizard */}
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* Section 1: Basic Info */}
+        <section className="card p-5 space-y-4">
+          <h3 className="font-sans text-xs font-bold uppercase tracking-wider border-b border-slate-100 pb-3 text-slate-900">
+            1. Thông tin cơ bản sự kiện
+          </h3>
+          <div className="space-y-4 font-sans text-xs">
+            <div>
+              <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
+                Tên sự kiện *
+              </label>
+              <input
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] text-xs transition-colors"
+                placeholder="Ví dụ: Mắt Nhắm Mắt Mở 2026"
+                type="text"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
+                Thể loại sự kiện *
+              </label>
+              <select
+                className="select-trigger w-full text-xs font-sans"
+                value={formData.category}
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
+              >
+                <option value="CONCERT">Live Concert</option>
+                <option value="LIVE_MUSIC">Nhạc Sống & Band</option>
+                <option value="EDM_NIGHTLIFE">EDM & Party</option>
+                <option value="FESTIVAL">Festival & Lễ hội</option>
+                <option value="THEATER_ARTS">Sân khấu & Kịch</option>
+                <option value="FANMEETING">Fan Meeting</option>
+                <option value="OTHER">Khác</option>
+              </select>
+            </div>
+
+            {/* Performers Input chips */}
+            <div>
+              <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
+                Nghệ sĩ biểu diễn
+              </label>
+              <div className="flex gap-2 mb-2">
+                <input
+                  className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] text-xs font-sans transition-colors"
+                  placeholder="Nhập tên nghệ sĩ và nhấn Thêm (hoặc Enter)"
+                  type="text"
+                  value={newPerformer}
+                  onChange={(e) => setNewPerformer(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddPerformer(e);
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleAddPerformer}
+                  className="btn btn-secondary btn-sm shrink-0 cursor-pointer"
+                >
+                  Thêm
+                </button>
+              </div>
+              {formData.performers.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5 p-3 bg-slate-50/70 border border-slate-100 rounded-lg">
+                  {formData.performers.map((p) => (
+                    <span
+                      key={p}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-blue-50 border border-blue-200 text-[#0052ff] rounded-full text-xs font-sans font-medium select-none"
+                    >
+                      {p}
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePerformer(p)}
+                        className="hover:text-rose-600 text-[#0052ff] transition-colors font-bold cursor-pointer"
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[11px] text-slate-500 font-sans italic">
+                  Chưa cấu hình nghệ sĩ nào cho sự kiện.
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
+                Mô tả sự kiện
+              </label>
+              <textarea
+                rows={3}
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] text-xs transition-colors"
+                placeholder="Nhập mô tả về sự kiện, thời gian mở cửa, lưu ý..."
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="block font-sans text-xs font-semibold text-slate-700 mb-1">
+                Ảnh bìa sự kiện (Poster)
+              </label>
+              {formData.poster_url && (
+                <div
+                  onClick={() => setLightboxUrl(formData.poster_url)}
+                  className="mb-3 relative w-full h-44 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 cursor-zoom-in group shadow-xs flex items-center justify-center"
+                  title="Click để phóng to ảnh bìa"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={formData.poster_url}
+                    alt="Cover preview"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <div className="flex justify-center rounded-xl border-2 border-dashed border-slate-300 px-6 py-6 hover:border-[#0052ff] bg-slate-50/50 transition-colors cursor-pointer group relative">
+                <input
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCoverImageChange}
+                  disabled={isUploadingImage}
+                />
+                <div className="text-center font-sans">
+                  <div className="text-xs text-slate-600">
+                    <span className="font-semibold text-[#0052ff] underline">
+                      {isUploadingImage
+                        ? "Đang tải ảnh lên..."
+                        : "Tải ảnh bìa mới lên"}
+                    </span>{" "}
+                    {!isUploadingImage && "hoặc kéo thả tập tin vào đây"}
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    PNG, JPG, WEBP tối đa 5MB
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section 2: Venue & Timing */}
+        <section className="card p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-slate-100 pb-3">
+            <div>
+              <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+                2. Địa Điểm & Thời Gian Tổ Chức
+              </h3>
+              <p className="text-[11px] text-slate-500 font-sans mt-0.5">
+                Chọn địa điểm từ danh sách cơ sở có sẵn hoặc nhập địa chỉ sự
+                kiện
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-sans text-xs">
+            <div>
+              <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
+                Chọn cơ sở / địa điểm có sẵn (Venue Preset)
+              </label>
+              <select
+                className="select-trigger w-full text-xs font-sans font-medium"
+                value={formData.venue_id}
+                onChange={(e) => handleVenueSelect(e.target.value)}
+              >
+                <option value="">
+                  -- Chọn địa điểm từ hệ thống (nếu có) --
+                </option>
+                {venues.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.name} ({v.city}) - Sức chứa:{" "}
+                    {v.capacity
+                      ? v.capacity.toLocaleString()
+                      : "Chưa xác định"}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
+                Thời gian bắt đầu biểu diễn{" "}
+                <span className="text-rose-500">*</span>
+              </label>
+              <input
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] text-xs font-sans transition-colors"
+                type="datetime-local"
+                value={formData.start_time}
+                onChange={(e) =>
+                  setFormData({ ...formData, start_time: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
+                Địa điểm tổ chức cụ thể{" "}
+                <span className="text-rose-500">*</span>
+              </label>
+              <input
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] text-xs transition-colors"
+                type="text"
+                placeholder="Ví dụ: Sân vận động Quốc gia Mỹ Đình, Lê Đức Thọ, Hà Nội"
+                value={formData.location}
+                onChange={(e) =>
+                  setFormData({ ...formData, location: e.target.value })
+                }
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Section 3: Seating Map & Stage */}
+        <section className="card p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <div>
+              <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+                3. Sơ Đồ Ghế & Sân Khấu
+              </h3>
+              <p className="text-[11px] text-slate-500 font-sans mt-0.5">
+                Sơ đồ trực quan định vị sân khấu, các khán đài và phân khu chỗ
+                ngồi
+              </p>
+            </div>
+            <label className="btn btn-secondary btn-sm cursor-pointer self-start sm:self-auto inline-flex items-center gap-1.5">
+              <Upload className="w-3.5 h-3.5 text-slate-500" />
+              <span>
+                {isUploadingSvg ? "Đang tải lên..." : "Tải sơ đồ SVG mới"}
+              </span>
+              <input
+                type="file"
+                accept=".svg,image/svg+xml,image/*"
+                onChange={handleSvgMapChange}
+                disabled={isUploadingSvg}
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          <div className="space-y-4 font-sans text-xs">
+            {/* Dropdown for system preset SVG maps */}
+            <div>
+              <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
+                Chọn sơ đồ mẫu chuẩn hệ thống
+              </label>
+              <select
+                value={
+                  SYSTEM_SVG_MAPS.some(
+                    (m) => m.value === formData.svg_map_url,
+                  )
+                    ? formData.svg_map_url
+                    : formData.svg_map_url
+                      ? "__custom__"
+                      : ""
+                }
+                onChange={(e) => {
+                  if (e.target.value !== "__custom__") {
+                    setFormData((prev) => ({
+                      ...prev,
+                      svg_map_url: e.target.value,
+                    }));
+                  }
+                }}
+                className="select-trigger w-full text-xs font-sans font-medium"
+              >
+                <option value="">-- Chọn mẫu sơ đồ từ hệ thống --</option>
+                {SYSTEM_SVG_MAPS.map((mapPreset) => (
+                  <option key={mapPreset.value} value={mapPreset.value}>
+                    {mapPreset.label}
+                  </option>
+                ))}
+                {formData.svg_map_url &&
+                  !SYSTEM_SVG_MAPS.some(
+                    (m) => m.value === formData.svg_map_url,
+                  ) && (
+                    <option value="__custom__">
+                      Sơ đồ tùy chỉnh / Đường dẫn riêng (
+                      {formData.svg_map_url.slice(0, 35)}...)
+                    </option>
+                  )}
+              </select>
+            </div>
+
+            {/* Visual Preview Box */}
+            {formData.svg_map_url ? (
+              <div className="p-3.5 bg-slate-50/60 border border-slate-200 rounded-xl space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block w-2 h-2 rounded-full bg-[#0052ff]" />
+                    <span className="text-xs font-semibold text-slate-800">
+                      Mặt bằng phân khu khán giả & Sân khấu
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setLightboxUrl(resolveSvgMapUrl(formData.svg_map_url))
+                    }
+                    className="inline-flex items-center gap-1.5 text-xs text-[#0052ff] hover:underline font-semibold cursor-pointer"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                    <span>Phóng to toàn màn hình</span>
+                  </button>
+                </div>
+
+                <div
+                  onClick={() =>
+                    setLightboxUrl(resolveSvgMapUrl(formData.svg_map_url))
+                  }
+                  className="w-full h-64 bg-white border border-slate-200 rounded-lg flex items-center justify-center p-4 cursor-zoom-in group shadow-2xs overflow-hidden relative"
+                  title="Nhấp để phóng to toàn màn hình"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={resolveSvgMapUrl(formData.svg_map_url)}
+                    alt="Sơ đồ ghế ngồi và sân khấu"
+                    className="max-w-full max-h-full object-contain transition-transform group-hover:scale-[1.02]"
+                  />
+                  <div className="absolute bottom-2 right-2 px-2 py-1 bg-white/90 backdrop-blur-xs border border-slate-200 rounded text-[11px] text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                    Nhấp để phóng to
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="border border-dashed border-slate-200 rounded-xl p-6 text-center bg-slate-50/40">
+                <p className="text-xs text-slate-500 font-medium">
+                  Chưa có sơ đồ ghế
+                </p>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Chọn một mẫu từ hệ thống ở trên hoặc tải file SVG để hiển
+                  thị sơ đồ phân khu
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Section 4: Ticketing */}
+        <section className="card p-5 space-y-4">
+          <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+            <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+              4. Cấu hình các hạng vé & giá bán
+            </h3>
+            <button
+              onClick={handleAddTier}
+              className="btn btn-secondary btn-sm inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <PlusCircle className="w-3.5 h-3.5 text-[#0052ff]" /> Thêm hạng vé
+            </button>
+          </div>
+
+          {ticketCategories.map((tier, index) => (
+            <div
+              key={index}
+              className="border border-slate-200 rounded-xl p-4 bg-slate-50/70 relative shadow-2xs space-y-3"
+            >
+              <div className="flex justify-between items-start gap-2">
+                <input
+                  className="font-sans text-sm font-semibold bg-white border border-slate-200 px-3 py-1.5 w-2/3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] rounded-lg transition-colors"
+                  placeholder="Tên hạng vé (ví dụ: VIP, GA, SVIP...)"
+                  type="text"
+                  value={tier.name}
+                  onChange={(e) =>
+                    handleTierChange(index, "name", e.target.value)
+                  }
+                />
+                <button
+                  onClick={() => handleRemoveTier(index)}
+                  className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
+                  title="Xóa hạng vé"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 font-sans">
+                <div>
+                  <label className="block font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
+                    Giá vé (VNĐ)
+                  </label>
+                  <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] text-xs text-right font-mono transition-colors"
+                    type="text"
+                    value={formatNumberString(tier.price)}
+                    onChange={(e) => {
+                      const rawVal = parseFormattedNumber(e.target.value);
+                      handleTierChange(index, "price", rawVal);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="block font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
+                    Tổng số lượng vé
+                  </label>
+                  <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] text-xs text-right font-mono transition-colors"
+                    type="text"
+                    value={formatNumberString(tier.total_quantity)}
+                    onChange={(e) => {
+                      const rawVal = parseFormattedNumber(e.target.value);
+                      handleTierChange(index, "total_quantity", rawVal);
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="block font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
+                    Tối đa / Người mua
+                  </label>
+                  <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] text-xs font-mono transition-colors"
+                    type="number"
+                    value={tier.max_per_user}
+                    onChange={(e) =>
+                      handleTierChange(
+                        index,
+                        "max_per_user",
+                        Number(e.target.value),
+                      )
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-1">
+                    Số cổng vào
+                  </label>
+                  <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] text-xs font-mono transition-colors"
+                    type="number"
+                    placeholder="Ví dụ: 1"
+                    value={tier.gate_number ?? ""}
+                    onChange={(e) =>
+                      handleTierChange(
+                        index,
+                        "gate_number",
+                        e.target.value ? Number(e.target.value) : null,
+                      )
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Additional parameters */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-slate-200/60 pt-3 font-sans">
+                <div>
+                  <label className="block font-sans text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                    Thứ tự hiển thị
+                  </label>
+                  <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] text-xs font-mono transition-colors"
+                    type="number"
+                    value={tier.position}
+                    onChange={(e) =>
+                      handleTierChange(
+                        index,
+                        "position",
+                        Number(e.target.value),
+                      )
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block font-sans text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                    Thời gian mở bán
+                  </label>
+                  <input
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] text-xs font-sans transition-colors"
+                    type="datetime-local"
+                    value={tier.sales_start_at}
+                    onChange={(e) =>
+                      handleTierChange(
+                        index,
+                        "sales_start_at",
+                        e.target.value,
+                      )
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block font-sans text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                    Trạng thái bán vé
+                  </label>
+                  <select
+                    className="select-trigger w-full text-xs font-sans font-medium"
+                    value={tier.status}
+                    onChange={(e) =>
+                      handleTierChange(index, "status", e.target.value)
+                    }
+                  >
+                    <option value="book_now">BOOK NOW (Đang mở bán)</option>
+                    <option value="sold_out">SOLD OUT (Hết vé)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          ))}
+        </section>
+      </div>
+
       {/* Sticky Bottom Actions Bar */}
-      <div className="fixed bottom-0 left-0 right-0 md:left-64 bg-white/95 backdrop-blur-xs border-t border-slate-200 p-4 flex items-center justify-between z-30 select-none shadow-md">
+      <div className="fixed bottom-0 left-0 right-0 md:left-[250px] bg-white/95 backdrop-blur-xs border-t border-slate-200 px-6 py-3 flex items-center justify-between z-30 select-none shadow-md">
         <button
           type="button"
           onClick={handleCancelClick}
-          className="px-4 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors font-sans text-xs font-medium cursor-pointer"
+          className="btn btn-secondary btn-sm cursor-pointer"
         >
           Hủy bỏ
         </button>
@@ -1047,7 +1047,7 @@ function EventForm() {
               type="button"
               onClick={() => handleSave("DRAFT")}
               disabled={isSaving}
-              className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 font-sans text-xs font-medium hover:bg-slate-50 transition-colors disabled:opacity-50 cursor-pointer shadow-xs"
+              className="btn btn-secondary btn-sm cursor-pointer"
             >
               Lưu bản nháp
             </button>
@@ -1058,7 +1058,7 @@ function EventForm() {
               handleSave(isEditing ? formData.status : "PUBLISHED")
             }
             disabled={isSaving}
-            className="px-5 py-2 rounded-lg bg-teal-600 text-white font-sans text-xs font-medium hover:bg-teal-700 transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
+            className="btn btn-primary btn-sm cursor-pointer"
           >
             {isSaving
               ? "Đang lưu dữ liệu..."

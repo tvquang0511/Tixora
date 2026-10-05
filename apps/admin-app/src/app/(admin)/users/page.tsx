@@ -54,32 +54,34 @@ export default function AdminUsersPage() {
 
   return (
     <div className="space-y-4">
-      {/* Title & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+      {/* Head */}
+      <div className="head stickyhead">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-            Quản lý Người dùng
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Quản trị tài khoản, phân quyền bảo mật và theo dõi trạng thái hoạt
-            động.
+          <div className="flex items-center gap-2">
+            <h1 className="htcaa-h1">Quản lý Người dùng</h1>
+            <span className="htcaa-badge-count-pill">
+              {totalItems} tài khoản
+            </span>
+          </div>
+          <p className="sub">
+            Quản trị tài khoản, phân quyền bảo mật và theo dõi trạng thái hoạt động.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="head-actions">
           <button
             onClick={() => void reloadUsers()}
             disabled={isLoading}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg cursor-pointer transition-colors disabled:opacity-50 shadow-sm"
+            className="btn btn-secondary btn-sm"
             title="Tải lại danh sách người dùng"
           >
             <RotateCw
-              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-teal-600" : "text-slate-500"}`}
+              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-[#0052ff]" : "text-slate-500"}`}
             />
             <span>Làm mới</span>
           </button>
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs py-2 px-4 rounded-lg shadow-sm flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="btn btn-primary btn-sm flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Tạo người dùng</span>

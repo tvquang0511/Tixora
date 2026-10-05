@@ -22,7 +22,12 @@ import {
   ClipboardCheck,
   AlertTriangle,
   ChevronDown,
+  Clock,
+  BarChart2,
+  Layers,
+  X,
 } from "lucide-react";
+import { StatusBadge } from "../_components/StatusBadge";
 
 import { ConcertWorkerDrawer } from "./_components/ConcertWorkerDrawer";
 import {
@@ -55,10 +60,10 @@ const CONCERT_STATUS_STYLES: Record<
     dot: "bg-amber-500",
   },
   APPROVED: {
-    bg: "bg-teal-50 hover:bg-teal-100/90",
-    text: "text-teal-800",
-    border: "border-teal-300",
-    dot: "bg-teal-500",
+    bg: "bg-blue-50 hover:bg-blue-100/90",
+    text: "text-[#0b63e5]",
+    border: "border-blue-200",
+    dot: "bg-[#0b63e5]",
   },
   DRAFT: {
     bg: "bg-slate-100 hover:bg-slate-200/90",
@@ -67,10 +72,10 @@ const CONCERT_STATUS_STYLES: Record<
     dot: "bg-slate-500",
   },
   COMPLETED: {
-    bg: "bg-teal-50 hover:bg-teal-100/90",
-    text: "text-teal-800",
-    border: "border-teal-300",
-    dot: "bg-teal-600",
+    bg: "bg-blue-50 hover:bg-blue-100/90",
+    text: "text-[#0b63e5]",
+    border: "border-blue-200",
+    dot: "bg-[#0b63e5]",
   },
   CANCELLED: {
     bg: "bg-rose-50 hover:bg-rose-100/90",
@@ -114,6 +119,7 @@ export default function AdminEventsPage() {
   const [selectedReviewConcert, setSelectedReviewConcert] =
     useState<ConcertCardItem | null>(null);
   const [isWorkerDrawerOpen, setIsWorkerDrawerOpen] = useState(false);
+  const [view, setView] = useState<"list" | "board">("list");
 
   // Debounce search input
   useEffect(() => {
@@ -265,395 +271,387 @@ export default function AdminEventsPage() {
       `danh_sach_su_kien_${new Date().toISOString().slice(0, 10)}.csv`,
     );
     document.body.appendChild(link);
-    link.click();
     document.body.removeChild(link);
   };
 
   return (
     <div className="space-y-4">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-            Quản lý Sự kiện
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Quản trị danh mục sự kiện, kiểm soát trạng thái phát hành và phân bổ
-            vé.
-          </p>
+      {/* Page Header - HTCAA Style */}
+      <div className="head stickyhead flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
+        <div className="flex items-center gap-3 flex-wrap">
+          <h1 className="htcaa-h1 m-0">Sự kiện</h1>
+          <span className="htcaa-badge-count-pill">
+            {totalItems} sự kiện · {concerts.filter((c) => c.status === "PUBLISHED").length} sắp diễn ra
+          </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="head-actions flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => success("Đã mở cài đặt tự động hủy đơn hết hạn.")}
+            className="btn"
+          >
+            <Clock size={14} className="text-slate-500" />
+            <span>Cài đặt tự hủy đơn</span>
+          </button>
           <button
             onClick={() => void fetchConcerts()}
             disabled={isLoading}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-xs cursor-pointer transition-colors disabled:opacity-50"
-            title="Tải lại danh sách mà không reset trang"
+            className="btn"
+            title="Tải lại danh sách"
           >
-            <RotateCw
-              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`}
-            />
-            <span>Làm mới</span>
+            <RotateCw size={14} className={isLoading ? "animate-spin" : ""} />
+            <span>{isLoading ? "Đang tải…" : "Tải lại"}</span>
           </button>
-          <Link
-            href="/assignments"
-            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-xs cursor-pointer transition-colors"
-            title="Quản lý và phân công cổng soát vé"
-          >
-            <ClipboardCheck className="w-3.5 h-3.5 text-teal-600" />
-            <span>Phân công soát vé</span>
-          </Link>
-          <button
-            onClick={handleExport}
-            className="hidden md:flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg shadow-xs cursor-pointer transition-colors"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Xuất CSV</span>
-          </button>
-
-          <Link
-            href="/create-event"
-            className="bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-2 font-medium text-xs rounded-lg shadow-xs flex items-center justify-center gap-1.5 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Tạo sự kiện mới</span>
+          <div className="htcaa-segmented">
+            <button
+              type="button"
+              className={`htcaa-segmented-btn ${view === "list" ? "active" : ""}`}
+              onClick={() => setView("list")}
+            >
+              <BarChart2 size={14} />
+              <span>Danh sách</span>
+            </button>
+            <button
+              type="button"
+              className={`htcaa-segmented-btn ${view === "board" ? "active" : ""}`}
+              onClick={() => setView("board")}
+            >
+              <Layers size={14} />
+              <span>Bảng</span>
+            </button>
+          </div>
+          <Link href="/create-event" className="btn btn-primary">
+            <Plus size={14} />
+            <span>Tạo sự kiện</span>
           </Link>
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white p-2.5 border border-slate-200 rounded-lg shadow-2xs space-y-2.5">
-        {/* Quick Status Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5">
+      {/* HTCAA Filter Bar */}
+      <div className="filters">
+        <div className="search-box">
+          <Search size={14} className="text-slate-400 shrink-0" />
+          <input
+            placeholder="Tìm sự kiện theo tên hoặc địa điểm…"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="text-slate-400 hover:text-slate-700 text-xs px-1"
+            >
+              <X size={12} />
+            </button>
+          )}
+        </div>
+        <select
+          value={String(limit)}
+          onChange={(e) => {
+            setLimit(Number(e.target.value));
+            setPage(1);
+          }}
+          className="select-trigger"
+          style={{ width: "150px" }}
+          aria-label="Số dòng mỗi trang"
+        >
+          <option value="10">10 dòng/trang</option>
+          <option value="20">20 dòng/trang</option>
+          <option value="50">50 dòng/trang</option>
+        </select>
+      </div>
+
+      {/* Subtitle & Status Select Bar */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          flexWrap: "wrap",
+          marginBottom: 12,
+        }}
+      >
+        <div className="sub">Danh sách sự kiện.</div>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <span className="over">Trạng thái</span>
+          <select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setPage(1);
+            }}
+            className="select-trigger"
+            style={{ width: "180px" }}
+            aria-label="Lọc theo trạng thái"
+          >
+            <option value="All">Tất cả trạng thái</option>
+            <option value="PUBLISHED">Đang mở bán</option>
+            <option value="PENDING_REVIEW">Chờ duyệt</option>
+            <option value="PAUSED">Tạm ngưng</option>
+            <option value="DRAFT">Bản nháp</option>
+            <option value="COMPLETED">Hoàn tất</option>
+            <option value="CANCELLED">Đã hủy</option>
+          </select>
+        </label>
+      </div>
+
+      {/* Content View: List or Board */}
+      {view === "board" ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { key: "All", label: "Tất cả" },
-            { key: "PENDING_REVIEW", label: "Chờ sàn duyệt" },
-            { key: "PUBLISHED", label: "Đang mở bán" },
-            { key: "PAUSED", label: "Tạm ngưng" },
             { key: "DRAFT", label: "Bản nháp" },
+            { key: "PENDING_REVIEW", label: "Chờ duyệt" },
+            { key: "PUBLISHED", label: "Đang mở bán" },
             { key: "COMPLETED", label: "Hoàn tất" },
-            { key: "CANCELLED", label: "Đã hủy" },
-          ].map((tab) => {
-            const isSelected = statusFilter === tab.key;
+          ].map((col) => {
+            const colConcerts = concerts.filter((c) => c.status === col.key);
             return (
-              <button
-                key={tab.key}
-                onClick={() => {
-                  setStatusFilter(tab.key);
-                  setPage(1);
-                }}
-                className={`px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition-colors duration-75 cursor-pointer ${
-                  isSelected
-                    ? tab.key === "PENDING_REVIEW"
-                      ? "bg-amber-600 text-white shadow-2xs"
-                      : "bg-teal-700 text-white shadow-2xs"
-                    : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
-                }`}
-              >
-                {tab.label}
-              </button>
+              <div key={col.key} className="bg-slate-50/70 border border-slate-200 rounded-xl p-3 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                  <span className="over font-bold">{col.label}</span>
+                  <span className="text-xs bg-white border border-slate-200 px-2 py-0.5 rounded-full font-semibold text-slate-700">
+                    {colConcerts.length}
+                  </span>
+                </div>
+                <div className="flex flex-col gap-2 min-h-[160px]">
+                  {colConcerts.length === 0 ? (
+                    <div className="text-center py-8 text-xs text-slate-400">Trống</div>
+                  ) : (
+                    colConcerts.map((concert) => {
+                      const totalCap =
+                        concert.ticketTiers?.reduce(
+                          (acc, t) => acc + (t.total_quantity || 0),
+                          0,
+                        ) || 0;
+                      const remCap =
+                        concert.ticketTiers?.reduce(
+                          (acc, t) =>
+                            acc + (t.remaining_quantity ?? t.total_quantity ?? 0),
+                          0,
+                        ) || 0;
+                      const registered =
+                        totalCap > 0 ? Math.max(0, totalCap - remCap) : 0;
+                      const capPercent =
+                        totalCap > 0
+                          ? Math.min(100, Math.round((registered / totalCap) * 100))
+                          : 0;
+
+                      return (
+                        <div
+                          key={concert.id}
+                          onClick={() => setEditingConcertId(concert.id)}
+                          className="card cursor-pointer hover:border-[#0052ff] hover:shadow-md transition-all p-3"
+                        >
+                          <div className="font-semibold text-slate-900 text-xs line-clamp-1">
+                            {concert.title}
+                          </div>
+                          <div className="font-mono text-[10px] text-[#0052ff] mt-0.5">
+                            TIX-{concert.id.slice(0, 8).toUpperCase()}
+                          </div>
+                          <div className="text-[11px] text-slate-500 mt-2">
+                            {concert.date || "—"}
+                          </div>
+                          <div
+                            className="cap-meter mt-2"
+                            style={{ width: "100%" }}
+                          >
+                            <span
+                              className="bar-fill"
+                              style={{ width: `${capPercent}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
             );
           })}
         </div>
-
-        <div className="flex flex-col md:flex-row gap-2 items-center">
-          <div className="relative w-full md:flex-1">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-            <input
-              className="w-full pl-8 pr-2.5 py-1.5 bg-white border border-slate-200 rounded-md text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors duration-75"
-              placeholder="Tìm theo tên sự kiện, ID, địa điểm..."
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          {/* Category Filter Dropdown */}
-          <div className="w-full md:w-56">
-            <select
-              value={categoryFilter}
-              onChange={(e) => {
-                setCategoryFilter(e.target.value);
-                setPage(1);
-              }}
-              className="w-full px-2.5 py-1.5 bg-white border border-slate-200 hover:border-teal-500 rounded-md text-xs font-medium text-slate-700 cursor-pointer shadow-2xs focus:outline-none focus:border-teal-500 transition-colors"
-            >
-              <option value="All">Tất cả thể loại</option>
-              <option value="CONCERT">Live Concert</option>
-              <option value="LIVE_MUSIC">Nhạc Sống & Band</option>
-              <option value="FESTIVAL">Festival & Lễ hội</option>
-              <option value="THEATER_ARTS">Sân khấu & Kịch</option>
-              <option value="FANMEETING">Fan Meeting</option>
-              <option value="WORKSHOP">Hội thảo & Workshop</option>
-              <option value="OTHER">Khác</option>
-            </select>
-          </div>
-
-          <button
-            onClick={() => {
-              setSearchQuery("");
-              setStatusFilter("All");
-              setCategoryFilter("All");
-              setPage(1);
-            }}
-            className="px-2.5 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-md text-xs font-medium flex items-center gap-1 cursor-pointer transition-colors duration-75 shadow-2xs shrink-0"
-            title="Đặt lại bộ lọc"
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>Đặt lại</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Table Data Container */}
-      <div className="bg-white border border-slate-200 rounded-lg shadow-2xs overflow-visible">
-        <div className="overflow-x-auto min-h-[320px]">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
-                <th className="px-3 py-2">Sự kiện</th>
-                <th className="px-3 py-2">Đơn vị tổ chức</th>
-                <th className="px-3 py-2">Thời gian & Địa điểm</th>
-                <th className="px-3 py-2 text-center">Trạng thái</th>
-                <th className="px-3 py-2 text-right">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-800">
-              {isLoading ? (
+      ) : (
+        /* HTCAA Data Table Container */
+        <div className="htcaa-table-wrap">
+          <div className="overflow-x-auto min-h-[320px]">
+            <table className="htcaa-table">
+              <thead>
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-slate-500">
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <RotateCw className="w-4 h-4 animate-spin text-teal-600" />
-                      <p className="text-xs">Đang tải dữ liệu sự kiện...</p>
-                    </div>
-                  </td>
+                  <th>SỰ KIỆN</th>
+                  <th>TRẠNG THÁI</th>
+                  <th>THỜI GIAN</th>
+                  <th>ĐỊA ĐIỂM</th>
+                  <th>VÉ / GIÁ VÉ</th>
+                  <th>ĐĂNG KÝ</th>
+                  <th style={{ width: 44, textAlign: "right" }}></th>
                 </tr>
-              ) : concerts.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="p-8 text-center text-slate-500">
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <CalendarOff className="w-6 h-6 text-slate-300" />
-                      <p className="text-xs font-medium">
-                        Không tìm thấy sự kiện nào.
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                concerts.map((concert) => {
-                  const validTransitions =
-                    VALID_STATUS_TRANSITIONS[concert.status] || [];
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={7} className="p-8 text-center text-slate-500">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <RotateCw className="w-4 h-4 animate-spin text-[#0052ff]" />
+                        <p className="text-xs">Đang tải dữ liệu sự kiện…</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : concerts.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="p-8 text-center text-slate-500">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <CalendarOff className="w-6 h-6 text-slate-300" />
+                        <p className="text-xs font-medium">Không tìm thấy sự kiện nào.</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  concerts.map((concert) => {
+                    const totalCap =
+                      concert.ticketTiers?.reduce(
+                        (acc, t) => acc + (t.total_quantity || 0),
+                        0,
+                      ) || 0;
+                    const remCap =
+                      concert.ticketTiers?.reduce(
+                        (acc, t) =>
+                          acc + (t.remaining_quantity ?? t.total_quantity ?? 0),
+                        0,
+                      ) || 0;
+                    const registered =
+                      totalCap > 0 ? Math.max(0, totalCap - remCap) : 0;
+                    const capPercent =
+                      totalCap > 0
+                        ? Math.min(100, Math.round((registered / totalCap) * 100))
+                        : 0;
 
-                  return (
-                    <tr
-                      key={concert.id}
-                      onClick={() => setEditingConcertId(concert.id)}
-                      className="hover:bg-slate-50/80 transition-colors duration-75 cursor-pointer group"
-                      title="Bấm vào hàng để mở bảng chỉnh sửa sự kiện"
-                    >
-                      {/* Event Column */}
-                      <td className="px-3 py-2.5">
-                        <div className="flex items-center gap-2.5">
-                          <div
-                            className="w-9 h-9 border border-slate-200 bg-slate-100 shrink-0 bg-cover bg-center rounded shadow-2xs group-hover:ring-2 group-hover:ring-teal-500 transition-all"
-                            style={{
-                              backgroundImage: `url('${getConcertPosterUrl(concert.posterUrl)}')`,
-                            }}
-                          />
-                          <div>
-                            <div className="font-semibold text-slate-900 leading-snug group-hover:text-teal-700 transition-colors">
-                              {concert.title}
-                            </div>
-                            <div className="text-[10px] font-mono text-slate-400 mt-0.5">
-                              ID: {concert.id.slice(0, 8)}... (Bấm để sửa)
-                            </div>
+                    return (
+                      <tr
+                        key={concert.id}
+                        onClick={() => setEditingConcertId(concert.id)}
+                        className="row-click group"
+                        title="Bấm vào hàng để mở bảng chỉnh sửa sự kiện"
+                      >
+                        {/* Event Column */}
+                        <td style={{ fontWeight: 600, color: "#0f172a" }}>
+                          <div className="font-semibold text-slate-900 group-hover:text-[#0052ff] transition-colors">
+                            {concert.title}
                           </div>
-                        </div>
-                      </td>
+                          <div
+                            className="font-mono"
+                            style={{ fontSize: "11px", color: "#0052ff", fontWeight: 500, marginTop: 2 }}
+                          >
+                            TIX-{concert.id.slice(0, 8).toUpperCase()}
+                          </div>
+                        </td>
 
-                      {/* Organizer Column */}
-                      <td className="px-3 py-2.5 whitespace-nowrap">
-                        {concert.organizer_name &&
-                        concert.organizer_name !== "Tixora Official" ? (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-800 border border-slate-200">
-                            {concert.organizer_name}
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-teal-50 text-teal-800 border border-teal-200">
-                            Tixora Official
-                          </span>
-                        )}
-                      </td>
+                        {/* Status Column */}
+                        <td>
+                          <StatusBadge status={concert.status} variant="concert" />
+                        </td>
 
-                      <td className="px-3 py-2.5">
-                        <div className="font-mono tabular-nums text-xs font-medium text-slate-900">
-                          {concert.date} {concert.time}
-                        </div>
-                        <div className="text-[11px] text-slate-500 mt-0.5">
-                          {concert.venue || concert.city || "Chưa cập nhật"}
-                        </div>
-                      </td>
-
-                      {/* Status Column with clear interactive affordance */}
-                      <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                        <div
-                          className="relative inline-block text-center"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {updatingStatusId === concert.id ? (
-                            <span className="text-xs text-slate-400 flex items-center justify-center gap-1.5 font-medium px-3 py-1.5">
-                              <RotateCw className="w-3.5 h-3.5 animate-spin text-teal-600" />
-                              Đang lưu...
-                            </span>
-                          ) : validTransitions.length > 0 ? (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setOpenStatusDropdownId((prev) =>
-                                  prev === concert.id ? null : concert.id,
-                                );
-                              }}
-                              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold shadow-2xs hover:shadow-xs transition-all cursor-pointer group/status hover:scale-[1.02] active:scale-[0.98] ${
-                                CONCERT_STATUS_STYLES[concert.status]?.bg ||
-                                "bg-slate-100 hover:bg-slate-200/90"
-                              } ${
-                                CONCERT_STATUS_STYLES[concert.status]?.text ||
-                                "text-slate-700"
-                              } ${
-                                CONCERT_STATUS_STYLES[concert.status]?.border ||
-                                "border-slate-300"
-                              }`}
-                              title="Bấm để mở danh mục đổi trạng thái sự kiện"
-                            >
-                              <span
-                                className={`w-2 h-2 rounded-full shrink-0 ${
-                                  CONCERT_STATUS_STYLES[concert.status]?.dot ||
-                                  "bg-current"
-                                }`}
-                              />
-                              <span>
-                                {STATUS_LABELS[concert.status] ||
-                                  concert.status}
-                              </span>
-                              <ChevronDown className="w-3.5 h-3.5 opacity-60 group-hover/status:opacity-100 group-hover/status:translate-y-0.5 transition-all ml-0.5" />
-                            </button>
-                          ) : (
-                            <span
-                              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold select-none ${
-                                CONCERT_STATUS_STYLES[concert.status]?.bg ||
-                                "bg-slate-100"
-                              } ${
-                                CONCERT_STATUS_STYLES[concert.status]?.text ||
-                                "text-slate-700"
-                              } ${
-                                CONCERT_STATUS_STYLES[concert.status]?.border ||
-                                "border-slate-300"
-                              }`}
-                              title="Trạng thái kết thúc, không thể thay đổi"
-                            >
-                              <span
-                                className={`w-2 h-2 rounded-full shrink-0 ${
-                                  CONCERT_STATUS_STYLES[concert.status]?.dot ||
-                                  "bg-current"
-                                }`}
-                              />
-                              <span>
-                                {STATUS_LABELS[concert.status] ||
-                                  concert.status}
-                              </span>
-                            </span>
-                          )}
-
-                          {/* Sleek status change popup menu */}
-                          {openStatusDropdownId === concert.id && (
+                        {/* Date/Time Column */}
+                        <td>
+                          {concert.date ? (
                             <>
-                              <div
-                                className="fixed inset-0 z-30"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setOpenStatusDropdownId(null);
-                                }}
-                              />
-                              <div
-                                className="absolute z-40 left-1/2 -translate-x-1/2 mt-1.5 w-48 bg-white border border-slate-200/90 rounded-xl shadow-xl ring-1 ring-black/5 p-1.5 text-left animate-in fade-in zoom-in-95 duration-100"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                  Chuyển trạng thái
-                                </div>
-                                <div className="space-y-0.5 mt-0.5">
-                                  {validTransitions.map((nextSt) => {
-                                    const style = CONCERT_STATUS_STYLES[
-                                      nextSt
-                                    ] || {
-                                      dot: "bg-slate-400",
-                                    };
-                                    return (
-                                      <button
-                                        key={nextSt}
-                                        type="button"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setOpenStatusDropdownId(null);
-                                          requestStatusChange(
-                                            concert.id,
-                                            concert.title,
-                                            concert.status,
-                                            nextSt,
-                                          );
-                                        }}
-                                        className="w-full px-2.5 py-1.5 hover:bg-slate-50 rounded-lg flex items-center gap-2.5 text-left text-xs font-medium transition-colors cursor-pointer group/item"
-                                      >
-                                        <span
-                                          className={`w-2 h-2 rounded-full shrink-0 ${style.dot}`}
-                                        />
-                                        <span className="text-slate-700 group-hover/item:text-slate-900 font-semibold">
-                                          {STATUS_LABELS[nextSt] || nextSt}
-                                        </span>
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                              </div>
+                              <div className="val-strong">{concert.date}</div>
+                              <div className="row-sub">{concert.time || "—"}</div>
                             </>
+                          ) : (
+                            <span className="text-slate-400">—</span>
                           )}
-                        </div>
-                      </td>
+                        </td>
 
-                      {/* Action Column - EXACTLY 2 Actions: Phân công and AI */}
-                      <td className="px-3 py-2.5 text-right whitespace-nowrap">
-                        <div
-                          className="inline-flex items-center gap-1.5"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Link
-                            href={`/assignments?concertId=${concert.id}`}
+                        {/* Venue Column */}
+                        <td>
+                          <div className="val-strong">{concert.venue || "—"}</div>
+                          {concert.city && <div className="row-sub">{concert.city}</div>}
+                        </td>
+
+                        {/* Ticket Tier Prices */}
+                        <td>
+                          {concert.ticketTiers && concert.ticketTiers.length > 0 ? (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                              {concert.ticketTiers.slice(0, 2).map((t) => (
+                                <div key={t.id} style={{ fontSize: "13px", whiteSpace: "nowrap" }}>
+                                  <span style={{ color: "#475569", fontWeight: 500 }}>{t.name}: </span>
+                                  <span
+                                    style={{
+                                      color: t.price === 0 ? "#059669" : "#2563eb",
+                                      fontWeight: 700,
+                                    }}
+                                  >
+                                    {t.price === 0 ? "0đ (Miễn phí)" : `${t.price.toLocaleString("vi-VN")} đ`}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div style={{ fontSize: "13px", whiteSpace: "nowrap" }}>
+                              <span style={{ color: "#475569", fontWeight: 500 }}>Từ: </span>
+                              <span
+                                style={{
+                                  color: (concert.minPrice || 0) === 0 ? "#059669" : "#2563eb",
+                                  fontWeight: 700,
+                                }}
+                              >
+                                {(concert.minPrice || 0) === 0
+                                  ? "0đ (Miễn phí)"
+                                  : `${(concert.minPrice || 0).toLocaleString("vi-VN")} đ`}
+                              </span>
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Registration Capacity */}
+                        <td>
+                          <div style={{ fontWeight: 600, color: "#0f172a", fontVariantNumeric: "tabular-nums" }}>
+                            {registered}
+                            <span className="text-slate-400 font-normal">/{totalCap} chỗ</span>
+                          </div>
+                          <div className="cap-meter" title={`${capPercent}% sức chứa`}>
+                            <span className="bar-fill" style={{ width: `${capPercent}%` }} />
+                          </div>
+                          <div className="row-sub">{registered} xác nhận</div>
+                        </td>
+
+                        {/* Action / Detail Chevron */}
+                        <td style={{ textAlign: "right", color: "#94a3b8" }}>
+                          <div
+                            className="inline-flex items-center gap-1.5"
                             onClick={(e) => e.stopPropagation()}
-                            className="p-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-sky-600 rounded-lg shadow-2xs transition-colors"
-                            title="Phân công nhân sự soát vé theo cổng"
                           >
-                            <ClipboardCheck className="w-3.5 h-3.5 text-sky-600" />
-                          </Link>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedWorkerConcert(concert);
-                              setIsWorkerDrawerOpen(true);
-                            }}
-                            className="p-1.5 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-teal-600 rounded-lg shadow-2xs transition-colors cursor-pointer"
-                            title="Tác vụ AI & Danh sách khách"
-                          >
-                            <Sparkles className="w-3.5 h-3.5 text-teal-600" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                            <Link
+                              href={`/assignments?concertId=${concert.id}`}
+                              className="p-1 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-[#0052ff] rounded-md transition-colors"
+                              title="Phân công nhân sự soát vé theo cổng"
+                            >
+                              <ClipboardCheck size={14} className="text-[#0052ff]" />
+                            </Link>
+                            <button
+                              onClick={() => {
+                                setSelectedWorkerConcert(concert);
+                                setIsWorkerDrawerOpen(true);
+                              }}
+                              className="p-1 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-[#0052ff] rounded-md transition-colors cursor-pointer"
+                              title="Tác vụ AI & Danh sách khách"
+                            >
+                              <Sparkles size={14} className="text-[#0052ff]" />
+                            </button>
+                            <ChevronRight
+                              size={16}
+                              className="text-slate-400 ml-1 group-hover:text-[#0052ff] group-hover:translate-x-0.5 transition-all"
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
+      )}
 
         {/* Pagination Bar */}
         {!isLoading && totalPages > 1 && (
@@ -709,7 +707,7 @@ export default function AdminEventsPage() {
                     onClick={() => setPage(p as number)}
                     className={`min-w-7 h-7 text-xs font-medium rounded-lg border transition-colors cursor-pointer flex items-center justify-center ${
                       isCurrent
-                        ? "bg-teal-600 border-teal-600 text-white shadow-2xs"
+                        ? "bg-[#0b63e5] border-[#0b63e5] text-white shadow-2xs"
                         : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-2xs"
                     }`}
                   >
@@ -728,7 +726,6 @@ export default function AdminEventsPage() {
             </div>
           </div>
         )}
-      </div>
 
       <ConcertWorkerDrawer
         isOpen={isWorkerDrawerOpen}
@@ -801,7 +798,7 @@ export default function AdminEventsPage() {
                   <span className="text-slate-400 block text-[11px]">
                     Khoảng giá vé:
                   </span>
-                  <span className="font-semibold text-teal-600">
+                  <span className="font-semibold text-[#0b63e5]">
                     {selectedReviewConcert.price}
                   </span>
                 </div>
@@ -881,7 +878,7 @@ export default function AdminEventsPage() {
                       "PUBLISHED",
                     );
                   }}
-                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-colors cursor-pointer shadow-xs"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg bg-[#0b63e5] text-white hover:bg-[#084fc2] transition-colors cursor-pointer shadow-xs"
                 >
                   Phê duyệt mở bán
                 </button>
@@ -910,7 +907,7 @@ export default function AdminEventsPage() {
                   statusConfirmTarget.currentStatus}
               </span>{" "}
               sang{" "}
-              <span className="font-semibold text-teal-700">
+              <span className="font-semibold text-[#0052ff]">
                 {STATUS_LABELS[statusConfirmTarget.nextStatus] ||
                   statusConfirmTarget.nextStatus}
               </span>{" "}
@@ -926,14 +923,14 @@ export default function AdminEventsPage() {
               <button
                 type="button"
                 onClick={() => setStatusConfirmTarget(null)}
-                className="px-3.5 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer shadow-2xs"
+                className="btn btn-secondary btn-sm cursor-pointer"
               >
                 Hủy bỏ
               </button>
               <button
                 type="button"
                 onClick={() => void confirmStatusChange()}
-                className="px-4 py-1.5 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-xs transition-colors cursor-pointer"
+                className="btn btn-primary btn-sm cursor-pointer"
               >
                 Xác nhận chuyển
               </button>

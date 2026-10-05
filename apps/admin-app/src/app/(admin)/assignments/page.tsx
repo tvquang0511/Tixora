@@ -88,13 +88,13 @@ function AssignmentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs select-none">
-      <div className="w-full max-w-xl overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl relative z-10 flex flex-col max-h-[90vh]">
+      <div className="card w-full max-w-xl overflow-hidden p-0 shadow-xl relative z-10 flex flex-col max-h-[90vh]">
         <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50/50 px-4 py-3">
           <div>
-            <span className="text-xs font-semibold text-teal-600 uppercase tracking-wider block font-sans">
+            <span className="over block text-[#0052ff]">
               Phân công soát vé
             </span>
-            <h3 className="font-sans text-base font-semibold text-slate-900">
+            <h3 className="font-bold text-base text-slate-900">
               {title}
             </h3>
             <p className="mt-0.5 text-xs text-slate-500 font-sans">
@@ -133,9 +133,9 @@ function ConfirmDeleteModal({
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs select-none">
-      <div className="w-full max-w-md overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl p-4 space-y-3 relative z-10">
+      <div className="card w-full max-w-md overflow-hidden p-4 space-y-3 relative z-10">
         <div className="space-y-1.5 font-sans text-xs">
-          <h3 className="font-sans text-sm font-semibold text-slate-900">
+          <h3 className="font-bold text-sm text-slate-900">
             {title}
           </h3>
           <p className="text-slate-600 leading-relaxed">{message}</p>
@@ -144,7 +144,7 @@ function ConfirmDeleteModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-sans font-medium text-slate-700 transition-colors hover:bg-slate-50 cursor-pointer"
+            className="btn btn-secondary btn-sm"
           >
             Hủy bỏ
           </button>
@@ -152,7 +152,7 @@ function ConfirmDeleteModal({
             type="button"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="rounded-lg bg-rose-600 px-4 py-1.5 text-xs font-sans font-medium text-white transition-colors hover:bg-rose-700 cursor-pointer disabled:opacity-50 shadow-sm"
+            className="btn btn-danger btn-sm"
           >
             {isDeleting ? "Đang xử lý..." : "Xác nhận xóa"}
           </button>
@@ -172,17 +172,17 @@ function SummaryCard({
   icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
-    <div className="bg-white rounded-lg border border-slate-200 p-3 sm:p-3.5 shadow-xs flex items-center justify-between">
+    <div className="card p-4 flex items-center justify-between">
       <div>
-        <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider font-sans">
+        <p className="over">
           {label}
         </p>
-        <p className="mt-0.5 tabular-nums text-xl sm:text-2xl font-bold text-slate-900">
+        <p className="mt-1 tabular-nums text-2xl font-bold text-slate-900">
           {value}
         </p>
       </div>
-      <div className="flex h-9 w-9 items-center justify-center rounded-md border border-teal-100 bg-teal-50 text-teal-700">
-        <Icon className="h-4 w-4" />
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-[#0052ff]">
+        <Icon className="h-5 w-5" />
       </div>
     </div>
   );
@@ -493,32 +493,35 @@ function AssignmentsContent() {
 
   return (
     <div className="space-y-6">
-      {/* Enterprise Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      {/* Head */}
+      <div className="head stickyhead">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 mt-1 font-sans">
-            Phân công soát vé
-          </h1>
-          <p className="text-xs text-slate-500 font-sans mt-0.5">
+          <div className="flex items-center gap-2">
+            <h1 className="htcaa-h1">Phân công soát vé</h1>
+            <span className="htcaa-badge-count-pill">
+              {meta.totalItems} lượt phân công
+            </span>
+          </div>
+          <p className="sub">
             Chỉ định nhân viên soát vé phụ trách từng cổng tại các sự kiện
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="head-actions">
           <button
             onClick={() => void handleRefresh()}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 px-3 py-2 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 text-xs font-sans font-medium text-slate-700 transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
+            className="btn btn-secondary btn-sm"
             title="Tải lại danh sách phân công"
           >
             <RefreshCw
-              className={`w-3.5 h-3.5 ${loading ? "animate-spin text-teal-600" : "text-slate-500"}`}
+              className={`w-3.5 h-3.5 ${loading ? "animate-spin text-[#0052ff]" : "text-slate-500"}`}
             />
             <span>Làm mới</span>
           </button>
           <button
             onClick={handleOpenCreate}
-            className="inline-flex items-center gap-1.5 px-3 py-2 border border-teal-600 rounded-lg bg-teal-600 hover:bg-teal-700 text-xs font-sans font-medium text-white transition-colors cursor-pointer shadow-sm"
+            className="btn btn-primary btn-sm flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Thêm phân công</span>
@@ -534,53 +537,43 @@ function AssignmentsContent() {
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-white rounded-lg border border-slate-200 p-3 shadow-xs grid grid-cols-1 md:grid-cols-12 gap-2.5 items-end">
-        <div className="flex flex-col gap-1 md:col-span-5">
-          <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider font-sans">
-            Lọc theo sự kiện
-          </span>
-          <div className="relative">
-            <CalendarDays className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <select
-              value={concertFilter}
-              onChange={(e) => {
-                setConcertFilter(e.target.value);
-                setPage(1);
-              }}
-              className="pl-8 pr-3 py-1.5 border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 font-sans text-xs w-full h-9 transition-colors text-slate-900 cursor-pointer font-medium"
-            >
-              <option value="">Tất cả sự kiện</option>
-              {concerts.map((concert) => (
-                <option key={concert.id} value={concert.id}>
-                  {concert.name}
-                </option>
-              ))}
-            </select>
-          </div>
+      <div className="filters">
+        <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+          <span className="over hidden sm:inline">Sự kiện:</span>
+          <select
+            value={concertFilter}
+            onChange={(e) => {
+              setConcertFilter(e.target.value);
+              setPage(1);
+            }}
+            className="select-trigger w-full text-xs font-medium"
+          >
+            <option value="">Tất cả sự kiện</option>
+            {concerts.map((concert) => (
+              <option key={concert.id} value={concert.id}>
+                {concert.name}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <div className="flex flex-col gap-1 md:col-span-5">
-          <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider font-sans">
-            Lọc theo nhân viên soát vé
-          </span>
-          <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <select
-              value={checkerFilter}
-              onChange={(e) => {
-                setCheckerFilter(e.target.value);
-                setPage(1);
-              }}
-              className="pl-8 pr-3 py-1.5 border border-slate-300 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 font-sans text-xs w-full h-9 transition-colors text-slate-900 cursor-pointer font-medium"
-            >
-              <option value="">Tất cả nhân viên</option>
-              {checkers.map((checker) => (
-                <option key={checker.id} value={checker.id}>
-                  {checker.full_name}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="flex items-center gap-2 flex-1 min-w-[200px]">
+          <span className="over hidden sm:inline">Nhân viên:</span>
+          <select
+            value={checkerFilter}
+            onChange={(e) => {
+              setCheckerFilter(e.target.value);
+              setPage(1);
+            }}
+            className="select-trigger w-full text-xs font-medium"
+          >
+            <option value="">Tất cả nhân viên</option>
+            {checkers.map((checker) => (
+              <option key={checker.id} value={checker.id}>
+                {checker.full_name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <button
@@ -589,137 +582,137 @@ function AssignmentsContent() {
             setCheckerFilter("");
             setPage(1);
           }}
-          className="rounded-md border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-sans text-xs font-medium h-9 transition-colors cursor-pointer md:col-span-2 w-full text-center"
+          className="btn btn-secondary btn-sm"
         >
           Xóa bộ lọc
         </button>
       </div>
 
       {/* Main Content Table Card */}
-      <div className="bg-white border border-slate-200 rounded-lg shadow-xs overflow-hidden">
-        <div className="px-3.5 py-2.5 border-b border-slate-100 bg-slate-50/50">
-          <h2 className="font-sans text-[11px] font-semibold uppercase tracking-wider text-slate-900">
-            Danh sách phân công soát vé
-          </h2>
+      <div className="space-y-2">
+        <div className="flex justify-between items-center px-1">
+          <span className="sub">Danh sách phân công soát vé ({meta.totalItems})</span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr className="bg-slate-50/70 font-sans text-[11px] font-semibold text-slate-600 uppercase tracking-wider border-b border-slate-100">
-                <th className="px-3 py-2.5">Nhân viên</th>
-                <th className="px-3 py-2.5">Sự kiện</th>
-                <th className="px-3 py-2.5">Cổng phụ trách</th>
-                <th className="px-3 py-2.5">Thời gian diễn ra</th>
-                <th className="px-3 py-2.5">Ngày tạo</th>
-                <th className="px-3 py-2.5 text-right">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-sans">
-              {bootstrapping || loading ? (
+        <div className="htcaa-table-wrap">
+          <div className="overflow-x-auto min-h-[320px]">
+            <table className="htcaa-table">
+              <thead>
                 <tr>
-                  <td
-                    colSpan={6}
-                    className="py-12 text-center text-slate-500 font-sans text-xs"
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-teal-600 border-t-transparent" />
-                      <span>Đang tải danh sách phân công...</span>
-                    </div>
-                  </td>
+                  <th>Nhân viên</th>
+                  <th>Sự kiện</th>
+                  <th>Cổng phụ trách</th>
+                  <th>Thời gian diễn ra</th>
+                  <th>Ngày tạo</th>
+                  <th style={{ textAlign: "right" }}>Thao tác</th>
                 </tr>
-              ) : assignments.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="py-12 text-center text-slate-500 font-sans text-xs"
-                  >
-                    Không tìm thấy lượt phân công nào phù hợp.
-                  </td>
-                </tr>
-              ) : (
-                assignments.map((assignment) => {
-                  const concertDetails = concertMap.get(assignment.concert_id);
-                  return (
-                    <tr
-                      key={assignment.id}
-                      className="hover:bg-slate-50/80 transition-colors"
+              </thead>
+              <tbody>
+                {bootstrapping || loading ? (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="py-16 text-center text-slate-500 font-sans text-xs"
                     >
-                      <td className="px-3 py-2.5 font-medium text-slate-900">
-                        <div className="font-semibold text-slate-900 text-xs">
-                          {assignment.checker.full_name}
-                        </div>
-                        <div className="text-[11px] text-slate-500 mt-0.5">
-                          {assignment.checker.email}
-                        </div>
-                      </td>
-                      <td className="px-3 py-2.5 font-medium text-slate-900">
-                        <div className="font-semibold text-xs">
-                          {assignment.concert.name}
-                        </div>
-                        {concertDetails?.location && (
-                          <div className="text-[11px] text-slate-500 mt-0.5">
-                            {concertDetails.location}
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#0052ff] border-t-transparent" />
+                        <span>Đang tải danh sách phân công...</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : assignments.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="py-16 text-center text-slate-500 font-sans text-xs"
+                    >
+                      Không tìm thấy lượt phân công nào phù hợp.
+                    </td>
+                  </tr>
+                ) : (
+                  assignments.map((assignment) => {
+                    const concertDetails = concertMap.get(assignment.concert_id);
+                    return (
+                      <tr
+                        key={assignment.id}
+                        className="row-click group"
+                      >
+                        <td>
+                          <div className="font-semibold text-slate-900 text-xs">
+                            {assignment.checker.full_name}
                           </div>
-                        )}
-                      </td>
-                      <td className="px-3 py-2.5">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-teal-200 bg-teal-50 font-sans text-xs font-medium text-teal-700 rounded">
-                          <ShieldCheck className="h-3 w-3 text-teal-600" />
-                          Cổng{" "}
-                          <span className="font-mono tabular-nums">
-                            {assignment.gate_number}
+                          <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                            {assignment.checker.email}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="font-semibold text-xs text-slate-900">
+                            {assignment.concert.name}
+                          </div>
+                          {concertDetails?.location && (
+                            <div className="text-[11px] text-slate-500 mt-0.5">
+                              {concertDetails.location}
+                            </div>
+                          )}
+                        </td>
+                        <td>
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 border border-blue-200 bg-blue-50 font-sans text-xs font-semibold text-[#0052ff] rounded-full">
+                            <ShieldCheck className="h-3 w-3 text-[#0052ff]" />
+                            Cổng{" "}
+                            <span className="font-mono tabular-nums">
+                              {assignment.gate_number}
+                            </span>
                           </span>
-                        </span>
-                      </td>
-                      <td className="px-3 py-2.5 font-mono tabular-nums text-[11px] text-slate-700">
-                        {formatConcertTime(concertDetails?.start_time)}
-                      </td>
-                      <td className="px-3 py-2.5 font-mono tabular-nums text-[11px] text-slate-500">
-                        {formatShortDate(assignment.created_at)}
-                      </td>
-                      <td className="px-3 py-2.5 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => void handleOpenEdit(assignment)}
-                            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-teal-700 px-2.5 py-1 rounded-md text-xs font-sans font-medium flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
-                          >
-                            <Pencil size={12} /> Sửa
-                          </button>
-                          <button
-                            onClick={() => setDeleteTarget(assignment)}
-                            disabled={deletingId === assignment.id}
-                            className="bg-white border border-rose-200 hover:bg-rose-50 text-rose-700 px-2.5 py-1 rounded-md text-xs font-sans font-medium flex items-center gap-1 transition-colors cursor-pointer disabled:opacity-50"
-                          >
-                            <Trash2 size={12} /> Xóa
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination bar */}
-        {!loading && meta.totalPages > 1 && (
-          <div className="p-3 border-t border-slate-100 bg-slate-50/50">
-            <Pagination
-              page={page}
-              totalPages={meta.totalPages}
-              totalItems={meta.totalItems}
-              itemsPerPage={limit}
-              onPageChange={setPage}
-              onLimitChange={(l) => {
-                setLimit(l);
-                setPage(1);
-              }}
-              itemLabel="lượt phân công"
-            />
+                        </td>
+                        <td className="font-mono tabular-nums text-[11px] text-slate-700">
+                          {formatConcertTime(concertDetails?.start_time)}
+                        </td>
+                        <td className="font-mono tabular-nums text-[11px] text-slate-500">
+                          {formatShortDate(assignment.created_at)}
+                        </td>
+                        <td style={{ textAlign: "right" }}>
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => void handleOpenEdit(assignment)}
+                              className="btn btn-secondary btn-sm"
+                            >
+                              <Pencil size={12} /> Sửa
+                            </button>
+                            <button
+                              onClick={() => setDeleteTarget(assignment)}
+                              disabled={deletingId === assignment.id}
+                              className="btn btn-danger btn-sm"
+                            >
+                              <Trash2 size={12} /> Xóa
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
+
+          {/* Pagination bar */}
+          {!loading && meta.totalPages > 1 && (
+            <div className="p-3 border-t border-slate-100 bg-slate-50/50">
+              <Pagination
+                page={page}
+                totalPages={meta.totalPages}
+                totalItems={meta.totalItems}
+                itemsPerPage={limit}
+                onPageChange={setPage}
+                onLimitChange={(l) => {
+                  setLimit(l);
+                  setPage(1);
+                }}
+                itemLabel="lượt phân công"
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* CREATE MODAL */}
@@ -746,7 +739,7 @@ function AssignmentsContent() {
                 onChange={(e) =>
                   void handleConcertChangeForCreate(e.target.value)
                 }
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 h-10 cursor-pointer font-sans"
+                className="select-trigger w-full h-10"
               >
                 <option value="">Chọn một sự kiện</option>
                 {concerts.map((concert) => (
@@ -764,7 +757,7 @@ function AssignmentsContent() {
               <select
                 value={createCheckerId}
                 onChange={(e) => setCreateCheckerId(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 h-10 cursor-pointer font-sans"
+                className="select-trigger w-full h-10"
               >
                 <option value="">Chọn nhân viên</option>
                 {checkers.map((checker) => (
@@ -789,7 +782,7 @@ function AssignmentsContent() {
                 </p>
               </div>
               {isLoadingCreateGates && (
-                <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
+                <Loader2 className="h-4 w-4 animate-spin text-[#0052ff]" />
               )}
             </div>
 
@@ -811,7 +804,7 @@ function AssignmentsContent() {
                         onClick={() => setCreateGateNumber(String(gate))}
                         className={`border px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-colors cursor-pointer ${
                           isSelected
-                            ? "border-teal-600 bg-teal-600 text-white shadow-xs"
+                            ? "border-[#0052ff] bg-[#0052ff] text-white shadow-xs"
                             : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                         }`}
                       >
@@ -831,14 +824,14 @@ function AssignmentsContent() {
                 setIsCreateOpen(false);
                 resetCreateForm();
               }}
-              className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-sans text-xs font-medium py-2 px-3.5 rounded-lg transition-colors cursor-pointer"
+              className="btn btn-secondary btn-sm"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-teal-600 hover:bg-teal-700 text-white font-sans text-xs font-medium py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+              className="btn btn-primary btn-sm flex items-center gap-1.5 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -865,7 +858,7 @@ function AssignmentsContent() {
           {editTarget && (
             <div className="grid gap-3 md:grid-cols-2">
               <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                <p className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+                <p className="over">
                   Nhân viên soát vé
                 </p>
                 <p className="mt-1 font-semibold text-slate-900 text-xs">
@@ -877,7 +870,7 @@ function AssignmentsContent() {
               </div>
 
               <div className="rounded-lg border border-slate-100 bg-slate-50/70 p-3">
-                <p className="text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+                <p className="over">
                   Sự kiện
                 </p>
                 <p className="mt-1 font-semibold text-slate-900 text-xs">
@@ -902,7 +895,7 @@ function AssignmentsContent() {
                 </p>
               </div>
               {isLoadingEditGates && (
-                <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
+                <Loader2 className="h-4 w-4 animate-spin text-[#0052ff]" />
               )}
             </div>
 
@@ -916,7 +909,7 @@ function AssignmentsContent() {
                     onClick={() => setEditGateNumber(String(gate))}
                     className={`border px-3 py-1.5 rounded-lg text-xs font-sans font-medium transition-colors cursor-pointer ${
                       isSelected
-                        ? "border-teal-600 bg-teal-600 text-white shadow-xs"
+                        ? "border-[#0052ff] bg-[#0052ff] text-white shadow-xs"
                         : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                     }`}
                   >
@@ -931,14 +924,14 @@ function AssignmentsContent() {
             <button
               type="button"
               onClick={closeEditModal}
-              className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-sans text-xs font-medium py-2 px-3.5 rounded-lg transition-colors cursor-pointer"
+              className="btn btn-secondary btn-sm"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-teal-600 hover:bg-teal-700 text-white font-sans text-xs font-medium py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
+              className="btn btn-primary btn-sm flex items-center gap-1.5 disabled:opacity-50"
             >
               {isSubmitting ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -973,7 +966,7 @@ export default function AdminAssignmentsPage() {
     <Suspense
       fallback={
         <div className="flex h-64 items-center justify-center">
-          <div className="h-6 w-6 animate-spin border-2 border-teal-600 border-t-transparent rounded-full" />
+          <div className="h-6 w-6 animate-spin border-2 border-[#0052ff] border-t-transparent rounded-full" />
         </div>
       }
     >

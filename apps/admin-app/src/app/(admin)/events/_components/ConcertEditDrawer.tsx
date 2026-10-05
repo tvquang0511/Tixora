@@ -583,7 +583,7 @@ export function ConcertEditDrawer({
               onClick={() => setActiveTab("info")}
               className={`py-2.5 text-xs font-semibold border-b-2 transition-colors cursor-pointer ${
                 activeTab === "info"
-                  ? "border-teal-600 text-teal-700"
+                  ? "border-[#0052ff] text-[#0052ff]"
                   : "border-transparent text-slate-500 hover:text-slate-900"
               }`}
             >
@@ -593,7 +593,7 @@ export function ConcertEditDrawer({
               onClick={() => setActiveTab("tickets")}
               className={`py-2.5 text-xs font-semibold border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "tickets"
-                  ? "border-teal-600 text-teal-700"
+                  ? "border-[#0052ff] text-[#0052ff]"
                   : "border-transparent text-slate-500 hover:text-slate-900"
               }`}
             >
@@ -606,7 +606,7 @@ export function ConcertEditDrawer({
               onClick={() => setActiveTab("status")}
               className={`py-2.5 text-xs font-semibold border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "status"
-                  ? "border-teal-600 text-teal-700"
+                  ? "border-[#0052ff] text-[#0052ff]"
                   : "border-transparent text-slate-500 hover:text-slate-900"
               }`}
             >
@@ -621,7 +621,7 @@ export function ConcertEditDrawer({
           <div className="flex-1 overflow-y-auto p-6 space-y-5">
             {isLoading ? (
               <div className="h-64 flex flex-col items-center justify-center gap-2 text-slate-400">
-                <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
+                <Loader2 className="w-6 h-6 animate-spin text-[#0052ff]" />
                 <p className="text-xs">Đang tải dữ liệu sự kiện...</p>
               </div>
             ) : (
@@ -638,7 +638,7 @@ export function ConcertEditDrawer({
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Nhập tên sự kiện..."
-                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-[#0052ff] focus:ring-2 focus:ring-[#0052ff]/20 transition-colors"
                       />
                     </div>
 
@@ -650,7 +650,7 @@ export function ConcertEditDrawer({
                         <select
                           value={category}
                           onChange={(e) => setCategory(e.target.value)}
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-teal-500 transition-colors"
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-[#0052ff] transition-colors"
                         >
                           <option value="LIVE_MUSIC">
                             Âm nhạc trực tiếp (Live Music)
@@ -680,7 +680,7 @@ export function ConcertEditDrawer({
                           type="datetime-local"
                           value={startTime}
                           onChange={(e) => setStartTime(e.target.value)}
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-teal-500 transition-colors tabular-nums"
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-[#0052ff] transition-colors tabular-nums"
                         />
                       </div>
                     </div>
@@ -700,7 +700,7 @@ export function ConcertEditDrawer({
                               setLocation(`${found.name}, ${found.address}`);
                             }
                           }}
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-teal-500 transition-colors"
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-[#0052ff] transition-colors"
                         >
                           <option value="">-- Chọn địa điểm đã lưu --</option>
                           {venues.map((v) => (
@@ -720,7 +720,7 @@ export function ConcertEditDrawer({
                           value={location}
                           onChange={(e) => setLocation(e.target.value)}
                           placeholder="Ví dụ: Trung tâm Triển lãm SECC, Quận 7, TP.HCM"
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-teal-500 transition-colors"
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-[#0052ff] transition-colors"
                         />
                       </div>
                     </div>
@@ -734,7 +734,7 @@ export function ConcertEditDrawer({
                         value={performers}
                         onChange={(e) => setPerformers(e.target.value)}
                         placeholder="Ví dụ: Sơn Tùng M-TP, Vũ, Đen Vâu..."
-                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-teal-500 transition-colors"
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-[#0052ff] transition-colors"
                       />
                     </div>
 
@@ -747,7 +747,7 @@ export function ConcertEditDrawer({
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Nội dung giới thiệu sự kiện, quy định vào cổng..."
-                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-teal-500 transition-colors"
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-[#0052ff] transition-colors"
                       />
                     </div>
 
@@ -829,7 +829,7 @@ export function ConcertEditDrawer({
                               setSvgMapUrl(e.target.value);
                             }
                           }}
-                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none focus:border-teal-500 cursor-pointer shadow-2xs"
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none focus:border-[#0052ff] cursor-pointer shadow-2xs"
                         >
                           <option value="">
                             -- Chọn sơ đồ mẫu có sẵn trên hệ thống --
@@ -859,7 +859,7 @@ export function ConcertEditDrawer({
                         <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-2xs space-y-2.5">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <span className="inline-block w-2 h-2 rounded-full bg-teal-500" />
+                              <span className="inline-block w-2 h-2 rounded-full bg-[#0052ff]" />
                               <span className="text-xs font-semibold text-slate-800">
                                 Mặt bằng phân khu khán giả & Sân khấu
                               </span>
@@ -868,7 +868,7 @@ export function ConcertEditDrawer({
                               href={resolveSvgMapUrl(svgMapUrl)}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-[11px] font-medium text-teal-700 hover:text-teal-800 hover:underline shrink-0"
+                              className="inline-flex items-center gap-1 text-[11px] font-medium text-[#0052ff] hover:underline shrink-0"
                             >
                               <ExternalLink className="w-3 h-3" />
                               <span>Mở toàn màn hình</span>
@@ -917,9 +917,9 @@ export function ConcertEditDrawer({
                         <button
                           type="button"
                           onClick={handleAddTier}
-                          className="flex items-center gap-1 px-2.5 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded-md text-xs font-medium shadow-2xs transition-colors cursor-pointer"
+                          className="btn btn-secondary btn-sm inline-flex items-center gap-1 cursor-pointer"
                         >
-                          <Plus className="w-3.5 h-3.5" />
+                          <Plus className="w-3.5 h-3.5 text-[#0052ff]" />
                           <span>Thêm hạng vé</span>
                         </button>
                       </div>
@@ -1085,7 +1085,7 @@ export function ConcertEditDrawer({
                           <select
                             value={selectedStatus}
                             onChange={(e) => setSelectedStatus(e.target.value)}
-                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs font-semibold text-slate-900 focus:outline-none focus:border-teal-500 transition-colors shadow-2xs"
+                            className="select-trigger w-full text-xs font-semibold"
                           >
                             <option value={currentStatus}>
                               {STATUS_LABELS[currentStatus] || currentStatus}{" "}
@@ -1151,7 +1151,7 @@ export function ConcertEditDrawer({
                 href={`${webAppUrl}/concerts/${concertId}`}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg shadow-2xs transition-colors"
+                className="btn btn-secondary btn-sm inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
                 <span>Xem trang công khai</span>
@@ -1159,7 +1159,6 @@ export function ConcertEditDrawer({
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Nút xóa màu đỏ kế bên nút hủy bỏ: không có icon, đậm khi cho phép xóa, nhạt khi không */}
               <button
                 type="button"
                 onClick={() => {
@@ -1168,10 +1167,10 @@ export function ConcertEditDrawer({
                   }
                 }}
                 disabled={!canDelete || isDeletingConcert}
-                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
+                className={`btn btn-sm cursor-pointer ${
                   canDelete
-                    ? "bg-rose-600 hover:bg-rose-700 text-white border-rose-600 shadow-xs cursor-pointer"
-                    : "bg-rose-50 text-rose-300 border-rose-100 cursor-not-allowed opacity-60"
+                    ? "btn-danger"
+                    : "bg-rose-50 text-rose-300 border border-rose-100 cursor-not-allowed opacity-60"
                 }`}
                 title={
                   canDelete
@@ -1185,19 +1184,18 @@ export function ConcertEditDrawer({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3.5 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-2xs transition-colors cursor-pointer"
+                className="btn btn-secondary btn-sm cursor-pointer"
               >
                 Hủy bỏ
               </button>
 
-              {/* Nút lưu thay đổi: không có icon, chỉ sáng lên khi có chỉnh sửa (isDirty) */}
               <button
                 type="button"
                 onClick={() => void handleSubmit()}
                 disabled={isSaving || isLoading || !isDirty}
-                className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                className={`btn btn-sm cursor-pointer ${
                   isDirty && !isSaving
-                    ? "bg-teal-600 hover:bg-teal-700 text-white shadow-xs cursor-pointer"
+                    ? "btn-primary"
                     : "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed shadow-none"
                 }`}
                 title={
@@ -1216,7 +1214,7 @@ export function ConcertEditDrawer({
       {/* Confirmation Modal for Delete Concert */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[270] flex items-center justify-center p-4 select-none">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3.5 animate-in fade-in zoom-in duration-100">
+          <div className="card max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-100 border border-slate-200">
             <div className="flex items-center gap-2.5 text-rose-600">
               <AlertTriangle className="w-5 h-5 shrink-0" />
               <h3 className="text-sm font-bold text-slate-900">
@@ -1224,18 +1222,18 @@ export function ConcertEditDrawer({
               </h3>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed font-sans">
               Bạn có chắc chắn muốn xóa sự kiện{" "}
               <strong>&quot;{name}&quot;</strong> không? Toàn bộ thông tin cấu
               hình và hạng vé liên quan sẽ bị xóa vĩnh viễn. Thao tác này không
               thể hoàn tác!
             </p>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
+                className="btn btn-secondary btn-sm cursor-pointer"
               >
                 Hủy bỏ
               </button>
@@ -1243,7 +1241,7 @@ export function ConcertEditDrawer({
                 type="button"
                 onClick={handleDeleteConcert}
                 disabled={isDeletingConcert}
-                className="px-4 py-1.5 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg shadow-xs transition-colors cursor-pointer"
+                className="btn btn-danger btn-sm cursor-pointer"
               >
                 {isDeletingConcert ? "Đang xóa..." : "Xác nhận xóa"}
               </button>
@@ -1255,7 +1253,7 @@ export function ConcertEditDrawer({
       {/* Confirmation Modal for Status Change */}
       {showStatusConfirm && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-[260] flex items-center justify-center p-4 select-none">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-3.5 animate-in fade-in zoom-in duration-100">
+          <div className="card max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in duration-100 border border-slate-200">
             <div className="flex items-center gap-2.5 text-amber-600">
               <AlertTriangle className="w-5 h-5 shrink-0" />
               <h3 className="text-sm font-bold text-slate-900">
@@ -1263,29 +1261,29 @@ export function ConcertEditDrawer({
               </h3>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed font-sans">
               Bạn có chắc chắn muốn chuyển trạng thái sự kiện{" "}
               <strong>&quot;{name}&quot;</strong> từ{" "}
               <span className="font-semibold text-slate-900">
                 {STATUS_LABELS[currentStatus] || currentStatus}
               </span>{" "}
               sang{" "}
-              <span className="font-semibold text-teal-700">
+              <span className="font-semibold text-[#0052ff]">
                 {STATUS_LABELS[selectedStatus] || selectedStatus}
               </span>{" "}
               không?
             </p>
 
-            <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl text-[11px] text-amber-800">
+            <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl text-[11px] text-amber-800 font-sans">
               {STATUS_WARNING_MESSAGES[selectedStatus] ||
                 "Hành động này sẽ thay đổi trạng thái mở bán của sự kiện."}
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setShowStatusConfirm(false)}
-                className="px-3 py-1.5 text-xs font-medium text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
+                className="btn btn-secondary btn-sm cursor-pointer"
               >
                 Hủy bỏ
               </button>
@@ -1293,7 +1291,7 @@ export function ConcertEditDrawer({
                 type="button"
                 onClick={() => void handleConfirmStatusChange()}
                 disabled={isSaving}
-                className="px-4 py-1.5 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-xs transition-colors cursor-pointer"
+                className="btn btn-primary btn-sm cursor-pointer"
               >
                 Xác nhận chuyển
               </button>
