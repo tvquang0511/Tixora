@@ -250,16 +250,10 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
           {error || "Đã xảy ra lỗi"}
         </p>
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => void fetchOrder()}
-            className="btn btn-primary"
-          >
+          <button onClick={() => void fetchOrder()} className="btn btn-primary">
             <RotateCw size={13} /> Thử lại
           </button>
-          <Link
-            href="/orders"
-            className="btn"
-          >
+          <Link href="/orders" className="btn">
             <ChevronLeft size={14} /> Quay lại danh sách
           </Link>
         </div>
@@ -317,7 +311,10 @@ export default function AdminOrderDetailPage({ params }: PageProps) {
             className="btn"
             title="Tải lại chi tiết"
           >
-            <RotateCw size={13} className={isLoading ? "animate-spin text-[#0052ff]" : ""} />
+            <RotateCw
+              size={13}
+              className={isLoading ? "animate-spin text-[#0052ff]" : ""}
+            />
             <span>Làm mới</span>
           </button>
           <span

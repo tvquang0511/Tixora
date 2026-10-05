@@ -197,14 +197,20 @@ export function PayoutSettlementTab({
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-slate-400">
+                    <td
+                      colSpan={7}
+                      className="py-12 text-center text-slate-400"
+                    >
                       <RefreshCw className="w-5 h-5 animate-spin mx-auto text-[#0052ff] mb-2" />
                       Đang tải dữ liệu đối soát...
                     </td>
                   </tr>
                 ) : filteredItems.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-slate-400">
+                    <td
+                      colSpan={7}
+                      className="py-12 text-center text-slate-400"
+                    >
                       Không tìm thấy sự kiện nào phù hợp.
                     </td>
                   </tr>
@@ -214,10 +220,7 @@ export function PayoutSettlementTab({
                     const refCode = settledIds[item.concert_id];
 
                     return (
-                      <tr
-                        key={item.concert_id}
-                        className="row-click group"
-                      >
+                      <tr key={item.concert_id} className="row-click group">
                         {/* Event */}
                         <td>
                           <div className="font-semibold text-slate-900 line-clamp-1">
@@ -250,17 +253,26 @@ export function PayoutSettlementTab({
                         </td>
 
                         {/* GMV */}
-                        <td style={{ textAlign: "right" }} className="font-bold text-slate-900 font-mono tabular-nums text-xs">
+                        <td
+                          style={{ textAlign: "right" }}
+                          className="font-bold text-slate-900 font-mono tabular-nums text-xs"
+                        >
                           {formatVND(item.gmv)}
                         </td>
 
                         {/* Platform Fee */}
-                        <td style={{ textAlign: "right" }} className="text-rose-700 font-mono tabular-nums text-xs font-medium">
+                        <td
+                          style={{ textAlign: "right" }}
+                          className="text-rose-700 font-mono tabular-nums text-xs font-medium"
+                        >
                           - {formatVND(item.platform_fee)}
                         </td>
 
                         {/* Net Payout */}
-                        <td style={{ textAlign: "right" }} className="font-bold text-[#0052ff] font-mono tabular-nums text-xs">
+                        <td
+                          style={{ textAlign: "right" }}
+                          className="font-bold text-[#0052ff] font-mono tabular-nums text-xs"
+                        >
                           {formatVND(item.net_payout)}
                         </td>
 

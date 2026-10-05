@@ -121,10 +121,7 @@ export function ConcertRevenueTable({
                   const platformFee = Math.round(item.revenue * 0.05);
                   const netPayout = item.revenue - platformFee;
                   return (
-                    <tr
-                      key={item.concert_id}
-                      className="row-click group"
-                    >
+                    <tr key={item.concert_id} className="row-click group">
                       <td>
                         <div className="flex items-center gap-2.5">
                           <div className="w-9 h-9 rounded-md overflow-hidden shrink-0 bg-slate-100 border border-slate-200 relative">
@@ -160,16 +157,28 @@ export function ConcertRevenueTable({
                       <td className="text-slate-600 font-mono tabular-nums text-xs">
                         {formatConcertDate(item.start_time)}
                       </td>
-                      <td style={{ textAlign: "right" }} className="font-bold text-slate-900 font-mono tabular-nums text-xs">
+                      <td
+                        style={{ textAlign: "right" }}
+                        className="font-bold text-slate-900 font-mono tabular-nums text-xs"
+                      >
                         {formatVND(item.revenue)}
                       </td>
-                      <td style={{ textAlign: "right" }} className="font-medium text-rose-700 font-mono tabular-nums text-xs">
+                      <td
+                        style={{ textAlign: "right" }}
+                        className="font-medium text-rose-700 font-mono tabular-nums text-xs"
+                      >
                         - {formatVND(platformFee)}
                       </td>
-                      <td style={{ textAlign: "right" }} className="font-bold text-[#0052ff] font-mono tabular-nums text-xs">
+                      <td
+                        style={{ textAlign: "right" }}
+                        className="font-bold text-[#0052ff] font-mono tabular-nums text-xs"
+                      >
                         {formatVND(netPayout)}
                       </td>
-                      <td style={{ textAlign: "center" }} className="font-medium text-slate-900 font-mono tabular-nums text-xs">
+                      <td
+                        style={{ textAlign: "center" }}
+                        className="font-medium text-slate-900 font-mono tabular-nums text-xs"
+                      >
                         {item.tickets_sold.toLocaleString("vi-VN")}
                       </td>
                       <td style={{ textAlign: "center" }}>

@@ -389,7 +389,9 @@ body {
     border-radius: 14px;
     padding: 16px 20px;
     background: #ffffff;
-    box-shadow: 0 1px 3px rgba(10, 11, 13, 0.01), 0 8px 24px rgba(10, 11, 13, 0.03);
+    box-shadow:
+      0 1px 3px rgba(10, 11, 13, 0.01),
+      0 8px 24px rgba(10, 11, 13, 0.03);
   }
 
   /* HTCAA Form Controls */
@@ -402,7 +404,9 @@ body {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
   }
 
   .search-box:hover {
@@ -438,7 +442,9 @@ body {
     font-family: inherit;
     cursor: pointer;
     outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
   }
 
   .select-trigger:hover:not(:disabled) {

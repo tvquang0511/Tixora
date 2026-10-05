@@ -261,19 +261,29 @@ export default function AdminOrdersPage() {
                       <div className="font-semibold text-slate-900">
                         {order.user_name || "Khách hàng ẩn danh"}
                       </div>
-                      <div className="row-sub">
-                        {order.user_email || "N/A"}
-                      </div>
+                      <div className="row-sub">{order.user_email || "N/A"}</div>
                     </td>
                     <td>
                       <div className="font-semibold text-slate-900 group-hover:text-[#0052ff] transition-colors">
                         {order.concert_name}
                       </div>
                     </td>
-                    <td style={{ textAlign: "center", fontVariantNumeric: "tabular-nums" }} className="font-bold text-slate-900 font-mono">
+                    <td
+                      style={{
+                        textAlign: "center",
+                        fontVariantNumeric: "tabular-nums",
+                      }}
+                      className="font-bold text-slate-900 font-mono"
+                    >
                       {order.ticket_count}
                     </td>
-                    <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }} className="font-bold text-slate-900 font-mono text-xs">
+                    <td
+                      style={{
+                        textAlign: "right",
+                        fontVariantNumeric: "tabular-nums",
+                      }}
+                      className="font-bold text-slate-900 font-mono text-xs"
+                    >
                       {formatConcertCurrency(Number(order.total_amount))}
                     </td>
                     <td style={{ textAlign: "center" }}>
@@ -288,10 +298,13 @@ export default function AdminOrdersPage() {
                         {new Date(order.created_at).toLocaleDateString("vi-VN")}
                       </div>
                       <div className="row-sub">
-                        {new Date(order.created_at).toLocaleTimeString("vi-VN", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {new Date(order.created_at).toLocaleTimeString(
+                          "vi-VN",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          },
+                        )}
                       </div>
                     </td>
                     <td style={{ textAlign: "right", color: "#94a3b8" }}>

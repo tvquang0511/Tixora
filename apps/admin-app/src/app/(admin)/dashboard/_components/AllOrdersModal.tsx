@@ -120,10 +120,7 @@ export function AllOrdersModal({
                 </thead>
                 <tbody className="divide-y divide-slate-100 font-sans">
                   {modalOrders.map((order) => (
-                    <tr
-                      key={order.id}
-                      className="row-click group"
-                    >
+                    <tr key={order.id} className="row-click group">
                       <td className="font-mono text-xs font-semibold text-[#0052ff]">
                         #{order.id.slice(0, 8)}
                       </td>

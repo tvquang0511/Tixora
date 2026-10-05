@@ -151,25 +151,19 @@ export function ConcertDetailDrawer({
                   {/* Quick Stats */}
                   <div className="grid grid-cols-3 gap-3">
                     <div className="card p-3.5 flex flex-col gap-1">
-                      <span className="over">
-                        Tổng doanh thu
-                      </span>
+                      <span className="over">Tổng doanh thu</span>
                       <span className="text-sm sm:text-base font-bold text-slate-900 truncate tabular-nums font-mono">
                         {formatVND(detailData.total_revenue)}
                       </span>
                     </div>
                     <div className="card p-3.5 flex flex-col gap-1">
-                      <span className="over">
-                        Đơn hoàn tất
-                      </span>
+                      <span className="over">Đơn hoàn tất</span>
                       <span className="text-sm sm:text-base font-bold text-slate-900 tabular-nums font-mono">
                         {detailData.paid_orders.toLocaleString("vi-VN")}
                       </span>
                     </div>
                     <div className="card p-3.5 flex flex-col gap-1">
-                      <span className="over">
-                        Vé đã bán
-                      </span>
+                      <span className="over">Vé đã bán</span>
                       <span className="text-sm sm:text-base font-bold text-slate-900 tabular-nums font-mono">
                         {detailData.tickets_sold.toLocaleString("vi-VN")}
                       </span>
@@ -178,9 +172,7 @@ export function ConcertDetailDrawer({
 
                   {/* Tier Breakdown */}
                   <div className="space-y-2">
-                    <span className="sub">
-                      Phân tích theo từng hạng vé
-                    </span>
+                    <span className="sub">Phân tích theo từng hạng vé</span>
                     <div className="htcaa-table-wrap">
                       <table className="w-full text-left border-collapse text-xs">
                         <thead>

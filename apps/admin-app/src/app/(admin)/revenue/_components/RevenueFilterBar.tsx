@@ -83,16 +83,10 @@ export function RevenueFilterBar({
 
       {/* Buttons */}
       <div className="flex gap-2 ml-auto">
-        <button
-          onClick={onReset}
-          className="btn btn-secondary btn-sm"
-        >
+        <button onClick={onReset} className="btn btn-secondary btn-sm">
           Mặc định
         </button>
-        <button
-          onClick={onApply}
-          className="btn btn-primary btn-sm"
-        >
+        <button onClick={onApply} className="btn btn-primary btn-sm">
           Áp dụng
         </button>
       </div>

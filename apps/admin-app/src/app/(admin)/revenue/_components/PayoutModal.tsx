@@ -105,9 +105,7 @@ export function PayoutModal({
         <div className="p-6 overflow-y-auto space-y-5 grow">
           {/* Concert & Organizer Header */}
           <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 space-y-2">
-            <div className="over">
-              Sự kiện thanh toán
-            </div>
+            <div className="over">Sự kiện thanh toán</div>
             <div className="font-bold text-slate-900 text-base">
               {item.concert_name}
             </div>
@@ -149,9 +147,7 @@ export function PayoutModal({
           {/* Bank Account Info & VietQR */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="over">
-                Thông tin tài khoản nhận tiền
-              </div>
+              <div className="over">Thông tin tài khoản nhận tiền</div>
               <span className="text-[11px] text-[#0052ff] font-medium">
                 Đã thẩm định hồ sơ
               </span>

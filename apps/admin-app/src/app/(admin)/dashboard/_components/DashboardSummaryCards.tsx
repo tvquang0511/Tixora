@@ -20,9 +20,7 @@ export function DashboardSummaryCards({
       {/* Published Events */}
       <div className="card flex flex-col justify-between">
         <div className="flex justify-between items-start mb-2">
-          <span className="over">
-            Sự kiện mở bán
-          </span>
+          <span className="over">Sự kiện mở bán</span>
           <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#0052ff]">
             <Building2 className="w-4 h-4" />
           </div>
@@ -35,18 +33,14 @@ export function DashboardSummaryCards({
               formatSummaryNumber(summary?.published_events ?? 0, "number")
             )}
           </h3>
-          <p className="sub mt-1">
-            Sự kiện đang hoạt động trên hệ thống
-          </p>
+          <p className="sub mt-1">Sự kiện đang hoạt động trên hệ thống</p>
         </div>
       </div>
 
       {/* Tickets Sold */}
       <div className="card flex flex-col justify-between">
         <div className="flex justify-between items-start mb-2">
-          <span className="over">
-            Vé đã bán
-          </span>
+          <span className="over">Vé đã bán</span>
           <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#0052ff]">
             <Ticket className="w-4 h-4" />
           </div>
@@ -59,18 +53,14 @@ export function DashboardSummaryCards({
               formatSummaryNumber(summary?.tickets_sold ?? 0, "number")
             )}
           </h3>
-          <p className="sub mt-1">
-            Tổng vé thanh toán thành công
-          </p>
+          <p className="sub mt-1">Tổng vé thanh toán thành công</p>
         </div>
       </div>
 
       {/* Total Revenue */}
       <div className="card flex flex-col justify-between">
         <div className="flex justify-between items-start mb-2">
-          <span className="over">
-            Tổng doanh thu
-          </span>
+          <span className="over">Tổng doanh thu</span>
           <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#0052ff]">
             <DollarSign className="w-4 h-4" />
           </div>
@@ -86,18 +76,14 @@ export function DashboardSummaryCards({
               formatSummaryNumber(summary?.total_revenue ?? 0, "currency")
             )}
           </h3>
-          <p className="sub mt-1">
-            Tích lũy toàn thời gian hệ thống
-          </p>
+          <p className="sub mt-1">Tích lũy toàn thời gian hệ thống</p>
         </div>
       </div>
 
       {/* Registered Users */}
       <div className="card flex flex-col justify-between">
         <div className="flex justify-between items-start mb-2">
-          <span className="over">
-            Người dùng đăng ký
-          </span>
+          <span className="over">Người dùng đăng ký</span>
           <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-[#0052ff]">
             <Users className="w-4 h-4" />
           </div>
@@ -110,9 +96,7 @@ export function DashboardSummaryCards({
               formatSummaryNumber(summary?.total_users ?? 0, "number")
             )}
           </h3>
-          <p className="sub mt-1">
-            Tài khoản người dùng toàn hệ thống
-          </p>
+          <p className="sub mt-1">Tài khoản người dùng toàn hệ thống</p>
         </div>
       </div>
     </section>

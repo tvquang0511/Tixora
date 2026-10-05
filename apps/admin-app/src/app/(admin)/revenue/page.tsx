@@ -68,7 +68,8 @@ export default function AdminRevenuePage() {
             <span className="htcaa-badge-count-pill">Báo cáo tài chính</span>
           </div>
           <p className="sub">
-            Quản trị dòng tiền bán vé, phân bổ phí sàn Tixora và đối soát giải ngân cho Ban tổ chức
+            Quản trị dòng tiền bán vé, phân bổ phí sàn Tixora và đối soát giải
+            ngân cho Ban tổ chức
           </p>
         </div>
 

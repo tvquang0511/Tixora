@@ -66,10 +66,7 @@ export function UserTable({
               </thead>
               <tbody>
                 {users.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="row-click group"
-                  >
+                  <tr key={item.id} className="row-click group">
                     <td>
                       <div className="flex items-center gap-2.5">
                         <div className="w-7 h-7 rounded-full bg-blue-50 text-[#0052ff] border border-blue-200 flex items-center justify-center font-bold text-xs shrink-0">
@@ -107,11 +104,17 @@ export function UserTable({
                       </div>
                     </td>
 
-                    <td style={{ textAlign: "center" }} className="font-bold text-slate-900 font-mono tabular-nums">
+                    <td
+                      style={{ textAlign: "center" }}
+                      className="font-bold text-slate-900 font-mono tabular-nums"
+                    >
                       {item.order_count.toLocaleString("vi-VN")}
                     </td>
 
-                    <td style={{ textAlign: "center" }} className="font-bold text-slate-900 font-mono tabular-nums">
+                    <td
+                      style={{ textAlign: "center" }}
+                      className="font-bold text-slate-900 font-mono tabular-nums"
+                    >
                       {item.ticket_count.toLocaleString("vi-VN")}
                     </td>
 

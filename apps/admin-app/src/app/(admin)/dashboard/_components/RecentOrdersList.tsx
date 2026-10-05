@@ -73,10 +73,7 @@ export function RecentOrdersList({
                 >
                   {order.customer_name}
                 </h4>
-                <p
-                  className="sub truncate"
-                  title={order.concert_name}
-                >
+                <p className="sub truncate" title={order.concert_name}>
                   {order.concert_name}
                 </p>
               </div>

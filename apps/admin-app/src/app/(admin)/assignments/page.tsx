@@ -91,12 +91,8 @@ function AssignmentModal({
       <div className="card w-full max-w-xl overflow-hidden p-0 shadow-xl relative z-10 flex flex-col max-h-[90vh]">
         <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50/50 px-4 py-3">
           <div>
-            <span className="over block text-[#0052ff]">
-              Phân công soát vé
-            </span>
-            <h3 className="font-bold text-base text-slate-900">
-              {title}
-            </h3>
+            <span className="over block text-[#0052ff]">Phân công soát vé</span>
+            <h3 className="font-bold text-base text-slate-900">{title}</h3>
             <p className="mt-0.5 text-xs text-slate-500 font-sans">
               {description}
             </p>
@@ -135,9 +131,7 @@ function ConfirmDeleteModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs select-none">
       <div className="card w-full max-w-md overflow-hidden p-4 space-y-3 relative z-10">
         <div className="space-y-1.5 font-sans text-xs">
-          <h3 className="font-bold text-sm text-slate-900">
-            {title}
-          </h3>
+          <h3 className="font-bold text-sm text-slate-900">{title}</h3>
           <p className="text-slate-600 leading-relaxed">{message}</p>
         </div>
         <div className="flex gap-2 justify-end pt-2 border-t border-slate-100">
@@ -174,9 +168,7 @@ function SummaryCard({
   return (
     <div className="card p-4 flex items-center justify-between">
       <div>
-        <p className="over">
-          {label}
-        </p>
+        <p className="over">{label}</p>
         <p className="mt-1 tabular-nums text-2xl font-bold text-slate-900">
           {value}
         </p>
@@ -591,7 +583,9 @@ function AssignmentsContent() {
       {/* Main Content Table Card */}
       <div className="space-y-2">
         <div className="flex justify-between items-center px-1">
-          <span className="sub">Danh sách phân công soát vé ({meta.totalItems})</span>
+          <span className="sub">
+            Danh sách phân công soát vé ({meta.totalItems})
+          </span>
         </div>
 
         <div className="htcaa-table-wrap">
@@ -631,12 +625,11 @@ function AssignmentsContent() {
                   </tr>
                 ) : (
                   assignments.map((assignment) => {
-                    const concertDetails = concertMap.get(assignment.concert_id);
+                    const concertDetails = concertMap.get(
+                      assignment.concert_id,
+                    );
                     return (
-                      <tr
-                        key={assignment.id}
-                        className="row-click group"
-                      >
+                      <tr key={assignment.id} className="row-click group">
                         <td>
                           <div className="font-semibold text-slate-900 text-xs">
                             {assignment.checker.full_name}
@@ -858,9 +851,7 @@ function AssignmentsContent() {
           {editTarget && (
             <div className="grid gap-3 md:grid-cols-2">
               <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                <p className="over">
-                  Nhân viên soát vé
-                </p>
+                <p className="over">Nhân viên soát vé</p>
                 <p className="mt-1 font-semibold text-slate-900 text-xs">
                   {editTarget.checker.full_name}
                 </p>
@@ -870,9 +861,7 @@ function AssignmentsContent() {
               </div>
 
               <div className="rounded-lg border border-slate-100 bg-slate-50/70 p-3">
-                <p className="over">
-                  Sự kiện
-                </p>
+                <p className="over">Sự kiện</p>
                 <p className="mt-1 font-semibold text-slate-900 text-xs">
                   {editTarget.concert.name}
                 </p>

@@ -160,9 +160,7 @@ function StatCard({
   return (
     <div className="card p-4 flex items-center justify-between">
       <div>
-        <p className="over">
-          {label}
-        </p>
+        <p className="over">{label}</p>
         <p className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight tabular-nums mt-0.5">
           {value.toLocaleString("vi-VN")}
         </p>
@@ -431,10 +429,7 @@ export default function AdminJobsPage() {
                     icon: null,
                   };
                   return (
-                    <tr
-                      key={job.id}
-                      className="row-click group"
-                    >
+                    <tr key={job.id} className="row-click group">
                       {/* Loại + copy ID tác vụ */}
                       <td>
                         <div className="flex items-center gap-1.5">

@@ -149,12 +149,11 @@ export default function OrganizerRequestsPage() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="htcaa-h1">Hồ sơ đối tác BTC</h1>
-            <span className="htcaa-badge-count-pill">
-              {totalItems} hồ sơ
-            </span>
+            <span className="htcaa-badge-count-pill">{totalItems} hồ sơ</span>
           </div>
           <p className="sub">
-            Kiểm tra thông tin pháp nhân, hồ sơ năng lực và cấp quyền Organizer cho đối tác
+            Kiểm tra thông tin pháp nhân, hồ sơ năng lực và cấp quyền Organizer
+            cho đối tác
           </p>
         </div>
         <div className="head-actions">
@@ -280,10 +279,7 @@ export default function OrganizerRequestsPage() {
                 </tr>
               ) : (
                 requests.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="row-click group"
-                  >
+                  <tr key={item.id} className="row-click group">
                     {/* Organization Name */}
                     <td>
                       <div className="font-semibold text-slate-900 text-xs">
@@ -638,8 +634,8 @@ export default function OrganizerRequestsPage() {
                   {selectedRequest.organization_name}
                 </span>{" "}
                 sẽ được cấp vai trò{" "}
-                <span className="font-bold text-[#0052ff]">Organizer</span> và mở
-                quyền tạo sự kiện bán vé.
+                <span className="font-bold text-[#0052ff]">Organizer</span> và
+                mở quyền tạo sự kiện bán vé.
               </p>
             </div>
 

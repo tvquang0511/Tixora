@@ -131,7 +131,8 @@ export function ActionRequiredSection() {
               <div className="sub mt-0.5">
                 {readySettlementCount > 0 ? (
                   <span className="text-amber-800 font-semibold">
-                    Có {readySettlementCount} sự kiện đã kết thúc sẵn sàng chuyển tiền
+                    Có {readySettlementCount} sự kiện đã kết thúc sẵn sàng
+                    chuyển tiền
                   </span>
                 ) : (
                   <span>Không có sự kiện tồn đọng chuyển khoản</span>

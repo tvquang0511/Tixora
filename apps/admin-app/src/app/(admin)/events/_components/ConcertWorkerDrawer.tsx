@@ -560,10 +560,7 @@ export function ConcertWorkerDrawer({
                           </tr>
                         ) : (
                           guests.map((g) => (
-                            <tr
-                              key={g.id}
-                              className="row-click group"
-                            >
+                            <tr key={g.id} className="row-click group">
                               <td>
                                 <p className="font-semibold text-slate-900">
                                   {g.full_name}

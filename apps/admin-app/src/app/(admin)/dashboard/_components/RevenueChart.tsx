@@ -92,12 +92,11 @@ export function RevenueChart({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 text-xs text-slate-600">
             <span className="w-2.5 h-2.5 rounded-full bg-[#0052ff] inline-block" />
-            <span className="font-semibold text-slate-700">Doanh thu (VND)</span>
+            <span className="font-semibold text-slate-700">
+              Doanh thu (VND)
+            </span>
           </div>
-          <button
-            onClick={onExportCsv}
-            className="btn btn-sm"
-          >
+          <button onClick={onExportCsv} className="btn btn-sm">
             <Download size={14} className="text-slate-500" />
             <span>Xuất CSV</span>
           </button>
@@ -107,9 +106,7 @@ export function RevenueChart({
       {/* Filters Bar */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-end mb-3.5 pb-3 border-b border-slate-100">
         <div className="md:col-span-5 flex flex-col gap-1">
-          <span className="over text-[10px]">
-            Khoảng thời gian
-          </span>
+          <span className="over text-[10px]">Khoảng thời gian</span>
           <div
             onClick={() => fromDateRef.current?.showPicker()}
             className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 transition-all cursor-pointer w-full focus-within:ring-2 focus-within:ring-[#0052ff]/10 focus-within:border-[#0052ff]"
@@ -146,9 +143,7 @@ export function RevenueChart({
         </div>
 
         <div className="md:col-span-3 flex flex-col gap-1">
-          <span className="over text-[10px]">
-            Gom nhóm
-          </span>
+          <span className="over text-[10px]">Gom nhóm</span>
           <select
             value={tempGroupBy}
             onChange={(e) =>
@@ -164,16 +159,10 @@ export function RevenueChart({
         </div>
 
         <div className="md:col-span-4 flex items-center gap-2">
-          <button
-            onClick={onApply}
-            className="btn btn-primary btn-sm flex-1"
-          >
+          <button onClick={onApply} className="btn btn-primary btn-sm flex-1">
             Áp dụng
           </button>
-          <button
-            onClick={onReset}
-            className="btn btn-sm"
-          >
+          <button onClick={onReset} className="btn btn-sm">
             Mặc định
           </button>
         </div>
@@ -334,9 +323,7 @@ export function RevenueChart({
       {!isLoadingRevenue && revenueData.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 border-t border-slate-100 mt-3 pt-3 gap-2 sm:gap-0">
           <div className="flex flex-col items-start sm:px-2.5 pb-2 sm:pb-0">
-            <span className="over text-[10px]">
-              Tổng doanh thu
-            </span>
+            <span className="over text-[10px]">Tổng doanh thu</span>
             <span className="text-sm font-mono tabular-nums font-bold text-slate-900 mt-0.5">
               {formatValueVND(totalRevenue)}
             </span>

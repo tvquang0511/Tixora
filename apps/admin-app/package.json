@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start -p 3002",
     "lint": "eslint",
-    "type-check": "next typegen && tsc --noEmit"
+    "type-check": "next typegen && tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "framer-motion": "^12.40.0",

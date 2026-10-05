@@ -109,9 +109,7 @@ export function UserDetailDrawer({
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div className="bg-slate-50/70 border border-slate-100 rounded-xl p-3 text-center">
                       <ShoppingBag className="w-4 h-4 text-[#0052ff] mx-auto mb-1" />
-                      <p className="over">
-                        Đơn hàng
-                      </p>
+                      <p className="over">Đơn hàng</p>
                       <p className="text-base font-bold text-slate-900 font-sans mt-1 tabular-nums">
                         {detailData.stats.order_count.toLocaleString("vi-VN")}
                       </p>
@@ -119,9 +117,7 @@ export function UserDetailDrawer({
 
                     <div className="bg-slate-50/70 border border-slate-100 rounded-xl p-3 text-center">
                       <CheckCircle className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
-                      <p className="over">
-                        Hoàn tất
-                      </p>
+                      <p className="over">Hoàn tất</p>
                       <p className="text-base font-bold text-emerald-700 font-sans mt-1 tabular-nums">
                         {detailData.stats.paid_order_count.toLocaleString(
                           "vi-VN",
@@ -131,9 +127,7 @@ export function UserDetailDrawer({
 
                     <div className="bg-slate-50/70 border border-slate-100 rounded-xl p-3 text-center">
                       <Ticket className="w-4 h-4 text-[#0052ff] mx-auto mb-1" />
-                      <p className="over">
-                        Số vé mua
-                      </p>
+                      <p className="over">Số vé mua</p>
                       <p className="text-base font-bold text-slate-900 font-sans mt-1 tabular-nums">
                         {detailData.stats.ticket_count.toLocaleString("vi-VN")}
                       </p>
@@ -180,9 +174,7 @@ export function UserDetailDrawer({
 
                       {/* Roles */}
                       <div className="space-y-1.5">
-                        <label className="over block">
-                          Vai trò người dùng
-                        </label>
+                        <label className="over block">Vai trò người dùng</label>
                         <select
                           disabled={isSavingDraft || !canEditTarget}
                           value={draftRoles[0] || "Audience"}

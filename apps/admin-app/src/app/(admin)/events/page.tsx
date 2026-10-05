@@ -281,7 +281,9 @@ export default function AdminEventsPage() {
         <div className="flex items-center gap-3 flex-wrap">
           <h1 className="htcaa-h1 m-0">Sự kiện</h1>
           <span className="htcaa-badge-count-pill">
-            {totalItems} sự kiện · {concerts.filter((c) => c.status === "PUBLISHED").length} sắp diễn ra
+            {totalItems} sự kiện ·{" "}
+            {concerts.filter((c) => c.status === "PUBLISHED").length} sắp diễn
+            ra
           </span>
         </div>
         <div className="head-actions flex items-center gap-2 flex-wrap">
@@ -406,7 +408,10 @@ export default function AdminEventsPage() {
           ].map((col) => {
             const colConcerts = concerts.filter((c) => c.status === col.key);
             return (
-              <div key={col.key} className="bg-slate-50/70 border border-slate-200 rounded-xl p-3 flex flex-col gap-2.5">
+              <div
+                key={col.key}
+                className="bg-slate-50/70 border border-slate-200 rounded-xl p-3 flex flex-col gap-2.5"
+              >
                 <div className="flex items-center justify-between pb-2 border-b border-slate-200">
                   <span className="over font-bold">{col.label}</span>
                   <span className="text-xs bg-white border border-slate-200 px-2 py-0.5 rounded-full font-semibold text-slate-700">
@@ -415,7 +420,9 @@ export default function AdminEventsPage() {
                 </div>
                 <div className="flex flex-col gap-2 min-h-[160px]">
                   {colConcerts.length === 0 ? (
-                    <div className="text-center py-8 text-xs text-slate-400">Trống</div>
+                    <div className="text-center py-8 text-xs text-slate-400">
+                      Trống
+                    </div>
                   ) : (
                     colConcerts.map((concert) => {
                       const totalCap =
@@ -426,14 +433,18 @@ export default function AdminEventsPage() {
                       const remCap =
                         concert.ticketTiers?.reduce(
                           (acc, t) =>
-                            acc + (t.remaining_quantity ?? t.total_quantity ?? 0),
+                            acc +
+                            (t.remaining_quantity ?? t.total_quantity ?? 0),
                           0,
                         ) || 0;
                       const registered =
                         totalCap > 0 ? Math.max(0, totalCap - remCap) : 0;
                       const capPercent =
                         totalCap > 0
-                          ? Math.min(100, Math.round((registered / totalCap) * 100))
+                          ? Math.min(
+                              100,
+                              Math.round((registered / totalCap) * 100),
+                            )
                           : 0;
 
                       return (
@@ -500,7 +511,9 @@ export default function AdminEventsPage() {
                     <td colSpan={7} className="p-8 text-center text-slate-500">
                       <div className="flex flex-col items-center justify-center gap-2">
                         <CalendarOff className="w-6 h-6 text-slate-300" />
-                        <p className="text-xs font-medium">Không tìm thấy sự kiện nào.</p>
+                        <p className="text-xs font-medium">
+                          Không tìm thấy sự kiện nào.
+                        </p>
                       </div>
                     </td>
                   </tr>
@@ -521,7 +534,10 @@ export default function AdminEventsPage() {
                       totalCap > 0 ? Math.max(0, totalCap - remCap) : 0;
                     const capPercent =
                       totalCap > 0
-                        ? Math.min(100, Math.round((registered / totalCap) * 100))
+                        ? Math.min(
+                            100,
+                            Math.round((registered / totalCap) * 100),
+                          )
                         : 0;
 
                     return (
@@ -538,7 +554,12 @@ export default function AdminEventsPage() {
                           </div>
                           <div
                             className="font-mono"
-                            style={{ fontSize: "11px", color: "#0052ff", fontWeight: 500, marginTop: 2 }}
+                            style={{
+                              fontSize: "11px",
+                              color: "#0052ff",
+                              fontWeight: 500,
+                              marginTop: 2,
+                            }}
                           >
                             TIX-{concert.id.slice(0, 8).toUpperCase()}
                           </div>
@@ -546,7 +567,10 @@ export default function AdminEventsPage() {
 
                         {/* Status Column */}
                         <td>
-                          <StatusBadge status={concert.status} variant="concert" />
+                          <StatusBadge
+                            status={concert.status}
+                            variant="concert"
+                          />
                         </td>
 
                         {/* Date/Time Column */}
@@ -554,7 +578,9 @@ export default function AdminEventsPage() {
                           {concert.date ? (
                             <>
                               <div className="val-strong">{concert.date}</div>
-                              <div className="row-sub">{concert.time || "—"}</div>
+                              <div className="row-sub">
+                                {concert.time || "—"}
+                              </div>
                             </>
                           ) : (
                             <span className="text-slate-400">—</span>
@@ -563,34 +589,70 @@ export default function AdminEventsPage() {
 
                         {/* Venue Column */}
                         <td>
-                          <div className="val-strong">{concert.venue || "—"}</div>
-                          {concert.city && <div className="row-sub">{concert.city}</div>}
+                          <div className="val-strong">
+                            {concert.venue || "—"}
+                          </div>
+                          {concert.city && (
+                            <div className="row-sub">{concert.city}</div>
+                          )}
                         </td>
 
                         {/* Ticket Tier Prices */}
                         <td>
-                          {concert.ticketTiers && concert.ticketTiers.length > 0 ? (
-                            <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                          {concert.ticketTiers &&
+                          concert.ticketTiers.length > 0 ? (
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 3,
+                              }}
+                            >
                               {concert.ticketTiers.slice(0, 2).map((t) => (
-                                <div key={t.id} style={{ fontSize: "13px", whiteSpace: "nowrap" }}>
-                                  <span style={{ color: "#475569", fontWeight: 500 }}>{t.name}: </span>
+                                <div
+                                  key={t.id}
+                                  style={{
+                                    fontSize: "13px",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                >
                                   <span
                                     style={{
-                                      color: t.price === 0 ? "#059669" : "#2563eb",
+                                      color: "#475569",
+                                      fontWeight: 500,
+                                    }}
+                                  >
+                                    {t.name}:{" "}
+                                  </span>
+                                  <span
+                                    style={{
+                                      color:
+                                        t.price === 0 ? "#059669" : "#2563eb",
                                       fontWeight: 700,
                                     }}
                                   >
-                                    {t.price === 0 ? "0đ (Miễn phí)" : `${t.price.toLocaleString("vi-VN")} đ`}
+                                    {t.price === 0
+                                      ? "0đ (Miễn phí)"
+                                      : `${t.price.toLocaleString("vi-VN")} đ`}
                                   </span>
                                 </div>
                               ))}
                             </div>
                           ) : (
-                            <div style={{ fontSize: "13px", whiteSpace: "nowrap" }}>
-                              <span style={{ color: "#475569", fontWeight: 500 }}>Từ: </span>
+                            <div
+                              style={{ fontSize: "13px", whiteSpace: "nowrap" }}
+                            >
+                              <span
+                                style={{ color: "#475569", fontWeight: 500 }}
+                              >
+                                Từ:{" "}
+                              </span>
                               <span
                                 style={{
-                                  color: (concert.minPrice || 0) === 0 ? "#059669" : "#2563eb",
+                                  color:
+                                    (concert.minPrice || 0) === 0
+                                      ? "#059669"
+                                      : "#2563eb",
                                   fontWeight: 700,
                                 }}
                               >
@@ -604,12 +666,26 @@ export default function AdminEventsPage() {
 
                         {/* Registration Capacity */}
                         <td>
-                          <div style={{ fontWeight: 600, color: "#0f172a", fontVariantNumeric: "tabular-nums" }}>
+                          <div
+                            style={{
+                              fontWeight: 600,
+                              color: "#0f172a",
+                              fontVariantNumeric: "tabular-nums",
+                            }}
+                          >
                             {registered}
-                            <span className="text-slate-400 font-normal">/{totalCap} chỗ</span>
+                            <span className="text-slate-400 font-normal">
+                              /{totalCap} chỗ
+                            </span>
                           </div>
-                          <div className="cap-meter" title={`${capPercent}% sức chứa`}>
-                            <span className="bar-fill" style={{ width: `${capPercent}%` }} />
+                          <div
+                            className="cap-meter"
+                            title={`${capPercent}% sức chứa`}
+                          >
+                            <span
+                              className="bar-fill"
+                              style={{ width: `${capPercent}%` }}
+                            />
                           </div>
                           <div className="row-sub">{registered} xác nhận</div>
                         </td>
@@ -625,7 +701,10 @@ export default function AdminEventsPage() {
                               className="p-1 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-[#0052ff] rounded-md transition-colors"
                               title="Phân công nhân sự soát vé theo cổng"
                             >
-                              <ClipboardCheck size={14} className="text-[#0052ff]" />
+                              <ClipboardCheck
+                                size={14}
+                                className="text-[#0052ff]"
+                              />
                             </Link>
                             <button
                               onClick={() => {
@@ -653,79 +732,78 @@ export default function AdminEventsPage() {
         </div>
       )}
 
-        {/* Pagination Bar */}
-        {!isLoading && totalPages > 1 && (
-          <div className="px-4 py-3 bg-slate-50/70 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs select-none">
-            <div className="flex items-center gap-3 text-slate-600 font-medium">
-              <span>
-                Trang <strong className="text-slate-900">{page}</strong> trên{" "}
-                <strong className="text-slate-900">{totalPages}</strong> (Tổng:{" "}
-                <strong className="text-slate-900">{totalItems}</strong> sự
-                kiện)
-              </span>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] text-slate-500">Hiển thị:</span>
-                <select
-                  value={limit}
-                  onChange={(e) => {
-                    setLimit(Number(e.target.value));
-                    setPage(1);
-                  }}
-                  className="px-2 py-1 border border-slate-200 bg-white text-xs font-medium text-slate-700 rounded-lg cursor-pointer focus:outline-none shadow-2xs"
-                >
-                  <option value={10}>10 dòng</option>
-                  <option value={20}>20 dòng</option>
-                  <option value={50}>50 dòng</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1">
-              <button
-                disabled={page === 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="px-2.5 py-1 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs rounded-lg disabled:opacity-40 cursor-pointer transition-colors shadow-2xs"
+      {/* Pagination Bar */}
+      {!isLoading && totalPages > 1 && (
+        <div className="px-4 py-3 bg-slate-50/70 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs select-none">
+          <div className="flex items-center gap-3 text-slate-600 font-medium">
+            <span>
+              Trang <strong className="text-slate-900">{page}</strong> trên{" "}
+              <strong className="text-slate-900">{totalPages}</strong> (Tổng:{" "}
+              <strong className="text-slate-900">{totalItems}</strong> sự kiện)
+            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] text-slate-500">Hiển thị:</span>
+              <select
+                value={limit}
+                onChange={(e) => {
+                  setLimit(Number(e.target.value));
+                  setPage(1);
+                }}
+                className="px-2 py-1 border border-slate-200 bg-white text-xs font-medium text-slate-700 rounded-lg cursor-pointer focus:outline-none shadow-2xs"
               >
-                <ChevronLeft size={14} />
-              </button>
-
-              {getPageNumbers().map((p: number | string, idx: number) => {
-                if (p === "...") {
-                  return (
-                    <span
-                      key={`dots-${idx}`}
-                      className="px-2 text-slate-400 text-xs"
-                    >
-                      ...
-                    </span>
-                  );
-                }
-                const isCurrent = p === page;
-                return (
-                  <button
-                    key={`page-${p}`}
-                    onClick={() => setPage(p as number)}
-                    className={`min-w-7 h-7 text-xs font-medium rounded-lg border transition-colors cursor-pointer flex items-center justify-center ${
-                      isCurrent
-                        ? "bg-[#0b63e5] border-[#0b63e5] text-white shadow-2xs"
-                        : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-2xs"
-                    }`}
-                  >
-                    {p}
-                  </button>
-                );
-              })}
-
-              <button
-                disabled={page === totalPages}
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="px-2.5 py-1 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs rounded-lg disabled:opacity-40 cursor-pointer transition-colors shadow-2xs"
-              >
-                <ChevronRight size={14} />
-              </button>
+                <option value={10}>10 dòng</option>
+                <option value={20}>20 dòng</option>
+                <option value={50}>50 dòng</option>
+              </select>
             </div>
           </div>
-        )}
+
+          <div className="flex items-center gap-1">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="px-2.5 py-1 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs rounded-lg disabled:opacity-40 cursor-pointer transition-colors shadow-2xs"
+            >
+              <ChevronLeft size={14} />
+            </button>
+
+            {getPageNumbers().map((p: number | string, idx: number) => {
+              if (p === "...") {
+                return (
+                  <span
+                    key={`dots-${idx}`}
+                    className="px-2 text-slate-400 text-xs"
+                  >
+                    ...
+                  </span>
+                );
+              }
+              const isCurrent = p === page;
+              return (
+                <button
+                  key={`page-${p}`}
+                  onClick={() => setPage(p as number)}
+                  className={`min-w-7 h-7 text-xs font-medium rounded-lg border transition-colors cursor-pointer flex items-center justify-center ${
+                    isCurrent
+                      ? "bg-[#0b63e5] border-[#0b63e5] text-white shadow-2xs"
+                      : "border-slate-200 bg-white hover:bg-slate-50 text-slate-700 shadow-2xs"
+                  }`}
+                >
+                  {p}
+                </button>
+              );
+            })}
+
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="px-2.5 py-1 border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs rounded-lg disabled:opacity-40 cursor-pointer transition-colors shadow-2xs"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
+        </div>
+      )}
 
       <ConcertWorkerDrawer
         isOpen={isWorkerDrawerOpen}

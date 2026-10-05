@@ -64,7 +64,8 @@ export default function AdminUsersPage() {
             </span>
           </div>
           <p className="sub">
-            Quản trị tài khoản, phân quyền bảo mật và theo dõi trạng thái hoạt động.
+            Quản trị tài khoản, phân quyền bảo mật và theo dõi trạng thái hoạt
+            động.
           </p>
         </div>
         <div className="head-actions">

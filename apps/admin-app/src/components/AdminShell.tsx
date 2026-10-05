@@ -161,7 +161,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
               >
                 <topNavItem.icon className="w-4 h-4" />
               </div>
-              {!collapsed && <span className="truncate">{topNavItem.label}</span>}
+              {!collapsed && (
+                <span className="truncate">{topNavItem.label}</span>
+              )}
             </Link>
           </div>
 

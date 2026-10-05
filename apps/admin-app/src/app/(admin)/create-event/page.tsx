@@ -510,7 +510,9 @@ function EventForm() {
             </ol>
           </nav>
           <h1 className="htcaa-h1">
-            {isEditing ? "Chỉnh sửa thông tin sự kiện" : "Thiết lập sự kiện mới"}
+            {isEditing
+              ? "Chỉnh sửa thông tin sự kiện"
+              : "Thiết lập sự kiện mới"}
           </h1>
           <p className="sub">
             {isEditing
@@ -705,9 +707,7 @@ function EventForm() {
                 {venues.map((v) => (
                   <option key={v.id} value={v.id}>
                     {v.name} ({v.city}) - Sức chứa:{" "}
-                    {v.capacity
-                      ? v.capacity.toLocaleString()
-                      : "Chưa xác định"}
+                    {v.capacity ? v.capacity.toLocaleString() : "Chưa xác định"}
                   </option>
                 ))}
               </select>
@@ -730,8 +730,7 @@ function EventForm() {
 
             <div className="sm:col-span-2">
               <label className="block font-sans text-xs font-semibold text-slate-700 mb-1.5">
-                Địa điểm tổ chức cụ thể{" "}
-                <span className="text-rose-500">*</span>
+                Địa điểm tổ chức cụ thể <span className="text-rose-500">*</span>
               </label>
               <input
                 className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0052ff]/20 focus:border-[#0052ff] text-xs transition-colors"
@@ -781,9 +780,7 @@ function EventForm() {
               </label>
               <select
                 value={
-                  SYSTEM_SVG_MAPS.some(
-                    (m) => m.value === formData.svg_map_url,
-                  )
+                  SYSTEM_SVG_MAPS.some((m) => m.value === formData.svg_map_url)
                     ? formData.svg_map_url
                     : formData.svg_map_url
                       ? "__custom__"
@@ -863,8 +860,8 @@ function EventForm() {
                   Chưa có sơ đồ ghế
                 </p>
                 <p className="text-[11px] text-slate-400 mt-1">
-                  Chọn một mẫu từ hệ thống ở trên hoặc tải file SVG để hiển
-                  thị sơ đồ phân khu
+                  Chọn một mẫu từ hệ thống ở trên hoặc tải file SVG để hiển thị
+                  sơ đồ phân khu
                 </p>
               </div>
             )}
@@ -1003,11 +1000,7 @@ function EventForm() {
                     type="datetime-local"
                     value={tier.sales_start_at}
                     onChange={(e) =>
-                      handleTierChange(
-                        index,
-                        "sales_start_at",
-                        e.target.value,
-                      )
+                      handleTierChange(index, "sales_start_at", e.target.value)
                     }
                   />
                 </div>

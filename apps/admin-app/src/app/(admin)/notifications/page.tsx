@@ -224,10 +224,7 @@ export default function AdminNotificationsPage() {
                     const meta = typeMeta[item.type];
                     const Icon = meta.icon;
                     return (
-                      <tr
-                        key={item.id}
-                        className="row-click group"
-                      >
+                      <tr key={item.id} className="row-click group">
                         <td className="max-w-md">
                           <div className="flex items-start gap-2.5">
                             <span
