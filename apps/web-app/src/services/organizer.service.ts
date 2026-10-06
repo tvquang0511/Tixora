@@ -34,6 +34,17 @@ export interface OrganizerProfileResponse {
   };
 }
 
+export interface UpdateOrganizerProfilePayload {
+  organization_name?: string;
+  phone_number?: string;
+  business_license_url?: string;
+  portfolio_url?: string;
+  bank_account_name?: string;
+  bank_account_number?: string;
+  bank_name?: string;
+  full_name?: string;
+}
+
 export const organizerService = {
   apply: async (
     payload: ApplyOrganizerPayload,
@@ -47,6 +58,19 @@ export const organizerService = {
   getMyApplication: async (): Promise<OrganizerProfileResponse | null> => {
     return apiClient.get<OrganizerProfileResponse | null>(
       "/organizer/my-application",
+    );
+  },
+
+  getProfile: async (): Promise<OrganizerProfileResponse | null> => {
+    return apiClient.get<OrganizerProfileResponse | null>("/organizer/profile");
+  },
+
+  updateProfile: async (
+    payload: UpdateOrganizerProfilePayload,
+  ): Promise<OrganizerProfileResponse> => {
+    return apiClient.patch<OrganizerProfileResponse>(
+      "/organizer/profile",
+      payload,
     );
   },
 };

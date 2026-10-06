@@ -97,6 +97,7 @@ export default function OrganizerHubLayout({
   const navLinks = [
     { href: "/organizer/dashboard", label: "Tổng quan" },
     { href: "/organizer/events", label: "Sự kiện" },
+    { href: "/organizer/profile", label: "Hồ sơ đối tác" },
   ];
 
   return (
@@ -120,7 +121,9 @@ export default function OrganizerHubLayout({
                 const isActive =
                   item.href === "/organizer/dashboard"
                     ? pathname === "/organizer/dashboard"
-                    : pathname.startsWith("/organizer/events");
+                    : item.href === "/organizer/profile"
+                      ? pathname.startsWith("/organizer/profile")
+                      : pathname.startsWith("/organizer/events");
                 return (
                   <Link
                     key={item.href}
@@ -191,7 +194,7 @@ export default function OrganizerHubLayout({
                     vé
                   </Link>
                   <Link
-                    href="/organizer/apply"
+                    href="/organizer/profile"
                     onClick={() => setIsDropdownOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-on-surface-variant/90 hover:bg-slate-900 hover:text-on-surface rounded-xl transition-colors"
                   >

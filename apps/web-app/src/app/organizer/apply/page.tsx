@@ -65,7 +65,7 @@ export default function OrganizerApplyPage() {
   // Auto redirect if user is already an approved Organizer
   useEffect(() => {
     if (!isAuthLoading && isAuthenticated && isOrganizer) {
-      router.replace("/organizer/dashboard");
+      router.replace("/organizer/profile");
     }
   }, [isAuthLoading, isAuthenticated, isOrganizer, router]);
 
@@ -87,9 +87,9 @@ export default function OrganizerApplyPage() {
         setBankHolder(profile.bank_account_name || "");
         setLicenseUrl(profile.business_license_url || "");
 
-        // If approved profile, route directly to organizer dashboard
+        // If approved profile, route directly to organizer profile
         if (profile.status === "APPROVED") {
-          router.replace("/organizer/dashboard");
+          router.replace("/organizer/profile");
         }
       })
       .catch((err) => {

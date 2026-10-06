@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User as UserIcon,
@@ -15,6 +16,8 @@ import {
   Calendar,
   Crown,
   ScanLine,
+  Building2,
+  ArrowRight,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -71,6 +74,8 @@ const getPermissionLabel = (perm: string) =>
 
 function ProfileContent() {
   const { user } = useAuth();
+  const isOrganizer =
+    user?.roles?.some((r) => r.toLowerCase() === "organizer") || false;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [ticketsOwned, setTicketsOwned] = useState(0);
@@ -408,6 +413,47 @@ function ProfileContent() {
           </motion.button>
         </div>
       </motion.div>
+
+      {/* Organizer Profile Card (Only shown if user has organizer role) */}
+      {isOrganizer && (
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="rounded-3xl border border-teal-500/20 bg-gradient-to-r from-teal-950/40 via-[#16222f]/60 to-[#16222f]/60 p-6 sm:p-8 shadow-md relative overflow-hidden"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-teal-500/15 border border-teal-500/30 text-teal-400">
+                <Building2 size={24} />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h2 className="font-display text-lg font-bold text-white">
+                    Hồ sơ Đối tác / Ban Tổ Chức
+                  </h2>
+                  <span className="text-[11px] font-bold text-teal-400 bg-teal-500/10 border border-teal-500/20 px-2 py-0.5 rounded-full">
+                    Đã phê duyệt
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400">
+                  Quản lý thông tin doanh nghiệp, tài khoản quyết toán doanh thu
+                  và giấy phép kinh doanh.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/organizer/profile"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold shadow-md shadow-teal-500/20 transition-all shrink-0 cursor-pointer"
+            >
+              <Building2 size={15} />
+              Xem & Chỉnh sửa hồ sơ BTC
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+        </motion.div>
+      )}
 
       {/* Password Change Dialog Modal */}
       <AnimatePresence>
