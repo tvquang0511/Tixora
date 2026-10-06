@@ -6,14 +6,11 @@ import { useToast } from "@/context/ToastContext";
 import {
   getConcerts,
   updateConcert,
-  getConcertPosterUrl,
   type ConcertCardItem,
 } from "@/services/concert.service";
 import {
-  Download,
   Plus,
   Search,
-  SlidersHorizontal,
   CalendarOff,
   Sparkles,
   ChevronLeft,
@@ -21,7 +18,6 @@ import {
   RotateCw,
   ClipboardCheck,
   AlertTriangle,
-  ChevronDown,
   Clock,
   BarChart2,
   Layers,
@@ -32,10 +28,10 @@ import { StatusBadge } from "../_components/StatusBadge";
 import { ConcertWorkerDrawer } from "./_components/ConcertWorkerDrawer";
 import {
   ConcertEditDrawer,
-  VALID_STATUS_TRANSITIONS,
   STATUS_LABELS,
   STATUS_WARNING_MESSAGES,
 } from "./_components/ConcertEditDrawer";
+import { CreateConcertModal } from "./_components/CreateConcertModal";
 
 const CONCERT_STATUS_STYLES: Record<
   string,
@@ -108,6 +104,7 @@ export default function AdminEventsPage() {
   const [totalItems, setTotalItems] = useState(0);
   const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null);
   const [editingConcertId, setEditingConcertId] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [statusConfirmTarget, setStatusConfirmTarget] = useState<{
     concertId: string;
     concertTitle: string;
@@ -321,10 +318,14 @@ export default function AdminEventsPage() {
               <span>Bảng</span>
             </button>
           </div>
-          <Link href="/create-event" className="btn btn-primary">
+          <button
+            type="button"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="btn btn-primary"
+          >
             <Plus size={14} />
             <span>Tạo sự kiện</span>
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -1058,6 +1059,16 @@ export default function AdminEventsPage() {
                 : c,
             ),
           );
+        }}
+      />
+
+      {/* In-place Create Concert Modal */}
+      <CreateConcertModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={() => {
+          setIsCreateModalOpen(false);
+          void fetchConcerts();
         }}
       />
     </div>
