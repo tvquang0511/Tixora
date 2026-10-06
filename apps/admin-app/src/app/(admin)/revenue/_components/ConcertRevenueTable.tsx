@@ -1,8 +1,11 @@
 "use client";
 
-import { MapPin, Search } from "lucide-react";
+import { Building2, MapPin, RotateCcw, Search, X } from "lucide-react";
 import { getConcertPosterUrl } from "@/services/concert.service";
-import { type RevenueByConcertItem } from "@/services/revenue.service";
+import {
+  type RevenueByConcertItem,
+  type RevenueByOrganizerItem,
+} from "@/services/revenue.service";
 import { StatusBadge } from "../../_components/StatusBadge";
 import { Pagination } from "../../_components/Pagination";
 
@@ -38,6 +41,9 @@ interface ConcertRevenueTableProps {
   onSearchChange: (v: string) => void;
   onPageChange: (p: number) => void;
   onViewDetail: (id: string) => void;
+  organizers?: RevenueByOrganizerItem[];
+  selectedOrganizerId?: string;
+  onFilterOrganizer?: (orgId: string) => void;
 }
 
 export function ConcertRevenueTable({
@@ -53,7 +59,14 @@ export function ConcertRevenueTable({
   onSearchChange,
   onPageChange,
   onViewDetail,
+  organizers,
+  selectedOrganizerId,
+  onFilterOrganizer,
 }: ConcertRevenueTableProps) {
+  const currentOrganizer = organizers?.find(
+    (o) => o.organizer_id === selectedOrganizerId,
+  );
+
   const formatDateRangeLabel = () => {
     const formatDate = (date: string) =>
       new Date(date).toLocaleDateString("vi-VN", {
@@ -71,23 +84,85 @@ export function ConcertRevenueTable({
 
   return (
     <div className="space-y-2">
+      {/* Active Organizer Filter Notification */}
+      {selectedOrganizerId && selectedOrganizerId !== "ALL" && (
+        <div className="flex items-center justify-between p-2.5 px-3 bg-blue-50/70 border border-blue-200 rounded-lg text-xs">
+          <div className="flex items-center gap-2 min-w-0">
+            <Building2 className="w-4 h-4 text-[#0e54a3] shrink-0" />
+            <span className="text-slate-600 shrink-0">
+              Đang lọc sự kiện của:
+            </span>
+            <span className="font-bold text-[#0e54a3] truncate">
+              {currentOrganizer?.organization_name || "Ban tổ chức được chọn"}
+            </span>
+            <span className="text-slate-500 font-mono shrink-0">
+              ({filteredConcerts.length} sự kiện)
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onFilterOrganizer?.("ALL")}
+            className="btn btn-secondary btn-sm inline-flex items-center gap-1 text-xs shrink-0 cursor-pointer text-[#0e54a3] hover:text-[#0a3d78]"
+          >
+            <RotateCcw className="w-3 h-3" />
+            <span>Xem tất cả sự kiện</span>
+          </button>
+        </div>
+      )}
+
+      {/* Toolbar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 px-1">
         <div>
           <span className="sub">
-            Doanh thu theo sự kiện [{formatDateRangeLabel()}]
+            Doanh thu theo sự kiện ({filteredConcerts.length}) &bull; [
+            {formatDateRangeLabel()}]
           </span>
         </div>
-        <div className="search-box w-full sm:w-72">
-          <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          <input
-            type="text"
-            placeholder="Tìm theo tên sự kiện..."
-            value={tableSearch}
-            onChange={(e) => {
-              onSearchChange(e.target.value);
-              onPageChange(1);
-            }}
-          />
+
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          {organizers && onFilterOrganizer && (
+            <select
+              value={selectedOrganizerId || "ALL"}
+              onChange={(e) => onFilterOrganizer(e.target.value)}
+              className="select-trigger text-xs font-semibold max-w-[200px] truncate"
+              title="Lọc theo ban tổ chức"
+            >
+              <option value="ALL">
+                Tất cả ban tổ chức ({organizers.length})
+              </option>
+              {organizers.map((org) => (
+                <option key={org.organizer_id} value={org.organizer_id}>
+                  {org.organization_name}
+                </option>
+              ))}
+            </select>
+          )}
+
+          <div className="search-box w-full sm:w-64">
+            <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <input
+              type="text"
+              placeholder="Tìm theo tên sự kiện..."
+              value={tableSearch}
+              onChange={(e) => {
+                onSearchChange(e.target.value);
+                onPageChange(1);
+              }}
+            />
+            {tableSearch && (
+              <button
+                type="button"
+                onClick={() => {
+                  onSearchChange("");
+                  onPageChange(1);
+                }}
+                className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                title="Xóa tìm kiếm"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -113,7 +188,6 @@ export function ConcertRevenueTable({
                   <th style={{ textAlign: "right" }}>Phí sàn (5%)</th>
                   <th style={{ textAlign: "right" }}>Thực nhận BTC</th>
                   <th style={{ textAlign: "center" }}>Vé bán</th>
-                  <th style={{ textAlign: "center" }}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -121,7 +195,11 @@ export function ConcertRevenueTable({
                   const platformFee = Math.round(item.revenue * 0.05);
                   const netPayout = item.revenue - platformFee;
                   return (
-                    <tr key={item.concert_id} className="row-click group">
+                    <tr
+                      key={item.concert_id}
+                      onClick={() => onViewDetail(item.concert_id)}
+                      className="row-click group cursor-pointer hover:bg-slate-50 transition-colors"
+                    >
                       <td>
                         <div className="flex items-center gap-2.5">
                           <div className="w-9 h-9 rounded-md overflow-hidden shrink-0 bg-slate-100 border border-slate-200 relative">
@@ -185,14 +263,6 @@ export function ConcertRevenueTable({
                         className="font-medium text-slate-900 font-mono tabular-nums text-xs"
                       >
                         {item.tickets_sold.toLocaleString("vi-VN")}
-                      </td>
-                      <td style={{ textAlign: "center" }}>
-                        <button
-                          onClick={() => onViewDetail(item.concert_id)}
-                          className="btn btn-secondary btn-sm"
-                        >
-                          Chi tiết
-                        </button>
                       </td>
                     </tr>
                   );

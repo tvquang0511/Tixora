@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, Award } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { type RevenueByOrganizerItem } from "@/services/revenue.service";
 
 interface TopOrganizersChartProps {
@@ -29,14 +29,23 @@ export function TopOrganizersChart({
       <div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Award className="w-4 h-4 text-[#0e54a3]" />
             <h3 className="text-sm font-bold text-slate-900">
               Top Ban tổ chức theo GMV
             </h3>
           </div>
-          <span className="text-[11px] text-slate-500 font-medium">
-            Thị phần sàn
-          </span>
+          {selectedOrganizerId !== "ALL" ? (
+            <button
+              type="button"
+              onClick={() => onSelectOrganizer("ALL")}
+              className="text-[11px] text-[#0e54a3] font-bold hover:underline cursor-pointer"
+            >
+              Xem tất cả
+            </button>
+          ) : (
+            <span className="text-[11px] text-slate-500 font-medium">
+              Thị phần sàn
+            </span>
+          )}
         </div>
 
         {isLoading ? (
@@ -64,7 +73,9 @@ export function TopOrganizersChart({
               return (
                 <div
                   key={org.organizer_id}
-                  onClick={() => onSelectOrganizer(org.organizer_id)}
+                  onClick={() =>
+                    onSelectOrganizer(isSelected ? "ALL" : org.organizer_id)
+                  }
                   className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
                     isSelected
                       ? "bg-blue-50/60 border-[#0e54a3]"
@@ -119,7 +130,7 @@ export function TopOrganizersChart({
                       {org.total_concerts} sự kiện • {org.tickets_sold} vé bán
                     </span>
                     <span className="text-[#0e54a3] font-medium flex items-center gap-0.5 hover:underline">
-                      Xem các show
+                      {isSelected ? "Bỏ lọc" : "Xem các show"}
                       <ArrowUpRight className="w-2.5 h-2.5" />
                     </span>
                   </div>
@@ -134,10 +145,11 @@ export function TopOrganizersChart({
         <span>Hiển thị top 5 đối tác lớn nhất</span>
         {selectedOrganizerId !== "ALL" && (
           <button
+            type="button"
             onClick={() => onSelectOrganizer("ALL")}
-            className="text-[11px] text-[#0e54a3] font-bold hover:underline"
+            className="text-[11px] text-[#0e54a3] font-bold hover:underline cursor-pointer"
           >
-            Bỏ lọc BTC
+            Bỏ lọc BTC (Xem tất cả)
           </button>
         )}
       </div>

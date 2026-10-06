@@ -1,4 +1,4 @@
-type StatusBadgeVariant = "user" | "concert" | "order";
+type StatusBadgeVariant = "user" | "concert" | "order" | "organizer";
 
 interface StatusBadgeProps {
   status: string;
@@ -11,6 +11,12 @@ const userStatusClasses: Record<string, string> = {
   INACTIVE: "bg-slate-100 text-slate-600 border-slate-200",
   BANNED: "bg-rose-50 text-rose-700 border-rose-200",
   PENDING: "bg-amber-50 text-amber-700 border-amber-200",
+};
+
+const organizerStatusClasses: Record<string, string> = {
+  PENDING: "bg-amber-50 text-amber-700 border-amber-200",
+  APPROVED: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  REJECTED: "bg-rose-50 text-rose-700 border-rose-200",
 };
 
 const concertStatusClasses: Record<string, string> = {
@@ -33,14 +39,14 @@ const orderStatusClasses: Record<string, string> = {
 
 const labelMap: Record<string, string> = {
   PAID: "Đã thanh toán",
-  PENDING: "Chờ thanh toán",
+  PENDING: "Chờ duyệt",
+  APPROVED: "Đã duyệt",
+  REJECTED: "Từ chối",
   CANCELLED: "Đã hủy",
   PUBLISHED: "Đang mở",
   PAUSED: "Tạm ngưng",
   DRAFT: "Bản nháp",
   PENDING_REVIEW: "Chờ duyệt",
-  APPROVED: "Đã duyệt",
-  REJECTED: "Đã từ chối",
   COMPLETED: "Đã hoàn thành",
   COMING_SOON: "Sắp diễn ra",
   ACTIVE: "Đang hoạt động",
@@ -58,7 +64,9 @@ export function StatusBadge({
       ? concertStatusClasses
       : variant === "order"
         ? orderStatusClasses
-        : userStatusClasses;
+        : variant === "organizer"
+          ? organizerStatusClasses
+          : userStatusClasses;
 
   const colorClass =
     map[status] ?? "bg-slate-100 text-slate-700 border-slate-300";

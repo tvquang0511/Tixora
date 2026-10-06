@@ -22,6 +22,7 @@ import {
   BarChart2,
   Layers,
   X,
+  RotateCcw,
 } from "lucide-react";
 import { StatusBadge } from "../_components/StatusBadge";
 
@@ -102,6 +103,23 @@ export default function AdminEventsPage() {
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+
+  const hasActiveFilters = Boolean(
+    searchQuery ||
+    (statusFilter && statusFilter !== "All") ||
+    (categoryFilter && categoryFilter !== "All"),
+  );
+  const activeFilterCount =
+    (searchQuery ? 1 : 0) +
+    (statusFilter && statusFilter !== "All" ? 1 : 0) +
+    (categoryFilter && categoryFilter !== "All" ? 1 : 0);
+
+  const handleResetFilters = () => {
+    setSearchQuery("");
+    setStatusFilter("All");
+    setCategoryFilter("All");
+    setPage(1);
+  };
   const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null);
   const [editingConcertId, setEditingConcertId] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -329,73 +347,120 @@ export default function AdminEventsPage() {
         </div>
       </div>
 
-      {/* HTCAA Filter Bar */}
-      <div className="filters">
-        <div className="search-box">
-          <Search size={14} className="text-slate-400 shrink-0" />
-          <input
-            placeholder="Tìm sự kiện theo tên hoặc địa điểm…"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="text-slate-400 hover:text-slate-700 text-xs px-1"
-            >
-              <X size={12} />
-            </button>
-          )}
-        </div>
-        <select
-          value={String(limit)}
-          onChange={(e) => {
-            setLimit(Number(e.target.value));
-            setPage(1);
-          }}
-          className="select-trigger"
-          style={{ width: "150px" }}
-          aria-label="Số dòng mỗi trang"
-        >
-          <option value="10">10 dòng/trang</option>
-          <option value="20">20 dòng/trang</option>
-          <option value="50">50 dòng/trang</option>
-        </select>
-      </div>
+      {/* Filters Toolbar Card */}
+      <div className="card p-3.5 space-y-3">
+        {/* Top row: Search input + Rows per page selector + Reset */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          {/* Search Box */}
+          <div className="search-box flex-1 max-w-md">
+            <Search className="w-4 h-4 text-slate-400 shrink-0" />
+            <input
+              type="text"
+              placeholder="Tìm sự kiện theo tên hoặc địa điểm…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                title="Xóa tìm kiếm"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
 
-      {/* Subtitle & Status Select Bar */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 12,
-          flexWrap: "wrap",
-          marginBottom: 12,
-        }}
-      >
-        <div className="sub">Danh sách sự kiện.</div>
-        <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-          <span className="over">Trạng thái</span>
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setPage(1);
-            }}
-            className="select-trigger"
-            style={{ width: "180px" }}
-            aria-label="Lọc theo trạng thái"
-          >
-            <option value="All">Tất cả trạng thái</option>
-            <option value="PUBLISHED">Đang mở bán</option>
-            <option value="PENDING_REVIEW">Chờ duyệt</option>
-            <option value="PAUSED">Tạm ngưng</option>
-            <option value="DRAFT">Bản nháp</option>
-            <option value="COMPLETED">Hoàn tất</option>
-            <option value="CANCELLED">Đã hủy</option>
-          </select>
-        </label>
+          {/* Quick controls: Per-page & Reset */}
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="btn btn-secondary btn-sm inline-flex items-center gap-1.5 text-slate-600 hover:text-rose-600 cursor-pointer"
+                title="Khôi phục tất cả bộ lọc"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+                <span>Đặt lại ({activeFilterCount})</span>
+              </button>
+            )}
+            <div className="flex items-center gap-1.5">
+              <span className="over text-[11px] hidden md:inline">
+                Hiển thị:
+              </span>
+              <select
+                value={String(limit)}
+                onChange={(e) => {
+                  setLimit(Number(e.target.value));
+                  setPage(1);
+                }}
+                className="select-trigger text-xs font-semibold"
+                aria-label="Số dòng mỗi trang"
+              >
+                <option value="10">10 dòng/trang</option>
+                <option value="20">20 dòng/trang</option>
+                <option value="50">50 dòng/trang</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom row: Filter Dropdowns & Stats */}
+        <div className="pt-2.5 border-t border-slate-100 flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 flex-1 min-w-[200px] max-w-xs">
+            <span className="over text-[11px] shrink-0">Trạng thái:</span>
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setPage(1);
+              }}
+              className="select-trigger w-full text-xs font-semibold"
+            >
+              <option value="All">Tất cả trạng thái</option>
+              <option value="PUBLISHED">Đang mở bán</option>
+              <option value="PENDING_REVIEW">Chờ duyệt</option>
+              <option value="PAUSED">Tạm ngưng</option>
+              <option value="DRAFT">Bản nháp</option>
+              <option value="COMPLETED">Hoàn tất</option>
+              <option value="CANCELLED">Đã hủy</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2 flex-1 min-w-[220px] max-w-xs">
+            <span className="over text-[11px] shrink-0">Thể loại:</span>
+            <select
+              value={categoryFilter}
+              onChange={(e) => {
+                setCategoryFilter(e.target.value);
+                setPage(1);
+              }}
+              className="select-trigger w-full text-xs font-semibold"
+            >
+              <option value="All">Tất cả thể loại</option>
+              <option value="CONCERT">Live Concert</option>
+              <option value="MUSIC_FESTIVAL">Music Festival</option>
+              <option value="ACOUSTIC">Acoustic</option>
+              <option value="THEATRE">Nhạc kịch</option>
+              <option value="CONFERENCE">Hội thảo</option>
+              <option value="SPORTS">Thể thao</option>
+            </select>
+          </div>
+
+          {/* Count info */}
+          <div className="ml-auto text-xs text-slate-500 font-medium hidden lg:flex items-center gap-1.5">
+            <span>Hiển thị</span>
+            <strong className="text-slate-900 font-bold tabular-nums">
+              {concerts.length}
+            </strong>
+            <span>trên</span>
+            <strong className="text-slate-900 font-bold tabular-nums">
+              {totalItems}
+            </strong>
+            <span>sự kiện</span>
+          </div>
+        </div>
       </div>
 
       {/* Content View: List or Board */}

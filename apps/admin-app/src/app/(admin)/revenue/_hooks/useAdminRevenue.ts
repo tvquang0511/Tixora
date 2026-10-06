@@ -225,7 +225,10 @@ export function useAdminRevenue() {
   const handleFilterByOrganizer = (orgId: string) => {
     setSelectedOrganizerId(orgId);
     setTempOrganizerId(orgId);
-    setActiveTableTab("concerts");
+    if (orgId !== "ALL") {
+      setActiveTableTab("concerts");
+    }
+    setTableSearch("");
     setCurrentPage(1);
   };
 

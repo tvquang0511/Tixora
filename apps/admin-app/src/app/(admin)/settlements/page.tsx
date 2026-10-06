@@ -7,9 +7,11 @@ import {
   Lock,
   Search,
   CheckCircle2,
-  RefreshCw,
+  RotateCw,
+  RotateCcw,
   Building2,
   AlertCircle,
+  X,
 } from "lucide-react";
 import {
   getSettlements,
@@ -42,6 +44,17 @@ export default function AdminSettlementsPage() {
   const [selectedPayoutItem, setSelectedPayoutItem] =
     useState<SettlementItem | null>(null);
   const [settledIds, setSettledIds] = useState<Record<string, string>>({});
+
+  const hasActiveFilters = Boolean(
+    searchTerm || (statusFilter && statusFilter !== "ALL"),
+  );
+  const activeFilterCount =
+    (searchTerm ? 1 : 0) + (statusFilter && statusFilter !== "ALL" ? 1 : 0);
+
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setStatusFilter("ALL");
+  };
 
   const loadData = useCallback(async () => {
     try {
@@ -86,10 +99,10 @@ export default function AdminSettlementsPage() {
   return (
     <div className="space-y-6">
       {/* Enterprise Page Header */}
-      <div className="head stickyhead">
+      <div className="head stickyhead flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="htcaa-h1">Đối soát & Quyết toán Ban tổ chức</h1>
+            <h1 className="htcaa-h1 m-0">Đối soát & Quyết toán Ban tổ chức</h1>
             <span className="htcaa-badge-count-pill">Tài chính & Escrow</span>
           </div>
           <p className="sub">
@@ -99,14 +112,14 @@ export default function AdminSettlementsPage() {
           </p>
         </div>
 
-        <div className="head-actions">
+        <div className="head-actions flex items-center gap-2">
           <button
             onClick={loadData}
             disabled={isLoading}
-            className="btn btn-secondary btn-sm"
+            className="btn"
             title="Tải lại danh sách đối soát"
           >
-            <RefreshCw
+            <RotateCw
               className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-[#0e54a3]" : "text-slate-500"}`}
             />
             <span>Làm mới</span>
@@ -181,21 +194,51 @@ export default function AdminSettlementsPage() {
         </div>
       </div>
 
-      {/* Filter & Search Bar */}
-      <div className="card p-3">
-        <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
-          <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+      {/* Filters Toolbar Card */}
+      <div className="card p-3.5 space-y-3">
+        {/* Top row: Search input + Reset */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="search-box flex-1 max-w-md">
+            <Search className="w-4 h-4 text-slate-400 shrink-0" />
             <input
               type="text"
               placeholder="Tìm theo sự kiện hoặc tên BTC..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="search-box w-full pl-9 pr-3 py-1.5 text-xs"
             />
+            {searchTerm && (
+              <button
+                type="button"
+                onClick={() => setSearchTerm("")}
+                className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                title="Xóa tìm kiếm"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto">
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="btn btn-secondary btn-sm inline-flex items-center gap-1.5 text-slate-600 hover:text-rose-600 cursor-pointer"
+                title="Khôi phục tất cả bộ lọc"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+                <span>Đặt lại ({activeFilterCount})</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom row: Status Tabs & Count Stats */}
+        <div className="pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 overflow-x-auto">
+            <span className="over text-[11px] shrink-0 hidden sm:inline">
+              Trạng thái:
+            </span>
             <div className="htcaa-segmented">
               <button
                 type="button"
@@ -245,172 +288,157 @@ export default function AdminSettlementsPage() {
               </button>
             </div>
           </div>
+
+          {/* Count info */}
+          <div className="text-xs text-slate-500 font-medium hidden lg:flex items-center gap-1.5">
+            <span>Hiển thị</span>
+            <strong className="text-slate-900 font-bold tabular-nums">
+              {filteredItems.length}
+            </strong>
+            <span>trên</span>
+            <strong className="text-slate-900 font-bold tabular-nums">
+              {settlements.length}
+            </strong>
+            <span>sự kiện</span>
+          </div>
         </div>
       </div>
 
       {/* Settlements Table */}
-      <div className="card overflow-hidden">
-        <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
-          <div>
-            <h2 className="text-sm font-bold text-slate-900">
-              Danh sách quyết toán sự kiện
-            </h2>
-            <p className="text-[11px] text-slate-500">
-              Hiển thị {filteredItems.length} sự kiện theo bộ lọc hiện tại
-            </p>
-          </div>
+      <div className="space-y-2">
+        <div className="flex justify-between items-center px-1">
+          <span className="sub">
+            Danh sách quyết toán sự kiện (
+            {filteredItems.length.toLocaleString()})
+          </span>
         </div>
-
         <div className="htcaa-table-wrap">
-          <table className="htcaa-table">
-            <thead>
-              <tr>
-                <th className="w-72">Sự kiện & Ngày tổ chức</th>
-                <th>Ban tổ chức & Ngân hàng</th>
-                <th className="text-right">Tổng GMV</th>
-                <th className="text-right">Phí sàn (5%)</th>
-                <th className="text-right">Thực nhận (Net Payout)</th>
-                <th className="text-center">Trạng thái</th>
-                <th className="text-right">Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
+          <div className="overflow-x-auto min-h-[320px]">
+            <table className="htcaa-table">
+              <thead>
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="text-center py-12 text-slate-400 text-xs"
-                  >
-                    <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-[#0e54a3]" />
-                    Đang tải dữ liệu đối soát...
-                  </td>
+                  <th className="w-72">Sự kiện & Ngày tổ chức</th>
+                  <th>Ban tổ chức & Ngân hàng</th>
+                  <th className="text-right">Tổng GMV</th>
+                  <th className="text-right">Phí sàn (5%)</th>
+                  <th className="text-right">Thực nhận (Net Payout)</th>
+                  <th className="text-center">Trạng thái</th>
                 </tr>
-              ) : filteredItems.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="text-center py-12 text-slate-400 text-xs"
-                  >
-                    Không tìm thấy sự kiện nào phù hợp với bộ lọc
-                  </td>
-                </tr>
-              ) : (
-                filteredItems.map((item) => {
-                  const isSettled = Boolean(settledIds[item.concert_id]);
-                  const refCode = settledIds[item.concert_id];
-                  const isReady =
-                    item.settlement_status === "READY_FOR_SETTLEMENT" &&
-                    !isSettled;
-
-                  return (
-                    <tr
-                      key={item.concert_id}
-                      className={isReady ? "bg-amber-50/20" : ""}
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="text-center py-12 text-slate-400 text-xs"
                     >
-                      {/* Concert */}
-                      <td>
-                        <div className="font-bold text-slate-900 text-xs hover:text-[#0e54a3] transition-colors">
-                          {item.concert_name}
-                        </div>
-                        <div className="flex items-center gap-1 text-[11px] text-slate-500 mt-0.5">
-                          <Calendar className="w-3 h-3 text-slate-400" />
-                          <span>{formatShortDate(item.start_time)}</span>
-                          <span className="text-slate-300">•</span>
-                          <span>{item.tickets_sold} vé đã bán</span>
-                        </div>
-                      </td>
+                      <RotateCw className="w-5 h-5 animate-spin mx-auto mb-2 text-[#0e54a3]" />
+                      Đang tải dữ liệu đối soát...
+                    </td>
+                  </tr>
+                ) : filteredItems.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="text-center py-12 text-slate-400 text-xs"
+                    >
+                      Không tìm thấy sự kiện nào phù hợp với bộ lọc
+                    </td>
+                  </tr>
+                ) : (
+                  filteredItems.map((item) => {
+                    const isSettled = Boolean(settledIds[item.concert_id]);
+                    const refCode = settledIds[item.concert_id];
+                    const isReady =
+                      item.settlement_status === "READY_FOR_SETTLEMENT" &&
+                      !isSettled;
 
-                      {/* Organizer */}
-                      <td>
-                        <div className="text-xs font-semibold text-slate-900">
-                          {item.organizer.organization_name}
-                        </div>
-                        <div className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1">
-                          {item.organizer.bank_name ? (
-                            <span>
-                              {item.organizer.bank_name} •{" "}
-                              {item.organizer.bank_account_number}
+                    return (
+                      <tr
+                        key={item.concert_id}
+                        onClick={() => setSelectedPayoutItem(item)}
+                        className={`row-click group cursor-pointer hover:bg-slate-50 transition-colors ${isReady ? "bg-amber-50/20" : ""}`}
+                      >
+                        {/* Concert */}
+                        <td>
+                          <div className="font-bold text-slate-900 text-xs hover:text-[#0e54a3] transition-colors">
+                            {item.concert_name}
+                          </div>
+                          <div className="flex items-center gap-1 text-[11px] text-slate-500 mt-0.5">
+                            <Calendar className="w-3 h-3 text-slate-400" />
+                            <span>{formatShortDate(item.start_time)}</span>
+                            <span className="text-slate-300">•</span>
+                            <span>{item.tickets_sold} vé đã bán</span>
+                          </div>
+                        </td>
+
+                        {/* Organizer */}
+                        <td>
+                          <div className="text-xs font-semibold text-slate-900">
+                            {item.organizer.organization_name}
+                          </div>
+                          <div className="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1">
+                            {item.organizer.bank_name ? (
+                              <span>
+                                {item.organizer.bank_name} •{" "}
+                                {item.organizer.bank_account_number}
+                              </span>
+                            ) : (
+                              <span className="text-amber-600 flex items-center gap-1">
+                                <AlertCircle className="w-3 h-3" />
+                                Chưa có STK ngân hàng
+                              </span>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* GMV */}
+                        <td className="text-right tabular-nums font-semibold text-slate-800 text-xs">
+                          {formatVND(item.gmv)}
+                        </td>
+
+                        {/* Platform Fee */}
+                        <td className="text-right tabular-nums text-xs text-rose-600 font-medium">
+                          - {formatVND(item.platform_fee)}
+                        </td>
+
+                        {/* Net Payout */}
+                        <td className="text-right tabular-nums font-bold text-xs text-[#0e54a3]">
+                          {formatVND(item.net_payout)}
+                        </td>
+
+                        {/* Settlement Status */}
+                        <td className="text-center">
+                          {isSettled ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              <CheckCircle2 className="w-3 h-3" />
+                              Đã quyết toán
+                            </span>
+                          ) : item.settlement_status ===
+                            "READY_FOR_SETTLEMENT" ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 animate-pulse">
+                              <CheckCircle2 className="w-3 h-3" />
+                              Sẵn sàng giải ngân
                             </span>
                           ) : (
-                            <span className="text-amber-600 flex items-center gap-1">
-                              <AlertCircle className="w-3 h-3" />
-                              Chưa có STK ngân hàng
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                              <Lock className="w-3 h-3" />
+                              Đang bảo chứng
                             </span>
                           )}
-                        </div>
-                      </td>
-
-                      {/* GMV */}
-                      <td className="text-right tabular-nums font-semibold text-slate-800 text-xs">
-                        {formatVND(item.gmv)}
-                      </td>
-
-                      {/* Platform Fee */}
-                      <td className="text-right tabular-nums text-xs text-rose-600 font-medium">
-                        - {formatVND(item.platform_fee)}
-                      </td>
-
-                      {/* Net Payout */}
-                      <td className="text-right tabular-nums font-bold text-xs text-[#0e54a3]">
-                        {formatVND(item.net_payout)}
-                      </td>
-
-                      {/* Settlement Status */}
-                      <td className="text-center">
-                        {isSettled ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <CheckCircle2 className="w-3 h-3" />
-                            Đã quyết toán
-                          </span>
-                        ) : item.settlement_status ===
-                          "READY_FOR_SETTLEMENT" ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 animate-pulse">
-                            <CheckCircle2 className="w-3 h-3" />
-                            Sẵn sàng giải ngân
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
-                            <Lock className="w-3 h-3" />
-                            Đang bảo chứng
-                          </span>
-                        )}
-                        {refCode && (
-                          <div className="text-[10px] text-slate-400 font-mono mt-0.5">
-                            Ref: {refCode}
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Actions */}
-                      <td className="text-right">
-                        {isSettled ? (
-                          <span className="text-[11px] text-emerald-600 font-medium">
-                            Hoàn tất
-                          </span>
-                        ) : isReady ? (
-                          <button
-                            onClick={() => setSelectedPayoutItem(item)}
-                            className="btn btn-primary btn-sm inline-flex items-center gap-1 text-[11px] py-1 px-2.5"
-                          >
-                            <CreditCard className="w-3.5 h-3.5" />
-                            <span>Quyết toán (VietQR)</span>
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => setSelectedPayoutItem(item)}
-                            className="btn btn-secondary btn-sm text-[11px] py-1 px-2"
-                            title="Xem chi tiết tài khoản thụ hưởng"
-                          >
-                            <span>Xem trước lệnh</span>
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                          {refCode && (
+                            <div className="text-[10px] text-slate-400 font-mono mt-0.5">
+                              Ref: {refCode}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

@@ -81,7 +81,7 @@ const navGroups = [
       },
       {
         href: "/users",
-        label: "Người dùng & Phân quyền",
+        label: "Phân quyền Người dùng",
         icon: Users,
       },
     ],
