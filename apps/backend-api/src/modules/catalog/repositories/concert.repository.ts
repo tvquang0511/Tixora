@@ -26,6 +26,20 @@ type ConcertListRow = {
       organization_name?: string | null;
     } | null;
   } | null;
+  ticket_categories?: Array<{
+    id: string;
+    name: string;
+    price: { toNumber(): number } | number | string;
+    total_quantity: number;
+    max_per_user?: number;
+    gate_number?: number | null;
+    position?: number | null;
+    status?: string | null;
+    sales_start_at?: Date | null;
+  }>;
+  orders?: Array<{
+    tickets?: Array<{ id: string }>;
+  }>;
 };
 
 type ConcertTicketCategoryRow = {
@@ -114,6 +128,26 @@ export class ConcertRepository {
                   organization_name: true,
                 },
               },
+            },
+          },
+          ticket_categories: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              total_quantity: true,
+              max_per_user: true,
+              gate_number: true,
+              position: true,
+              status: true,
+              sales_start_at: true,
+            },
+            orderBy: { position: "asc" },
+          },
+          orders: {
+            where: { status: "PAID" },
+            select: {
+              tickets: { select: { id: true } },
             },
           },
         },
@@ -365,6 +399,34 @@ export class ConcertRepository {
   }
 
   private mapToListDto(concert: ConcertListRow): ConcertListItemDto {
+    const rawCategories = concert.ticket_categories || [];
+    const totalCapacity = rawCategories.reduce(
+      (sum, tc) => sum + (tc.total_quantity || 0),
+      0,
+    );
+    const soldTickets = (concert.orders || []).reduce(
+      (sum, o) => sum + (o.tickets?.length || 0),
+      0,
+    );
+    const ticketTiers: TicketTierDto[] = rawCategories.map(
+      (tc) =>
+        new TicketTierDto({
+          id: tc.id,
+          name: tc.name,
+          price: Number(
+            typeof tc.price === "object" && tc.price !== null
+              ? tc.price.toNumber()
+              : tc.price,
+          ),
+          total_quantity: tc.total_quantity,
+          max_per_user: tc.max_per_user ?? 10,
+          gate_number: tc.gate_number ?? null,
+          position: tc.position ?? 0,
+          status: tc.status ?? "book_now",
+          sales_start_at: tc.sales_start_at ?? null,
+        }),
+    );
+
     return new ConcertListItemDto({
       id: concert.id,
       name: concert.name,
@@ -382,6 +444,9 @@ export class ConcertRepository {
         concert.organizer?.organizer_profile?.organization_name ||
         concert.organizer?.full_name ||
         (concert.organizer_id ? "Đơn vị tổ chức" : "Tixora Official"),
+      total_capacity: totalCapacity,
+      sold_tickets: soldTickets,
+      ticketTiers,
     });
   }
 }

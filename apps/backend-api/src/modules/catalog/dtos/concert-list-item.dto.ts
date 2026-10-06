@@ -49,6 +49,15 @@ export class ConcertListItemDto {
   @ApiPropertyOptional({ example: "Tixora Official" })
   organizer_name?: string | null;
 
+  @ApiPropertyOptional({ example: 5000 })
+  total_capacity?: number;
+
+  @ApiPropertyOptional({ example: 1200 })
+  sold_tickets?: number;
+
+  @ApiPropertyOptional()
+  ticketTiers?: unknown[];
+
   constructor(partial: Partial<ConcertListItemDto> = {}) {
     Object.assign(this, partial);
   }

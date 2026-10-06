@@ -492,19 +492,13 @@ export default function AdminEventsPage() {
                   ) : (
                     colConcerts.map((concert) => {
                       const totalCap =
+                        concert.totalCapacity ??
                         concert.ticketTiers?.reduce(
                           (acc, t) => acc + (t.total_quantity || 0),
                           0,
-                        ) || 0;
-                      const remCap =
-                        concert.ticketTiers?.reduce(
-                          (acc, t) =>
-                            acc +
-                            (t.remaining_quantity ?? t.total_quantity ?? 0),
-                          0,
-                        ) || 0;
-                      const registered =
-                        totalCap > 0 ? Math.max(0, totalCap - remCap) : 0;
+                        ) ??
+                        0;
+                      const registered = concert.soldTickets ?? 0;
                       const capPercent =
                         totalCap > 0
                           ? Math.min(
@@ -557,15 +551,14 @@ export default function AdminEventsPage() {
                   <th>TRẠNG THÁI</th>
                   <th>THỜI GIAN</th>
                   <th>ĐỊA ĐIỂM</th>
-                  <th>VÉ / GIÁ VÉ</th>
-                  <th>ĐĂNG KÝ</th>
+                  <th style={{ minWidth: 220 }}>VÉ ĐÃ BÁN / TỔNG VÉ</th>
                   <th style={{ width: 44, textAlign: "right" }}></th>
                 </tr>
               </thead>
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-slate-500">
+                    <td colSpan={6} className="p-8 text-center text-slate-500">
                       <div className="flex flex-col items-center justify-center gap-2">
                         <RotateCw className="w-4 h-4 animate-spin text-[#0052ff]" />
                         <p className="text-xs">Đang tải dữ liệu sự kiện…</p>
@@ -574,7 +567,7 @@ export default function AdminEventsPage() {
                   </tr>
                 ) : concerts.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-slate-500">
+                    <td colSpan={6} className="p-8 text-center text-slate-500">
                       <div className="flex flex-col items-center justify-center gap-2">
                         <CalendarOff className="w-6 h-6 text-slate-300" />
                         <p className="text-xs font-medium">
@@ -586,18 +579,13 @@ export default function AdminEventsPage() {
                 ) : (
                   concerts.map((concert) => {
                     const totalCap =
+                      concert.totalCapacity ??
                       concert.ticketTiers?.reduce(
                         (acc, t) => acc + (t.total_quantity || 0),
                         0,
-                      ) || 0;
-                    const remCap =
-                      concert.ticketTiers?.reduce(
-                        (acc, t) =>
-                          acc + (t.remaining_quantity ?? t.total_quantity ?? 0),
-                        0,
-                      ) || 0;
-                    const registered =
-                      totalCap > 0 ? Math.max(0, totalCap - remCap) : 0;
+                      ) ??
+                      0;
+                    const registered = concert.soldTickets ?? 0;
                     const capPercent =
                       totalCap > 0
                         ? Math.min(
@@ -605,6 +593,7 @@ export default function AdminEventsPage() {
                             Math.round((registered / totalCap) * 100),
                           )
                         : 0;
+                    const remainingTickets = Math.max(0, totalCap - registered);
 
                     return (
                       <tr
@@ -663,97 +652,66 @@ export default function AdminEventsPage() {
                           )}
                         </td>
 
-                        {/* Ticket Tier Prices */}
-                        <td>
-                          {concert.ticketTiers &&
-                          concert.ticketTiers.length > 0 ? (
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 3,
-                              }}
-                            >
-                              {concert.ticketTiers.slice(0, 2).map((t) => (
-                                <div
-                                  key={t.id}
-                                  style={{
-                                    fontSize: "13px",
-                                    whiteSpace: "nowrap",
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      color: "#475569",
-                                      fontWeight: 500,
-                                    }}
-                                  >
-                                    {t.name}:{" "}
-                                  </span>
-                                  <span
-                                    style={{
-                                      color:
-                                        t.price === 0 ? "#059669" : "#2563eb",
-                                      fontWeight: 700,
-                                    }}
-                                  >
-                                    {t.price === 0
-                                      ? "0đ (Miễn phí)"
-                                      : `${t.price.toLocaleString("vi-VN")} đ`}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div
-                              style={{ fontSize: "13px", whiteSpace: "nowrap" }}
-                            >
-                              <span
-                                style={{ color: "#475569", fontWeight: 500 }}
-                              >
-                                Từ:{" "}
-                              </span>
-                              <span
-                                style={{
-                                  color:
-                                    (concert.minPrice || 0) === 0
-                                      ? "#059669"
-                                      : "#2563eb",
-                                  fontWeight: 700,
-                                }}
-                              >
-                                {(concert.minPrice || 0) === 0
-                                  ? "0đ (Miễn phí)"
-                                  : `${(concert.minPrice || 0).toLocaleString("vi-VN")} đ`}
-                              </span>
-                            </div>
-                          )}
-                        </td>
-
                         {/* Registration Capacity */}
-                        <td>
-                          <div
-                            style={{
-                              fontWeight: 600,
-                              color: "#0f172a",
-                              fontVariantNumeric: "tabular-nums",
-                            }}
-                          >
-                            {registered}
-                            <span className="text-slate-400 font-normal">
-                              /{totalCap} chỗ
+                        <td style={{ minWidth: 220 }}>
+                          <div className="flex items-baseline justify-between gap-2">
+                            <div className="flex items-baseline gap-1 font-mono">
+                              <span className="text-sm font-bold text-slate-900 tabular-nums">
+                                {registered.toLocaleString("vi-VN")}
+                              </span>
+                              <span className="text-xs text-slate-400 font-normal">
+                                /
+                                {totalCap > 0
+                                  ? totalCap.toLocaleString("vi-VN")
+                                  : "0"}{" "}
+                                vé
+                              </span>
+                            </div>
+                            <span
+                              className={`text-[11px] font-bold px-2 py-0.5 rounded-full tabular-nums border ${
+                                capPercent >= 90
+                                  ? "bg-rose-50 text-rose-700 border-rose-200"
+                                  : capPercent >= 50
+                                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                                    : capPercent > 0
+                                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                                      : "bg-slate-100 text-slate-600 border-slate-200"
+                              }`}
+                            >
+                              {capPercent}%
                             </span>
                           </div>
                           <div
-                            className="cap-meter"
-                            title={`${capPercent}% sức chứa`}
+                            className="w-full h-2 rounded-full bg-slate-100 overflow-hidden mt-1.5 border border-slate-200/60"
+                            title={`${capPercent}% vé đã bán (${registered}/${totalCap})`}
                           >
-                            <span
-                              className="bar-fill"
-                              style={{ width: `${capPercent}%` }}
+                            <div
+                              className="h-full rounded-full transition-all duration-300"
+                              style={{
+                                width: `${capPercent}%`,
+                                background:
+                                  capPercent >= 90
+                                    ? "linear-gradient(90deg, #f43f5e, #e11d48)"
+                                    : capPercent >= 50
+                                      ? "linear-gradient(90deg, #f59e0b, #d97706)"
+                                      : "linear-gradient(90deg, #0b63e5, #0052ff)",
+                              }}
                             />
                           </div>
-                          <div className="row-sub">{registered} xác nhận</div>
+                          <div className="text-[11px] text-slate-500 mt-1 flex items-center justify-between">
+                            <span>
+                              Đã bán:{" "}
+                              <strong className="text-slate-700 font-semibold tabular-nums">
+                                {registered.toLocaleString("vi-VN")}
+                              </strong>
+                            </span>
+                            <span>
+                              Còn lại:{" "}
+                              <strong className="text-slate-700 font-semibold tabular-nums">
+                                {remainingTickets.toLocaleString("vi-VN")}
+                              </strong>
+                            </span>
+                          </div>
                         </td>
 
                         {/* Action / Detail Chevron */}

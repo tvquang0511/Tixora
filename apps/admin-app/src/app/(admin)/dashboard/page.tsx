@@ -9,10 +9,10 @@ import {
   Check,
   ChevronRight,
   CreditCard,
-  DollarSign,
   RefreshCw,
   ShieldCheck,
   Ticket,
+  Users,
 } from "lucide-react";
 import {
   getDashboardSummary,
@@ -107,14 +107,6 @@ export default function AdminDashboardPage() {
       ? `${pendingOrgCount} hồ sơ ban tổ chức chờ xét duyệt, ${readySettlementCount} sự kiện sẵn sàng giải ngân quyết toán, ${recentOrders.length} đơn hàng mới ghi nhận.`
       : "Hệ thống đang vận hành ổn định — Toàn bộ sự kiện, cổng soát vé và giao dịch sẵn sàng.";
 
-  const formatRevenueMillion = (amount: number) => {
-    const inMillion = amount / 1_000_000;
-    return `${new Intl.NumberFormat("vi-VN", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(inMillion)} triệu đồng`;
-  };
-
   const formatVND = (amount: number) => {
     return new Intl.NumberFormat("vi-VN").format(amount) + "đ";
   };
@@ -126,12 +118,12 @@ export default function AdminDashboardPage() {
   // KPI pulse list
   const pulseChips = [
     {
-      label: "Doanh thu tích lũy",
-      value: formatRevenueMillion(summary?.total_revenue ?? 0),
-      icon: DollarSign,
+      label: "Người dùng hệ thống",
+      value: formatNumber(summary?.total_users ?? 0),
+      icon: Users,
       tintBg: "#eff6ff",
       tintColor: "#0b63e5",
-      path: "/revenue",
+      path: "/users",
     },
     {
       label: "Vé phát hành",

@@ -15,6 +15,8 @@ export interface ConcertApiItem {
   performers?: string[];
   organizer_id?: string | null;
   organizer_name?: string | null;
+  total_capacity?: number;
+  sold_tickets?: number;
 }
 
 export interface ConcertTicketTier {
@@ -78,6 +80,8 @@ export interface ConcertCardItem {
   performers?: string[];
   organizer_id?: string | null;
   organizer_name?: string | null;
+  totalCapacity?: number;
+  soldTickets?: number;
 }
 
 export interface ConcertDetailItem extends ConcertCardItem {
@@ -177,6 +181,11 @@ function mapConcert(item: ConcertApiItem): ConcertCardItem {
     organizer_name:
       item.organizer_name ||
       (item.organizer_id ? "Đơn vị tổ chức" : "Tixora Official"),
+    totalCapacity:
+      item.total_capacity !== undefined
+        ? item.total_capacity
+        : tiers.reduce((acc, t) => acc + (t.total_quantity || 0), 0),
+    soldTickets: item.sold_tickets ?? 0,
   };
 }
 

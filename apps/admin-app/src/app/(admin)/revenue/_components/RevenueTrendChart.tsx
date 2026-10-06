@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { TrendingUp } from "lucide-react";
 import { type RevenueTrendItem } from "@/services/revenue.service";
 
@@ -39,6 +40,22 @@ export function RevenueTrendChart({
   hoveredIndex,
   onHover,
 }: RevenueTrendChartProps) {
+  const [showRevenue, setShowRevenue] = useState(true);
+  const [showOrders, setShowOrders] = useState(true);
+  const [showTickets, setShowTickets] = useState(true);
+
+  const toggleMetric = (metric: "revenue" | "orders" | "tickets") => {
+    if (metric === "revenue") {
+      if (showRevenue && !showOrders && !showTickets) return;
+      setShowRevenue((prev) => !prev);
+    } else if (metric === "orders") {
+      if (showOrders && !showRevenue && !showTickets) return;
+      setShowOrders((prev) => !prev);
+    } else if (metric === "tickets") {
+      if (showTickets && !showRevenue && !showOrders) return;
+      setShowTickets((prev) => !prev);
+    }
+  };
   const svgWidth = 1000;
   const svgHeight = 400;
   const paddingLeft = 85;
@@ -192,20 +209,53 @@ export function RevenueTrendChart({
             </div>
           )}
 
-          {/* Legend */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-sans">
-            <div className="flex items-center gap-1.5 text-[#0e54a3] font-semibold">
-              <span className="w-2.5 h-1 rounded-full bg-[#0e54a3] inline-block" />
+          {/* Metric Visibility Toggles */}
+          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-50 border border-slate-200 rounded-xl text-xs font-sans">
+            <button
+              type="button"
+              onClick={() => toggleMetric("revenue")}
+              className={`px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                showRevenue
+                  ? "bg-[#0e54a3] text-white shadow-2xs"
+                  : "text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 line-through opacity-60"
+              }`}
+              title="Bật/tắt hiển thị Doanh thu (GMV)"
+            >
+              <span
+                className={`w-2 h-2 rounded-full ${showRevenue ? "bg-[#7dd3fc]" : "bg-slate-400"}`}
+              />
               Doanh thu (GMV)
-            </div>
-            <div className="flex items-center gap-1.5 text-emerald-700 font-semibold">
-              <span className="w-2.5 h-1 rounded-full bg-emerald-600 inline-block" />
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleMetric("orders")}
+              className={`px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                showOrders
+                  ? "bg-emerald-600 text-white shadow-2xs"
+                  : "text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 line-through opacity-60"
+              }`}
+              title="Bật/tắt hiển thị Đơn hàng"
+            >
+              <span
+                className={`w-2 h-2 rounded-full ${showOrders ? "bg-emerald-200" : "bg-slate-400"}`}
+              />
               Đơn hàng
-            </div>
-            <div className="flex items-center gap-1.5 text-violet-700 font-semibold">
-              <span className="w-2.5 h-1 rounded-full bg-violet-600 inline-block" />
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleMetric("tickets")}
+              className={`px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                showTickets
+                  ? "bg-violet-600 text-white shadow-2xs"
+                  : "text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 line-through opacity-60"
+              }`}
+              title="Bật/tắt hiển thị Vé đã bán"
+            >
+              <span
+                className={`w-2 h-2 rounded-full ${showTickets ? "bg-violet-200" : "bg-slate-400"}`}
+              />
               Vé đã bán
-            </div>
+            </button>
           </div>
         </div>
       </div>
@@ -256,98 +306,107 @@ export function RevenueTrendChart({
               })}
 
               {/* Y-Axis Left (Revenue) */}
-              {yTicksLeft.map((val, idx) => {
-                const y = paddingTop + (idx / 4) * chartHeight;
-                return (
-                  <text
-                    key={`y-left-${idx}`}
-                    x={paddingLeft - 12}
-                    y={y + 3.5}
-                    fill="#64748b"
-                    fontSize={10}
-                    textAnchor="end"
-                    fontFamily="monospace"
-                  >
-                    {formatConciseNumber(val)}
-                  </text>
-                );
-              })}
+              {showRevenue &&
+                yTicksLeft.map((val, idx) => {
+                  const y = paddingTop + (idx / 4) * chartHeight;
+                  return (
+                    <text
+                      key={`y-left-${idx}`}
+                      x={paddingLeft - 12}
+                      y={y + 3.5}
+                      fill="#64748b"
+                      fontSize={10}
+                      textAnchor="end"
+                      fontFamily="monospace"
+                    >
+                      {formatConciseNumber(val)}
+                    </text>
+                  );
+                })}
 
               {/* Y-Axis Right 1 (Orders) */}
-              {yTicksRightOrders.map((val, idx) => {
-                const y = paddingTop + (idx / 4) * chartHeight;
-                return (
-                  <text
-                    key={`y-right-orders-${idx}`}
-                    x={svgWidth - paddingRight + 20}
-                    y={y + 3.5}
-                    fill="#059669"
-                    fontSize={10}
-                    textAnchor="start"
-                    fontFamily="monospace"
-                  >
-                    {Math.round(val)}
-                  </text>
-                );
-              })}
+              {showOrders &&
+                yTicksRightOrders.map((val, idx) => {
+                  const y = paddingTop + (idx / 4) * chartHeight;
+                  return (
+                    <text
+                      key={`y-right-orders-${idx}`}
+                      x={svgWidth - paddingRight + 20}
+                      y={y + 3.5}
+                      fill="#059669"
+                      fontSize={10}
+                      textAnchor="start"
+                      fontFamily="monospace"
+                    >
+                      {Math.round(val)}
+                    </text>
+                  );
+                })}
 
               {/* Y-Axis Right 2 (Tickets) */}
-              {yTicksRightTickets.map((val, idx) => {
-                const y = paddingTop + (idx / 4) * chartHeight;
-                return (
-                  <text
-                    key={`y-right-tickets-${idx}`}
-                    x={svgWidth - paddingRight + 70}
-                    y={y + 3.5}
-                    fill="#7c3aed"
-                    fontSize={10}
-                    textAnchor="start"
-                    fontFamily="monospace"
-                  >
-                    {Math.round(val)}
-                  </text>
-                );
-              })}
+              {showTickets &&
+                yTicksRightTickets.map((val, idx) => {
+                  const y = paddingTop + (idx / 4) * chartHeight;
+                  return (
+                    <text
+                      key={`y-right-tickets-${idx}`}
+                      x={svgWidth - paddingRight + (showOrders ? 70 : 20)}
+                      y={y + 3.5}
+                      fill="#7c3aed"
+                      fontSize={10}
+                      textAnchor="start"
+                      fontFamily="monospace"
+                    >
+                      {Math.round(val)}
+                    </text>
+                  );
+                })}
 
               {/* Axis Labels */}
-              <text
-                x={paddingLeft - 12}
-                y={paddingTop - 15}
-                fill="#0e54a3"
-                fontSize={9}
-                fontWeight="700"
-                textAnchor="end"
-                fontFamily="inherit"
-              >
-                DOANH SỐ (VND)
-              </text>
-              <text
-                x={svgWidth - paddingRight + 15}
-                y={paddingTop - 15}
-                fill="#059669"
-                fontSize={9}
-                fontWeight="700"
-                textAnchor="start"
-                fontFamily="inherit"
-              >
-                ĐƠN HÀNG
-              </text>
-              <text
-                x={svgWidth - paddingRight + 65}
-                y={paddingTop - 15}
-                fill="#7c3aed"
-                fontSize={9}
-                fontWeight="700"
-                textAnchor="start"
-                fontFamily="inherit"
-              >
-                VÉ BÁN
-              </text>
+              {showRevenue && (
+                <text
+                  x={paddingLeft - 12}
+                  y={paddingTop - 15}
+                  fill="#0e54a3"
+                  fontSize={9}
+                  fontWeight="700"
+                  textAnchor="end"
+                  fontFamily="inherit"
+                >
+                  DOANH SỐ (VND)
+                </text>
+              )}
+              {showOrders && (
+                <text
+                  x={svgWidth - paddingRight + 15}
+                  y={paddingTop - 15}
+                  fill="#059669"
+                  fontSize={9}
+                  fontWeight="700"
+                  textAnchor="start"
+                  fontFamily="inherit"
+                >
+                  ĐƠN HÀNG
+                </text>
+              )}
+              {showTickets && (
+                <text
+                  x={svgWidth - paddingRight + (showOrders ? 65 : 15)}
+                  y={paddingTop - 15}
+                  fill="#7c3aed"
+                  fontSize={9}
+                  fontWeight="700"
+                  textAnchor="start"
+                  fontFamily="inherit"
+                >
+                  VÉ BÁN
+                </text>
+              )}
 
-              {revenueAreaPath && (
+              {showRevenue && revenueAreaPath && (
                 <path d={revenueAreaPath} fill="url(#revenue-gradient)" />
               )}
-              {revenuePath && (
+              {showRevenue && revenuePath && (
                 <path
                   d={revenuePath}
                   fill="none"
@@ -357,7 +416,7 @@ export function RevenueTrendChart({
                   strokeLinejoin="round"
                 />
               )}
-              {ordersPath && (
+              {showOrders && ordersPath && (
                 <path
                   d={ordersPath}
                   fill="none"
@@ -367,7 +426,7 @@ export function RevenueTrendChart({
                   strokeLinejoin="round"
                 />
               )}
-              {ticketsPath && (
+              {showTickets && ticketsPath && (
                 <path
                   d={ticketsPath}
                   fill="none"
@@ -395,30 +454,36 @@ export function RevenueTrendChart({
                 const isHovered = hoveredIndex === index;
                 return (
                   <g key={index}>
-                    <circle
-                      cx={x}
-                      cy={getY(item.revenue, maxRevenue)}
-                      r={isHovered ? 5 : 3.5}
-                      fill={isHovered ? "#0e54a3" : "#ffffff"}
-                      stroke="#0e54a3"
-                      strokeWidth={2}
-                    />
-                    <circle
-                      cx={x}
-                      cy={getY(item.paid_orders, maxPaidOrders)}
-                      r={isHovered ? 4 : 2.5}
-                      fill={isHovered ? "#059669" : "#ffffff"}
-                      stroke="#059669"
-                      strokeWidth={1.5}
-                    />
-                    <circle
-                      cx={x}
-                      cy={getY(item.tickets_sold, maxTicketsSold)}
-                      r={isHovered ? 4 : 2.5}
-                      fill={isHovered ? "#7c3aed" : "#ffffff"}
-                      stroke="#7c3aed"
-                      strokeWidth={1.5}
-                    />
+                    {showRevenue && (
+                      <circle
+                        cx={x}
+                        cy={getY(item.revenue, maxRevenue)}
+                        r={isHovered ? 5 : 3.5}
+                        fill={isHovered ? "#0e54a3" : "#ffffff"}
+                        stroke="#0e54a3"
+                        strokeWidth={2}
+                      />
+                    )}
+                    {showOrders && (
+                      <circle
+                        cx={x}
+                        cy={getY(item.paid_orders, maxPaidOrders)}
+                        r={isHovered ? 4 : 2.5}
+                        fill={isHovered ? "#059669" : "#ffffff"}
+                        stroke="#059669"
+                        strokeWidth={1.5}
+                      />
+                    )}
+                    {showTickets && (
+                      <circle
+                        cx={x}
+                        cy={getY(item.tickets_sold, maxTicketsSold)}
+                        r={isHovered ? 4 : 2.5}
+                        fill={isHovered ? "#7c3aed" : "#ffffff"}
+                        stroke="#7c3aed"
+                        strokeWidth={1.5}
+                      />
+                    )}
                   </g>
                 );
               })}
@@ -478,45 +543,55 @@ export function RevenueTrendChart({
                   Thời gian: {trendItems[hoveredIndex].period}
                 </div>
                 <div className="space-y-1.5 font-sans">
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="flex items-center gap-1.5 text-slate-300">
-                      <span className="w-2 h-2 rounded-full bg-[#7dd3fc]" />
-                      Doanh số GMV:
-                    </span>
-                    <span className="font-bold font-mono text-[#7dd3fc]">
-                      {formatVND(trendItems[hoveredIndex].revenue)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="flex items-center gap-1.5 text-slate-300">
-                      <span className="w-2 h-2 rounded-full bg-blue-400" />
-                      Phí sàn Tixora (5%):
-                    </span>
-                    <span className="font-semibold font-mono text-blue-300">
-                      {formatVND(
-                        trendItems[hoveredIndex].platform_fee ??
-                          Math.round(trendItems[hoveredIndex].revenue * 0.05),
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="flex items-center gap-1.5 text-slate-300">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                      Đơn hàng hoàn tất:
-                    </span>
-                    <span className="font-semibold font-mono text-emerald-400">
-                      {trendItems[hoveredIndex].paid_orders} đơn
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="flex items-center gap-1.5 text-slate-300">
-                      <span className="w-2 h-2 rounded-full bg-violet-400" />
-                      Tổng vé bán ra:
-                    </span>
-                    <span className="font-semibold font-mono text-violet-400">
-                      {trendItems[hoveredIndex].tickets_sold} vé
-                    </span>
-                  </div>
+                  {showRevenue && (
+                    <>
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="flex items-center gap-1.5 text-slate-300">
+                          <span className="w-2 h-2 rounded-full bg-[#7dd3fc]" />
+                          Doanh số GMV:
+                        </span>
+                        <span className="font-bold font-mono text-[#7dd3fc]">
+                          {formatVND(trendItems[hoveredIndex].revenue)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="flex items-center gap-1.5 text-slate-300">
+                          <span className="w-2 h-2 rounded-full bg-blue-400" />
+                          Phí sàn Tixora (5%):
+                        </span>
+                        <span className="font-semibold font-mono text-blue-300">
+                          {formatVND(
+                            trendItems[hoveredIndex].platform_fee ??
+                              Math.round(
+                                trendItems[hoveredIndex].revenue * 0.05,
+                              ),
+                          )}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                  {showOrders && (
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="flex items-center gap-1.5 text-slate-300">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                        Đơn hàng hoàn tất:
+                      </span>
+                      <span className="font-semibold font-mono text-emerald-400">
+                        {trendItems[hoveredIndex].paid_orders} đơn
+                      </span>
+                    </div>
+                  )}
+                  {showTickets && (
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="flex items-center gap-1.5 text-slate-300">
+                        <span className="w-2 h-2 rounded-full bg-violet-400" />
+                        Tổng vé bán ra:
+                      </span>
+                      <span className="font-semibold font-mono text-violet-400">
+                        {trendItems[hoveredIndex].tickets_sold} vé
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
