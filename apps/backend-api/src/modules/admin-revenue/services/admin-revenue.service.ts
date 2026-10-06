@@ -26,6 +26,7 @@ type RevenueConcertDetailRow = {
     price: MoneyLike;
     total_quantity: number;
     gate_number: number | null;
+    sales_start_at: Date | null;
     tickets: Array<{ id: string }>;
   }>;
 };
@@ -126,7 +127,11 @@ export class AdminRevenueService {
         OR: [
           { organizer_profile: { isNot: null } },
           { organized_concerts: { some: {} } },
-          { user_roles: { some: { role: { name: "ORGANIZER" } } } },
+          {
+            user_roles: {
+              some: { role: { name: { in: ["Organizer", "ORGANIZER"] } } },
+            },
+          },
         ],
       },
       select: {
@@ -356,6 +361,7 @@ export class AdminRevenueService {
             price: true,
             total_quantity: true,
             gate_number: true,
+            sales_start_at: true,
             tickets: {
               where: {
                 order: {
@@ -383,13 +389,77 @@ export class AdminRevenueService {
       },
       select: {
         total_amount: true,
+        created_at: true,
         tickets: {
           select: { id: true },
         },
       },
+      orderBy: { created_at: "asc" },
     });
 
-    const detail = concert as RevenueConcertDetailRow;
+    const detail = concert as unknown as RevenueConcertDetailRow;
+
+    // Determine sales start & end
+    const tierStartDates = detail.ticket_categories
+      .map((c) => c.sales_start_at)
+      .filter((d): d is Date => d instanceof Date && !isNaN(d.getTime()));
+
+    const salesStartAt =
+      tierStartDates.length > 0
+        ? new Date(Math.min(...tierStartDates.map((d) => d.getTime())))
+        : orders.length > 0 && orders[0].created_at
+          ? new Date(orders[0].created_at)
+          : null;
+
+    const salesEndAt = detail.start_time ? new Date(detail.start_time) : null;
+
+    // Group orders by day (YYYY-MM-DD)
+    const dailyMap = new Map<
+      string,
+      {
+        date: string;
+        revenue: number;
+        tickets_sold: number;
+        paid_orders: number;
+      }
+    >();
+
+    for (const order of orders) {
+      const orderCreatedAt = order.created_at
+        ? new Date(order.created_at)
+        : new Date();
+      const dateKey = !isNaN(orderCreatedAt.getTime())
+        ? orderCreatedAt.toISOString().slice(0, 10)
+        : new Date().toISOString().slice(0, 10);
+
+      const curr = dailyMap.get(dateKey) ?? {
+        date: dateKey,
+        revenue: 0,
+        tickets_sold: 0,
+        paid_orders: 0,
+      };
+      curr.revenue += this.toNumber(order.total_amount);
+      curr.tickets_sold += order.tickets ? order.tickets.length : 0;
+      curr.paid_orders += 1;
+      dailyMap.set(dateKey, curr);
+    }
+
+    const sortedDates = Array.from(dailyMap.keys()).sort();
+    let cumulativeRevenue = 0;
+    let cumulativeTickets = 0;
+    const timeline = sortedDates.map((date) => {
+      const item = dailyMap.get(date)!;
+      cumulativeRevenue += item.revenue;
+      cumulativeTickets += item.tickets_sold;
+      return {
+        date: item.date,
+        revenue: item.revenue,
+        cumulative_revenue: cumulativeRevenue,
+        tickets_sold: item.tickets_sold,
+        cumulative_tickets: cumulativeTickets,
+        paid_orders: item.paid_orders,
+      };
+    });
 
     return {
       concert: {
@@ -403,6 +473,15 @@ export class AdminRevenueService {
       total_revenue: this.sumRevenue(orders),
       paid_orders: orders.length,
       tickets_sold: this.sumTickets(orders),
+      sales_start_at:
+        salesStartAt && !isNaN(salesStartAt.getTime())
+          ? salesStartAt.toISOString()
+          : null,
+      sales_end_at:
+        salesEndAt && !isNaN(salesEndAt.getTime())
+          ? salesEndAt.toISOString()
+          : null,
+      sales_timeline: timeline,
       ticket_tiers: detail.ticket_categories.map((category) => {
         const price = this.toNumber(category.price);
         const ticketsSold = category.tickets.length;

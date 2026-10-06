@@ -159,6 +159,7 @@ test("getConcertDetail returns summary and ticket tier breakdown", async () => {
         price: { toString: () => "500000" },
         total_quantity: 100,
         gate_number: 1,
+        sales_start_at: new Date("2026-07-01T00:00:00.000Z"),
         tickets: [{ id: "ticket-1" }, { id: "ticket-2" }],
       },
       {
@@ -167,6 +168,7 @@ test("getConcertDetail returns summary and ticket tier breakdown", async () => {
         price: "200000",
         total_quantity: 200,
         gate_number: 2,
+        sales_start_at: new Date("2026-07-01T00:00:00.000Z"),
         tickets: [{ id: "ticket-3" }],
       },
     ],
@@ -174,10 +176,12 @@ test("getConcertDetail returns summary and ticket tier breakdown", async () => {
   mockPrisma.order.findMany.mockResolvedValue([
     {
       total_amount: "700000",
+      created_at: new Date("2026-07-10T10:00:00.000Z"),
       tickets: [{ id: "ticket-1" }, { id: "ticket-3" }],
     },
     {
       total_amount: "500000",
+      created_at: new Date("2026-07-15T15:00:00.000Z"),
       tickets: [{ id: "ticket-2" }],
     },
   ]);
@@ -210,6 +214,26 @@ test("getConcertDetail returns summary and ticket tier breakdown", async () => {
     total_revenue: 1200000,
     paid_orders: 2,
     tickets_sold: 3,
+    sales_start_at: "2026-07-01T00:00:00.000Z",
+    sales_end_at: startTime.toISOString(),
+    sales_timeline: [
+      {
+        date: "2026-07-10",
+        revenue: 700000,
+        cumulative_revenue: 700000,
+        tickets_sold: 2,
+        cumulative_tickets: 2,
+        paid_orders: 1,
+      },
+      {
+        date: "2026-07-15",
+        revenue: 500000,
+        cumulative_revenue: 1200000,
+        tickets_sold: 1,
+        cumulative_tickets: 3,
+        paid_orders: 1,
+      },
+    ],
     ticket_tiers: [
       {
         category_id: "category-vip",
