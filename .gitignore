@@ -28,10 +28,12 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Test
+# Test & Automation Reports
 coverage/
-testing/playwright-report/
-testing/test-results/
+playwright-report/
+test-results/
+testing/reports/**/*
+!testing/reports/**/.gitkeep
 testing/load/*.local.ps1
 scripts/*.local.ps1
 

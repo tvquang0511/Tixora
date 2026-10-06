@@ -1,6 +1,8 @@
-﻿# 🧪 MODULE KIỂM THỬ HỆ THỐNG Tixora (TESTING SUITE)
+# 🧪 MODULE KIỂM THỬ HỆ THỐNG TIXORA (ENTERPRISE QA & LOAD TESTING SUITE)
 
-Module này đóng gói toàn bộ công cụ, kịch bản kiểm thử tự động End-to-End (E2E Playwright) và kiểm thử chịu tải (k6 Load Testing) của hệ sinh thái Tixora.
+Module đóng gói toàn diện 2 tầng kiểm thử chuẩn doanh nghiệp:
+1. **Kiểm thử tự động End-to-End (E2E)** theo tiêu chuẩn ISO/IEC/IEEE 29119 với Playwright, xuất báo cáo Nghiệm thu Excel (.xlsx) & HTML Dashboard.
+2. **Kiểm thử chịu tải cao & Concurrency (k6 Load Testing)** kiểm chứng năng lực chịu tải, chống bán lố vé (Zero Oversell), bảo vệ Token Bucket Rate Limit và áp lực cổng soát vé giờ G.
 
 ---
 
@@ -8,52 +10,73 @@ Module này đóng gói toàn bộ công cụ, kịch bản kiểm thử tự đ
 
 ```
 testing/
-├── e2e/                           # Kiểm thử tự động giao diện (Playwright)
-│   ├── fixtures/
-│   │   └── test-data.ts           # Dữ liệu tài khoản seed & Concert ID
-│   ├── helpers/
-│   │   └── auth.helper.ts         # Tiện ích login nhanh
-│   ├── web-auth.spec.ts           # Test xác thực Web Khách hàng (:3001)
-│   ├── web-catalog.spec.ts        # Test danh sách, tìm kiếm & chi tiết sự kiện
-│   ├── web-booking.spec.ts        # Test chọn vé, giữ chỗ & xem vé
-│   └── admin-portal.spec.ts       # Test RBAC, Dashboard & Quản trị (:3002)
-├── load/                          # Kiểm thử chịu tải & phòng thủ (k6)
-│   ├── k6-oversell-check.js       # Kịch bản kiểm tra chống bán lố vé (Zero Oversell)
-│   ├── k6-oversell-check.example.ps1
-│   ├── k6-ticketing-flow.js       # Kịch bản kiểm tra luồng đặt vé & Rate Limiting (HTTP 429)
-│   ├── k6-ticketing-flow.example.ps1
-│   └── reports/                   # Thư mục lưu kết quả chạy test k6
-│       ├── k6-oversell-summary.json
-│       └── k6-ticketing-summary.json
-├── playwright.config.ts           # Cấu hình Playwright
-└── README.md                      # Tài liệu này
+├── .env / .env.example              # Cấu hình môi trường (Cloud vs Local Staging)
+├── playwright.config.ts             # Cấu hình Playwright Runner (2 workers, headless, outputDir)
+├── fixtures/                        # 🎯 Trung tâm dữ liệu kiểm thử tập trung
+│   ├── test-data.ts                 # Thông tin tài khoản, URLs, cấu hình môi trường
+│   └── test-cases.catalog.ts        # Bảng từ điển đặc tả 25 Test Case chuẩn ISO 29119
+├── helpers/
+│   └── auth.helper.ts               # Action Helper & Session Guard (chống race condition)
+├── e2e/                             # Domain-Driven E2E Test Suite (Playwright)
+│   ├── 01-auth/                     # Web Authentication & Admin RBAC Guard
+│   ├── 02-audience/                 # Khám phá sự kiện, Đặt vé & Quản lý vé của tôi
+│   ├── 03-organizer/                # Hub Ban tổ chức, Tạo sự kiện & Doanh thu
+│   └── 04-admin/                    # Cockpit, Quản trị Users, Events, Quyết toán
+├── load/                            # Kiểm thử chịu tải & Phòng thủ hệ thống (k6)
+│   ├── k6-oversell-check.js         # [Kịch bản 1] Tranh chấp vé đồng thời chống bán lố (Zero Oversell)
+│   ├── k6-ticketing-flow.js         # [Kịch bản 2] Luồng khép kín: Xem -> Khóa vé -> Thanh toán
+│   ├── k6-catalog-browse.js         # [Kịch bản 3] F5 / Tìm kiếm tải cao (Read-Heavy / Cache Spike)
+│   └── k6-checkin-stress.js         # [Kịch bản 4] Cổng soát vé giờ G (Mobile Check-in Scanners)
+├── reporters/
+│   └── excel-reporter.ts            # Engine xuất báo cáo Excel & HTML Dashboard
+└── reports/                         # 📊 TRUNG TÂM BÁO CÁO DUY NHẤT (REPORTS HUB)
+    ├── e2e/                         # File Báo cáo Nghiệm thu Excel (.xlsx) & HTML Dashboard
+    ├── playwright/                  # Báo cáo Playwright native HTML report
+    ├── artifacts/                   # Video, Screenshots, Trace callstack khi test fail
+    └── load/                        # File JSON tóm tắt chỉ số tải k6
 ```
 
 ---
 
-## 🚀 Hướng Dẫn Sử Dụng
+## 🚀 Hướng Dẫn Thực Thi
 
-### 1. Kiểm Thử Tự Động Playwright E2E
+### 1. Kiểm Thử Giao Diện E2E Nghiệm Thu (Playwright)
 ```powershell
-# Chạy toàn bộ E2E tests (ngầm)
+# Chạy toàn bộ 25 Test Cases và xuất file Báo cáo Excel + HTML Dashboard
 pnpm test:e2e
 
-# Chạy với giao diện trực quan Playwright Interactive UI Mode
+# Chạy giao diện tương tác Playwright Interactive UI
 pnpm test:e2e:ui
 
-# Chạy bật trình duyệt thật (Headed)
-pnpm test:e2e:headed
-
-# Xem báo cáo HTML
+# Mở báo cáo HTML mặc định của Playwright
 pnpm test:e2e:report
 ```
 
-### 2. Kiểm Thử Chịu Tải k6 (Load & Concurrency Testing)
-```powershell
-# Chạy kiểm tra chống bán quá số lượng (Zero Oversell)
-.\testing\load\k6-oversell-check.local.ps1
+---
 
-# Chạy kiểm tra luồng đặt vé & Token Bucket Rate Limit
-.\testing\load\k6-ticketing-flow.local.ps1
+### 2. Kiểm Thử Chịu Tải Cao & Tranh Chấp Dữ Liệu (k6 Load Testing)
+
+Toàn bộ script k6 đều hỗ trợ **Auto-Discovery** (tự động nhận diện sự kiện và hạng vé mở bán trên Cloud hoặc Local):
+
+```powershell
+# Kịch bản 1: Kiểm tra chống bán lố vé (Zero Oversell Concurrency Check)
+pnpm test:load:oversell
+
+# Kịch bản 2: Kiểm tra trọn vẹn luồng Bán vé & Thanh toán (Closed-Loop Ticketing Flow)
+pnpm test:load:flow
+
+# Kịch bản 3: Kiểm tra đọc tải cao / F5 trang chủ / Tìm kiếm show diễn (Read-Heavy)
+pnpm test:load:catalog
+
+# Kịch bản 4: Kiểm tra tải cổng soát vé giờ G của các máy quét di động (Check-in Gate)
+pnpm test:load:checkin
 ```
-*Kết quả sẽ được tự động lưu vào thư mục `testing/load/reports/`.*
+
+#### Tùy chỉnh tham số khi chạy (Environment Variables):
+```powershell
+# Ví dụ chạy k6 Catalog test với 50 người dùng ảo trong 30 giây vào Cloud:
+$env:BASE_URL="https://api.tixora.tvquang.id.vn"
+$env:VUS="50"
+$env:DURATION="30s"
+pnpm test:load:catalog
+```

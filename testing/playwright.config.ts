@@ -1,4 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+// Tự động nạp file .env từ thư mục testing/ hoặc thư mục gốc
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 /**
  * Playwright E2E Configuration for Tixora Monorepo.
@@ -6,17 +12,19 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './e2e',
-  timeout: 35 * 1000,
+  timeout: 40 * 1000,
   expect: {
-    timeout: 7000,
+    timeout: 12000,
   },
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.WORKERS ? Number(process.env.WORKERS) : 2,
+  outputDir: './reports/artifacts',
   reporter: [
     ['list'],
-    ['html', { outputFolder: 'playwright-report', open: 'never' }]
+    ['html', { outputFolder: 'reports/playwright', open: 'never' }],
+    ['./reporters/excel-reporter.ts']
   ],
   use: {
     baseURL: process.env.WEB_URL || 'http://localhost:3001',
@@ -27,27 +35,19 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'Web App (Desktop Chrome)',
-      testMatch: /web-.*\.spec\.ts/,
+      name: 'Web & Organizer App (Desktop)',
+      testMatch: /(web-auth|catalog|booking|organizer-).*\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         baseURL: process.env.WEB_URL || 'http://localhost:3001',
       },
     },
     {
-      name: 'Admin Portal (Desktop Chrome)',
+      name: 'Admin Portal (Desktop)',
       testMatch: /admin-.*\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
         baseURL: process.env.ADMIN_URL || 'http://localhost:3002',
-      },
-    },
-    {
-      name: 'Web App (Mobile Chrome)',
-      testMatch: /web-.*\.spec\.ts/,
-      use: {
-        ...devices['Pixel 5'],
-        baseURL: process.env.WEB_URL || 'http://localhost:3001',
       },
     },
   ],

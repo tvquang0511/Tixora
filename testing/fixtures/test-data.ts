@@ -5,33 +5,33 @@
 
 export const TEST_USERS = {
   admin: {
-    email: 'vy.admin@tixora.local',
-    password: 'Password123@',
+    email: process.env.TEST_ADMIN_EMAIL || 'vy.admin@tixora.local',
+    password: process.env.TEST_ADMIN_PASSWORD || 'Password123@',
     name: 'Vy Admin',
     role: 'Admin',
   },
   adminSecondary: {
-    email: 'vuong.admin@tixora.local',
-    password: 'Password123@',
+    email: process.env.TEST_ADMIN_SECONDARY_EMAIL || 'vuong.admin@tixora.local',
+    password: process.env.TEST_ADMIN_SECONDARY_PASSWORD || 'Password123@',
     name: 'Vuong Admin',
     role: 'Admin',
   },
   organizer: {
-    email: 'tuan.organizer@tixora.local',
-    password: 'Password123@',
+    email: process.env.TEST_ORGANIZER_EMAIL || 'tuan.organizer@tixora.local',
+    password: process.env.TEST_ORGANIZER_PASSWORD || 'Password123@',
     name: 'Tuan Organizer',
     role: 'Organizer',
   },
   checker: {
-    email: 'quang.checker@tixora.local',
-    password: 'Password123@',
+    email: process.env.TEST_CHECKER_EMAIL || 'quang.checker@tixora.local',
+    password: process.env.TEST_CHECKER_PASSWORD || 'Password123@',
     name: 'Quang Checker',
     role: 'Checker',
     assignedGate: 1,
   },
   audience: {
-    email: 'audience1@tixora.local',
-    password: 'Password123@',
+    email: process.env.TEST_AUDIENCE_EMAIL || 'audience1@tixora.local',
+    password: process.env.TEST_AUDIENCE_PASSWORD || 'Password123@',
     name: 'Audience User',
     role: 'Audience',
   },
@@ -63,6 +63,13 @@ export const URLS = {
     myTickets: '/my-tickets',
     orders: '/orders',
     catalog: '/catalog',
+  },
+  organizer: {
+    dashboard: '/organizer/dashboard',
+    events: '/organizer/events',
+    createEvent: '/organizer/create-event',
+    revenue: '/organizer/revenue',
+    profile: '/organizer/profile',
   },
   admin: {
     login: '/login',
