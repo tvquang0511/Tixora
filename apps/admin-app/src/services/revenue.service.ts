@@ -1,8 +1,48 @@
 import apiClient from "./api";
 
+export interface RevenueSummaryGrowth {
+  gmv: number;
+  platform_fee: number;
+  tickets_sold: number;
+  paid_orders: number;
+  aov: number;
+}
+
+export interface RevenueSummaryResponse {
+  from: string;
+  to: string;
+  total_gmv: number;
+  total_platform_fee: number;
+  platform_fee_rate: number;
+  paid_orders: number;
+  total_tickets_sold: number;
+  aov: number;
+  growth: RevenueSummaryGrowth;
+}
+
+export interface RevenueByOrganizerItem {
+  organizer_id: string;
+  organization_name: string;
+  contact_name: string;
+  email: string;
+  phone_number: string | null;
+  total_concerts: number;
+  gmv: number;
+  platform_fee: number;
+  paid_orders: number;
+  tickets_sold: number;
+  market_share: number;
+}
+
+export interface RevenueByOrganizerResponse {
+  total_platform_gmv: number;
+  items: RevenueByOrganizerItem[];
+}
+
 export interface RevenueTrendItem {
   period: string;
   revenue: number;
+  platform_fee?: number;
   paid_orders: number;
   tickets_sold: number;
 }
@@ -21,6 +61,8 @@ export interface RevenueByConcertItem {
   start_time: string;
   poster_url: string | null;
   location: string | null;
+  organizer_id?: string;
+  organizer_name?: string;
   revenue: number;
   paid_orders: number;
   tickets_sold: number;
@@ -50,23 +92,65 @@ export interface TicketTierRevenue {
   gate_number: number | null;
 }
 
+export interface ConcertSalesTimelinePoint {
+  date: string;
+  revenue: number;
+  cumulative_revenue: number;
+  tickets_sold: number;
+  cumulative_tickets: number;
+  paid_orders: number;
+}
+
 export interface ConcertRevenueDetailResponse {
   concert: ConcertInfo;
   total_revenue: number;
   paid_orders: number;
   tickets_sold: number;
+  sales_start_at: string | null;
+  sales_end_at: string | null;
+  sales_timeline: ConcertSalesTimelinePoint[];
   ticket_tiers: TicketTierRevenue[];
+}
+
+export async function getRevenueSummary(params?: {
+  from?: string;
+  to?: string;
+  organizer_id?: string;
+}): Promise<RevenueSummaryResponse> {
+  const query = new URLSearchParams();
+  if (params?.from) query.append("from", params.from);
+  if (params?.to) query.append("to", params.to);
+  if (params?.organizer_id) query.append("organizer_id", params.organizer_id);
+
+  const queryString = query.toString();
+  const endpoint = `/admin/revenue/summary${queryString ? `?${queryString}` : ""}`;
+  return apiClient.get<RevenueSummaryResponse>(endpoint);
+}
+
+export async function getRevenueByOrganizer(params?: {
+  from?: string;
+  to?: string;
+}): Promise<RevenueByOrganizerResponse> {
+  const query = new URLSearchParams();
+  if (params?.from) query.append("from", params.from);
+  if (params?.to) query.append("to", params.to);
+
+  const queryString = query.toString();
+  const endpoint = `/admin/revenue/by-organizer${queryString ? `?${queryString}` : ""}`;
+  return apiClient.get<RevenueByOrganizerResponse>(endpoint);
 }
 
 export async function getRevenueTrend(params?: {
   from?: string;
   to?: string;
   group_by?: "day" | "week" | "month";
+  organizer_id?: string;
 }): Promise<RevenueTrendResponse> {
   const query = new URLSearchParams();
   if (params?.from) query.append("from", params.from);
   if (params?.to) query.append("to", params.to);
   if (params?.group_by) query.append("group_by", params.group_by);
+  if (params?.organizer_id) query.append("organizer_id", params.organizer_id);
 
   const queryString = query.toString();
   const endpoint = `/admin/revenue/trend${queryString ? `?${queryString}` : ""}`;
@@ -78,12 +162,14 @@ export async function getRevenueByConcert(params?: {
   to?: string;
   status?: string;
   limit?: number;
+  organizer_id?: string;
 }): Promise<RevenueByConcertResponse> {
   const query = new URLSearchParams();
   if (params?.from) query.append("from", params.from);
   if (params?.to) query.append("to", params.to);
   if (params?.status) query.append("status", params.status);
   if (params?.limit) query.append("limit", params.limit.toString());
+  if (params?.organizer_id) query.append("organizer_id", params.organizer_id);
 
   const queryString = query.toString();
   const endpoint = `/admin/revenue/by-concert${queryString ? `?${queryString}` : ""}`;

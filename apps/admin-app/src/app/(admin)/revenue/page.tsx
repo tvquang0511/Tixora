@@ -1,37 +1,44 @@
 "use client";
 
-import { RefreshCw, TrendingUp, CreditCard } from "lucide-react";
+import { Building2, Calendar } from "lucide-react";
 import { useAdminRevenue } from "./_hooks/useAdminRevenue";
+import { RevenueSummaryCards } from "./_components/RevenueSummaryCards";
 import { RevenueFilterBar } from "./_components/RevenueFilterBar";
 import { RevenueTrendChart } from "./_components/RevenueTrendChart";
+import { TopOrganizersChart } from "./_components/TopOrganizersChart";
+import { OrganizerRevenueTable } from "./_components/OrganizerRevenueTable";
 import { ConcertRevenueTable } from "./_components/ConcertRevenueTable";
 import { ConcertDetailDrawer } from "./_components/ConcertDetailDrawer";
-import { PayoutSettlementTab } from "./_components/PayoutSettlementTab";
 
 export default function AdminRevenuePage() {
   const {
-    activeTab,
-    setActiveTab,
+    preset,
     fromDate,
     toDate,
     groupBy,
+    setGroupBy,
+    selectedOrganizerId,
     tempFromDate,
     setTempFromDate,
     tempToDate,
     setTempToDate,
-    tempGroupBy,
-    setTempGroupBy,
+    tempOrganizerId,
+    setTempOrganizerId,
     fromDateRef,
     toDateRef,
+    activeTableTab,
+    setActiveTableTab,
+    summary,
+    isSummaryLoading,
+    organizers,
+    isOrganizersLoading,
     trendItems,
     isTrendLoading,
-    isConcertsLoading,
     filteredConcerts,
     paginatedConcerts,
-    settlements,
-    settlementSummary,
-    isSettlementsLoading,
-    fetchSettlementsData,
+    isConcertsLoading,
+    filteredOrganizers,
+    paginatedOrganizers,
     tableSearch,
     setTableSearch,
     currentPage,
@@ -39,24 +46,17 @@ export default function AdminRevenuePage() {
     totalPages,
     itemsPerPage,
     selectedConcertId,
-    setSelectedConcertId,
     detailData,
-    setDetailData,
     isDetailLoading,
     hoveredIndex,
     setHoveredIndex,
-    tierTotals,
-    handleApply,
-    handleReset,
-    reloadRevenue,
+    handleSelectPreset,
+    handleApplyFilters,
+    handleFilterByOrganizer,
+    handleResetFilters,
+    handleOpenConcertDetail,
+    handleCloseDetail,
   } = useAdminRevenue();
-
-  const isRefreshing =
-    isTrendLoading || isConcertsLoading || isSettlementsLoading;
-
-  const readyPayoutCount = settlements.filter(
-    (s) => s.settlement_status === "READY_FOR_SETTLEMENT",
-  ).length;
 
   return (
     <div className="space-y-6">
@@ -64,80 +64,136 @@ export default function AdminRevenuePage() {
       <div className="head stickyhead">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="htcaa-h1">Trung tâm tài chính & Doanh thu</h1>
-            <span className="htcaa-badge-count-pill">Báo cáo tài chính</span>
+            <h1 className="htcaa-h1">Doanh thu & Tăng trưởng</h1>
           </div>
           <p className="sub">
-            Quản trị dòng tiền bán vé, phân bổ phí sàn Tixora và đối soát giải
-            ngân cho Ban tổ chức
+            Theo dõi quy mô GMV bán vé toàn sàn, dòng tiền thu nhập từ phí dịch
+            vụ và thị phần của các đơn vị tổ chức sự kiện.
           </p>
         </div>
+      </div>
 
-        <div className="head-actions">
+      {/* Layer 1: Executive KPI Cards */}
+      <RevenueSummaryCards summary={summary} isLoading={isSummaryLoading} />
+
+      {/* Layer 2: Global Filters */}
+      <RevenueFilterBar
+        preset={preset}
+        tempFromDate={tempFromDate}
+        tempToDate={tempToDate}
+        tempOrganizerId={tempOrganizerId}
+        organizers={organizers}
+        fromDateRef={fromDateRef}
+        toDateRef={toDateRef}
+        onSelectPreset={handleSelectPreset}
+        onFromDateChange={setTempFromDate}
+        onToDateChange={setTempToDate}
+        onOrganizerChange={setTempOrganizerId}
+        onApply={handleApplyFilters}
+        onReset={handleResetFilters}
+      />
+
+      {/* Active Filter Notification if specific Organizer is filtered */}
+      {selectedOrganizerId !== "ALL" && (
+        <div className="card p-3 bg-blue-50/60 border-blue-200 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs">
+            <span className="font-bold text-[#0e54a3]">Đang lọc theo:</span>
+            <span className="text-slate-700 font-semibold">
+              {organizers.find((o) => o.organizer_id === selectedOrganizerId)
+                ?.organization_name || "Ban tổ chức được chọn"}
+            </span>
+          </div>
           <button
-            onClick={reloadRevenue}
-            disabled={isRefreshing}
-            className="btn btn-secondary btn-sm"
-            title="Tải lại toàn bộ dữ liệu tài chính"
+            onClick={() => handleFilterByOrganizer("ALL")}
+            className="text-xs font-bold text-[#0e54a3] hover:underline"
           >
-            <RefreshCw
-              className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin text-[#0052ff]" : "text-slate-500"}`}
-            />
-            <span>Làm mới</span>
+            Xóa lọc BTC (Xem toàn sàn)
           </button>
         </div>
-      </div>
+      )}
 
-      {/* Tabs Switcher */}
-      <div className="htcaa-segmented self-start">
-        <button
-          onClick={() => setActiveTab("analytics")}
-          className={activeTab === "analytics" ? "active" : ""}
-        >
-          <TrendingUp className="w-3.5 h-3.5 inline mr-1" />
-          Phân tích Doanh thu & Phí sàn
-        </button>
-
-        <button
-          onClick={() => setActiveTab("settlements")}
-          className={activeTab === "settlements" ? "active" : ""}
-        >
-          <CreditCard className="w-3.5 h-3.5 inline mr-1" />
-          Đối soát & Quyết toán Payout
-          {readyPayoutCount > 0 && (
-            <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 text-emerald-800">
-              {readyPayoutCount}
-            </span>
-          )}
-        </button>
-      </div>
-
-      {/* Tab 1: Analytics */}
-      {activeTab === "analytics" && (
-        <div className="space-y-6 animate-in fade-in">
-          <RevenueFilterBar
-            tempFromDate={tempFromDate}
-            tempToDate={tempToDate}
-            tempGroupBy={tempGroupBy}
-            fromDateRef={fromDateRef}
-            toDateRef={toDateRef}
-            onFromDateChange={setTempFromDate}
-            onToDateChange={setTempToDate}
-            onGroupByChange={setTempGroupBy}
-            onApply={handleApply}
-            onReset={handleReset}
-          />
-
+      {/* Layer 3: Visual Analytics Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Main Growth & Revenue Trend Chart (2 cols) */}
+        <div className="lg:col-span-2">
           <RevenueTrendChart
             trendItems={trendItems}
             isTrendLoading={isTrendLoading}
             groupBy={groupBy}
+            onGroupByChange={setGroupBy}
             fromDate={fromDate}
             toDate={toDate}
             hoveredIndex={hoveredIndex}
             onHover={setHoveredIndex}
           />
+        </div>
 
+        {/* Top Organizers Ranking (1 col) */}
+        <div>
+          <TopOrganizersChart
+            organizers={organizers}
+            isLoading={isOrganizersLoading}
+            onSelectOrganizer={handleFilterByOrganizer}
+            selectedOrganizerId={selectedOrganizerId}
+          />
+        </div>
+      </div>
+
+      {/* Layer 4: Multi-tab Detailed Breakdown */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+          <div className="htcaa-segmented">
+            <button
+              onClick={() => {
+                setActiveTableTab("organizers");
+                setCurrentPage(1);
+              }}
+              className={activeTableTab === "organizers" ? "active" : ""}
+            >
+              <Building2 className="w-3.5 h-3.5 inline mr-1" />
+              Báo cáo theo Ban tổ chức ({filteredOrganizers.length})
+            </button>
+            <button
+              onClick={() => {
+                setActiveTableTab("concerts");
+                setCurrentPage(1);
+              }}
+              className={activeTableTab === "concerts" ? "active" : ""}
+            >
+              <Calendar className="w-3.5 h-3.5 inline mr-1" />
+              Báo cáo theo Sự kiện ({filteredConcerts.length})
+            </button>
+          </div>
+
+          <span className="text-xs text-slate-400 hidden sm:inline">
+            {activeTableTab === "organizers"
+              ? "Bấm vào 'Xem các show' để lọc chi tiết sự kiện của BTC đó"
+              : "Bấm vào 'Chi tiết' để xem phân bổ hạng vé riêng của show"}
+          </span>
+        </div>
+
+        {/* Tab Content 1: Organizers Table */}
+        {activeTableTab === "organizers" && (
+          <OrganizerRevenueTable
+            organizers={paginatedOrganizers}
+            isLoading={isOrganizersLoading}
+            searchTerm={tableSearch}
+            onSearchChange={(v) => {
+              setTableSearch(v);
+              setCurrentPage(1);
+            }}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredOrganizers.length}
+            itemsPerPage={itemsPerPage}
+            onPageChange={setCurrentPage}
+            onFilterConcerts={handleFilterByOrganizer}
+            selectedOrganizerId={selectedOrganizerId}
+          />
+        )}
+
+        {/* Tab Content 2: Concerts Table */}
+        {activeTableTab === "concerts" && (
           <ConcertRevenueTable
             paginatedConcerts={paginatedConcerts}
             filteredConcerts={filteredConcerts}
@@ -148,37 +204,25 @@ export default function AdminRevenuePage() {
             currentPage={currentPage}
             totalPages={totalPages}
             itemsPerPage={itemsPerPage}
-            onSearchChange={setTableSearch}
-            onPageChange={setCurrentPage}
-            onViewDetail={setSelectedConcertId}
-          />
-
-          <ConcertDetailDrawer
-            selectedConcertId={selectedConcertId}
-            detailData={detailData}
-            isDetailLoading={isDetailLoading}
-            fromDate={fromDate}
-            toDate={toDate}
-            tierTotals={tierTotals}
-            onClose={() => {
-              setSelectedConcertId(null);
-              setDetailData(null);
+            onSearchChange={(v) => {
+              setTableSearch(v);
+              setCurrentPage(1);
             }}
+            onPageChange={setCurrentPage}
+            onViewDetail={handleOpenConcertDetail}
           />
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Tab 2: Payout Settlements */}
-      {activeTab === "settlements" && (
-        <div className="animate-in fade-in">
-          <PayoutSettlementTab
-            settlements={settlements}
-            summary={settlementSummary}
-            isLoading={isSettlementsLoading}
-            onRefresh={() => fetchSettlementsData(fromDate, toDate)}
-          />
-        </div>
-      )}
+      {/* Drill-down Drawer for Concert Ticket Tiers */}
+      <ConcertDetailDrawer
+        selectedConcertId={selectedConcertId}
+        detailData={detailData}
+        isDetailLoading={isDetailLoading}
+        fromDate={fromDate}
+        toDate={toDate}
+        onClose={handleCloseDetail}
+      />
     </div>
   );
 }

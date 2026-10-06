@@ -81,7 +81,7 @@ export function PayoutModal({
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-blue-100/70 text-[#0052ff] rounded-lg">
+            <div className="p-2 bg-blue-100/70 text-[#0e54a3] rounded-lg">
               <CreditCard className="w-5 h-5" />
             </div>
             <div>
@@ -138,7 +138,7 @@ export function PayoutModal({
               <span className="font-bold text-slate-900 text-sm">
                 Số tiền thực chuyển (Net Payout):
               </span>
-              <span className="font-extrabold text-[#0052ff] text-lg tabular-nums">
+              <span className="font-extrabold text-[#0e54a3] text-lg tabular-nums">
                 {formatVND(item.net_payout)}
               </span>
             </div>
@@ -148,7 +148,7 @@ export function PayoutModal({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="over">Thông tin tài khoản nhận tiền</div>
-              <span className="text-[11px] text-[#0052ff] font-medium">
+              <span className="text-[11px] text-[#0e54a3] font-medium">
                 Đã thẩm định hồ sơ
               </span>
             </div>
@@ -165,7 +165,7 @@ export function PayoutModal({
                   <div className="flex items-center justify-between">
                     <span className="text-slate-500">Số tài khoản:</span>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-[#0052ff] text-sm">
+                      <span className="font-mono font-bold text-[#0e54a3] text-sm">
                         {item.organizer.bank_account_number}
                       </span>
                       <button
@@ -218,7 +218,7 @@ export function PayoutModal({
 
                 {qrUrl && (
                   <div className="flex flex-col items-center justify-center p-3 bg-blue-50/50 rounded-xl border border-blue-100 text-center">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-[#0052ff] mb-2">
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-[#0e54a3] mb-2">
                       <QrCode className="w-4 h-4" />
                       <span>Quét mã VietQR chuyển khoản nhanh</span>
                     </div>
@@ -255,7 +255,7 @@ export function PayoutModal({
                   placeholder="Ví dụ: FT2609887192 hoặc MB991823"
                   value={refCode}
                   onChange={(e) => setRefCode(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#0052ff]"
+                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#0e54a3]"
                 />
                 <p className="text-[11px] text-slate-400 mt-1">
                   Nhập mã biên lai hoặc mã giao dịch sau khi kế toán đã chuyển

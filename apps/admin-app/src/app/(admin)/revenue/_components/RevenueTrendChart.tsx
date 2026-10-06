@@ -22,6 +22,7 @@ interface RevenueTrendChartProps {
   trendItems: RevenueTrendItem[];
   isTrendLoading: boolean;
   groupBy: "day" | "week" | "month";
+  onGroupByChange?: (g: "day" | "week" | "month") => void;
   fromDate: string;
   toDate: string;
   hoveredIndex: number | null;
@@ -32,6 +33,7 @@ export function RevenueTrendChart({
   trendItems,
   isTrendLoading,
   groupBy,
+  onGroupByChange,
   fromDate,
   toDate,
   hoveredIndex,
@@ -122,25 +124,11 @@ export function RevenueTrendChart({
         Number(parts[1]) - 1,
         Number(parts[2]),
       );
-      return d.toLocaleDateString("vi-VN", { month: "short", day: "numeric" });
+      if (groupBy === "week") {
+        return `T${Math.ceil(d.getDate() / 7)}/${d.getMonth() + 1}`;
+      }
+      return `${d.getDate()}/${d.getMonth() + 1}`;
     }
-    return period;
-  };
-
-  const formatFullPeriod = (period: string) => {
-    if (!period) return "";
-    const parts = period.split("-");
-    if (parts.length === 3)
-      return new Date(
-        Number(parts[0]),
-        Number(parts[1]) - 1,
-        Number(parts[2]),
-      ).toLocaleDateString("vi-VN", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    if (parts.length === 2) return `Tháng ${parts[1]}, ${parts[0]}`;
     return period;
   };
 
@@ -163,28 +151,61 @@ export function RevenueTrendChart({
     <div className="card p-5 flex flex-col min-h-[480px]">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 pb-4 border-b border-slate-100">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-blue-50 rounded-lg border border-blue-100 text-[#0052ff]">
+          <div className="p-1.5 bg-blue-50 rounded-lg border border-blue-100 text-[#0e54a3]">
             <TrendingUp className="w-4 h-4" />
           </div>
-          <h3 className="font-sans text-xs font-semibold uppercase tracking-wider text-slate-900">
-            Biểu đồ xu hướng doanh thu
-          </h3>
-          <span className="text-xs font-sans text-slate-500">
-            [{formatDateRangeLabel()}]
-          </span>
+          <div>
+            <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-slate-900">
+              Xu hướng Doanh thu & Tăng trưởng
+            </h3>
+            <span className="text-[11px] font-sans text-slate-500">
+              [{formatDateRangeLabel()}]
+            </span>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-sans">
-          <div className="flex items-center gap-1.5 text-[#0052ff] font-medium">
-            <span className="w-2.5 h-1 rounded-full bg-[#0052ff] inline-block" />
-            Doanh thu (VND)
-          </div>
-          <div className="flex items-center gap-1.5 text-emerald-700 font-medium">
-            <span className="w-2.5 h-1 rounded-full bg-emerald-600 inline-block" />
-            Đơn hoàn tất
-          </div>
-          <div className="flex items-center gap-1.5 text-violet-700 font-medium">
-            <span className="w-2.5 h-1 rounded-full bg-violet-600 inline-block" />
-            Vé đã bán
+
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Granularity Switcher */}
+          {onGroupByChange && (
+            <div className="htcaa-segmented text-xs">
+              <button
+                type="button"
+                onClick={() => onGroupByChange("day")}
+                className={`htcaa-segmented-btn ${groupBy === "day" ? "active" : ""}`}
+              >
+                Ngày
+              </button>
+              <button
+                type="button"
+                onClick={() => onGroupByChange("week")}
+                className={`htcaa-segmented-btn ${groupBy === "week" ? "active" : ""}`}
+              >
+                Tuần
+              </button>
+              <button
+                type="button"
+                onClick={() => onGroupByChange("month")}
+                className={`htcaa-segmented-btn ${groupBy === "month" ? "active" : ""}`}
+              >
+                Tháng
+              </button>
+            </div>
+          )}
+
+          {/* Legend */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-sans">
+            <div className="flex items-center gap-1.5 text-[#0e54a3] font-semibold">
+              <span className="w-2.5 h-1 rounded-full bg-[#0e54a3] inline-block" />
+              Doanh thu (GMV)
+            </div>
+            <div className="flex items-center gap-1.5 text-emerald-700 font-semibold">
+              <span className="w-2.5 h-1 rounded-full bg-emerald-600 inline-block" />
+              Đơn hàng
+            </div>
+            <div className="flex items-center gap-1.5 text-violet-700 font-semibold">
+              <span className="w-2.5 h-1 rounded-full bg-violet-600 inline-block" />
+              Vé đã bán
+            </div>
           </div>
         </div>
       </div>
@@ -192,7 +213,7 @@ export function RevenueTrendChart({
       <div className="grow relative min-h-[300px] w-full select-none">
         {isTrendLoading ? (
           <div className="absolute inset-0 flex items-center justify-center font-sans text-xs text-slate-500 gap-2">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#0052ff] border-t-transparent" />
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#0e54a3] border-t-transparent" />
             Đang tải dữ liệu xu hướng...
           </div>
         ) : trendItems.length === 0 ? (
@@ -213,8 +234,8 @@ export function RevenueTrendChart({
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="0%" stopColor="#0052ff" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#0052ff" stopOpacity="0.0" />
+                  <stop offset="0%" stopColor="#0e54a3" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#0e54a3" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
 
@@ -229,74 +250,83 @@ export function RevenueTrendChart({
                     x2={svgWidth - paddingRight}
                     y2={y}
                     stroke="#f1f5f9"
-                    strokeDasharray={idx === 4 ? "" : "3 3"}
+                    strokeDasharray="3 3"
                   />
                 );
               })}
 
-              {/* Y Axis Left - Revenue */}
-              {yTicksLeft.map((val, idx) => (
-                <text
-                  key={`ytick-rev-${idx}`}
-                  x={paddingLeft - 10}
-                  y={paddingTop + (idx / 4) * chartHeight + 4}
-                  fill="#94a3b8"
-                  fontSize={10}
-                  textAnchor="end"
-                  fontFamily="inherit"
-                >
-                  {formatConciseNumber(val)}
-                </text>
-              ))}
+              {/* Y-Axis Left (Revenue) */}
+              {yTicksLeft.map((val, idx) => {
+                const y = paddingTop + (idx / 4) * chartHeight;
+                return (
+                  <text
+                    key={`y-left-${idx}`}
+                    x={paddingLeft - 12}
+                    y={y + 3.5}
+                    fill="#64748b"
+                    fontSize={10}
+                    textAnchor="end"
+                    fontFamily="monospace"
+                  >
+                    {formatConciseNumber(val)}
+                  </text>
+                );
+              })}
 
-              {/* Y Axis Right - Orders */}
-              {yTicksRightOrders.map((val, idx) => (
-                <text
-                  key={`ytick-orders-${idx}`}
-                  x={svgWidth - paddingRight + 15}
-                  y={paddingTop + (idx / 4) * chartHeight + 4}
-                  fill="#059669"
-                  fontSize={10}
-                  textAnchor="start"
-                  fontFamily="inherit"
-                >
-                  {Math.round(val)}
-                </text>
-              ))}
+              {/* Y-Axis Right 1 (Orders) */}
+              {yTicksRightOrders.map((val, idx) => {
+                const y = paddingTop + (idx / 4) * chartHeight;
+                return (
+                  <text
+                    key={`y-right-orders-${idx}`}
+                    x={svgWidth - paddingRight + 20}
+                    y={y + 3.5}
+                    fill="#059669"
+                    fontSize={10}
+                    textAnchor="start"
+                    fontFamily="monospace"
+                  >
+                    {Math.round(val)}
+                  </text>
+                );
+              })}
 
-              {/* Y Axis Right - Tickets */}
-              {yTicksRightTickets.map((val, idx) => (
-                <text
-                  key={`ytick-tickets-${idx}`}
-                  x={svgWidth - paddingRight + 65}
-                  y={paddingTop + (idx / 4) * chartHeight + 4}
-                  fill="#7c3aed"
-                  fontSize={10}
-                  textAnchor="start"
-                  fontFamily="inherit"
-                >
-                  {Math.round(val)}
-                </text>
-              ))}
+              {/* Y-Axis Right 2 (Tickets) */}
+              {yTicksRightTickets.map((val, idx) => {
+                const y = paddingTop + (idx / 4) * chartHeight;
+                return (
+                  <text
+                    key={`y-right-tickets-${idx}`}
+                    x={svgWidth - paddingRight + 70}
+                    y={y + 3.5}
+                    fill="#7c3aed"
+                    fontSize={10}
+                    textAnchor="start"
+                    fontFamily="monospace"
+                  >
+                    {Math.round(val)}
+                  </text>
+                );
+              })}
 
-              {/* Legend headers on axis */}
+              {/* Axis Labels */}
               <text
-                x={paddingLeft - 10}
+                x={paddingLeft - 12}
                 y={paddingTop - 15}
-                fill="#0052ff"
+                fill="#0e54a3"
                 fontSize={9}
-                fontWeight="600"
+                fontWeight="700"
                 textAnchor="end"
                 fontFamily="inherit"
               >
-                DOANH THU (VND)
+                DOANH SỐ (VND)
               </text>
               <text
                 x={svgWidth - paddingRight + 15}
                 y={paddingTop - 15}
                 fill="#059669"
                 fontSize={9}
-                fontWeight="600"
+                fontWeight="700"
                 textAnchor="start"
                 fontFamily="inherit"
               >
@@ -307,7 +337,7 @@ export function RevenueTrendChart({
                 y={paddingTop - 15}
                 fill="#7c3aed"
                 fontSize={9}
-                fontWeight="600"
+                fontWeight="700"
                 textAnchor="start"
                 fontFamily="inherit"
               >
@@ -321,7 +351,7 @@ export function RevenueTrendChart({
                 <path
                   d={revenuePath}
                   fill="none"
-                  stroke="#0052ff"
+                  stroke="#0e54a3"
                   strokeWidth={2.5}
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -369,8 +399,8 @@ export function RevenueTrendChart({
                       cx={x}
                       cy={getY(item.revenue, maxRevenue)}
                       r={isHovered ? 5 : 3.5}
-                      fill={isHovered ? "#0052ff" : "#ffffff"}
-                      stroke="#0052ff"
+                      fill={isHovered ? "#0e54a3" : "#ffffff"}
+                      stroke="#0e54a3"
                       strokeWidth={2}
                     />
                     <circle
@@ -439,33 +469,52 @@ export function RevenueTrendChart({
               <div
                 className="absolute z-20 bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-xl pointer-events-none transition-all duration-75 text-xs text-white"
                 style={{
-                  left: `${((paddingLeft + (trendItems.length > 1 ? (hoveredIndex / (trendItems.length - 1)) * chartWidth : chartWidth / 2)) / svgWidth) * 100}%`,
-                  top: `${((paddingTop + chartHeight - (trendItems[hoveredIndex].revenue / maxRevenue) * chartHeight) / svgHeight) * 100 - 10}%`,
-                  transform: "translate(-50%, -100%)",
+                  left: `${(getX(hoveredIndex) / svgWidth) * 100}%`,
+                  top: "20px",
+                  transform: "translateX(-50%)",
                 }}
               >
-                <div className="font-sans text-slate-300 text-[11px] border-b border-slate-700/60 pb-1 mb-1.5 font-medium">
-                  {formatFullPeriod(trendItems[hoveredIndex].period)}
+                <div className="font-bold text-slate-200 border-b border-slate-700/60 pb-1.5 mb-2">
+                  Thời gian: {trendItems[hoveredIndex].period}
                 </div>
-                <div className="space-y-1 font-sans text-[11px]">
-                  <div className="flex items-center justify-between gap-4 text-blue-400 font-semibold">
-                    <span>Doanh thu:</span>
-                    <span>{formatVND(trendItems[hoveredIndex].revenue)}</span>
+                <div className="space-y-1.5 font-sans">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="flex items-center gap-1.5 text-slate-300">
+                      <span className="w-2 h-2 rounded-full bg-[#7dd3fc]" />
+                      Doanh số GMV:
+                    </span>
+                    <span className="font-bold font-mono text-[#7dd3fc]">
+                      {formatVND(trendItems[hoveredIndex].revenue)}
+                    </span>
                   </div>
-                  <div className="flex items-center justify-between gap-4 text-emerald-400 font-semibold">
-                    <span>Đơn hoàn tất:</span>
-                    <span>
-                      {trendItems[hoveredIndex].paid_orders.toLocaleString(
-                        "vi-VN",
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="flex items-center gap-1.5 text-slate-300">
+                      <span className="w-2 h-2 rounded-full bg-blue-400" />
+                      Phí sàn Tixora (5%):
+                    </span>
+                    <span className="font-semibold font-mono text-blue-300">
+                      {formatVND(
+                        trendItems[hoveredIndex].platform_fee ??
+                          Math.round(trendItems[hoveredIndex].revenue * 0.05),
                       )}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between gap-4 text-violet-400 font-semibold">
-                    <span>Vé bán ra:</span>
-                    <span>
-                      {trendItems[hoveredIndex].tickets_sold.toLocaleString(
-                        "vi-VN",
-                      )}
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="flex items-center gap-1.5 text-slate-300">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      Đơn hàng hoàn tất:
+                    </span>
+                    <span className="font-semibold font-mono text-emerald-400">
+                      {trendItems[hoveredIndex].paid_orders} đơn
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="flex items-center gap-1.5 text-slate-300">
+                      <span className="w-2 h-2 rounded-full bg-violet-400" />
+                      Tổng vé bán ra:
+                    </span>
+                    <span className="font-semibold font-mono text-violet-400">
+                      {trendItems[hoveredIndex].tickets_sold} vé
                     </span>
                   </div>
                 </div>

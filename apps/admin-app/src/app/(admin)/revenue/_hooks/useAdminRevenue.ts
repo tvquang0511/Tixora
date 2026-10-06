@@ -2,66 +2,69 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import {
+  getRevenueSummary,
+  getRevenueByOrganizer,
   getRevenueTrend,
   getRevenueByConcert,
   getConcertRevenueDetail,
-  getSettlements,
+  type RevenueSummaryResponse,
+  type RevenueByOrganizerItem,
   type RevenueTrendItem,
   type RevenueByConcertItem,
   type ConcertRevenueDetailResponse,
-  type SettlementItem,
-  type SettlementSummary,
 } from "@/services/revenue.service";
 
+export type PresetRange = "7d" | "30d" | "90d" | "year" | "all";
+
 export function useAdminRevenue() {
-  const initialFromDate = "2026-03-01";
   const getTodayDate = () => new Date().toISOString().slice(0, 10);
+  const getDateDaysAgo = (days: number) => {
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    return d.toISOString().slice(0, 10);
+  };
 
-  const normalizeDateRangeForQuery = (from?: string, to?: string) => ({
-    from: from || undefined,
-    to: to ? `${to}T23:59:59.999Z` : undefined,
-  });
-
-  // Tab state: "analytics" | "settlements"
-  const [activeTab, setActiveTab] = useState<"analytics" | "settlements">(
-    "analytics",
-  );
-
-  // Applied filter state
-  const [fromDate, setFromDate] = useState<string>(initialFromDate);
+  // Default to 30 days
+  const [preset, setPreset] = useState<PresetRange>("30d");
+  const [fromDate, setFromDate] = useState<string>(() => getDateDaysAgo(30));
   const [toDate, setToDate] = useState<string>(getTodayDate);
   const [groupBy, setGroupBy] = useState<"day" | "week" | "month">("day");
+  const [selectedOrganizerId, setSelectedOrganizerId] = useState<string>("ALL");
 
-  // Temp (pending) filter state
-  const [tempFromDate, setTempFromDate] = useState<string>(initialFromDate);
-  const [tempToDate, setTempToDate] = useState<string>(getTodayDate);
-  const [tempGroupBy, setTempGroupBy] = useState<"day" | "week" | "month">(
-    "day",
+  // Temp filter state (for custom inputs)
+  const [tempFromDate, setTempFromDate] = useState<string>(() =>
+    getDateDaysAgo(30),
   );
-  const [tempStatus, setTempStatus] = useState<string>("All");
+  const [tempToDate, setTempToDate] = useState<string>(getTodayDate);
+  const [tempOrganizerId, setTempOrganizerId] = useState<string>("ALL");
 
   const fromDateRef = useRef<HTMLInputElement>(null);
   const toDateRef = useRef<HTMLInputElement>(null);
 
-  // Data states
-  const [trendItems, setTrendItems] = useState<RevenueTrendItem[]>([]);
-  const [concertItems, setConcertItems] = useState<RevenueByConcertItem[]>([]);
-  const [isTrendLoading, setIsTrendLoading] = useState<boolean>(true);
-  const [isConcertsLoading, setIsConcertsLoading] = useState<boolean>(true);
+  // View sub-tab: "organizers" | "concerts"
+  const [activeTableTab, setActiveTableTab] = useState<
+    "organizers" | "concerts"
+  >("organizers");
 
-  // Settlements data states
-  const [settlements, setSettlements] = useState<SettlementItem[]>([]);
-  const [settlementSummary, setSettlementSummary] =
-    useState<SettlementSummary | null>(null);
-  const [isSettlementsLoading, setIsSettlementsLoading] =
-    useState<boolean>(true);
+  // Data states
+  const [summary, setSummary] = useState<RevenueSummaryResponse | null>(null);
+  const [isSummaryLoading, setIsSummaryLoading] = useState<boolean>(true);
+
+  const [organizers, setOrganizers] = useState<RevenueByOrganizerItem[]>([]);
+  const [isOrganizersLoading, setIsOrganizersLoading] = useState<boolean>(true);
+
+  const [trendItems, setTrendItems] = useState<RevenueTrendItem[]>([]);
+  const [isTrendLoading, setIsTrendLoading] = useState<boolean>(true);
+
+  const [concertItems, setConcertItems] = useState<RevenueByConcertItem[]>([]);
+  const [isConcertsLoading, setIsConcertsLoading] = useState<boolean>(true);
 
   // Table search and pagination
   const [tableSearch, setTableSearch] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 7;
+  const itemsPerPage = 8;
 
-  // Drawer
+  // Drawer for concert details
   const [selectedConcertId, setSelectedConcertId] = useState<string | null>(
     null,
   );
@@ -72,20 +75,68 @@ export function useAdminRevenue() {
   // Chart hover
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
+  const normalizeDateRange = (from?: string, to?: string) => ({
+    from: from || undefined,
+    to: to ? `${to}T23:59:59.999Z` : undefined,
+  });
+
+  // Fetch summary
+  const fetchSummary = useCallback(
+    async (fromVal?: string, toVal?: string, orgId?: string) => {
+      try {
+        setIsSummaryLoading(true);
+        const range = normalizeDateRange(fromVal, toVal);
+        const res = await getRevenueSummary({
+          from: range.from,
+          to: range.to,
+          organizer_id: orgId && orgId !== "ALL" ? orgId : undefined,
+        });
+        setSummary(res);
+      } catch (err) {
+        console.error("Failed to fetch revenue summary:", err);
+      } finally {
+        setIsSummaryLoading(false);
+      }
+    },
+    [],
+  );
+
+  // Fetch organizers
+  const fetchOrganizers = useCallback(
+    async (fromVal?: string, toVal?: string) => {
+      try {
+        setIsOrganizersLoading(true);
+        const range = normalizeDateRange(fromVal, toVal);
+        const res = await getRevenueByOrganizer({
+          from: range.from,
+          to: range.to,
+        });
+        setOrganizers(res.items || []);
+      } catch (err) {
+        console.error("Failed to fetch revenue by organizer:", err);
+      } finally {
+        setIsOrganizersLoading(false);
+      }
+    },
+    [],
+  );
+
   // Fetch trend
-  const fetchTrendData = useCallback(
+  const fetchTrend = useCallback(
     async (
       fromVal?: string,
       toVal?: string,
       groupVal?: "day" | "week" | "month",
+      orgId?: string,
     ) => {
       try {
         setIsTrendLoading(true);
-        const range = normalizeDateRangeForQuery(fromVal, toVal);
+        const range = normalizeDateRange(fromVal, toVal);
         const res = await getRevenueTrend({
           from: range.from,
           to: range.to,
           group_by: groupVal,
+          organizer_id: orgId && orgId !== "ALL" ? orgId : undefined,
         });
         setTrendItems(res.items || []);
       } catch (err) {
@@ -98,18 +149,18 @@ export function useAdminRevenue() {
   );
 
   // Fetch concerts
-  const fetchConcertsData = useCallback(
-    async (fromVal?: string, toVal?: string, statusVal?: string) => {
+  const fetchConcerts = useCallback(
+    async (fromVal?: string, toVal?: string, orgId?: string) => {
       try {
         setIsConcertsLoading(true);
-        const range = normalizeDateRangeForQuery(fromVal, toVal);
+        const range = normalizeDateRange(fromVal, toVal);
         const res = await getRevenueByConcert({
           from: range.from,
           to: range.to,
-          status: statusVal === "All" ? undefined : statusVal,
+          limit: 100,
+          organizer_id: orgId && orgId !== "ALL" ? orgId : undefined,
         });
         setConcertItems(res.items || []);
-        setCurrentPage(1);
       } catch (err) {
         console.error("Failed to fetch revenue by concert:", err);
       } finally {
@@ -119,166 +170,185 @@ export function useAdminRevenue() {
     [],
   );
 
-  // Fetch settlements
-  const fetchSettlementsData = useCallback(
-    async (fromVal?: string, toVal?: string) => {
-      try {
-        setIsSettlementsLoading(true);
-        const range = normalizeDateRangeForQuery(fromVal, toVal);
-        const res = await getSettlements({
-          from: range.from,
-          to: range.to,
-        });
-        setSettlements(res.items || []);
-        setSettlementSummary(res.summary || null);
-      } catch (err) {
-        console.error("Failed to fetch settlements:", err);
-      } finally {
-        setIsSettlementsLoading(false);
-      }
-    },
-    [],
-  );
-
-  // Initial load
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const today = getTodayDate();
-      void fetchTrendData(initialFromDate, today, "day");
-      void fetchConcertsData(initialFromDate, today, "All");
-      void fetchSettlementsData(initialFromDate, today);
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [fetchTrendData, fetchConcertsData, fetchSettlementsData]);
-
-  // Fetch detail on concert selection
-  useEffect(() => {
-    if (!selectedConcertId) return;
-    const fetchDetail = async () => {
-      try {
-        setIsDetailLoading(true);
-        const range = normalizeDateRangeForQuery(fromDate, toDate);
-        const res = await getConcertRevenueDetail(selectedConcertId, {
-          from: range.from,
-          to: range.to,
-        });
-        setDetailData(res);
-      } catch (err) {
-        console.error("Failed to fetch concert details:", err);
-      } finally {
-        setIsDetailLoading(false);
-      }
-    };
-    const timer = setTimeout(() => {
-      void fetchDetail();
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [selectedConcertId, fromDate, toDate]);
-
-  const reloadRevenue = useCallback(() => {
-    void fetchTrendData(fromDate, toDate, groupBy);
-    void fetchConcertsData(fromDate, toDate, tempStatus);
-    void fetchSettlementsData(fromDate, toDate);
+  // Load all
+  const reloadAll = useCallback(() => {
+    fetchSummary(fromDate, toDate, selectedOrganizerId);
+    fetchOrganizers(fromDate, toDate);
+    fetchTrend(fromDate, toDate, groupBy, selectedOrganizerId);
+    fetchConcerts(fromDate, toDate, selectedOrganizerId);
   }, [
-    fetchTrendData,
-    fetchConcertsData,
-    fetchSettlementsData,
     fromDate,
     toDate,
     groupBy,
-    tempStatus,
+    selectedOrganizerId,
+    fetchSummary,
+    fetchOrganizers,
+    fetchTrend,
+    fetchConcerts,
   ]);
 
-  const handleApply = () => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      reloadAll();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [reloadAll]);
+
+  // Apply preset
+  const handleSelectPreset = (p: PresetRange) => {
+    setPreset(p);
+    let newFrom = fromDate;
+    const newTo = getTodayDate();
+
+    if (p === "7d") newFrom = getDateDaysAgo(7);
+    else if (p === "30d") newFrom = getDateDaysAgo(30);
+    else if (p === "90d") newFrom = getDateDaysAgo(90);
+    else if (p === "year") newFrom = getDateDaysAgo(365);
+    else if (p === "all") newFrom = "2025-01-01";
+
+    setFromDate(newFrom);
+    setToDate(newTo);
+    setTempFromDate(newFrom);
+    setTempToDate(newTo);
+    setCurrentPage(1);
+  };
+
+  // Apply custom dates & organizer
+  const handleApplyFilters = () => {
     setFromDate(tempFromDate);
     setToDate(tempToDate);
-    setGroupBy(tempGroupBy);
-    void fetchTrendData(tempFromDate, tempToDate, tempGroupBy);
-    void fetchConcertsData(tempFromDate, tempToDate, tempStatus);
-    void fetchSettlementsData(tempFromDate, tempToDate);
+    setSelectedOrganizerId(tempOrganizerId);
+    setCurrentPage(1);
   };
 
-  const handleReset = () => {
-    setTempFromDate("");
-    setTempToDate("");
-    setTempGroupBy("day");
-    setTempStatus("All");
-    setFromDate("");
-    setToDate("");
+  // Filter directly by an organizer (e.g. from the table)
+  const handleFilterByOrganizer = (orgId: string) => {
+    setSelectedOrganizerId(orgId);
+    setTempOrganizerId(orgId);
+    setActiveTableTab("concerts");
+    setCurrentPage(1);
+  };
+
+  // Reset
+  const handleResetFilters = () => {
+    const dFrom = getDateDaysAgo(30);
+    const dTo = getTodayDate();
+    setPreset("30d");
+    setFromDate(dFrom);
+    setToDate(dTo);
+    setTempFromDate(dFrom);
+    setTempToDate(dTo);
+    setSelectedOrganizerId("ALL");
+    setTempOrganizerId("ALL");
     setGroupBy("day");
-    void fetchTrendData("", "", "day");
-    void fetchConcertsData("", "", "All");
-    void fetchSettlementsData("", "");
+    setTableSearch("");
+    setCurrentPage(1);
   };
 
-  // Derived data
-  const filteredConcerts = concertItems.filter((item) =>
-    item.concert_name.toLowerCase().includes(tableSearch.toLowerCase().trim()),
+  // Fetch concert detail
+  const handleOpenConcertDetail = async (concertId: string) => {
+    try {
+      setSelectedConcertId(concertId);
+      setIsDetailLoading(true);
+      // Fetch full lifecycle without date restrictions so the entire sales timeline is shown
+      const detail = await getConcertRevenueDetail(concertId);
+      setDetailData(detail);
+    } catch (err) {
+      console.error("Failed to load concert detail:", err);
+    } finally {
+      setIsDetailLoading(false);
+    }
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedConcertId(null);
+    setDetailData(null);
+  };
+
+  // Filtered & Paginated Organizers
+  const filteredOrganizers = organizers.filter((org) => {
+    if (!tableSearch) return true;
+    const q = tableSearch.toLowerCase();
+    return (
+      org.organization_name.toLowerCase().includes(q) ||
+      org.contact_name.toLowerCase().includes(q) ||
+      org.email.toLowerCase().includes(q)
+    );
+  });
+
+  // Filtered & Paginated Concerts
+  const filteredConcerts = concertItems.filter((c) => {
+    if (!tableSearch) return true;
+    const q = tableSearch.toLowerCase();
+    return (
+      c.concert_name.toLowerCase().includes(q) ||
+      (c.organizer_name && c.organizer_name.toLowerCase().includes(q)) ||
+      (c.location && c.location.toLowerCase().includes(q))
+    );
+  });
+
+  const totalPages = Math.ceil(
+    (activeTableTab === "organizers"
+      ? filteredOrganizers.length
+      : filteredConcerts.length) / itemsPerPage,
   );
-  const totalPages = Math.ceil(filteredConcerts.length / itemsPerPage) || 1;
+
+  const paginatedOrganizers = filteredOrganizers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
   const paginatedConcerts = filteredConcerts.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
   );
 
-  const tierTotals = detailData?.ticket_tiers?.reduce(
-    (acc, curr) => {
-      acc.total_quantity += curr.total_quantity;
-      acc.tickets_sold += curr.tickets_sold;
-      acc.remaining_quantity += curr.remaining_quantity;
-      acc.revenue += curr.revenue;
-      return acc;
-    },
-    { total_quantity: 0, tickets_sold: 0, remaining_quantity: 0, revenue: 0 },
-  ) ?? {
-    total_quantity: 0,
-    tickets_sold: 0,
-    remaining_quantity: 0,
-    revenue: 0,
-  };
-
   return {
-    activeTab,
-    setActiveTab,
+    preset,
     fromDate,
     toDate,
     groupBy,
+    setGroupBy,
+    selectedOrganizerId,
     tempFromDate,
     setTempFromDate,
     tempToDate,
     setTempToDate,
-    tempGroupBy,
-    setTempGroupBy,
-    tempStatus,
-    setTempStatus,
+    tempOrganizerId,
+    setTempOrganizerId,
     fromDateRef,
     toDateRef,
+    activeTableTab,
+    setActiveTableTab,
+    summary,
+    isSummaryLoading,
+    organizers,
+    isOrganizersLoading,
     trendItems,
-    concertItems,
     isTrendLoading,
+    concertItems,
     isConcertsLoading,
-    settlements,
-    settlementSummary,
-    isSettlementsLoading,
-    fetchSettlementsData,
+    filteredOrganizers,
+    paginatedOrganizers,
+    filteredConcerts,
+    paginatedConcerts,
     tableSearch,
     setTableSearch,
     currentPage,
     setCurrentPage,
-    itemsPerPage,
     totalPages,
-    filteredConcerts,
-    paginatedConcerts,
+    itemsPerPage,
     selectedConcertId,
-    setSelectedConcertId,
     detailData,
-    setDetailData,
     isDetailLoading,
     hoveredIndex,
     setHoveredIndex,
-    tierTotals,
-    handleApply,
-    handleReset,
-    reloadRevenue,
+    handleSelectPreset,
+    handleApplyFilters,
+    handleFilterByOrganizer,
+    handleResetFilters,
+    handleOpenConcertDetail,
+    handleCloseDetail,
+    reloadAll,
   };
 }

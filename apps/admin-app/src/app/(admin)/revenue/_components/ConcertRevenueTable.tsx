@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, MapPin, Search } from "lucide-react";
+import { MapPin, Search } from "lucide-react";
 import { getConcertPosterUrl } from "@/services/concert.service";
 import { type RevenueByConcertItem } from "@/services/revenue.service";
 import { StatusBadge } from "../../_components/StatusBadge";
@@ -136,14 +136,19 @@ export function ConcertRevenueTable({
                             <div className="text-xs font-semibold text-slate-900 leading-tight">
                               {item.concert_name}
                             </div>
-                            {item.location && (
-                              <div className="flex items-center gap-1 mt-0.5 text-[11px] text-slate-500 font-sans">
-                                <MapPin className="w-3 h-3 shrink-0 text-slate-400" />
-                                <span className="line-clamp-1">
-                                  {item.location}
+                            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-slate-500 font-sans">
+                              {item.organizer_name && (
+                                <span className="font-medium text-slate-700">
+                                  {item.organizer_name}
                                 </span>
-                              </div>
-                            )}
+                              )}
+                              {item.location && (
+                                <span className="flex items-center gap-0.5 line-clamp-1">
+                                  <MapPin className="w-3 h-3 shrink-0 text-slate-400" />
+                                  <span>{item.location}</span>
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -171,7 +176,7 @@ export function ConcertRevenueTable({
                       </td>
                       <td
                         style={{ textAlign: "right" }}
-                        className="font-bold text-[#0052ff] font-mono tabular-nums text-xs"
+                        className="font-bold text-[#0e54a3] font-mono tabular-nums text-xs"
                       >
                         {formatVND(netPayout)}
                       </td>
