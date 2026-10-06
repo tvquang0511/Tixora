@@ -385,9 +385,6 @@ export function CreateEventModal({
           {/* Header */}
           <div className="flex items-start justify-between p-6 border-b border-slate-800/80 bg-slate-900/60 shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400">
-                <Sparkles className="w-5 h-5" />
-              </div>
               <div>
                 <h3 className="text-lg font-bold text-white tracking-tight">
                   Tạo Sự Kiện Mới

@@ -13,6 +13,7 @@ import {
   LogOut,
   AlertTriangle,
   ArrowRight,
+  DollarSign,
 } from "lucide-react";
 import { NotificationBell } from "@/components/notification-bell";
 
@@ -97,6 +98,7 @@ export default function OrganizerHubLayout({
   const navLinks = [
     { href: "/organizer/dashboard", label: "Tổng quan" },
     { href: "/organizer/events", label: "Sự kiện" },
+    { href: "/organizer/revenue", label: "Doanh thu" },
     { href: "/organizer/profile", label: "Hồ sơ đối tác" },
   ];
 
@@ -123,7 +125,9 @@ export default function OrganizerHubLayout({
                     ? pathname === "/organizer/dashboard"
                     : item.href === "/organizer/profile"
                       ? pathname.startsWith("/organizer/profile")
-                      : pathname.startsWith("/organizer/events");
+                      : item.href === "/organizer/revenue"
+                        ? pathname.startsWith("/organizer/revenue")
+                        : pathname.startsWith("/organizer/events");
                 return (
                   <Link
                     key={item.href}
@@ -192,6 +196,17 @@ export default function OrganizerHubLayout({
                   >
                     <Compass size={16} className="text-teal-400" /> Website bán
                     vé
+                  </Link>
+                  <Link
+                    href="/organizer/revenue"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2.5 text-sm font-semibold text-on-surface-variant/90 hover:bg-slate-900 hover:text-on-surface rounded-xl transition-colors"
+                  >
+                    <DollarSign
+                      size={16}
+                      className="text-on-surface-variant/70"
+                    />{" "}
+                    Doanh thu & Đối soát
                   </Link>
                   <Link
                     href="/organizer/profile"
