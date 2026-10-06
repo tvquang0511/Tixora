@@ -85,6 +85,7 @@ Chứa các bản vẽ kiến trúc, thiết kế dữ liệu và giải pháp c
 
 ### 3. [03-testing/](./03-testing/README.md) — Kiểm Thử & Đảm Bảo Chất Lượng
 Hướng dẫn kiểm thử đầy đủ các cấp độ từ thủ công đến tự động:
+- **[E2E_AND_LOAD_TESTING_PLAN.md](./03-testing/E2E_AND_LOAD_TESTING_PLAN.md):** Kế hoạch kiểm thử tổng thể hai tầng: Playwright E2E cho 3 portal và k6 Load & Concurrency Testing (Zero Oversell, Rate Limit).
 - **[MANUAL_TEST_GUIDE.md](./03-testing/MANUAL_TEST_GUIDE.md):** Bộ kịch bản kiểm thử thủ công 11 Test Suites (> 35 test cases) bao phủ mọi tính năng của Web, Admin và Mobile kèm bảng tài khoản seed và checklist nghiệm thu.
 - **[PLAYWRIGHT_E2E.md](./03-testing/PLAYWRIGHT_E2E.md):** Hướng dẫn cài đặt, cấu hình và chạy bộ test E2E Playwright tự động trên Web App (`:3001`) và Admin Portal (`:3002`).
 - **[LOAD_TESTING_K6.md](./03-testing/LOAD_TESTING_K6.md):** Hướng dẫn chạy k6 script kiểm chứng Rate Limiting (HTTP 429) và chống Oversell dưới tải cao đồng thời.
