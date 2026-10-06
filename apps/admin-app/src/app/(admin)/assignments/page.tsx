@@ -9,6 +9,7 @@ import {
   Pencil,
   Plus,
   RefreshCw,
+  RotateCcw,
   Search,
   ShieldCheck,
   Trash2,
@@ -200,6 +201,7 @@ function AssignmentsContent() {
   const [limit, setLimit] = useState(10);
   const [concertFilter, setConcertFilter] = useState(paramConcertId);
   const [checkerFilter, setCheckerFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -229,6 +231,33 @@ function AssignmentsContent() {
     [concertMap, createConcertId],
   );
 
+  const displayedAssignments = useMemo(() => {
+    if (!searchQuery.trim()) return assignments;
+    const q = searchQuery.toLowerCase().trim();
+    return assignments.filter(
+      (a) =>
+        a.checker.full_name.toLowerCase().includes(q) ||
+        a.checker.email.toLowerCase().includes(q) ||
+        a.concert.name.toLowerCase().includes(q) ||
+        String(a.gate_number).includes(q),
+    );
+  }, [assignments, searchQuery]);
+
+  const hasActiveFilters = Boolean(
+    concertFilter || checkerFilter || searchQuery.trim(),
+  );
+  const activeFilterCount =
+    (concertFilter ? 1 : 0) +
+    (checkerFilter ? 1 : 0) +
+    (searchQuery.trim() ? 1 : 0);
+
+  const handleResetFilters = () => {
+    setConcertFilter("");
+    setCheckerFilter("");
+    setSearchQuery("");
+    setPage(1);
+  };
+
   const summaryItems = [
     {
       label: "Tổng phân công",
@@ -246,8 +275,8 @@ function AssignmentsContent() {
       icon: UserRound,
     },
     {
-      label: "Kết quả lọc",
-      value: meta.itemCount.toString(),
+      label: "Kết quả hiển thị",
+      value: displayedAssignments.length.toString(),
       icon: ShieldCheck,
     },
   ];
@@ -486,24 +515,25 @@ function AssignmentsContent() {
   return (
     <div className="space-y-6">
       {/* Head */}
-      <div className="head stickyhead">
+      <div className="head stickyhead flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <h1 className="htcaa-h1">Phân công soát vé</h1>
             <span className="htcaa-badge-count-pill">
               {meta.totalItems} lượt phân công
             </span>
           </div>
-          <p className="sub">
+          <p className="sub mt-1">
             Chỉ định nhân viên soát vé phụ trách từng cổng tại các sự kiện
           </p>
         </div>
 
-        <div className="head-actions">
+        <div className="head-actions flex items-center gap-2">
           <button
+            type="button"
             onClick={() => void handleRefresh()}
             disabled={loading}
-            className="btn btn-secondary btn-sm"
+            className="btn btn-secondary btn-sm inline-flex items-center gap-1.5"
             title="Tải lại danh sách phân công"
           >
             <RefreshCw
@@ -512,8 +542,9 @@ function AssignmentsContent() {
             <span>Làm mới</span>
           </button>
           <button
+            type="button"
             onClick={handleOpenCreate}
-            className="btn btn-primary btn-sm flex items-center gap-1.5"
+            className="btn btn-primary btn-sm inline-flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Thêm phân công</span>
@@ -528,63 +559,127 @@ function AssignmentsContent() {
         ))}
       </div>
 
-      {/* Filters Bar */}
-      <div className="filters">
-        <div className="flex items-center gap-2 flex-1 min-w-[200px]">
-          <span className="over hidden sm:inline">Sự kiện:</span>
-          <select
-            value={concertFilter}
-            onChange={(e) => {
-              setConcertFilter(e.target.value);
-              setPage(1);
-            }}
-            className="select-trigger w-full text-xs font-medium"
-          >
-            <option value="">Tất cả sự kiện</option>
-            {concerts.map((concert) => (
-              <option key={concert.id} value={concert.id}>
-                {concert.name}
-              </option>
-            ))}
-          </select>
+      {/* Filters Toolbar Card */}
+      <div className="card p-3.5 space-y-3">
+        {/* Top row: Search input + Rows per page selector + Reset */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          {/* Search Box */}
+          <div className="search-box flex-1 max-w-md">
+            <Search className="w-4 h-4 text-slate-400 shrink-0" />
+            <input
+              type="text"
+              placeholder="Tìm theo tên nhân viên, email, sự kiện, cổng..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                title="Xóa tìm kiếm"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Quick controls: Per-page & Reset */}
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="btn btn-secondary btn-sm inline-flex items-center gap-1.5 text-slate-600 hover:text-rose-600 cursor-pointer"
+                title="Khôi phục tất cả bộ lọc"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+                <span>Đặt lại ({activeFilterCount})</span>
+              </button>
+            )}
+            <div className="flex items-center gap-1.5">
+              <span className="over text-[11px] hidden md:inline">
+                Hiển thị:
+              </span>
+              <select
+                value={String(limit)}
+                onChange={(e) => {
+                  setLimit(Number(e.target.value));
+                  setPage(1);
+                }}
+                className="select-trigger text-xs font-semibold"
+                aria-label="Số dòng mỗi trang"
+              >
+                <option value="10">10 dòng/trang</option>
+                <option value="20">20 dòng/trang</option>
+                <option value="50">50 dòng/trang</option>
+              </select>
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-1 min-w-[200px]">
-          <span className="over hidden sm:inline">Nhân viên:</span>
-          <select
-            value={checkerFilter}
-            onChange={(e) => {
-              setCheckerFilter(e.target.value);
-              setPage(1);
-            }}
-            className="select-trigger w-full text-xs font-medium"
-          >
-            <option value="">Tất cả nhân viên</option>
-            {checkers.map((checker) => (
-              <option key={checker.id} value={checker.id}>
-                {checker.full_name}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Bottom row: Filter Dropdowns & Stats */}
+        <div className="pt-2.5 border-t border-slate-100 flex flex-wrap items-center gap-3">
+          {/* Concert Filter */}
+          <div className="flex items-center gap-2 flex-1 min-w-[240px] max-w-sm">
+            <span className="over text-[11px] shrink-0">Sự kiện:</span>
+            <select
+              value={concertFilter}
+              onChange={(e) => {
+                setConcertFilter(e.target.value);
+                setPage(1);
+              }}
+              className="select-trigger w-full text-xs font-semibold truncate"
+            >
+              <option value="">Tất cả sự kiện ({concerts.length})</option>
+              {concerts.map((concert) => (
+                <option key={concert.id} value={concert.id}>
+                  {concert.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <button
-          onClick={() => {
-            setConcertFilter("");
-            setCheckerFilter("");
-            setPage(1);
-          }}
-          className="btn btn-secondary btn-sm"
-        >
-          Xóa bộ lọc
-        </button>
+          {/* Checker Filter */}
+          <div className="flex items-center gap-2 flex-1 min-w-[200px] max-w-xs">
+            <span className="over text-[11px] shrink-0">Nhân viên:</span>
+            <select
+              value={checkerFilter}
+              onChange={(e) => {
+                setCheckerFilter(e.target.value);
+                setPage(1);
+              }}
+              className="select-trigger w-full text-xs font-semibold truncate"
+            >
+              <option value="">Tất cả nhân viên ({checkers.length})</option>
+              {checkers.map((checker) => (
+                <option key={checker.id} value={checker.id}>
+                  {checker.full_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Count info */}
+          <div className="ml-auto text-xs text-slate-500 font-medium hidden lg:flex items-center gap-1.5">
+            <span>Hiển thị</span>
+            <strong className="text-slate-900 font-bold tabular-nums">
+              {displayedAssignments.length}
+            </strong>
+            <span>trên</span>
+            <strong className="text-slate-900 font-bold tabular-nums">
+              {meta.totalItems}
+            </strong>
+            <span>phân công</span>
+          </div>
+        </div>
       </div>
 
       {/* Main Content Table Card */}
       <div className="space-y-2">
         <div className="flex justify-between items-center px-1">
           <span className="sub">
-            Danh sách phân công soát vé ({meta.totalItems})
+            Danh sách phân công soát vé ({displayedAssignments.length})
           </span>
         </div>
 
@@ -614,7 +709,7 @@ function AssignmentsContent() {
                       </div>
                     </td>
                   </tr>
-                ) : assignments.length === 0 ? (
+                ) : displayedAssignments.length === 0 ? (
                   <tr>
                     <td
                       colSpan={6}
@@ -624,7 +719,7 @@ function AssignmentsContent() {
                     </td>
                   </tr>
                 ) : (
-                  assignments.map((assignment) => {
+                  displayedAssignments.map((assignment) => {
                     const concertDetails = concertMap.get(
                       assignment.concert_id,
                     );
@@ -666,17 +761,23 @@ function AssignmentsContent() {
                         <td style={{ textAlign: "right" }}>
                           <div className="flex items-center justify-end gap-1.5">
                             <button
+                              type="button"
                               onClick={() => void handleOpenEdit(assignment)}
-                              className="btn btn-secondary btn-sm"
+                              className="btn btn-secondary btn-sm inline-flex items-center gap-1 hover:border-[#0052ff] hover:text-[#0052ff]"
+                              title="Sửa cổng phân công"
                             >
-                              <Pencil size={12} /> Sửa
+                              <Pencil size={12} />
+                              <span>Sửa</span>
                             </button>
                             <button
+                              type="button"
                               onClick={() => setDeleteTarget(assignment)}
                               disabled={deletingId === assignment.id}
-                              className="btn btn-danger btn-sm"
+                              className="btn btn-secondary btn-sm inline-flex items-center gap-1 text-slate-500 hover:text-rose-600 hover:bg-rose-50 hover:border-rose-200"
+                              title="Xóa phân công"
                             >
-                              <Trash2 size={12} /> Xóa
+                              <Trash2 size={12} />
+                              <span>Xóa</span>
                             </button>
                           </div>
                         </td>

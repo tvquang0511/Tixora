@@ -11,7 +11,6 @@ import {
   DollarSign,
   Users,
   LogOut,
-  ExternalLink,
   Receipt,
   Cpu,
   Bell,
@@ -21,6 +20,7 @@ import {
   ChevronsRight,
   Zap,
   TrendingUp,
+  CreditCard,
   Settings,
 } from "lucide-react";
 import { BrandMark } from "@/components/BrandMark";
@@ -60,8 +60,13 @@ const navGroups = [
     items: [
       {
         href: "/revenue",
-        label: "Doanh thu & Đối soát",
-        icon: DollarSign,
+        label: "Báo cáo Doanh thu",
+        icon: TrendingUp,
+      },
+      {
+        href: "/settlements",
+        label: "Đối soát & Quyết toán",
+        icon: CreditCard,
       },
     ],
   },
@@ -112,7 +117,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
-  const webAppUrl = process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3001";
   const [collapsed, setCollapsed] = useState(false);
   const isTopActive = pathname === "/dashboard" || pathname === "/";
 
@@ -121,24 +125,37 @@ export function AdminShell({ children }: { children: ReactNode }) {
       {/* Desktop Sidebar - HTCAA Style */}
       <nav
         className={`hidden md:flex flex-col h-screen ${
-          collapsed ? "w-16 p-2" : "w-[250px] p-[18px_14px_14px]"
+          collapsed ? "w-16 p-2" : "w-[250px] p-[14px_12px_12px]"
         } bg-[#0e54a3] text-white shrink-0 sticky top-0 z-40 border-r border-[#0e54a3] shadow-[4px_0_24px_-8px_rgba(14,84,163,0.35)] transition-all duration-200 overflow-hidden`}
       >
-        {/* Brand Header */}
+        {/* Brand Header with Collapse Button on Top */}
         <div
-          className={`flex items-center ${
+          className={`flex items-center shrink-0 border-b border-white/10 pb-2.5 mb-2 ${
             collapsed
-              ? "justify-center p-[8px_0_22px]"
-              : "gap-2.5 p-[8px_8px_22px]"
-          } shrink-0`}
+              ? "flex-col gap-2 justify-center pt-0.5"
+              : "justify-between px-1 pt-0.5"
+          }`}
         >
           <Link href="/dashboard" className="block">
             <BrandMark compact={collapsed} theme="dark" />
           </Link>
+          <button
+            type="button"
+            onClick={() => setCollapsed(!collapsed)}
+            className="p-1 text-white/70 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer"
+            title={collapsed ? "Mở rộng thanh điều hướng" : "Thu gọn"}
+            aria-label={collapsed ? "Mở rộng thanh điều hướng" : "Thu gọn"}
+          >
+            {collapsed ? (
+              <ChevronsRight size={16} />
+            ) : (
+              <ChevronsLeft size={16} />
+            )}
+          </button>
         </div>
 
         {/* Grouped Navigation */}
-        <div className="flex-1 overflow-y-auto flex flex-col gap-0.5 no-scrollbar">
+        <div className="flex-1 overflow-y-auto flex flex-col gap-0.5 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {/* Top Single Item: Hôm nay */}
           <div>
             <Link
@@ -228,71 +245,42 @@ export function AdminShell({ children }: { children: ReactNode }) {
           ))}
         </div>
 
-        {/* Sidebar Footer */}
-        <div className="pt-2 mt-2 border-t border-white/10 flex flex-col gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={() => setCollapsed(!collapsed)}
-            className="flex items-center gap-2 p-1.5 w-full text-white/60 hover:text-white hover:bg-white/10 rounded-lg text-xs font-semibold transition-colors justify-center cursor-pointer"
-            title={collapsed ? "Mở rộng" : "Thu gọn"}
-          >
-            {collapsed ? (
-              <ChevronsRight size={16} />
-            ) : (
-              <>
-                <ChevronsLeft size={16} />
-                <span className="flex-1 text-left">Thu gọn</span>
-              </>
-            )}
-          </button>
-
+        {/* Sidebar Footer - Slim Account Box */}
+        <div className="pt-2 mt-auto border-t border-white/10 shrink-0">
           {!collapsed ? (
-            <div className="p-2 border-t border-white/10 bg-white/5 rounded-lg space-y-1.5">
-              <div className="flex items-center gap-2 px-1">
-                <div className="h-7 w-7 rounded-lg bg-white text-[#0e54a3] flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-                  {user?.fullName?.charAt(0).toUpperCase() || "A"}
+            <div className="p-1.5 bg-white/5 border border-white/10 rounded-lg flex items-center gap-2">
+              <div className="h-6 w-6 rounded-md bg-white text-[#0e54a3] flex items-center justify-center font-bold text-[11px] shrink-0 shadow-xs">
+                {user?.fullName?.charAt(0).toUpperCase() || "A"}
+              </div>
+              <div className="min-w-0 flex-1 leading-tight">
+                <div className="font-semibold text-white truncate text-[11px]">
+                  {user?.fullName || "Quản trị viên"}
                 </div>
-                <div className="min-w-0 flex-1">
-                  <div className="font-semibold text-white truncate text-xs leading-tight">
-                    {user?.fullName || "Quản trị viên"}
-                  </div>
-                  <div className="text-white/60 truncate text-[10px]">
-                    {user?.email || ""}
-                  </div>
+                <div className="text-white/60 truncate text-[9.5px]">
+                  {user?.email || ""}
                 </div>
               </div>
-              <div className="flex items-center gap-1 pt-1 border-t border-white/10 text-xs">
-                <a
-                  href={webAppUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1 py-1 px-1.5 bg-white/10 hover:bg-white/20 text-white rounded-md text-[11px] transition-colors"
-                >
-                  <span>Web</span>
-                  <ExternalLink size={10} className="text-white/60" />
-                </a>
-                <button
-                  onClick={() => {
-                    void logout().then(() => router.replace("/login"));
-                  }}
-                  className="flex items-center justify-center gap-1 py-1 px-2 bg-white/10 hover:bg-rose-500 text-white rounded-md text-[11px] transition-colors cursor-pointer"
-                  title="Đăng xuất"
-                >
-                  <LogOut size={10} />
-                  <span>Thoát</span>
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center pt-1 border-t border-white/10">
               <button
                 onClick={() => {
                   void logout().then(() => router.replace("/login"));
                 }}
-                className="p-1.5 text-white/60 hover:text-rose-400 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                className="px-2 py-1 bg-white/10 hover:bg-rose-600 text-white rounded text-[11px] font-medium flex items-center gap-1 transition-colors shrink-0 cursor-pointer"
                 title="Đăng xuất"
               >
-                <LogOut size={15} />
+                <LogOut size={11} />
+                <span>Thoát</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex justify-center">
+              <button
+                onClick={() => {
+                  void logout().then(() => router.replace("/login"));
+                }}
+                className="p-1.5 text-white/70 hover:text-white hover:bg-rose-600 rounded-md transition-colors cursor-pointer"
+                title="Đăng xuất"
+              >
+                <LogOut size={16} />
               </button>
             </div>
           )}

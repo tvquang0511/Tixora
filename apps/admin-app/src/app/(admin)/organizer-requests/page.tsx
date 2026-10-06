@@ -213,11 +213,12 @@ export default function OrganizerRequestsPage() {
           ].map((tab) => (
             <button
               key={tab.key}
+              type="button"
               onClick={() => {
                 setStatusFilter(tab.key);
                 setPage(1);
               }}
-              className={statusFilter === tab.key ? "active" : ""}
+              className={`htcaa-segmented-btn ${statusFilter === tab.key ? "active" : ""}`}
             >
               {tab.label}
             </button>

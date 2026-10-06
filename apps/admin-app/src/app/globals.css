@@ -268,6 +268,15 @@ body {
     box-shadow: inset 4px 0 0 #0052ff !important;
   }
 
+  /* Scrollbar hiding utilities */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
   /* HTCAA Segmented Control */
   .htcaa-segmented {
     display: inline-flex;
@@ -277,11 +286,14 @@ body {
     border-radius: 8px;
     gap: 2px;
     border: 1px solid #e2e8f0;
+    user-select: none;
   }
 
+  .htcaa-segmented button,
   .htcaa-segmented-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     padding: 5px 12px;
     font-size: 12px;
@@ -292,12 +304,24 @@ body {
     cursor: pointer;
     border: none;
     background: transparent;
+    white-space: nowrap;
+    line-height: 1.25;
   }
 
-  .htcaa-segmented-btn.active {
-    background: #ffffff;
+  .htcaa-segmented button:hover:not(.active),
+  .htcaa-segmented-btn:hover:not(.active) {
     color: #0f172a;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.6);
+  }
+
+  .htcaa-segmented button.active,
+  .htcaa-segmented-btn.active {
+    background: #ffffff !important;
+    color: #0052ff !important;
+    font-weight: 700 !important;
+    box-shadow:
+      0 1px 3px rgba(15, 23, 42, 0.08),
+      0 1px 2px rgba(15, 23, 42, 0.04) !important;
   }
 
   /* HTCAA Primitives (Buttons, Cards, Inputs, Tables) */
@@ -447,6 +471,18 @@ body {
       box-shadow 0.15s ease;
   }
 
+  select.select-trigger {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 32px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px 14px;
+    line-height: 1.25;
+  }
+
   .select-trigger:hover:not(:disabled) {
     border-color: #94a3b8;
   }
@@ -454,6 +490,22 @@ body {
   .select-trigger:focus {
     border-color: #0052ff;
     box-shadow: 0 0 0 3px rgba(0, 82, 255, 0.1);
+  }
+
+  /* Date inputs styling */
+  input[type="date"] {
+    font-family: inherit;
+    color: #0f172a;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.15s ease;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 0.9;
   }
 
   /* HTCAA Typography & Micro-copy */
@@ -522,4 +574,256 @@ body {
 * {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── HTCAA Home Cockpit (Hôm nay): Hero Briefing + Agenda Spine + Event Rail ── */
+.hero {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  padding: 24px 28px 22px;
+  color: #0f172a;
+  background: linear-gradient(118deg, #eff6ff, #ffffff 78%);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  right: -90px;
+  top: -160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(11, 99, 229, 0.12), transparent 70%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hero-title {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-top: 6px;
+  color: #0f172a;
+}
+
+.hero-sub {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #64748b;
+  margin-top: 8px;
+}
+
+.hero-date {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.hero-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.kchip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  text-align: left;
+  font: inherit;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.kchip:hover {
+  border-color: #0b63e5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px -2px rgba(11, 99, 229, 0.15);
+}
+
+.kchip-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kchip-ic {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kchip .v {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.kchip .l {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+/* Agenda spine (Trục dòng sự vụ hôm nay) */
+.agenda {
+  position: relative;
+}
+
+.agenda::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 16px;
+  bottom: 20px;
+  width: 2px;
+  background: #e2e8f0;
+}
+
+.agenda-row {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+}
+
+.agenda-gut {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.agenda-node {
+  position: relative;
+  z-index: 1;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  margin-top: 15px;
+  border: 3px solid #ffffff;
+}
+
+.agenda-node.mile {
+  width: 17px;
+  height: 17px;
+  margin-top: 8px;
+}
+
+.agenda-body {
+  padding: 0 0 16px 15px;
+  min-width: 0;
+}
+
+.agenda-body.milelabel {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding-top: 6px;
+  padding-bottom: 12px;
+}
+
+.agenda-clear {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.agenda-clear-ic {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #16a34a;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+/* Event date pill block */
+.ev-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.ev-row:hover {
+  background: #f8fafc;
+}
+
+.ev-row + .ev-row {
+  border-top: 1px solid #f1f5f9;
+}
+
+.ev-date {
+  width: 46px;
+  flex: none;
+  text-align: center;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #0b63e5;
+  padding: 6px 0;
+}
+
+.ev-date .d {
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.ev-date .m {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
 }
