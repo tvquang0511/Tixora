@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import {
   getConcerts,
   ConcertCardItem,
@@ -10,106 +10,200 @@ import {
 } from "@/services/concert.service";
 import {
   Search,
-  MapPin,
   Clock,
   ExternalLink,
   RotateCw,
   Building2,
   Ticket,
+  Plus,
+  ChevronRight,
+  ChevronLeft,
+  CalendarOff,
+  Layers,
+  X,
 } from "lucide-react";
+import { CreateEventModal } from "./_components/CreateEventModal";
+import {
+  EventDetailDrawer,
+  STATUS_LABELS,
+  STATUS_BADGE_STYLES,
+} from "./_components/EventDetailDrawer";
 
 export default function OrganizerEventsPage() {
   const { user } = useAuth();
+  const { error: toastError } = useToast();
+
   const [concerts, setConcerts] = useState<ConcertCardItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState("");
+
+  // Filters & Pagination
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [page, setPage] = useState(1);
+  const limit = 10;
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
+  // Modals & Drawers state
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedConcertId, setSelectedConcertId] = useState<string | null>(
+    null,
+  );
+
+  // Debounce search
   useEffect(() => {
-    if (!user?.id) return;
-    let active = true;
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setPage(1);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-    getConcerts({
-      organizer_id: user.id,
-      limit: 100,
-      status: statusFilter === "ALL" ? undefined : statusFilter,
-      search: search.trim() || undefined,
-    })
-      .then((res) => {
-        if (active) {
-          setConcerts(res.items || []);
-          setIsLoading(false);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to load organizer events", err);
-        if (active) setIsLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, statusFilter]);
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const fetchConcerts = useCallback(async () => {
     if (!user?.id) return;
     setIsLoading(true);
-    getConcerts({
-      organizer_id: user.id,
-      limit: 100,
-      status: statusFilter === "ALL" ? undefined : statusFilter,
-      search: search.trim() || undefined,
-    })
-      .then((res) => {
-        setConcerts(res.items || []);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to load organizer events", err);
-        setIsLoading(false);
+
+    try {
+      const res = await getConcerts({
+        organizer_id: user.id,
+        page,
+        limit,
+        status: statusFilter === "ALL" ? undefined : statusFilter,
+        search: debouncedSearch.trim() || undefined,
       });
-  };
+
+      setConcerts(res.items || []);
+      setTotalPages(res.meta?.totalPages ?? 1);
+      setTotalItems(res.meta?.totalItems ?? 0);
+    } catch (err: unknown) {
+      console.error("Failed to load organizer events", err);
+      toastError("Không thể tải danh sách sự kiện.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user, page, limit, statusFilter, debouncedSearch, toastError]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void fetchConcerts();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchConcerts]);
+
+  // Quick stats calculation
+  const publishedCount = concerts.filter(
+    (c) => c.status === "PUBLISHED",
+  ).length;
+  const pendingCount = concerts.filter(
+    (c) => c.status === "PENDING_REVIEW",
+  ).length;
+  const draftCount = concerts.filter((c) => c.status === "DRAFT").length;
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-6 pb-16 font-body text-xs text-slate-200">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
-            Sự Kiện Của Tôi
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+            <span>Sự Kiện Của Tôi</span>
+            {totalItems > 0 && (
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-800 text-teal-400 border border-slate-700">
+                {totalItems}
+              </span>
+            )}
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Quản lý danh sách các show diễn, kiểm tra trạng thái phê duyệt của
-            sàn
+            Quản lý các chương trình biểu diễn, trạng thái kiểm duyệt và các
+            hạng vé phát hành
           </p>
         </div>
 
-        <Link
-          href="/organizer/create-event"
-          className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs sm:text-sm font-bold shadow-md shadow-teal-500/20 inline-flex items-center self-start sm:self-auto transition-transform active:scale-95"
+        <button
+          type="button"
+          onClick={() => setIsCreateModalOpen(true)}
+          className="px-4 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs sm:text-sm font-bold shadow-md shadow-teal-500/20 inline-flex items-center gap-2 self-start sm:self-auto transition-transform active:scale-95 cursor-pointer"
         >
-          Tạo sự kiện mới
-        </Link>
+          <Plus className="w-4 h-4 stroke-[2.5]" />
+          <span>Tạo sự kiện mới</span>
+        </button>
+      </div>
+
+      {/* Mini Stats Summary */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="p-3.5 rounded-2xl bg-slate-900/40 border border-slate-800/80 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center">
+            <Layers className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="text-[11px] text-slate-400 block">
+              Tổng sự kiện
+            </span>
+            <span className="text-base font-bold text-white">{totalItems}</span>
+          </div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-slate-900/40 border border-slate-800/80 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <Ticket className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="text-[11px] text-slate-400 block">
+              Đang mở bán
+            </span>
+            <span className="text-base font-bold text-emerald-400">
+              {publishedCount}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-slate-900/40 border border-slate-800/80 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+            <Clock className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="text-[11px] text-slate-400 block">
+              Chờ sàn duyệt
+            </span>
+            <span className="text-base font-bold text-amber-400">
+              {pendingCount}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-slate-900/40 border border-slate-800/80 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 flex items-center justify-center">
+            <Building2 className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="text-[11px] text-slate-400 block">Bản nháp</span>
+            <span className="text-base font-bold text-slate-300">
+              {draftCount}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-slate-950/85 p-4 rounded-2xl border border-slate-700/80 shadow-md">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-slate-950/85 p-3 sm:p-4 rounded-2xl border border-slate-800/80 shadow-md">
         {/* Status Filter Tabs */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-900 rounded-xl border border-slate-700/70 overflow-x-auto">
+        <div className="flex items-center gap-1 p-1 bg-slate-900/80 rounded-xl border border-slate-800 overflow-x-auto">
           {[
             { key: "ALL", label: "Tất cả" },
             { key: "PUBLISHED", label: "Đang mở bán" },
             { key: "PENDING_REVIEW", label: "Chờ sàn duyệt" },
             { key: "DRAFT", label: "Bản nháp" },
+            { key: "PAUSED", label: "Tạm ngưng" },
           ].map((tab) => (
             <button
               key={tab.key}
-              onClick={() => setStatusFilter(tab.key)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap ${
+              onClick={() => {
+                setStatusFilter(tab.key);
+                setPage(1);
+              }}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all whitespace-nowrap cursor-pointer ${
                 statusFilter === tab.key
-                  ? "bg-slate-800 text-teal-400 shadow-xs"
+                  ? "bg-slate-800 text-teal-400 shadow-xs border border-slate-700/80"
                   : "text-slate-400 hover:text-white"
               }`}
             >
@@ -119,134 +213,295 @@ export default function OrganizerEventsPage() {
         </div>
 
         {/* Search Input */}
-        <form
-          onSubmit={handleSearchSubmit}
-          className="relative flex-1 md:max-w-md"
-        >
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <div className="relative flex-1 md:max-w-md">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Tìm theo tên sự kiện..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-20 py-2 text-xs bg-slate-900 border border-slate-700/80 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-400"
+            placeholder="Tìm theo tên sự kiện hoặc địa điểm..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-8 py-2 text-xs bg-slate-900/80 border border-slate-800 rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-400"
           />
-          <button
-            type="submit"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 text-xs font-semibold text-slate-950 bg-teal-400 hover:bg-teal-300 rounded-lg transition-colors font-medium cursor-pointer"
-          >
-            Tìm
-          </button>
-        </form>
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Events Table / Card List */}
-      <div className="bg-slate-950/85 rounded-3xl border border-slate-700/80 overflow-hidden shadow-xl shadow-black/30">
-        {isLoading ? (
-          <div className="py-16 text-center text-slate-500">
-            <RotateCw className="w-6 h-6 animate-spin mx-auto text-teal-400 mb-2" />
-            Đang tải dữ liệu sự kiện...
-          </div>
-        ) : concerts.length === 0 ? (
-          <div className="py-16 text-center space-y-3">
-            <Building2 className="w-12 h-12 text-slate-800 mx-auto" />
-            <p className="text-sm text-slate-400">
-              Không tìm thấy sự kiện nào trong danh mục này.
-            </p>
-            <Link
-              href="/organizer/create-event"
-              className="inline-flex items-center px-4 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold shadow-md shadow-teal-500/20 transition-transform active:scale-95"
-            >
-              Tạo sự kiện mới
-            </Link>
-          </div>
-        ) : (
-          <div className="divide-y divide-slate-800">
-            {concerts.map((concert) => {
-              const totalQuantity = (concert.ticketTiers || []).reduce(
-                (sum, t) => sum + (t.total_quantity || 0),
-                0,
-              );
+      {/* Events Table (Consistent with Admin Layout) */}
+      <div className="bg-slate-950/85 rounded-3xl border border-slate-800/80 overflow-hidden shadow-xl shadow-black/30">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="border-b border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-900/40">
+                <th className="py-3.5 px-5">SỰ KIỆN</th>
+                <th className="py-3.5 px-4">TRẠNG THÁI</th>
+                <th className="py-3.5 px-4">ĐỊA ĐIỂM</th>
+                <th className="py-3.5 px-4">THỜI GIAN</th>
+                <th className="py-3.5 px-4">VÉ / GIÁ VÉ</th>
+                <th className="py-3.5 px-4">SỨC CHỨA</th>
+                <th className="py-3.5 px-4 text-right"></th>
+              </tr>
+            </thead>
 
-              return (
-                <div
-                  key={concert.id}
-                  className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-850/50 transition-colors"
-                >
-                  <div className="flex items-start sm:items-center gap-4">
-                    <div className="w-24 h-16 sm:w-28 sm:h-20 rounded-xl overflow-hidden bg-slate-950 shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={getConcertPosterUrl(concert.posterUrl)}
-                        alt={concert.title}
-                        className="w-full h-full object-cover"
-                      />
+            <tbody className="divide-y divide-slate-800/60">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="py-16 text-center text-slate-500">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <RotateCw className="w-5 h-5 animate-spin text-teal-400" />
+                      <p className="text-xs">Đang tải dữ liệu sự kiện...</p>
                     </div>
-
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-white text-sm sm:text-base">
-                          {concert.title}
-                        </h3>
-                        {concert.status === "PUBLISHED" && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                            Đang mở bán
-                          </span>
-                        )}
-                        {concert.status === "PENDING_REVIEW" && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse">
-                            Chờ sàn duyệt
-                          </span>
-                        )}
-                        {concert.status === "DRAFT" && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">
-                            Bản nháp
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3.5 h-3.5 text-teal-400" />
-                          {concert.venue || concert.city || "Chưa cập nhật"}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5 text-slate-500" />
-                          {concert.date} - {concert.time}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Ticket className="w-3.5 h-3.5 text-teal-400" />
-                          {concert.ticketTiers?.length || 0} hạng vé (
-                          {totalQuantity} ghế)
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 self-end sm:self-center">
-                    <Link
-                      href={`/organizer/create-event?edit=${concert.id}`}
-                      className="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-semibold transition-colors"
-                    >
-                      Chỉnh sửa
-                    </Link>
-                    {concert.status === "PUBLISHED" && (
-                      <Link
-                        href={`/concerts/${concert.id}`}
-                        target="_blank"
-                        className="px-3 py-1.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 border border-teal-500/30 text-xs font-semibold inline-flex items-center gap-1 transition-colors"
+                  </td>
+                </tr>
+              ) : concerts.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-16 text-center text-slate-500">
+                    <div className="flex flex-col items-center justify-center gap-3">
+                      <CalendarOff className="w-8 h-8 text-slate-700" />
+                      <p className="text-xs font-medium text-slate-400">
+                        Không tìm thấy sự kiện nào trong danh mục này.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="px-4 py-2 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 border border-teal-500/30 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                       >
-                        Xem trang vé
-                        <ExternalLink className="w-3 h-3" />
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                        <Plus className="w-3.5 h-3.5" />
+                        Tạo sự kiện ngay
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                concerts.map((concert) => {
+                  const totalCap =
+                    concert.ticketTiers?.reduce(
+                      (acc, t) => acc + (t.total_quantity || 0),
+                      0,
+                    ) || 0;
+                  const remCap =
+                    concert.ticketTiers?.reduce(
+                      (acc, t) =>
+                        acc + (t.remaining_quantity ?? t.total_quantity ?? 0),
+                      0,
+                    ) || 0;
+                  const registered =
+                    totalCap > 0 ? Math.max(0, totalCap - remCap) : 0;
+                  const capPercent =
+                    totalCap > 0
+                      ? Math.min(100, Math.round((registered / totalCap) * 100))
+                      : 0;
+
+                  return (
+                    <tr
+                      key={concert.id}
+                      onClick={() => setSelectedConcertId(concert.id)}
+                      className="group hover:bg-slate-900/60 transition-colors cursor-pointer"
+                      title="Bấm vào để mở bảng chi tiết & chỉnh sửa sự kiện"
+                    >
+                      {/* SỰ KIỆN */}
+                      <td className="py-4 px-5">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shrink-0">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={getConcertPosterUrl(concert.posterUrl)}
+                              alt={concert.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                          </div>
+
+                          <div className="space-y-0.5">
+                            <div className="font-bold text-white text-xs sm:text-sm group-hover:text-teal-400 transition-colors line-clamp-1">
+                              {concert.title}
+                            </div>
+                            <div className="font-mono text-[10px] text-teal-400/90 font-medium">
+                              TIX-{concert.id.slice(0, 8).toUpperCase()}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* TRẠNG THÁI */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${
+                            STATUS_BADGE_STYLES[concert.status] ||
+                            "bg-slate-800 text-slate-400 border-slate-700"
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              concert.status === "PUBLISHED"
+                                ? "bg-emerald-400 animate-pulse"
+                                : concert.status === "PENDING_REVIEW"
+                                  ? "bg-amber-400 animate-ping"
+                                  : "bg-slate-400"
+                            }`}
+                          />
+                          {STATUS_LABELS[concert.status] || concert.status}
+                        </span>
+                      </td>
+
+                      {/* ĐỊA ĐIỂM */}
+                      <td className="py-4 px-4">
+                        <div className="text-slate-300 font-medium line-clamp-1">
+                          {concert.venue || concert.city || "Chưa cập nhật"}
+                        </div>
+                        {concert.city && (
+                          <div className="text-[10px] text-slate-500">
+                            {concert.city}
+                          </div>
+                        )}
+                      </td>
+
+                      {/* THỜI GIAN */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="text-white font-medium">
+                          {concert.date}
+                        </div>
+                        <div className="text-[10px] text-slate-400">
+                          {concert.time}
+                        </div>
+                      </td>
+
+                      {/* VÉ / GIÁ VÉ */}
+                      <td className="py-4 px-4">
+                        {concert.ticketTiers &&
+                        concert.ticketTiers.length > 0 ? (
+                          <div className="space-y-0.5">
+                            <span className="text-[10px] text-slate-400">
+                              {concert.ticketTiers.length} hạng vé
+                            </span>
+                            <div className="text-teal-400 font-bold whitespace-nowrap">
+                              Từ:{" "}
+                              {(concert.minPrice || 0) === 0
+                                ? "0đ (Miễn phí)"
+                                : `${(concert.minPrice || 0).toLocaleString("vi-VN")} đ`}
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-slate-500 text-[11px]">
+                            Chưa cấu hình
+                          </span>
+                        )}
+                      </td>
+
+                      {/* SỨC CHỨA / ĐĂNG KÝ */}
+                      <td className="py-4 px-4 whitespace-nowrap min-w-[120px]">
+                        <div className="flex items-center justify-between text-[11px] mb-1">
+                          <span className="font-bold text-white font-mono">
+                            {registered}
+                          </span>
+                          <span className="text-slate-500 font-mono">
+                            /{totalCap} chỗ
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden border border-slate-800">
+                          <div
+                            className="bg-teal-400 h-full rounded-full transition-all"
+                            style={{ width: `${capPercent}%` }}
+                          />
+                        </div>
+                        <span className="text-[10px] text-slate-500 mt-0.5 block">
+                          Đạt {capPercent}% sức chứa
+                        </span>
+                      </td>
+
+                      {/* THAO TÁC / CHI TIẾT */}
+                      <td className="py-4 px-5 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-2">
+                          {concert.status === "PUBLISHED" && (
+                            <a
+                              href={`/concerts/${concert.id}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="p-1.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-400 border border-teal-500/30 transition-colors"
+                              title="Xem trang bán vé công khai"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+                          <div className="text-slate-500 group-hover:text-teal-400 transition-colors">
+                            <ChevronRight className="w-4 h-4" />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination Bar */}
+        {totalPages > 1 && (
+          <div className="p-4 border-t border-slate-800/80 bg-slate-900/30 flex items-center justify-between gap-3 text-xs text-slate-400">
+            <div>
+              Hiển thị {(page - 1) * limit + 1} -{" "}
+              {Math.min(page * limit, totalItems)} trong tổng số {totalItems} sự
+              kiện
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <span className="px-3 py-1 font-semibold text-white">
+                Trang {page} / {totalPages}
+              </span>
+
+              <button
+                type="button"
+                disabled={page >= totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                className="p-1.5 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         )}
       </div>
+
+      {/* Modal Tạo sự kiện mới (In-place modal dialog vừa phải) */}
+      <CreateEventModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={() => {
+          setIsCreateModalOpen(false);
+          void fetchConcerts();
+        }}
+      />
+
+      {/* Slide-over Drawer Xem Chi Tiết & Chỉnh Sửa sự kiện */}
+      <EventDetailDrawer
+        isOpen={selectedConcertId !== null}
+        onClose={() => setSelectedConcertId(null)}
+        concertId={selectedConcertId}
+        onSuccess={() => {
+          void fetchConcerts();
+        }}
+        onDeleteSuccess={(deletedId) => {
+          setConcerts((prev) => prev.filter((c) => c.id !== deletedId));
+          setTotalItems((prev) => Math.max(0, prev - 1));
+        }}
+      />
     </div>
   );
 }
