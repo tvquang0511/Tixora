@@ -91,6 +91,7 @@ Hướng dẫn kiểm thử đầy đủ các cấp độ từ thủ công đế
 
 ### 4. [04-planning-roadmap/](./04-planning-roadmap/README.md) — Kế Hoạch & Đề Xuất Nâng Cấp
 Định hướng phát triển và kế hoạch thực thi:
+- **[AI_AND_MCP_MASTER_PLAN.md](./AI_AND_MCP_MASTER_PLAN.md):** Bản kế hoạch toàn diện tích hợp Trí tuệ Nhân tạo (AI Concierge, Smart Pricing, Anti-scalping) và Model Context Protocol (MCP Server cho Claude Desktop/Cursor).
 - **[UPGRADE_PROPOSALS.md](./04-planning-roadmap/UPGRADE_PROPOSALS.md):** 9 đề xuất nâng cấp kiến trúc đột phá: RabbitMQ DLX giải phóng vé chính xác, Realtime SSE, Bản đồ ghế tương tác trực quan (Interactive Seatmap), Chữ ký số ECDSA cho QR Code, Phòng chờ ảo (Virtual Waiting Room), Đa cổng thanh toán và Observability.
 - **[PROJECT_PLAN.md](./04-planning-roadmap/PROJECT_PLAN.md):** Kế hoạch chi tiết 3 Sprint thực chiến (Sprint 1: Nền móng, Sprint 2: Tải cao & Đặt vé, Sprint 3: Ngoại tuyến & Hoàn thiện).
 - **[TASK_BREAKDOWN.md](./04-planning-roadmap/TASK_BREAKDOWN.md):** Phân rã công việc từng Issue, Checklist và Tiêu chí nghiệm thu (Acceptance Criteria).
