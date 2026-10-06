@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker";
 import { FAKER_SEED } from "./seed-data";
 import { chunkArray } from "./seed-utils";
 
-const CHUNK_SIZE = 5000;
+const CHUNK_SIZE = 1000;
 const PAYMENT_METHODS = ["PAYOS"] as const;
 const PROVIDER_ORDER_CODE_START = 100_000;
 

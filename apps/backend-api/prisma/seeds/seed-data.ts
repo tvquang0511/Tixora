@@ -1,4 +1,6 @@
-export const DEFAULT_PASSWORD = "123456";
+import { relDays } from "./seed-utils";
+
+export const DEFAULT_PASSWORD = "12345678";
 export const BCRYPT_SALT = "$2b$10$EixZaYVK1fsbw1ZfbX3OXe";
 export const FAKER_SEED = 9;
 
@@ -58,7 +60,124 @@ export const rolePermissions: Record<string, string[]> = {
   Audience: [],
 };
 
+export const ORGANIZER_IDS = {
+  DEFAULT_ORGANIZER: "11111111-1111-4000-8000-000000000000",
+  SPACESPEAKERS: "11111111-1111-4000-8000-000000000001",
+  CT_ENTERTAINMENT: "11111111-1111-4000-8000-000000000002",
+  MAY_LANG_THANG: "11111111-1111-4000-8000-000000000003",
+  SAIGON_HUB: "11111111-1111-4000-8000-000000000004",
+  VIETART: "11111111-1111-4000-8000-000000000005",
+  TUAN: "11111111-1111-4000-8000-000000000006",
+};
+
+export const organizerProfiles = [
+  {
+    user_id: ORGANIZER_IDS.DEFAULT_ORGANIZER,
+    organization_name: "Tixora Entertainment Vietnam",
+    tax_code_or_id: "0301234567",
+    phone_number: "0909000111",
+    bank_name: "Vietcombank",
+    bank_account_number: "999988887777",
+    bank_account_name: "CONG TY TNHH TIXORA VIETNAM",
+    status: "APPROVED",
+  },
+  {
+    user_id: ORGANIZER_IDS.SPACESPEAKERS,
+    organization_name: "Công ty Cổ phần SpaceSpeakers Group",
+    tax_code_or_id: "0315891234",
+    phone_number: "0908123456",
+    bank_name: "Techcombank",
+    bank_account_number: "1903678889999",
+    bank_account_name: "CTY CP SPACESPEAKERS GROUP",
+    status: "APPROVED",
+  },
+  {
+    user_id: ORGANIZER_IDS.CT_ENTERTAINMENT,
+    organization_name: "CT Entertainment & Media JSC",
+    tax_code_or_id: "0316789012",
+    phone_number: "0918776655",
+    bank_name: "Vietcombank",
+    bank_account_number: "0071000889988",
+    bank_account_name: "CT ENTERTAINMENT MEDIA JSC",
+    status: "APPROVED",
+  },
+  {
+    user_id: ORGANIZER_IDS.MAY_LANG_THANG,
+    organization_name: "Mây Lang Thang Acoustic Live",
+    tax_code_or_id: "0317654321",
+    phone_number: "0934567890",
+    bank_name: "MBBank",
+    bank_account_number: "686868999999",
+    bank_account_name: "CONG TY CO PHAN MAY LANG THANG",
+    status: "APPROVED",
+  },
+  {
+    user_id: ORGANIZER_IDS.SAIGON_HUB,
+    organization_name: "Saigon Show & Production Co.",
+    tax_code_or_id: "0318998877",
+    phone_number: "0977889900",
+    bank_name: "ACB",
+    bank_account_number: "2468101214",
+    bank_account_name: "SAIGON SHOW AND PRODUCTION",
+    status: "APPROVED",
+  },
+  {
+    user_id: ORGANIZER_IDS.VIETART,
+    organization_name: "Viet Art Culture & Media JSC",
+    tax_code_or_id: "0108997766",
+    phone_number: "0989112233",
+    bank_name: "BIDV",
+    bank_account_number: "12210000888999",
+    bank_account_name: "CTY CO PHAN VIET ART",
+    status: "APPROVED",
+  },
+  {
+    user_id: ORGANIZER_IDS.TUAN,
+    organization_name: "Tixora Indie Showcase Group",
+    tax_code_or_id: "0319554433",
+    phone_number: "0903112233",
+    bank_name: "TPBank",
+    bank_account_number: "090311223301",
+    bank_account_name: "NGUYEN ANH TUAN",
+    status: "APPROVED",
+  },
+];
+
 export const staticUsers = [
+  // --- Default accounts from README (Password: 12345678) ---
+  {
+    email: "superadmin@tixora.local",
+    full_name: "Super Administrator",
+    status: "ACTIVE",
+    roles: ["SuperAdmin"],
+  },
+  {
+    email: "admin@tixora.local",
+    full_name: "Tixora Admin",
+    status: "ACTIVE",
+    roles: ["Admin"],
+  },
+  {
+    id: ORGANIZER_IDS.DEFAULT_ORGANIZER,
+    email: "organizer@tixora.local",
+    full_name: "Tixora Organizer",
+    status: "ACTIVE",
+    roles: ["Organizer"],
+  },
+  {
+    email: "audience@tixora.local",
+    full_name: "Tixora Audience",
+    status: "ACTIVE",
+    roles: ["Audience"],
+  },
+  {
+    email: "checker@tixora.local",
+    full_name: "Tixora Checker",
+    status: "ACTIVE",
+    roles: ["Checker"],
+  },
+
+  // --- Named Team & Organizer accounts ---
   {
     email: "vy.admin@tixora.local",
     full_name: "Vy Admin",
@@ -72,8 +191,44 @@ export const staticUsers = [
     roles: ["Admin"],
   },
   {
+    id: ORGANIZER_IDS.TUAN,
     email: "tuan.organizer@tixora.local",
-    full_name: "Tuan Organizer",
+    full_name: "Nguyễn Anh Tuấn",
+    status: "ACTIVE",
+    roles: ["Organizer"],
+  },
+  {
+    id: ORGANIZER_IDS.SPACESPEAKERS,
+    email: "spacespeakers@tixora.local",
+    full_name: "Nguyễn Hoàng Long (Touliver)",
+    status: "ACTIVE",
+    roles: ["Organizer"],
+  },
+  {
+    id: ORGANIZER_IDS.CT_ENTERTAINMENT,
+    email: "ct.entertainment@tixora.local",
+    full_name: "Trần Quốc Tuấn",
+    status: "ACTIVE",
+    roles: ["Organizer"],
+  },
+  {
+    id: ORGANIZER_IDS.MAY_LANG_THANG,
+    email: "maylangthang@tixora.local",
+    full_name: "Lê Anh Thư",
+    status: "ACTIVE",
+    roles: ["Organizer"],
+  },
+  {
+    id: ORGANIZER_IDS.SAIGON_HUB,
+    email: "saigon.hub@tixora.local",
+    full_name: "Võ Minh Trí",
+    status: "ACTIVE",
+    roles: ["Organizer"],
+  },
+  {
+    id: ORGANIZER_IDS.VIETART,
+    email: "vietart@tixora.local",
+    full_name: "Đặng Thu Trang",
     status: "ACTIVE",
     roles: ["Organizer"],
   },
@@ -101,7 +256,7 @@ export const staticUsers = [
   })),
 ];
 
-export const concerts = [
+const rawConcerts = [
   {
     id: "c09a6502-e081-483a-96f6-d0001c06b5d1",
     name: "[CONCERT ENCORE] ANH TRAI VƯỢT NGÀN CHÔNG GAI DAY7, DAY8",
@@ -1411,4 +1566,183 @@ export const concerts = [
       "Rhyder",
     ],
   },
+];
+
+const CONCERT_CONFIG: Record<
+  string,
+  {
+    organizer_id: string;
+    start_time: Date;
+    sales_start_at: Date;
+    status: string;
+  }
+> = {
+  // 1. Anh Trai Vượt Ngàn Chông Gai: Held 10 days ago (Completed, Ready for Settlement)
+  "c09a6502-e081-483a-96f6-d0001c06b5d1": {
+    organizer_id: ORGANIZER_IDS.CT_ENTERTAINMENT,
+    start_time: relDays(-10, 18),
+    sales_start_at: relDays(-45, 10),
+    status: "COMPLETED",
+  },
+  // 2. Anh Trai Say Hi Day 9: Held 4 days ago (Completed, Ready for Settlement)
+  "f3d948b0-2ca9-4cd6-8fd0-0fcf10dcaa4f": {
+    organizer_id: ORGANIZER_IDS.CT_ENTERTAINMENT,
+    start_time: relDays(-4, 19),
+    sales_start_at: relDays(-35, 10),
+    status: "COMPLETED",
+  },
+  // 3. Chị Đẹp: Held 18 days ago (Completed, Ready for Settlement)
+  "aa1064b6-095e-4cc3-a3ad-0aa46a364f28": {
+    organizer_id: ORGANIZER_IDS.SAIGON_HUB,
+    start_time: relDays(-18, 19),
+    sales_start_at: relDays(-50, 10),
+    status: "COMPLETED",
+  },
+  // 4. Phùng Khánh Linh Chapter 3: In 8 days (Published, Sales Active, Escrow Holding)
+  "2b7e14d8-2a17-4ac4-bc9c-02fa998bf293": {
+    organizer_id: ORGANIZER_IDS.VIETART,
+    start_time: relDays(8, 19),
+    sales_start_at: relDays(-25, 10),
+    status: "PUBLISHED",
+  },
+  // 5. Phùng Khánh Linh Chapter 4: In 9 days (Published, Sales Active, Escrow Holding)
+  "1054bc1a-1b0e-4810-b2df-76fa27e5745e": {
+    organizer_id: ORGANIZER_IDS.VIETART,
+    start_time: relDays(9, 19),
+    sales_start_at: relDays(-25, 10),
+    status: "PUBLISHED",
+  },
+  // 6. Hà Nhi Tri Kỷ: In 18 days (Published, Sales Active, Escrow Holding)
+  "3ac46e1d-8f5b-47a9-b9d1-cfbe7d8c92ed": {
+    organizer_id: ORGANIZER_IDS.MAY_LANG_THANG,
+    start_time: relDays(18, 19),
+    sales_start_at: relDays(-20, 10),
+    status: "PUBLISHED",
+  },
+  // 7. Mắt Nhắm Mắt Mở: In 28 days (Published, Sales Active, Escrow Holding)
+  "6865c479-b18d-4e0a-b1e8-e9a7160d3308": {
+    organizer_id: ORGANIZER_IDS.SPACESPEAKERS,
+    start_time: relDays(28, 19),
+    sales_start_at: relDays(-15, 10),
+    status: "PUBLISHED",
+  },
+};
+
+const extraConcerts = [
+  {
+    id: "77777777-7777-4000-8000-000000000008",
+    organizer_id: ORGANIZER_IDS.SPACESPEAKERS,
+    name: "KOSMIK LIVE CONCERT - SPACESPEAKERS 11TH ANNIVERSARY",
+    description:
+      "Đêm diễn đỉnh cao kỉ niệm 11 năm thành lập đế chế SpaceSpeakers quy tụ dàn nghệ sĩ Touliver, SOOBIN, Binz, Rhymastic, SlimV, Kiên Ứng, TinLe.",
+    location:
+      "Nhà Thi Đấu Quân Khu 7, 202 Hoàng Văn Thụ, Phường 9, Quận Phú Nhuận, Thành phố Hồ Chí Minh",
+    ai_bio:
+      "Biểu tượng của âm nhạc Hip-hop/RnB đương đại Việt Nam với âm thanh chuẩn quốc tế và hiệu ứng thị giác đỉnh cao.",
+    start_time: relDays(40, 20),
+    svg_map_url:
+      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/9a07b16a-4532-4e1a-b074-547c3bb58ede.jpg",
+    poster_url:
+      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/c09a6502-e081-483a-96f6-d0001c06b5d1.png",
+    status: "PUBLISHED",
+    ticket_categories: [
+      {
+        name: "KOSMIK LOUNGE",
+        price: 5000000,
+        max_per_user: 4,
+        gate_number: 1,
+        position: 1,
+        status: "book_now",
+        total_quantity: 200,
+        sales_start_at: relDays(-15, 10),
+      },
+      {
+        name: "VIP ZONE",
+        price: 2500000,
+        max_per_user: 6,
+        gate_number: 2,
+        position: 2,
+        status: "book_now",
+        total_quantity: 500,
+        sales_start_at: relDays(-15, 10),
+      },
+      {
+        name: "GA STANDING",
+        price: 1200000,
+        max_per_user: 8,
+        gate_number: 3,
+        position: 3,
+        status: "book_now",
+        total_quantity: 1500,
+        sales_start_at: relDays(-15, 10),
+      },
+    ],
+    performers: [
+      "Touliver",
+      "SOOBIN",
+      "Binz",
+      "Rhymastic",
+      "SlimV",
+      "16 Typhoon",
+      "Gonzo",
+    ],
+  },
+  {
+    id: "99999999-9999-4000-8000-000000000009",
+    organizer_id: ORGANIZER_IDS.TUAN,
+    name: "TIXORA INDIE ACOUSTIC NIGHT - GIAI ĐIỆU HOÀNG HÔN",
+    description:
+      "Show diễn acoustic mộc mạc và sâu lắng của các nghệ sĩ trẻ độc lập trong không gian cổ kính đầy chất thơ.",
+    location:
+      "Bảo tàng Mỹ thuật TP.HCM, 97A Phó Đức Chính, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh",
+    ai_bio:
+      "Đêm nhạc mang âm hưởng mộc, tôn vinh nghệ thuật indie và kết nối cảm xúc người nghe.",
+    start_time: relDays(-7, 18),
+    svg_map_url:
+      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/bf4cfc05-8dd8-46f0-ac2b-38e9bcbb0303.jpeg",
+    poster_url:
+      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/3ac46e1d-8f5b-47a9-b9d1-cfbe7d8c92ed.jpg",
+    status: "COMPLETED",
+    ticket_categories: [
+      {
+        name: "VIP ACOUSTIC",
+        price: 1500000,
+        max_per_user: 4,
+        gate_number: 1,
+        position: 1,
+        status: "sold_out",
+        total_quantity: 150,
+        sales_start_at: relDays(-35, 10),
+      },
+      {
+        name: "STANDARD",
+        price: 750000,
+        max_per_user: 4,
+        gate_number: 2,
+        position: 2,
+        status: "sold_out",
+        total_quantity: 350,
+        sales_start_at: relDays(-35, 10),
+      },
+    ],
+    performers: ["Thái Đinh", "Vũ Cát Tường", "Vũ Thanh Vân", "Trang"],
+  },
+];
+
+export const concerts = [
+  ...rawConcerts.map((c) => {
+    const cfg = CONCERT_CONFIG[c.id];
+    if (!cfg) return c;
+    return {
+      ...c,
+      organizer_id: cfg.organizer_id,
+      start_time: cfg.start_time,
+      status: cfg.status,
+      ticket_categories: c.ticket_categories.map((tc: any) => ({
+        ...tc,
+        sales_start_at: cfg.sales_start_at,
+      })),
+    };
+  }),
+  ...extraConcerts,
 ];

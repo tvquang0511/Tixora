@@ -23,6 +23,7 @@ async function runSeed(name: string, task: () => Promise<void>) {
 async function clearDatabase() {
   await prisma.$executeRawUnsafe(`
     TRUNCATE TABLE
+      "organizer_profiles",
       "checker_assignments",
       "payment_transactions",
       "tickets",

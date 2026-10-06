@@ -5,6 +5,7 @@ import {
   BCRYPT_SALT,
   DEFAULT_PASSWORD,
   FAKER_SEED,
+  organizerProfiles,
   permissions,
   rolePermissions,
   roles,
@@ -12,8 +13,8 @@ import {
 } from "./seed-data";
 import { chunkArray } from "./seed-utils";
 
-const AUDIENCE_COUNT = 10000;
-const CHUNK_SIZE = 5000;
+const AUDIENCE_COUNT = 2000;
+const CHUNK_SIZE = 1000;
 
 export async function seedAuth(prisma: PrismaClient) {
   faker.seed(FAKER_SEED);
@@ -65,7 +66,7 @@ export async function seedAuth(prisma: PrismaClient) {
   const password_hash = bcrypt.hashSync(DEFAULT_PASSWORD, BCRYPT_SALT);
 
   const staticUsersWithId = staticUsers.map((user) => ({
-    id: faker.string.uuid(),
+    id: (user as any).id ?? faker.string.uuid(),
     email: user.email,
     full_name: user.full_name,
     status: user.status,
@@ -112,4 +113,9 @@ export async function seedAuth(prisma: PrismaClient) {
   for (const chunk of chunkArray(userRoleRows, CHUNK_SIZE)) {
     await prisma.userRole.createMany({ data: chunk, skipDuplicates: true });
   }
+
+  await prisma.organizerProfile.createMany({
+    data: organizerProfiles,
+    skipDuplicates: true,
+  });
 }

@@ -4,8 +4,9 @@ import crypto from "crypto";
 import { concerts, FAKER_SEED } from "./seed-data";
 import { chunkArray } from "./seed-utils";
 
-const SAMPLE_USER_COUNT = 5000;
-const CHUNK_SIZE = 5000;
+const SAMPLE_USER_COUNT = 2000;
+const CHUNK_SIZE = 1000;
+const MAX_SEEDED_TICKETS_PER_CATEGORY = 60;
 const BOOK_NOW_MIN_SOLD_PERCENT = 50;
 const BOOK_NOW_MAX_SOLD_PERCENT = 90;
 const CANCELLED_ORDER_PERCENT = 2;
@@ -93,10 +94,14 @@ async function buildOrderPlan(prisma: PrismaClient): Promise<OrderPlan> {
             min: BOOK_NOW_MIN_SOLD_PERCENT,
             max: BOOK_NOW_MAX_SOLD_PERCENT,
           });
-    const targetTicketCount =
+    const rawTarget =
       status === "sold_out"
         ? category.total_quantity
         : Math.floor((category.total_quantity * soldPercent) / 100);
+    const targetTicketCount = Math.max(
+      6,
+      Math.min(MAX_SEEDED_TICKETS_PER_CATEGORY, rawTarget),
+    );
     let remaining = targetTicketCount;
     const categoryOrderStartIndex = orders.length;
     const unitPrice = Number(category.price);
@@ -123,7 +128,46 @@ async function buildOrderPlan(prisma: PrismaClient): Promise<OrderPlan> {
       const toDate = new Date(
         Math.min(now.getTime(), concert.start_time.getTime() - 60 * 60 * 1000),
       );
-      const createdAt = faker.date.between({ from: fromDate, to: toDate });
+      let effectiveFromDate = fromDate;
+      if (effectiveFromDate >= toDate) {
+        effectiveFromDate = new Date(toDate.getTime() - 24 * 60 * 60 * 1000);
+      }
+
+      let createdAt: Date;
+      if (now < concert.start_time) {
+        const roll = faker.number.int({ min: 1, max: 100 });
+        if (roll <= 12) {
+          const startOfToday = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            8,
+            0,
+            0,
+          );
+          createdAt = faker.date.between({
+            from:
+              startOfToday < now
+                ? startOfToday
+                : new Date(now.getTime() - 3600 * 1000),
+            to: now,
+          });
+        } else if (roll <= 30) {
+          const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 3600 * 1000);
+          createdAt = faker.date.between({ from: threeDaysAgo, to: now });
+        } else if (roll <= 60) {
+          const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 3600 * 1000);
+          createdAt = faker.date.between({ from: sevenDaysAgo, to: now });
+        } else {
+          createdAt = faker.date.between({
+            from: effectiveFromDate,
+            to: toDate,
+          });
+        }
+      } else {
+        createdAt = faker.date.between({ from: effectiveFromDate, to: toDate });
+      }
+
       const expiresAt = new Date(createdAt.getTime() + 10 * 60 * 1000);
       const hasStarted = now >= concert.start_time;
 
@@ -184,16 +228,19 @@ async function buildOrderPlan(prisma: PrismaClient): Promise<OrderPlan> {
       Math.round((paidOrderCount * CANCELLED_ORDER_PERCENT) / 100),
     );
     for (let index = 0; index < cancelledOrderCount; index += 1) {
+      const fromCancel =
+        category.sales_start_at ??
+        new Date(concert.start_time.getTime() - 60 * 24 * 60 * 60 * 1000);
+      const toCancel = new Date(
+        Math.min(now.getTime(), concert.start_time.getTime() - 60 * 60 * 1000),
+      );
+      const effectiveFromCancel =
+        fromCancel >= toCancel
+          ? new Date(toCancel.getTime() - 24 * 60 * 60 * 1000)
+          : fromCancel;
       const createdAt = faker.date.between({
-        from:
-          category.sales_start_at ??
-          new Date(concert.start_time.getTime() - 60 * 24 * 60 * 60 * 1000),
-        to: new Date(
-          Math.min(
-            now.getTime(),
-            concert.start_time.getTime() - 60 * 60 * 1000,
-          ),
-        ),
+        from: effectiveFromCancel,
+        to: toCancel,
       });
       const quantity = faker.number.int({
         min: 1,

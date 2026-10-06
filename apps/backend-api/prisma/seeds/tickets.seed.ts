@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { getOrderPlan } from "./orders.seed";
 import { chunkArray } from "./seed-utils";
 
-const CHUNK_SIZE = 5000;
+const CHUNK_SIZE = 1000;
 
 export async function seedTickets(prisma: PrismaClient) {
   const { tickets } = await getOrderPlan(prisma);

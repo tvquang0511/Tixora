@@ -10,6 +10,13 @@ export function assertFound<T>(
   return value;
 }
 
+export function relDays(days: number, hours: number = 0): Date {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  d.setHours(d.getHours() + hours);
+  return d;
+}
+
 export async function getUserIdByEmail(
   prisma: PrismaClient,
   email: string,
