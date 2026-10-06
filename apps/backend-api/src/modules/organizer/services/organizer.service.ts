@@ -9,6 +9,7 @@ import { PrismaService } from "../../../shared/prisma.service";
 import { ApplyOrganizerDto } from "../dtos/apply-organizer.dto";
 import { RejectOrganizerDto } from "../dtos/reject-organizer.dto";
 import { OrganizerRequestQueryDto } from "../dtos/organizer-request-query.dto";
+import { UpdateOrganizerProfileDto } from "../dtos/update-organizer-profile.dto";
 import { PaginationMetaDto } from "../../../shared/dtos/pagination-meta.dto";
 
 @Injectable()
@@ -223,7 +224,10 @@ export class OrganizerService {
 
   async updateRequestStatus(
     id: string,
-    dto: { status: "PENDING" | "APPROVED" | "REJECTED"; rejection_reason?: string },
+    dto: {
+      status: "PENDING" | "APPROVED" | "REJECTED";
+      rejection_reason?: string;
+    },
   ) {
     const profile = await this.prisma.organizerProfile.findUnique({
       where: { id },
@@ -265,5 +269,49 @@ export class OrganizerService {
     this.logger.log(`Organizer request ${id} reset to PENDING`);
     return updated;
   }
-}
 
+  async updateProfile(userId: string, dto: UpdateOrganizerProfileDto) {
+    const existing = await this.prisma.organizerProfile.findUnique({
+      where: { user_id: userId },
+    });
+
+    if (!existing) {
+      throw new NotFoundException("Hồ sơ Ban Tổ Chức không tồn tại");
+    }
+
+    if (existing.status !== "APPROVED") {
+      throw new BadRequestException(
+        "Chỉ tài khoản Ban Tổ Chức đã được phê duyệt mới có thể cập nhật hồ sơ",
+      );
+    }
+
+    const { full_name, ...profileFields } = dto;
+
+    if (full_name) {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { full_name },
+      });
+    }
+
+    const dataToUpdate: Record<string, any> = {};
+    for (const [key, val] of Object.entries(profileFields)) {
+      if (val !== undefined) {
+        dataToUpdate[key] = val;
+      }
+    }
+
+    const updated = await this.prisma.organizerProfile.update({
+      where: { user_id: userId },
+      data: dataToUpdate,
+      include: {
+        user: {
+          select: { id: true, email: true, full_name: true, status: true },
+        },
+      },
+    });
+
+    this.logger.log(`Organizer profile updated by user ${userId}`);
+    return updated;
+  }
+}

@@ -22,6 +22,9 @@ function createOrganizerService() {
     userRole: {
       upsert: fn(),
     },
+    user: {
+      update: fn(),
+    },
     $transaction: fn(),
   };
 
@@ -168,6 +171,66 @@ test("OrganizerService.rejectRequest: updates status to REJECTED with rejection_
 
   assert.equal(result.status, "REJECTED");
   assert.equal(result.rejection_reason, "Missing business license");
+});
+
+test("OrganizerService.updateProfile: successfully updates approved organizer profile and user full_name", async () => {
+  const { service, prisma } = createOrganizerService();
+
+  prisma.organizerProfile.findUnique.mockResolvedValue({
+    id: "profile-1",
+    user_id: "user-1",
+    status: "APPROVED",
+  });
+  prisma.organizerProfile.update.mockResolvedValue({
+    id: "profile-1",
+    user_id: "user-1",
+    organization_name: "Saigon Entertainment Group",
+    phone_number: "0911223344",
+    status: "APPROVED",
+    user: { id: "user-1", email: "user@tixora.vn", full_name: "Nguyễn Văn B" },
+  });
+
+  const result = await service.updateProfile("user-1", {
+    organization_name: "Saigon Entertainment Group",
+    phone_number: "0911223344",
+    full_name: "Nguyễn Văn B",
+  });
+
+  assert.equal(result.organization_name, "Saigon Entertainment Group");
+  assert.equal(prisma.user.update.mock.calls.length, 1);
+  assert.equal(prisma.organizerProfile.update.mock.calls.length, 1);
+});
+
+test("OrganizerService.updateProfile: throws BadRequestException if organizer profile is not APPROVED", async () => {
+  const { service, prisma } = createOrganizerService();
+
+  prisma.organizerProfile.findUnique.mockResolvedValue({
+    id: "profile-1",
+    user_id: "user-1",
+    status: "PENDING",
+  });
+
+  await assert.rejects(
+    () =>
+      service.updateProfile("user-1", {
+        organization_name: "Test Org",
+      }),
+    BadRequestException,
+  );
+});
+
+test("OrganizerService.updateProfile: throws NotFoundException if organizer profile does not exist", async () => {
+  const { service, prisma } = createOrganizerService();
+
+  prisma.organizerProfile.findUnique.mockResolvedValue(null);
+
+  await assert.rejects(
+    () =>
+      service.updateProfile("user-unknown", {
+        organization_name: "Test Org",
+      }),
+    (err: any) => err.name === "NotFoundException",
+  );
 });
 
 test("ConcertService.createConcert: sets organizer_id and PENDING_REVIEW if created by Organizer", async () => {

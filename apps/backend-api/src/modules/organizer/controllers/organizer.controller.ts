@@ -22,6 +22,7 @@ import { OrganizerService } from "../services/organizer.service";
 import { ApplyOrganizerDto } from "../dtos/apply-organizer.dto";
 import { RejectOrganizerDto } from "../dtos/reject-organizer.dto";
 import { UpdateOrganizerStatusDto } from "../dtos/update-organizer-status.dto";
+import { UpdateOrganizerProfileDto } from "../dtos/update-organizer-profile.dto";
 import { OrganizerRequestQueryDto } from "../dtos/organizer-request-query.dto";
 import { JwtAuthGuard } from "../../../shared/guards/jwt-auth.guard";
 import { RolesGuard } from "../../../shared/guards/roles.guard";
@@ -47,6 +48,26 @@ export class OrganizerController {
   @ApiOperation({ summary: "Get current user organizer application status" })
   async getMyApplication(@Req() req: any) {
     return this.organizerService.getMyApplication(req.user.sub);
+  }
+
+  @Get("organizer/profile")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Get current user organizer profile" })
+  async getOrganizerProfile(@Req() req: any) {
+    return this.organizerService.getMyApplication(req.user.sub);
+  }
+
+  @Patch("organizer/profile")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("ORGANIZER", "ADMIN")
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Update organizer profile" })
+  async updateOrganizerProfile(
+    @Req() req: any,
+    @Body() dto: UpdateOrganizerProfileDto,
+  ) {
+    return this.organizerService.updateProfile(req.user.sub, dto);
   }
 
   @Get("admin/organizer-requests")
