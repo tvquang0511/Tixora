@@ -30,7 +30,7 @@ export function RevenueSummaryCards({
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
-            className="h-28 rounded-2xl bg-slate-900/40 border border-slate-800/80 animate-pulse p-4"
+            className="h-28 rounded-2xl bg-slate-950/85 border border-slate-800/80 animate-pulse p-4"
           />
         ))}
       </div>
@@ -95,7 +95,7 @@ export function RevenueSummaryCards({
         return (
           <div
             key={idx}
-            className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800/80 flex flex-col justify-between hover:border-slate-700/80 transition-colors shadow-sm"
+            className="p-4 rounded-2xl bg-slate-950/85 border border-slate-800/80 flex flex-col justify-between hover:border-slate-700/80 transition-colors shadow-md"
           >
             <div className="flex items-center justify-between gap-2">
               <span className="text-[11px] font-medium text-slate-400 line-clamp-1">

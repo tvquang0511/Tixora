@@ -187,6 +187,9 @@ export default function OrganizerRevenuePage() {
         </div>
       )}
 
+      {/* KPI Summary Cards */}
+      <RevenueSummaryCards summary={summary} isLoading={isLoading} />
+
       {/* Filter and Date Range Bar */}
       <RevenueFilterBar
         fromDate={fromDate}
@@ -200,9 +203,6 @@ export default function OrganizerRevenuePage() {
         onRefresh={() => void loadAllData()}
         isLoading={isLoading}
       />
-
-      {/* KPI Summary Cards */}
-      <RevenueSummaryCards summary={summary} isLoading={isLoading} />
 
       {/* Growth Trend Chart (Similar to Admin) */}
       <RevenueTrendChart
