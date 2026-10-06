@@ -1,4 +1,3 @@
-import { Activity } from "lucide-react";
 import { type AdminUserListItem } from "@/services/admin-user.service";
 import { StatusBadge } from "../../_components/StatusBadge";
 import { Pagination } from "../../_components/Pagination";
@@ -61,12 +60,15 @@ export function UserTable({
                   <th style={{ textAlign: "center" }}>Đơn hàng</th>
                   <th style={{ textAlign: "center" }}>Vé đã mua</th>
                   <th>Ngày tham gia</th>
-                  <th style={{ textAlign: "center" }}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((item) => (
-                  <tr key={item.id} className="row-click group">
+                  <tr
+                    key={item.id}
+                    onClick={() => onViewDetail(item.id)}
+                    className="row-click group cursor-pointer hover:bg-slate-50 transition-colors"
+                  >
                     <td>
                       <div className="flex items-center gap-2.5">
                         <div className="w-7 h-7 rounded-full bg-blue-50 text-[#0052ff] border border-blue-200 flex items-center justify-center font-bold text-xs shrink-0">
@@ -124,15 +126,6 @@ export function UserTable({
                         month: "2-digit",
                         day: "2-digit",
                       })}
-                    </td>
-
-                    <td style={{ textAlign: "center" }}>
-                      <button
-                        onClick={() => onViewDetail(item.id)}
-                        className="btn btn-secondary btn-sm"
-                      >
-                        Chi tiết
-                      </button>
                     </td>
                   </tr>
                 ))}

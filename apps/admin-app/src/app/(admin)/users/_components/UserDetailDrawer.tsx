@@ -1,6 +1,14 @@
 "use client";
 
-import { X, ShoppingBag, CheckCircle, Ticket, DollarSign } from "lucide-react";
+import {
+  X,
+  ShoppingBag,
+  CheckCircle,
+  Ticket,
+  DollarSign,
+  ShieldAlert,
+  RotateCw,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { type AdminUserDetail } from "@/services/admin-user.service";
@@ -163,12 +171,24 @@ export function UserDetailDrawer({
                           disabled={isSavingDraft || !canEditTarget}
                           value={draftStatus}
                           onChange={(e) => onDraftStatusChange(e.target.value)}
-                          className="select-trigger w-full h-10 disabled:opacity-50"
+                          className={`select-trigger w-full h-10 disabled:opacity-50 text-xs font-semibold ${
+                            draftStatus === "BANNED"
+                              ? "border-rose-400 bg-rose-50/50 text-rose-700"
+                              : ""
+                          }`}
                         >
-                          <option value="ACTIVE">ACTIVE</option>
-                          <option value="INACTIVE">INACTIVE</option>
-                          <option value="BANNED">BANNED</option>
-                          <option value="PENDING">PENDING</option>
+                          <option value="ACTIVE">
+                            ACTIVE - Hoạt động bình thường
+                          </option>
+                          <option value="BANNED">
+                            BANNED - Cấm tài khoản (Khóa)
+                          </option>
+                          <option value="INACTIVE">
+                            INACTIVE - Tạm khóa tài khoản
+                          </option>
+                          <option value="PENDING">
+                            PENDING - Chờ kích hoạt
+                          </option>
                         </select>
                       </div>
 
@@ -179,39 +199,43 @@ export function UserDetailDrawer({
                           disabled={isSavingDraft || !canEditTarget}
                           value={draftRoles[0] || "Audience"}
                           onChange={(e) => onDraftRolesChange([e.target.value])}
-                          className="select-trigger w-full h-10 disabled:opacity-50"
+                          className="select-trigger w-full h-10 disabled:opacity-50 text-xs font-semibold"
                         >
-                          <option value="Audience">Audience</option>
+                          <option value="Audience">Audience (Khán giả)</option>
                           {isCurrentSuperAdmin && (
-                            <option value="SuperAdmin">SuperAdmin</option>
+                            <option value="SuperAdmin">
+                              SuperAdmin (Quản trị cấp cao)
+                            </option>
                           )}
                           {isCurrentSuperAdmin && (
-                            <option value="Admin">Admin</option>
+                            <option value="Admin">Admin (Quản trị viên)</option>
                           )}
-                          <option value="Checker">Checker</option>
-                          <option value="Organizer">Organizer</option>
+                          <option value="Checker">Checker (Soát vé)</option>
+                          <option value="Organizer">
+                            Organizer (Ban tổ chức)
+                          </option>
                         </select>
                       </div>
                     </div>
 
-                    {hasChanges && (
-                      <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={onCancelDraft}
-                          disabled={isSavingDraft}
-                          className="btn btn-secondary btn-sm"
-                        >
-                          Hủy
-                        </button>
-                        <button
-                          type="button"
-                          onClick={onSaveChanges}
-                          disabled={isSavingDraft}
-                          className="btn btn-primary btn-sm"
-                        >
-                          {isSavingDraft ? "Đang lưu..." : "Lưu thay đổi"}
-                        </button>
+                    {/* Warning when BANNED is selected */}
+                    {draftStatus === "BANNED" && (
+                      <div className="p-3 bg-rose-50 border border-rose-300 rounded-xl text-rose-900 text-xs flex items-start gap-2.5">
+                        <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                        <div className="space-y-0.5">
+                          <p className="font-bold text-rose-800">
+                            Cảnh báo cấm tài khoản người dùng!
+                          </p>
+                          <p className="text-rose-700 leading-relaxed text-[11px]">
+                            Tài khoản <strong>{detailData.email}</strong> sẽ bị{" "}
+                            <span className="font-bold underline">
+                              CẤM (BANNED)
+                            </span>{" "}
+                            ngay sau khi nhấn nút <strong>Lưu thay đổi</strong>.
+                            Người dùng sẽ bị đăng xuất khỏi tất cả phiên làm
+                            việc và không thể truy cập hệ thống.
+                          </p>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -274,6 +298,52 @@ export function UserDetailDrawer({
                 </>
               )}
             </div>
+
+            {/* Sticky Action Footer */}
+            {detailData && (
+              <div className="p-4 border-t border-slate-200 bg-slate-50/90 flex items-center justify-between gap-3">
+                <div>
+                  {hasChanges ? (
+                    <span className="text-xs font-semibold text-amber-700 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                      Có thay đổi chưa lưu
+                    </span>
+                  ) : (
+                    <span className="text-xs text-slate-400">
+                      Chưa có thay đổi nào
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={onCancelDraft}
+                    disabled={!hasChanges || isSavingDraft}
+                    className="btn btn-secondary btn-sm disabled:opacity-50"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onSaveChanges}
+                    disabled={!hasChanges || isSavingDraft}
+                    className={`btn btn-sm inline-flex items-center gap-2 ${
+                      draftStatus === "BANNED" ? "btn-danger" : "btn-primary"
+                    }`}
+                  >
+                    {isSavingDraft ? (
+                      <>
+                        <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>Đang lưu...</span>
+                      </>
+                    ) : (
+                      <span>Lưu thay đổi</span>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
           </motion.aside>
         </>
       )}

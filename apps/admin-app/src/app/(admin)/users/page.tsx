@@ -55,10 +55,10 @@ export default function AdminUsersPage() {
   return (
     <div className="space-y-4">
       {/* Head */}
-      <div className="head stickyhead">
+      <div className="head stickyhead flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="htcaa-h1">Quản lý Người dùng</h1>
+            <h1 className="htcaa-h1 m-0">Quản lý Người dùng</h1>
             <span className="htcaa-badge-count-pill">
               {totalItems} tài khoản
             </span>
@@ -68,23 +68,23 @@ export default function AdminUsersPage() {
             động.
           </p>
         </div>
-        <div className="head-actions">
+        <div className="head-actions flex items-center gap-2">
           <button
             onClick={() => void reloadUsers()}
             disabled={isLoading}
-            className="btn btn-secondary btn-sm"
+            className="btn"
             title="Tải lại danh sách người dùng"
           >
             <RotateCw
               className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-[#0052ff]" : "text-slate-500"}`}
             />
-            <span>Làm mới</span>
+            <span>{isLoading ? "Đang tải…" : "Làm mới"}</span>
           </button>
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="btn btn-primary btn-sm flex items-center gap-1.5"
+            className="btn btn-primary"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             <span>Tạo người dùng</span>
           </button>
         </div>
@@ -96,6 +96,9 @@ export default function AdminUsersPage() {
         search={search}
         status={status}
         role={role}
+        limit={limit}
+        totalItems={totalItems}
+        displayedCount={users.length}
         onSearchChange={(v) => {
           setSearch(v);
           setPage(1);
@@ -106,6 +109,16 @@ export default function AdminUsersPage() {
         }}
         onRoleChange={(v) => {
           setRole(v);
+          setPage(1);
+        }}
+        onLimitChange={(newLimit) => {
+          setLimit(newLimit);
+          setPage(1);
+        }}
+        onReset={() => {
+          setSearch("");
+          setStatus("All");
+          setRole("All");
           setPage(1);
         }}
       />
