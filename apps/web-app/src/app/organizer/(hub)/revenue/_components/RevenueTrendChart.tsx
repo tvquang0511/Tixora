@@ -32,9 +32,24 @@ export function RevenueTrendChart({
   trendItems,
   isTrendLoading,
   groupBy,
-  onGroupByChange,
 }: RevenueTrendChartProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [showRevenue, setShowRevenue] = useState(true);
+  const [showTickets, setShowTickets] = useState(true);
+  const [showOrders, setShowOrders] = useState(true);
+
+  const toggleMetric = (metric: "revenue" | "tickets" | "orders") => {
+    if (metric === "revenue") {
+      if (showRevenue && !showTickets && !showOrders) return;
+      setShowRevenue((prev) => !prev);
+    } else if (metric === "tickets") {
+      if (showTickets && !showRevenue && !showOrders) return;
+      setShowTickets((prev) => !prev);
+    } else if (metric === "orders") {
+      if (showOrders && !showRevenue && !showTickets) return;
+      setShowOrders((prev) => !prev);
+    }
+  };
 
   const svgWidth = 1000;
   const svgHeight = 380;
@@ -118,11 +133,6 @@ export function RevenueTrendChart({
     return period;
   };
 
-  const totalRevenue = trendItems.reduce((acc, i) => acc + i.revenue, 0);
-  const totalNet = trendItems.reduce((acc, i) => acc + i.net_revenue, 0);
-  const totalTickets = trendItems.reduce((acc, i) => acc + i.tickets_sold, 0);
-  const totalOrders = trendItems.reduce((acc, i) => acc + i.paid_orders, 0);
-
   const hoveredItem =
     hoveredIndex !== null && trendItems[hoveredIndex]
       ? trendItems[hoveredIndex]
@@ -143,77 +153,53 @@ export function RevenueTrendChart({
           </p>
         </div>
 
-        {/* Group By pill selector */}
-        {onGroupByChange && (
-          <div className="flex items-center gap-1 p-1 bg-slate-900/80 rounded-xl border border-slate-800 self-start sm:self-auto text-xs">
-            <button
-              type="button"
-              onClick={() => onGroupByChange("day")}
-              className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-colors cursor-pointer ${
-                groupBy === "day"
-                  ? "bg-slate-800 text-teal-400 shadow-2xs"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Ngày
-            </button>
-            <button
-              type="button"
-              onClick={() => onGroupByChange("week")}
-              className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-colors cursor-pointer ${
-                groupBy === "week"
-                  ? "bg-slate-800 text-teal-400 shadow-2xs"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Tuần
-            </button>
-            <button
-              type="button"
-              onClick={() => onGroupByChange("month")}
-              className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-colors cursor-pointer ${
-                groupBy === "month"
-                  ? "bg-slate-800 text-teal-400 shadow-2xs"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Tháng
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Mini summary strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-slate-300 text-xs">
-        <div className="p-3 rounded-2xl bg-slate-900/40 border border-slate-800/80">
-          <span className="text-[10px] text-slate-500 block">
-            Doanh thu trong kỳ
-          </span>
-          <span className="text-sm font-bold text-teal-400">
-            {formatVND(totalRevenue)}
-          </span>
-        </div>
-        <div className="p-3 rounded-2xl bg-slate-900/40 border border-slate-800/80">
-          <span className="text-[10px] text-slate-500 block">
-            Thực nhận (Net Payout)
-          </span>
-          <span className="text-sm font-bold text-emerald-400">
-            {formatVND(totalNet)}
-          </span>
-        </div>
-        <div className="p-3 rounded-2xl bg-slate-900/40 border border-slate-800/80">
-          <span className="text-[10px] text-slate-500 block">Số vé bán</span>
-          <span className="text-sm font-bold text-sky-400">
-            {totalTickets.toLocaleString("vi-VN")} vé
-          </span>
-        </div>
-        <div className="p-3 rounded-2xl bg-slate-900/40 border border-slate-800/80">
-          <span className="text-[10px] text-slate-500 block">
-            Đơn thanh toán
-          </span>
-          <span className="text-sm font-bold text-amber-400">
-            {totalOrders.toLocaleString("vi-VN")} đơn
-          </span>
+        {/* Metric Visibility Toggles */}
+        <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-900/80 border border-slate-800 rounded-xl text-xs self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => toggleMetric("revenue")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              showRevenue
+                ? "bg-teal-500/20 text-teal-300 border border-teal-500/40 shadow-xs"
+                : "text-slate-500 hover:text-slate-300 border border-transparent line-through opacity-60"
+            }`}
+            title="Bật/tắt hiển thị Doanh thu (GMV)"
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${showRevenue ? "bg-teal-400" : "bg-slate-500"}`}
+            />
+            Doanh thu (GMV)
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleMetric("tickets")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              showTickets
+                ? "bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-xs"
+                : "text-slate-500 hover:text-slate-300 border border-transparent line-through opacity-60"
+            }`}
+            title="Bật/tắt hiển thị Vé đã bán"
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${showTickets ? "bg-sky-400" : "bg-slate-500"}`}
+            />
+            Vé đã bán
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleMetric("orders")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              showOrders
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-xs"
+                : "text-slate-500 hover:text-slate-300 border border-transparent line-through opacity-60"
+            }`}
+            title="Bật/tắt hiển thị Đơn hàng"
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${showOrders ? "bg-amber-400" : "bg-slate-500"}`}
+            />
+            Đơn hàng
+          </button>
         </div>
       </div>
 
@@ -261,41 +247,45 @@ export function RevenueTrendChart({
                       strokeDasharray="4 4"
                       strokeOpacity="0.4"
                     />
-                    <text
-                      x={paddingLeft - 10}
-                      y={y + 3}
-                      fill="#64748b"
-                      fontSize="10"
-                      textAnchor="end"
-                      fontWeight="500"
-                    >
-                      {formatConciseNumber(tick)}
-                    </text>
+                    {showRevenue && (
+                      <text
+                        x={paddingLeft - 10}
+                        y={y + 3}
+                        fill="#64748b"
+                        fontSize="10"
+                        textAnchor="end"
+                        fontWeight="500"
+                      >
+                        {formatConciseNumber(tick)}
+                      </text>
+                    )}
                   </g>
                 );
               })}
 
               {/* Right Y-Axis Ticks (Tickets sold) */}
-              {yTicksRight.map((tick, index) => {
-                const y =
-                  paddingTop + (index / (yTicksRight.length - 1)) * chartHeight;
-                return (
-                  <text
-                    key={`r-${index}`}
-                    x={svgWidth - paddingRight + 10}
-                    y={y + 3}
-                    fill="#38bdf8"
-                    fontSize="10"
-                    textAnchor="start"
-                    fontWeight="500"
-                  >
-                    {Math.round(tick)} vé
-                  </text>
-                );
-              })}
+              {showTickets &&
+                yTicksRight.map((tick, index) => {
+                  const y =
+                    paddingTop +
+                    (index / (yTicksRight.length - 1)) * chartHeight;
+                  return (
+                    <text
+                      key={`r-${index}`}
+                      x={svgWidth - paddingRight + 10}
+                      y={y + 3}
+                      fill="#38bdf8"
+                      fontSize="10"
+                      textAnchor="start"
+                      fontWeight="500"
+                    >
+                      {Math.round(tick)} vé
+                    </text>
+                  );
+                })}
 
               {/* Revenue Area */}
-              {revenueAreaPath && (
+              {showRevenue && revenueAreaPath && (
                 <path
                   d={revenueAreaPath}
                   fill="url(#organizerRevenueGradient)"
@@ -303,7 +293,7 @@ export function RevenueTrendChart({
               )}
 
               {/* Revenue Line */}
-              {revenuePath && (
+              {showRevenue && revenuePath && (
                 <path
                   d={revenuePath}
                   fill="none"
@@ -315,7 +305,7 @@ export function RevenueTrendChart({
               )}
 
               {/* Tickets Line */}
-              {ticketsPath && (
+              {showTickets && ticketsPath && (
                 <path
                   d={ticketsPath}
                   fill="none"
@@ -328,7 +318,7 @@ export function RevenueTrendChart({
               )}
 
               {/* Orders Line */}
-              {ordersPath && (
+              {showOrders && ordersPath && (
                 <path
                   d={ordersPath}
                   fill="none"
@@ -396,14 +386,42 @@ export function RevenueTrendChart({
                     strokeWidth="1.5"
                     strokeDasharray="3 3"
                   />
-                  <circle
-                    cx={getX(hoveredIndex)}
-                    cy={getY(trendItems[hoveredIndex].revenue, maxRevenue)}
-                    r="5"
-                    fill="#14b8a6"
-                    stroke="#042f2e"
-                    strokeWidth="2"
-                  />
+                  {showRevenue && (
+                    <circle
+                      cx={getX(hoveredIndex)}
+                      cy={getY(trendItems[hoveredIndex].revenue, maxRevenue)}
+                      r="5"
+                      fill="#14b8a6"
+                      stroke="#042f2e"
+                      strokeWidth="2"
+                    />
+                  )}
+                  {showTickets && (
+                    <circle
+                      cx={getX(hoveredIndex)}
+                      cy={getY(
+                        trendItems[hoveredIndex].tickets_sold,
+                        maxTicketsSold,
+                      )}
+                      r="4"
+                      fill="#38bdf8"
+                      stroke="#082f49"
+                      strokeWidth="2"
+                    />
+                  )}
+                  {showOrders && (
+                    <circle
+                      cx={getX(hoveredIndex)}
+                      cy={getY(
+                        trendItems[hoveredIndex].paid_orders,
+                        maxPaidOrders,
+                      )}
+                      r="4"
+                      fill="#fbbf24"
+                      stroke="#451a03"
+                      strokeWidth="2"
+                    />
+                  )}
                 </g>
               )}
             </svg>
@@ -421,57 +439,49 @@ export function RevenueTrendChart({
                   Mốc: {hoveredItem.period}
                 </div>
                 <div className="space-y-1 text-[11px]">
-                  <div className="flex items-center justify-between text-teal-400">
-                    <span className="flex items-center gap-1">
-                      <DollarSign className="w-3 h-3" /> GMV:
-                    </span>
-                    <span className="font-bold">
-                      {formatVND(hoveredItem.revenue)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-emerald-400">
-                    <span>Thực nhận:</span>
-                    <span className="font-bold">
-                      {formatVND(hoveredItem.net_revenue)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sky-400">
-                    <span className="flex items-center gap-1">
-                      <Ticket className="w-3 h-3" /> Vé bán:
-                    </span>
-                    <span className="font-bold">
-                      {hoveredItem.tickets_sold} vé
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-amber-400">
-                    <span className="flex items-center gap-1">
-                      <ShoppingBag className="w-3 h-3" /> Đơn hàng:
-                    </span>
-                    <span className="font-bold">
-                      {hoveredItem.paid_orders} đơn
-                    </span>
-                  </div>
+                  {showRevenue && (
+                    <>
+                      <div className="flex items-center justify-between text-teal-400">
+                        <span className="flex items-center gap-1">
+                          <DollarSign className="w-3 h-3" /> GMV:
+                        </span>
+                        <span className="font-bold">
+                          {formatVND(hoveredItem.revenue)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-emerald-400">
+                        <span>Thực nhận:</span>
+                        <span className="font-bold">
+                          {formatVND(hoveredItem.net_revenue)}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                  {showTickets && (
+                    <div className="flex items-center justify-between text-sky-400">
+                      <span className="flex items-center gap-1">
+                        <Ticket className="w-3 h-3" /> Vé bán:
+                      </span>
+                      <span className="font-bold">
+                        {hoveredItem.tickets_sold} vé
+                      </span>
+                    </div>
+                  )}
+                  {showOrders && (
+                    <div className="flex items-center justify-between text-amber-400">
+                      <span className="flex items-center gap-1">
+                        <ShoppingBag className="w-3 h-3" /> Đơn hàng:
+                      </span>
+                      <span className="font-bold">
+                        {hoveredItem.paid_orders} đơn
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
           </>
         )}
-      </div>
-
-      {/* Legend */}
-      <div className="flex items-center justify-center gap-6 pt-2 text-[11px] text-slate-400 border-t border-slate-800/80">
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-teal-400" />
-          <span>Doanh thu (GMV)</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-1 rounded-full bg-sky-400" />
-          <span>Số vé đã bán</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-1 rounded-full bg-amber-400" />
-          <span>Số đơn thanh toán</span>
-        </div>
       </div>
     </div>
   );
