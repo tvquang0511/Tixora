@@ -52,11 +52,29 @@ export interface UpdateCheckerAssignmentDto {
   gate_number: number;
 }
 
+export interface ActiveConcertTicketCategory {
+  id: string;
+  name: string;
+  gate_number: number | null;
+}
+
+export interface ActiveConcertAssignment {
+  id: string;
+  gate_number: number;
+  checker: {
+    id: string;
+    email: string;
+    full_name: string;
+  };
+}
+
 export interface ActiveConcertOption {
   id: string;
   name: string;
   location: string;
   start_time: string;
+  ticket_categories?: ActiveConcertTicketCategory[];
+  checker_assignments?: ActiveConcertAssignment[];
 }
 
 export interface ActiveCheckerOption {

@@ -251,6 +251,29 @@ export class CheckerAssignmentService {
         name: true,
         location: true,
         start_time: true,
+        ticket_categories: {
+          select: {
+            id: true,
+            name: true,
+            gate_number: true,
+          },
+          orderBy: {
+            gate_number: "asc",
+          },
+        },
+        checker_assignments: {
+          select: {
+            id: true,
+            gate_number: true,
+            checker: {
+              select: {
+                id: true,
+                email: true,
+                full_name: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         start_time: "desc",
