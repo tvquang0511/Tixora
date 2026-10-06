@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { formatConcertCurrency } from "@/services/concert.service";
 import { type RecentOrder } from "@/services/dashboard.service";
 import { StatusBadge } from "../../_components/StatusBadge";
@@ -41,6 +41,16 @@ export function RecentOrdersList({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => onSearchChange("")}
+              className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+              title="Xóa tìm kiếm"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
 

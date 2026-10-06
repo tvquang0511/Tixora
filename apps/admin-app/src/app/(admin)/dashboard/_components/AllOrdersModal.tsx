@@ -70,6 +70,19 @@ export function AllOrdersModal({
                 onPageChange(1);
               }}
             />
+            {modalSearch && (
+              <button
+                type="button"
+                onClick={() => {
+                  onSearchChange("");
+                  onPageChange(1);
+                }}
+                className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                title="Xóa tìm kiếm"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
