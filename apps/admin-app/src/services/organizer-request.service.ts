@@ -20,6 +20,7 @@ export interface OrganizerRequestItem {
     id: string;
     email: string;
     full_name: string;
+    status?: string;
   };
 }
 
@@ -70,6 +71,20 @@ export async function rejectOrganizerRequest(
   return apiClient.post<OrganizerRequestItem>(
     `/admin/organizer-requests/${id}/reject`,
     {
+      rejection_reason: rejectionReason,
+    },
+  );
+}
+
+export async function updateOrganizerRequestStatus(
+  id: string,
+  status: "PENDING" | "APPROVED" | "REJECTED",
+  rejectionReason?: string,
+): Promise<OrganizerRequestItem> {
+  return apiClient.patch<OrganizerRequestItem>(
+    `/admin/organizer-requests/${id}/status`,
+    {
+      status,
       rejection_reason: rejectionReason,
     },
   );
