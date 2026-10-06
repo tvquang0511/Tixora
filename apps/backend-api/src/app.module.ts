@@ -14,6 +14,7 @@ import { AdminRevenueModule } from "./modules/admin-revenue/admin-revenue.module
 import { AdminUsersModule } from "./modules/admin-users/admin-users.module";
 import { NotificationModule } from "./modules/notifications/notification.module";
 import { OrganizerModule } from "./modules/organizer/organizer.module";
+import { OrganizerRevenueModule } from "./modules/organizer-revenue/organizer-revenue.module";
 import { PrismaService } from "./shared/prisma.service";
 import { RolesPermissionsSyncService } from "./shared/roles-permissions-sync.service";
 
@@ -34,6 +35,7 @@ import { RolesPermissionsSyncService } from "./shared/roles-permissions-sync.ser
     AdminUsersModule,
     NotificationModule,
     OrganizerModule,
+    OrganizerRevenueModule,
   ],
   providers: [PrismaService, RolesPermissionsSyncService],
 })
