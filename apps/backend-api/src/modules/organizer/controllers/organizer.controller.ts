@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -20,6 +21,7 @@ import {
 import { OrganizerService } from "../services/organizer.service";
 import { ApplyOrganizerDto } from "../dtos/apply-organizer.dto";
 import { RejectOrganizerDto } from "../dtos/reject-organizer.dto";
+import { UpdateOrganizerStatusDto } from "../dtos/update-organizer-status.dto";
 import { OrganizerRequestQueryDto } from "../dtos/organizer-request-query.dto";
 import { JwtAuthGuard } from "../../../shared/guards/jwt-auth.guard";
 import { RolesGuard } from "../../../shared/guards/roles.guard";
@@ -87,5 +89,18 @@ export class OrganizerController {
     @Body() dto: RejectOrganizerDto,
   ) {
     return this.organizerService.rejectRequest(id, dto);
+  }
+
+  @Patch("admin/organizer-requests/:id/status")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("ADMIN")
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Update organizer application status (Admin only)" })
+  @ApiParam({ name: "id", description: "OrganizerProfile ID" })
+  async updateOrganizerRequestStatus(
+    @Param("id") id: string,
+    @Body() dto: UpdateOrganizerStatusDto,
+  ) {
+    return this.organizerService.updateRequestStatus(id, dto);
   }
 }

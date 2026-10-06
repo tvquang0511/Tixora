@@ -109,7 +109,7 @@ export class OrganizerService {
         where,
         include: {
           user: {
-            select: { id: true, email: true, full_name: true },
+            select: { id: true, email: true, full_name: true, status: true },
           },
         },
         orderBy: { created_at: "desc" },
@@ -164,7 +164,7 @@ export class OrganizerService {
         },
         include: {
           user: {
-            select: { id: true, email: true, full_name: true },
+            select: { id: true, email: true, full_name: true, status: true },
           },
         },
       });
@@ -210,7 +210,7 @@ export class OrganizerService {
       },
       include: {
         user: {
-          select: { id: true, email: true, full_name: true },
+          select: { id: true, email: true, full_name: true, status: true },
         },
       },
     });
@@ -220,4 +220,50 @@ export class OrganizerService {
     );
     return updated;
   }
+
+  async updateRequestStatus(
+    id: string,
+    dto: { status: "PENDING" | "APPROVED" | "REJECTED"; rejection_reason?: string },
+  ) {
+    const profile = await this.prisma.organizerProfile.findUnique({
+      where: { id },
+      include: { user: true },
+    });
+
+    if (!profile) {
+      throw new NotFoundException("Không tìm thấy yêu cầu đối tác");
+    }
+
+    if (dto.status === "APPROVED") {
+      if (profile.status === "APPROVED") {
+        return profile;
+      }
+      return this.approveRequest(id);
+    }
+
+    if (dto.status === "REJECTED") {
+      return this.rejectRequest(id, {
+        rejection_reason: dto.rejection_reason || "Từ chối bởi quản trị viên",
+      });
+    }
+
+    // PENDING
+    const updated = await this.prisma.organizerProfile.update({
+      where: { id },
+      data: {
+        status: "PENDING",
+        rejection_reason: null,
+        approved_at: null,
+      },
+      include: {
+        user: {
+          select: { id: true, email: true, full_name: true, status: true },
+        },
+      },
+    });
+
+    this.logger.log(`Organizer request ${id} reset to PENDING`);
+    return updated;
+  }
 }
+
