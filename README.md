@@ -189,54 +189,93 @@ sequenceDiagram
 
 Trong Tixora, mỗi sự kiện concert vận hành qua một **Máy Trạng Thái (Finite State Machine)** nghiêm ngặt với 8 trạng thái và phân quyền rõ rệt giữa **Quản Trị Sàn (Admin)** và **Ban Tổ Chức (Organizer)**:
 
-### 1. Sơ Đồ Chuyển Đổi Trạng Thái Sự Kiện (State Transition Diagram)
+### 1. Sơ Đồ Tiến Trình Vòng Đời Sự Kiện (State Machine Flowchart)
 
 ```mermaid
-stateDiagram-v2
-    [*] --> DRAFT : Khởi tạo bản nháp (Admin hoặc Organizer)
-    
-    note right of DRAFT
-        DRAFT: Tự do sửa đổi thông tin,
-        sơ đồ ghế & giá vé (orders_count = 0)
-    end note
+flowchart TD
+    %% Giai đoạn 1: Khởi tạo & Kiểm duyệt
+    subgraph PHASE1 ["Giai Đoạn 1: Khởi Tạo & Phê Duyệt Hồ Sơ"]
+        direction TB
+        ORG_ROLE["Ban Tổ Chức (Organizer)"] --> ORG_DRAFT["DRAFT (Bản nháp)<br/><i>Tự do sửa thông tin, giá vé & sơ đồ ghế</i>"]
+        ORG_DRAFT -->|"Organizer bấm 'Gửi duyệt'"| PENDING["PENDING_REVIEW (Chờ duyệt)<br/><i>Khóa chỉnh sửa, chờ sàn thẩm định</i>"]
+        
+        PENDING -->|"Admin duyệt đạt chuẩn"| APPROVED["APPROVED (Đã duyệt)<br/><i>Chờ đến lịch mở bán tự động</i>"]
+        PENDING -->|"Admin từ chối duyệt"| REJECTED["REJECTED (Bị từ chối)<br/><i>Kèm lý do thiếu giấy phép/hồ sơ</i>"]
+        REJECTED -->|"Organizer chỉnh sửa lại"| ORG_DRAFT
 
-    DRAFT --> PENDING_REVIEW : Organizer bấm "Gửi duyệt sự kiện"
-    DRAFT --> PUBLISHED : Admin tạo trực tiếp sự kiện của sàn (Mở bán ngay)
-    
-    PENDING_REVIEW --> PUBLISHED : Admin duyệt hồ sơ & Mở bán trực tiếp
-    PENDING_REVIEW --> APPROVED : Admin duyệt đạt chuẩn (Chờ đến giờ mở bán)
-    PENDING_REVIEW --> REJECTED : Admin từ chối (Kèm lý do thiếu hồ sơ/giấy phép)
-    
-    REJECTED --> DRAFT : Organizer chỉnh sửa lại theo yêu cầu
-    APPROVED --> PUBLISHED : Đến lịch mở bán (Hệ thống/Admin kích hoạt)
-    
-    PUBLISHED --> PAUSED : Tạm ngưng khẩn cấp (Admin hoặc Organizer)
-    PAUSED --> PUBLISHED : Admin mở bán trở lại (Sau khi xử lý sự cố)
-    
-    PUBLISHED --> COMPLETED : Show diễn kết thúc an toàn
-    PAUSED --> COMPLETED : Show diễn kết thúc (Đối soát & Giải ngân Escrow)
-    
-    PUBLISHED --> CANCELLED : Admin hủy show (Bất khả kháng - Kích hoạt Refund)
-    PAUSED --> CANCELLED : Admin hủy show (Kích hoạt luồng hoàn tiền cho khán giả)
-    
-    DRAFT --> [*] : XÓA VĨNH VIỄN (Hard Delete - Chỉ khi 0 vé)
-    REJECTED --> [*] : XÓA VĨNH VIỄN (Hard Delete - Chỉ khi 0 vé)
+        ADMIN_ROLE["Quản Trị Sàn (Admin)"] --> ADMIN_DRAFT["DRAFT (Sự kiện do Sàn tạo)"]
+    end
+
+    %% Giai đoạn 2: Mở bán & Vận hành
+    subgraph PHASE2 ["Giai Đoạn 2: Mở Bán & Vận Hành Sự Kiện"]
+        direction TB
+        APPROVED -->|"Đến giờ mở bán (sales_start_at)"| PUBLISHED["PUBLISHED (Đang mở bán)<br/><i>Hiển thị công khai, khán giả săn vé & thanh toán</i>"]
+        PENDING -->|"Admin duyệt mở bán ngay"| PUBLISHED
+        ADMIN_DRAFT -->|"Admin phát hành trực tiếp"| PUBLISHED
+
+        PUBLISHED <-->|"Tạm ngưng khẩn cấp (Sự cố) / Mở bán lại"| PAUSED["PAUSED (Tạm ngưng bán vé)<br/><i>Ngắt nhận đơn mới — Vé khách đã mua vẫn hợp lệ 100%</i>"]
+    end
+
+    %% Giai đoạn 3: Kết thúc vòng đời
+    subgraph PHASE3 ["Giai Đoạn 3: Kết Thúc Vòng Đời"]
+        direction TB
+        PUBLISHED -->|"Show diễn kết thúc"| COMPLETED["COMPLETED (Hoàn tất sự kiện)<br/><i>Khóa sự kiện — Đối soát & Quyết toán Escrow</i>"]
+        PAUSED -->|"Show diễn kết thúc"| COMPLETED
+
+        PUBLISHED -->|"Bất khả kháng"| CANCELLED["CANCELLED (Đã hủy show)<br/><i>Vô hiệu hóa vé — Kích hoạt quy trình hoàn tiền</i>"]
+        PAUSED -->|"Hủy bỏ sự kiện"| CANCELLED
+
+        ORG_DRAFT -.->|"Chỉ khi chưa có vé nào bán ra (orders = 0)"| DELETED(["XÓA VĨNH VIỄN (Hard Delete)"])
+        REJECTED -.->|"Chỉ khi chưa có vé nào bán ra (orders = 0)"| DELETED
+    end
+
+    PHASE1 ==> PHASE2
+    PHASE2 ==> PHASE3
+
+    %% Styling
+    classDef draft fill:#1e293b,stroke:#475569,stroke-width:2px,color:#f8fafc;
+    classDef pending fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    classDef approved fill:#134e4a,stroke:#14b8a6,stroke-width:2px,color:#ccfbf1;
+    classDef published fill:#14532d,stroke:#22c55e,stroke-width:2px,color:#dcfce7;
+    classDef paused fill:#7c2d12,stroke:#f97316,stroke-width:2px,color:#ffedd5;
+    classDef completed fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#dbeafe;
+    classDef cancelled fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fee2e2;
+    classDef deleted fill:#450a0a,stroke:#dc2626,stroke-width:2px,stroke-dasharray: 4 4,color:#fca5a5;
+    classDef role fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#38bdf8;
+
+    class ORG_DRAFT,ADMIN_DRAFT draft;
+    class PENDING,REJECTED pending;
+    class APPROVED approved;
+    class PUBLISHED published;
+    class PAUSED paused;
+    class COMPLETED completed;
+    class CANCELLED cancelled;
+    class DELETED deleted;
+    class ORG_ROLE,ADMIN_ROLE role;
 ```
+
+> **Tóm tắt 2 nhánh vận hành chính:**
+> - **Nhánh Ban Tổ Chức (Organizer Flow)**: `DRAFT` ➔ Gửi duyệt `PENDING_REVIEW` ➔ Admin duyệt `APPROVED` (hoặc từ chối `REJECTED` để sửa lại) ➔ Đến giờ mở bán chuyển `PUBLISHED`.
+> - **Nhánh Quản Trị Sàn (Admin Direct Flow)**: `DRAFT` ➔ Phát hành mở bán trực tiếp `PUBLISHED` (Bỏ qua bước chờ duyệt).
+> - **Quy tắc bảo vệ dữ liệu sống còn**:
+>   - `PAUSED` *(Tạm ngưng)*: Vé khách đã mua vẫn giữ nguyên giá trị 100%, chỉ tạm khóa luồng mua mới để xử lý kỹ thuật.
+>   - `CANCELLED` *(Hủy show)*: Hủy bỏ toàn bộ sự kiện do bất khả kháng, kích hoạt quy trình hoàn tiền (Refund).
+>   - `DELETE` *(Xóa cứng)*: Chỉ khả dụng khi sự kiện chưa phát sinh bất kỳ đơn hàng nào (`orders_count === 0`).
 
 ### 2. Bảng Ma Trận Phân Quyền & Vai Trò (Admin vs Organizer)
 
 | Trạng Thái / Thao Tác | Ban Tổ Chức (Organizer) | Quản Trị Sàn (Admin) | Mô Tả Ý Nghĩa & Ràng Buộc Dữ Liệu |
 | :--- | :---: | :---: | :--- |
-| **Khởi tạo bản nháp (`DRAFT`)** | ✅ | ✅ | Soạn thảo thông tin show, poster, sơ đồ ghế, cấu hình các hạng vé. |
-| **Gửi duyệt (`PENDING_REVIEW`)** | ✅ | ➖ *(Không cần)* | Gửi hồ sơ pháp lý & thông tin show lên sàn để kiểm duyệt. |
-| **Phê duyệt (`APPROVED` / `PUBLISHED`)** | ❌ *(Bị chặn ở API)* | ✅ | Chỉ Admin mới có quyền phát hành sự kiện công khai ra thị trường. |
-| **Từ chối duyệt (`REJECTED`)** | ❌ | ✅ | Admin phản hồi lý do từ chối; Organizer nhận thông báo để sửa đổi. |
+| **Khởi tạo bản nháp (`DRAFT`)** | Cho phép | Cho phép | Soạn thảo thông tin show, poster, sơ đồ ghế, cấu hình các hạng vé. |
+| **Gửi duyệt (`PENDING_REVIEW`)** | Cho phép | Không cần | Gửi hồ sơ pháp lý & thông tin show lên sàn để kiểm duyệt. |
+| **Phê duyệt (`APPROVED` / `PUBLISHED`)** | Bị chặn | Cho phép | Chỉ Admin mới có quyền phát hành sự kiện công khai ra thị trường. |
+| **Từ chối duyệt (`REJECTED`)** | Bị chặn | Cho phép | Admin phản hồi lý do từ chối; Organizer nhận thông báo để sửa đổi. |
 | **Đang mở bán (`PUBLISHED`)** | — | — | Sự kiện hiển thị trên Web, khán giả bắt đầu săn vé & giữ chỗ 10 phút. |
-| **Tạm ngưng mở bán (`PAUSED`)** | ✅ *(Show của mình)* | ✅ *(Mọi show)* | Tạm dừng bán vé khẩn cấp để rà soát kỹ thuật. **Vé khách đã mua vẫn hợp lệ 100%**. |
-| **Mở lại bán vé (`PUBLISHED`)** | ❌ *(Chờ Admin)* | ✅ | Admin kiểm tra an toàn xong mới được bấm kích hoạt mở bán lại. |
-| **Hoàn tất sự kiện (`COMPLETED`)** | ❌ | ✅ *(hoặc Cron)* | Show diễn ra thành công; kích hoạt đối soát dòng tiền và giải ngân Escrow. |
-| **Hủy sự kiện (`CANCELLED`)** | ❌ *(Gửi yêu cầu)* | ✅ | Show bị hủy do bất khả kháng; tự động vô hiệu hóa vé và kích hoạt quy trình Hoàn tiền. |
-| **Xóa vĩnh viễn (`DELETE`)** | ✅ *(Chỉ khi 0 vé)* | ✅ *(Chỉ khi 0 vé)* | **Quy tắc bất di bất dịch**: Chỉ được xóa khi chưa có vé nào bán ra (`orders_count === 0`). |
+| **Tạm ngưng mở bán (`PAUSED`)** | Show của mình | Mọi show | Tạm dừng bán vé khẩn cấp để rà soát kỹ thuật. **Vé khách đã mua vẫn hợp lệ 100%**. |
+| **Mở lại bán vé (`PUBLISHED`)** | Chờ Admin | Cho phép | Admin kiểm tra an toàn xong mới được bấm kích hoạt mở bán lại. |
+| **Hoàn tất sự kiện (`COMPLETED`)** | Không | Cho phép (hoặc Cron) | Show diễn ra thành công; kích hoạt đối soát dòng tiền và giải ngân Escrow. |
+| **Hủy sự kiện (`CANCELLED`)** | Gửi yêu cầu | Cho phép | Show bị hủy do bất khả kháng; tự động vô hiệu hóa vé và kích hoạt quy trình Hoàn tiền. |
+| **Xóa vĩnh viễn (`DELETE`)** | Chỉ khi 0 vé | Chỉ khi 0 vé | **Quy tắc bất di bất dịch**: Chỉ được xóa khi chưa có vé nào bán ra (`orders_count === 0`). |
 
 ---
 
@@ -415,7 +454,7 @@ Tixora/
 ## License & Contact
 
 Bản quyền đồ án được thiết kế và phát triển bởi **Trần Vũ Quang**.
-- 📞 **Điện thoại / Zalo**: `0357131476`
-- ✉️ **Email**: `tvquang.working@gmail.com`
-- 🌐 **GitHub**: [https://github.com/tvquang0511](https://github.com/tvquang0511)
-- 📍 **Địa chỉ**: TP. Hồ Chí Minh
+- **Điện thoại / Zalo**: `0357131476`
+- **Email**: `tvquang.working@gmail.com`
+- **GitHub**: [https://github.com/tvquang0511](https://github.com/tvquang0511)
+- **Địa chỉ**: TP. Hồ Chí Minh

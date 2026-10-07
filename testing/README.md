@@ -1,4 +1,4 @@
-# 🧪 MODULE KIỂM THỬ HỆ THỐNG TIXORA (ENTERPRISE QA & LOAD TESTING SUITE)
+# MODULE KIỂM THỬ HỆ THỐNG TIXORA (ENTERPRISE QA & LOAD TESTING SUITE)
 
 Module đóng gói toàn diện 2 tầng kiểm thử chuẩn doanh nghiệp:
 1. **Kiểm thử tự động End-to-End (E2E)** theo tiêu chuẩn ISO/IEC/IEEE 29119 với Playwright, xuất báo cáo Nghiệm thu Excel (.xlsx) & HTML Dashboard.
@@ -6,7 +6,7 @@ Module đóng gói toàn diện 2 tầng kiểm thử chuẩn doanh nghiệp:
 
 ---
 
-## 📁 Cấu Trúc Thư Mục
+## Cấu Trúc Thư Mục
 
 ```
 testing/
@@ -38,7 +38,7 @@ testing/
 
 ---
 
-## 🚀 Hướng Dẫn Thực Thi
+## Hướng Dẫn Thực Thi
 
 ### 1. Kiểm Thử Giao Diện E2E Nghiệm Thu (Playwright)
 ```powershell

@@ -46,30 +46,66 @@ Trong phiên bản cũ, hệ thống từng ép sự kiện `PUBLISHED ➔ DRAFT
 ## 3. Sơ Đồ Chuyển Đổi Trạng Thái (State Machine Diagram)
 
 ```mermaid
-stateDiagram-v2
-    [*] --> DRAFT : Khởi tạo (Organizer hoặc Admin)
-    
-    DRAFT --> PENDING_REVIEW : Organizer bấm "Gửi duyệt"
-    DRAFT --> PUBLISHED : Admin tạo sự kiện của sàn (Phát hành trực tiếp)
-    
-    PENDING_REVIEW --> PUBLISHED : Admin duyệt mở bán
-    PENDING_REVIEW --> APPROVED : Admin duyệt trước giờ mở bán
-    PENDING_REVIEW --> REJECTED : Admin từ chối kèm lý do
-    
-    APPROVED --> PUBLISHED : Đến giờ mở bán (Hệ thống/Admin kích hoạt)
-    REJECTED --> DRAFT : Organizer chỉnh sửa lại hồ sơ
-    
-    PUBLISHED --> PAUSED : Admin hoặc Organizer tạm ngưng khẩn cấp
-    PAUSED --> PUBLISHED : Admin mở bán trở lại
-    
-    PUBLISHED --> COMPLETED : Show diễn ra thành công kết thúc
-    PAUSED --> COMPLETED : Show diễn ra thành công (sau khi giải quyết sự cố)
-    
-    PUBLISHED --> CANCELLED : Admin hủy show (Kích hoạt luồng Refund)
-    PAUSED --> CANCELLED : Admin hủy show (Kích hoạt luồng Refund)
-    
-    DRAFT --> [*] : XÓA VĨNH VIỄN (Hard Delete khi 0 vé)
-    REJECTED --> [*] : XÓA VĨNH VIỄN (Hard Delete khi 0 vé)
+flowchart TD
+    %% Giai đoạn 1: Khởi tạo & Kiểm duyệt
+    subgraph PHASE1 ["Giai Đoạn 1: Khởi Tạo & Phê Duyệt Hồ Sơ"]
+        direction TB
+        ORG_ROLE["Ban Tổ Chức (Organizer)"] --> ORG_DRAFT["DRAFT (Bản nháp)<br/><i>Tự do sửa thông tin, giá vé & sơ đồ ghế</i>"]
+        ORG_DRAFT -->|"Organizer bấm 'Gửi duyệt'"| PENDING["PENDING_REVIEW (Chờ duyệt)<br/><i>Khóa chỉnh sửa, chờ sàn thẩm định</i>"]
+        
+        PENDING -->|"Admin duyệt đạt chuẩn"| APPROVED["APPROVED (Đã duyệt)<br/><i>Chờ đến lịch mở bán tự động</i>"]
+        PENDING -->|"Admin từ chối duyệt"| REJECTED["REJECTED (Bị từ chối)<br/><i>Kèm lý do thiếu giấy phép/hồ sơ</i>"]
+        REJECTED -->|"Organizer chỉnh sửa lại"| ORG_DRAFT
+
+        ADMIN_ROLE["Quản Trị Sàn (Admin)"] --> ADMIN_DRAFT["DRAFT (Sự kiện do Sàn tạo)"]
+    end
+
+    %% Giai đoạn 2: Mở bán & Vận hành
+    subgraph PHASE2 ["Giai Đoạn 2: Mở Bán & Vận Hành Sự Kiện"]
+        direction TB
+        APPROVED -->|"Đến giờ mở bán (sales_start_at)"| PUBLISHED["PUBLISHED (Đang mở bán)<br/><i>Hiển thị công khai, khán giả săn vé & thanh toán</i>"]
+        PENDING -->|"Admin duyệt mở bán ngay"| PUBLISHED
+        ADMIN_DRAFT -->|"Admin phát hành trực tiếp"| PUBLISHED
+
+        PUBLISHED <-->|"Tạm ngưng khẩn cấp (Sự cố) / Mở bán lại"| PAUSED["PAUSED (Tạm ngưng bán vé)<br/><i>Ngắt nhận đơn mới — Vé khách đã mua vẫn hợp lệ 100%</i>"]
+    end
+
+    %% Giai đoạn 3: Kết thúc vòng đời
+    subgraph PHASE3 ["Giai Đoạn 3: Kết Thúc Vòng Đời"]
+        direction TB
+        PUBLISHED -->|"Show diễn kết thúc"| COMPLETED["COMPLETED (Hoàn tất sự kiện)<br/><i>Khóa sự kiện — Đối soát & Quyết toán Escrow</i>"]
+        PAUSED -->|"Show diễn kết thúc"| COMPLETED
+
+        PUBLISHED -->|"Bất khả kháng"| CANCELLED["CANCELLED (Đã hủy show)<br/><i>Vô hiệu hóa vé — Kích hoạt quy trình hoàn tiền</i>"]
+        PAUSED -->|"Hủy bỏ sự kiện"| CANCELLED
+
+        ORG_DRAFT -.->|"Chỉ khi chưa có vé nào bán ra (orders = 0)"| DELETED(["XÓA VĨNH VIỄN (Hard Delete)"])
+        REJECTED -.->|"Chỉ khi chưa có vé nào bán ra (orders = 0)"| DELETED
+    end
+
+    PHASE1 ==> PHASE2
+    PHASE2 ==> PHASE3
+
+    %% Styling
+    classDef draft fill:#1e293b,stroke:#475569,stroke-width:2px,color:#f8fafc;
+    classDef pending fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    classDef approved fill:#134e4a,stroke:#14b8a6,stroke-width:2px,color:#ccfbf1;
+    classDef published fill:#14532d,stroke:#22c55e,stroke-width:2px,color:#dcfce7;
+    classDef paused fill:#7c2d12,stroke:#f97316,stroke-width:2px,color:#ffedd5;
+    classDef completed fill:#1e3a8a,stroke:#3b82f6,stroke-width:2px,color:#dbeafe;
+    classDef cancelled fill:#7f1d1d,stroke:#ef4444,stroke-width:2px,color:#fee2e2;
+    classDef deleted fill:#450a0a,stroke:#dc2626,stroke-width:2px,stroke-dasharray: 4 4,color:#fca5a5;
+    classDef role fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#38bdf8;
+
+    class ORG_DRAFT,ADMIN_DRAFT draft;
+    class PENDING,REJECTED pending;
+    class APPROVED approved;
+    class PUBLISHED published;
+    class PAUSED paused;
+    class COMPLETED completed;
+    class CANCELLED cancelled;
+    class DELETED deleted;
+    class ORG_ROLE,ADMIN_ROLE role;
 ```
 
 ---

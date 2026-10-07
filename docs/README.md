@@ -1,4 +1,4 @@
-# 📚 HỆ THỐNG TÀI LIỆU DỰ ÁN Tixora (DOCUMENTATION PORTAL)
+# HỆ THỐNG TÀI LIỆU DỰ ÁN Tixora (DOCUMENTATION PORTAL)
 
 > **Chào mừng bạn đến với trung tâm tài liệu chính thức của Tixora!**  
 > Toàn bộ tài liệu được chuẩn hóa theo phân tầng nghiệp vụ, giúp đội ngũ kỹ thuật, kiểm thử và quản trị dễ dàng tra cứu, vận hành và phát triển tính năng mới.
@@ -9,7 +9,7 @@
 
 ---
 
-## 🗺️ Sơ Đồ Cấu Trúc Tài Liệu (Documentation Map)
+## Sơ Đồ Cấu Trúc Tài Liệu (Documentation Map)
 
 ```mermaid
 graph TD
@@ -57,7 +57,7 @@ graph TD
 
 ---
 
-## 🧭 Bảng Tra Cứu Nhanh Theo Vai Trò (Quick Navigation by Role)
+## Bảng Tra Cứu Nhanh Theo Vai Trò (Quick Navigation by Role)
 
 | Bạn là ai? | Tài liệu bạn cần đọc đầu tiên |
 | :--- | :--- |
@@ -70,7 +70,7 @@ graph TD
 
 ---
 
-## 📂 Chi Tiết Từng Phân Hệ Tài Liệu
+## Chi Tiết Từng Phân Hệ Tài Liệu
 
 ### 1. [01-architecture/](./01-architecture/README.md) — Kiến Trúc & Thiết Kế Hệ Thống
 Chứa các bản vẽ kiến trúc, thiết kế dữ liệu và giải pháp chịu tải cao:
@@ -125,7 +125,7 @@ Quy chuẩn thiết kế màu sắc, typography và CSS components cho các giao
 
 ---
 
-## ⚡ Các Lệnh Nhanh Cho Dự Án (Quick Commands)
+## Các Lệnh Nhanh Cho Dự Án (Quick Commands)
 
 ```powershell
 # 1. Khởi động hạ tầng Docker (Redis & RabbitMQ)

@@ -109,7 +109,7 @@ Chuẩn bị trước các tab trình duyệt, thiết bị di động và termi
 
 ---
 
-## 🧠 PHẦN 3: Top 10 Câu Hỏi Hóc Búa Interviewer Chắc Chắn Sẽ Hỏi & Câu Trả Lời Chuẩn Mực
+## PHẦN 3: Top 10 Câu Hỏi Hóc Búa Interviewer Chắc Chắn Sẽ Hỏi & Câu Trả Lời Chuẩn Mực
 
 ### Câu 1: "Tại sao em dùng Redis Lua Script thay vì dùng Database Transaction (`SELECT FOR UPDATE`)?"
 > **Trả lời xuất sắc:**  
@@ -201,7 +201,7 @@ Chuẩn bị trước các tab trình duyệt, thiết bị di động và termi
 
 ---
 
-## 📋 PHẦN 4: Checklist Chuẩn Bị Trước Giờ G (Pre-Interview Checklist)
+## PHẦN 4: Checklist Chuẩn Bị Trước Giờ G (Pre-Interview Checklist)
 
 Hãy rà soát kỹ bảng kiểm tra sau 30 phút trước buổi phỏng vấn:
 
