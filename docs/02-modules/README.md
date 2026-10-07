@@ -1,4 +1,4 @@
-﻿# 02 — ĐẶC TẢ CHI TIẾT CÁC MODULE (MODULE SPECIFICATIONS)
+# 02 — ĐẶC TẢ CHI TIẾT CÁC MODULE (MODULE SPECIFICATIONS)
 
 Thư mục này chứa đặc tả nghiệp vụ, API DTOs, luồng xử lý và dữ liệu của từng module độc lập trong Monolith Tixora.
 
@@ -6,6 +6,7 @@ Thư mục này chứa đặc tả nghiệp vụ, API DTOs, luồng xử lý và
 
 | Module / Tài liệu | Trách nhiệm chính |
 | :--- | :--- |
+| **[EVENT_LIFECYCLE.md](./EVENT_LIFECYCLE.md)** | Quản lý vòng đời sự kiện (8 trạng thái từ DRAFT đến ARCHIVED), phân quyền Admin/Organizer và quy tắc hủy sự kiện an toàn. |
 | **[AUTH_RBAC.md](./AUTH_RBAC.md)** | Đăng ký, đăng nhập, JWT stateless, quản lý Role (Admin, Organizer, Checker, Audience) & Permissions. |
 | **[CATALOG_EVENTS.md](./CATALOG_EVENTS.md)** | Quản lý thông tin concert, hạng vé, sơ đồ ghế, tối ưu đọc với Redis Cache-aside. |
 | **[TICKETING_RESERVATION.md](./TICKETING_RESERVATION.md)** | Giữ chỗ vé nguyên tử bằng Redis Lua Script, chống overbooking, hủy đơn tự động khi hết hạn. |

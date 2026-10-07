@@ -3,6 +3,10 @@
 > **Chào mừng bạn đến với trung tâm tài liệu chính thức của Tixora!**  
 > Toàn bộ tài liệu được chuẩn hóa theo phân tầng nghiệp vụ, giúp đội ngũ kỹ thuật, kiểm thử và quản trị dễ dàng tra cứu, vận hành và phát triển tính năng mới.
 
+> [!TIP]
+> 🎓 **Bạn chuẩn bị phỏng vấn hoặc xem đánh giá dự án?**  
+> Hãy đọc ngay: **[👉 INTERVIEW_DEMO_GUIDE.md](./INTERVIEW_DEMO_GUIDE.md)** — Cẩm nang 7 phút demo thực chiến, top 10 câu hỏi kỹ thuật hóc búa kèm câu trả lời chuẩn Senior.
+
 ---
 
 ## 🗺️ Sơ Đồ Cấu Trúc Tài Liệu (Documentation Map)
@@ -10,18 +14,21 @@
 ```mermaid
 graph TD
     Root["📂 docs/ (Documentation Portal)"]
+    Root --> Demo["🎯 INTERVIEW_DEMO_GUIDE.md<br/>Kịch bản phỏng vấn & Demo"]
     Root --> Arch["🏛️ 01-architecture<br/>Kiến trúc & Hạ tầng"]
     Root --> Mod["📦 02-modules<br/>Đặc tả từng Module"]
     Root --> Test["🧪 03-testing<br/>Kiểm thử & QA"]
     Root --> Plan["🚀 04-planning-roadmap<br/>Lộ trình & Nâng cấp"]
     Root --> Flow["👥 05-workflow<br/>Quy trình & Onboarding"]
     Root --> Tpl["📋 06-templates<br/>Biểu mẫu chuẩn"]
+    Root --> UI["🎨 DESIGN_SYSTEM_HTCAA.md<br/>Chuẩn thiết kế giao diện"]
 
     Arch --> Arch1["SYSTEM_DESIGN.md"]
     Arch --> Arch2["TECHSTACK.md"]
     Arch --> Arch3["DATABASE_SCHEMA.md"]
     Arch --> Arch4["HIGH_LOAD_DEFENSE.md"]
 
+    Mod --> Mod0["EVENT_LIFECYCLE.md"]
     Mod --> Mod1["AUTH_RBAC.md"]
     Mod --> Mod2["CATALOG_EVENTS.md"]
     Mod --> Mod3["TICKETING_RESERVATION.md"]
@@ -35,8 +42,9 @@ graph TD
     Test --> Test3["LOAD_TESTING_K6.md"]
 
     Plan --> Plan1["UPGRADE_PROPOSALS.md"]
-    Plan --> Plan2["PROJECT_PLAN.md"]
-    Plan --> Plan3["TASK_BREAKDOWN.md"]
+    Plan --> Plan2["AI_AND_MCP_MASTER_PLAN.md"]
+    Plan --> Plan3["PROJECT_PLAN.md"]
+    Plan --> Plan4["TASK_BREAKDOWN.md"]
 
     Flow --> Flow1["ONBOARDING.md"]
     Flow --> Flow2["TEAM_WORKFLOW.md"]
@@ -53,10 +61,11 @@ graph TD
 
 | Bạn là ai? | Tài liệu bạn cần đọc đầu tiên |
 | :--- | :--- |
+| 🎯 **Ứng viên phỏng vấn & Người chấm demo** | [Interview Demo Guide](./INTERVIEW_DEMO_GUIDE.md) ➔ [System Design](./01-architecture/SYSTEM_DESIGN.md) ➔ [Proof of Scale (k6)](./03-testing/LOAD_TESTING_K6.md) |
 | 🆕 **Lập trình viên mới vào dự án** | [Onboarding Guide](./05-workflow/ONBOARDING.md) ➔ [System Design](./01-architecture/SYSTEM_DESIGN.md) ➔ [Team Workflow](./05-workflow/TEAM_WORKFLOW.md) |
 | 🧪 **Kiểm thử viên / QA Engineer** | [Manual Test Guide](./03-testing/MANUAL_TEST_GUIDE.md) ➔ [Playwright E2E Testing](./03-testing/PLAYWRIGHT_E2E.md) ➔ [Load Test k6](./03-testing/LOAD_TESTING_K6.md) |
 | 💻 **Backend Developer** | [Database Schema](./01-architecture/DATABASE_SCHEMA.md) ➔ [Ticketing Reservation](./02-modules/TICKETING_RESERVATION.md) ➔ [High Load Defense](./01-architecture/HIGH_LOAD_DEFENSE.md) |
-| 🎨 **Frontend / Mobile Developer** | [Catalog Events](./02-modules/CATALOG_EVENTS.md) ➔ [Payment Transactions](./02-modules/PAYMENT_TRANSACTIONS.md) ➔ [Checkin Offline](./02-modules/CHECKIN_OFFLINE.md) |
+| 🎨 **Frontend / Mobile Developer** | [HTCAA Design System](./DESIGN_SYSTEM_HTCAA.md) ➔ [Catalog Events](./02-modules/CATALOG_EVENTS.md) ➔ [Checkin Offline](./02-modules/CHECKIN_OFFLINE.md) |
 | 🚀 **Tech Lead / Architect** | [Upgrade Proposals](./04-planning-roadmap/UPGRADE_PROPOSALS.md) ➔ [Project Plan](./04-planning-roadmap/PROJECT_PLAN.md) ➔ [System Design](./01-architecture/SYSTEM_DESIGN.md) |
 
 ---
@@ -73,10 +82,9 @@ Chứa các bản vẽ kiến trúc, thiết kế dữ liệu và giải pháp c
 
 ### 2. [02-modules/](./02-modules/README.md) — Đặc Tả Nghiệp Vụ Các Module
 Đặc tả chi tiết đầu vào/đầu ra, API contracts, DTOs và luồng xử lý nội bộ:
-- **[EVENT_LIFECYCLE.md](./EVENT_LIFECYCLE.md):** Chuẩn hóa toàn bộ vòng đời sự kiện, máy trạng thái 8 bước, ý nghĩa trạng thái `PAUSED` (tạm ngưng), phân quyền Admin vs Organizer và quy tắc bất di bất dịch giữa Hủy (`CANCELLED`) vs Xóa (`DELETE`).
+- **[EVENT_LIFECYCLE.md](./02-modules/EVENT_LIFECYCLE.md):** Chuẩn hóa toàn bộ vòng đời sự kiện, máy trạng thái 8 bước, ý nghĩa trạng thái `PAUSED` (tạm ngưng), phân quyền Admin vs Organizer và quy tắc bất di bất dịch giữa Hủy (`CANCELLED`) vs Xóa (`DELETE`).
 - **[AUTH_RBAC.md](./02-modules/AUTH_RBAC.md):** Quản lý định danh, Stateless JWT, phân quyền Role-Based Access Control (Admin, Organizer, Checker, Audience).
 - **[CATALOG_EVENTS.md](./02-modules/CATALOG_EVENTS.md):** Quản lý concert, hạng vé, sơ đồ ghế, tối ưu tốc độ đọc bằng Redis Cache-aside.
-
 - **[TICKETING_RESERVATION.md](./02-modules/TICKETING_RESERVATION.md):** Luồng giữ vé RAM nguyên tử, chống bán quá số lượng (Zero Oversell), giới hạn per-user và cơ chế hủy đơn quá hạn.
 - **[PAYMENT_TRANSACTIONS.md](./02-modules/PAYMENT_TRANSACTIONS.md):** Tích hợp PayOS, chữ ký Webhook bảo mật, khóa lũy đẳng (Idempotency Key) chống trừ tiền hai lần.
 - **[CHECKIN_OFFLINE.md](./02-modules/CHECKIN_OFFLINE.md):** Giải pháp soát vé di động khi mất kết nối Internet, phân luồng Gate Segregation tránh xung đột và bulk-sync khi có mạng.
@@ -92,8 +100,11 @@ Hướng dẫn kiểm thử đầy đủ các cấp độ từ thủ công đế
 
 ### 4. [04-planning-roadmap/](./04-planning-roadmap/README.md) — Kế Hoạch & Đề Xuất Nâng Cấp
 Định hướng phát triển và kế hoạch thực thi:
-- **[AI_AND_MCP_MASTER_PLAN.md](./AI_AND_MCP_MASTER_PLAN.md):** Bản kế hoạch toàn diện tích hợp Trí tuệ Nhân tạo (AI Concierge, Smart Pricing, Anti-scalping) và Model Context Protocol (MCP Server cho Claude Desktop/Cursor).
 - **[UPGRADE_PROPOSALS.md](./04-planning-roadmap/UPGRADE_PROPOSALS.md):** 9 đề xuất nâng cấp kiến trúc đột phá: RabbitMQ DLX giải phóng vé chính xác, Realtime SSE, Bản đồ ghế tương tác trực quan (Interactive Seatmap), Chữ ký số ECDSA cho QR Code, Phòng chờ ảo (Virtual Waiting Room), Đa cổng thanh toán và Observability.
+- **[AI_AND_MCP_MASTER_PLAN.md](./04-planning-roadmap/AI_AND_MCP_MASTER_PLAN.md):** Bản kế hoạch toàn diện tích hợp Trí tuệ Nhân tạo (AI Concierge, Smart Pricing, Anti-scalping) và Model Context Protocol (MCP Server cho Claude Desktop/Cursor).
+- **[MCP_SERVER_PLAN.md](./04-planning-roadmap/MCP_SERVER_PLAN.md):** Thiết kế kỹ thuật triển khai MCP Server cho Claude Desktop và Cursor.
+- **[ORGANIZER_PLATFORM_PROPOSAL.md](./04-planning-roadmap/ORGANIZER_PLATFORM_PROPOSAL.md):** Đề xuất giải pháp cổng thông tin chuyên biệt cho Ban Tổ Chức (Organizer Multi-tenancy).
+- **[VENUE_SEATING_MAP_PROPOSAL.md](./04-planning-roadmap/VENUE_SEATING_MAP_PROPOSAL.md):** Đề xuất sơ đồ chỗ ngồi tương tác (Interactive SVG Venue Seating Map).
 - **[PROJECT_PLAN.md](./04-planning-roadmap/PROJECT_PLAN.md):** Kế hoạch chi tiết 3 Sprint thực chiến (Sprint 1: Nền móng, Sprint 2: Tải cao & Đặt vé, Sprint 3: Ngoại tuyến & Hoàn thiện).
 - **[TASK_BREAKDOWN.md](./04-planning-roadmap/TASK_BREAKDOWN.md):** Phân rã công việc từng Issue, Checklist và Tiêu chí nghiệm thu (Acceptance Criteria).
 
@@ -108,6 +119,9 @@ Biểu mẫu dùng cho công việc hàng ngày:
 - **[PR_TEMPLATE.md](./06-templates/PR_TEMPLATE.md):** Biểu mẫu tạo Pull Request.
 - **[BUG_REPORT_TEMPLATE.md](./06-templates/BUG_REPORT_TEMPLATE.md):** Biểu mẫu báo cáo lỗi phần mềm.
 - **[TASK_TEMPLATE.md](./06-templates/TASK_TEMPLATE.md):** Biểu mẫu khởi tạo Task/Feature mới.
+
+### 7. [DESIGN_SYSTEM_HTCAA.md](./DESIGN_SYSTEM_HTCAA.md) — Hệ Thống Thiết Kế UI Chuẩn Doanh Nghiệp
+Quy chuẩn thiết kế màu sắc, typography và CSS components cho các giao diện Next.js theo tiêu chuẩn HTCAA.
 
 ---
 

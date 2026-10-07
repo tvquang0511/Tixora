@@ -1,4 +1,4 @@
-﻿# HƯỚNG DẪN THIẾT LẬP VÀ KIỂM THỬ TỰ ĐỘNG BẰNG PLAYWRIGHT (PLAYWRIGHT E2E TESTING GUIDE)
+# HƯỚNG DẪN THIẾT LẬP VÀ KIỂM THỬ TỰ ĐỘNG BẰNG PLAYWRIGHT (PLAYWRIGHT E2E TESTING GUIDE)
 ## HỆ THỐNG Tixora MONOREPO
 
 > **Tài liệu:** Hướng dẫn cài đặt, cấu hình và chạy bộ kiểm thử tự động End-to-End (E2E) với Playwright cho Tixora  
@@ -69,7 +69,7 @@ tixora-monorepo/
 ├── playwright.config.ts           # File cấu hình trung tâm của Playwright
 ├── package.json                   # Thêm các script test:e2e
 └── docs/
-    └── PLAYWRIGHT_TEST.md         # File tài liệu này
+    └── PLAYWRIGHT_E2E.md          # File tài liệu này
 ```
 
 ---

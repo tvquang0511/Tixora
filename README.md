@@ -23,6 +23,10 @@
 > 1. **Cơn ác mộng mở bán vé "Flash-Sale"**: Hàng chục ngàn khán giả đổ xô bấm nút "Mua vé" cùng lúc gây sập server, nghẽn database và bán vượt quá số lượng vé thực tế (Overselling / Race condition).
 > 2. **Cơn ác mộng nghẽn cổng soát vé**: Sóng 4G/Wifi bị tê liệt tại sân vận động có 40.000 khán giả, khiến ứng dụng soát vé quay tròn không tải được dữ liệu, gây ùn tắc kéo dài tại cổng check-in.
 
+> [!TIP]
+> 🎯 **Dành cho Người Phỏng Vấn & Đánh Giá Dự Án:**  
+> Xem ngay: **[👉 Kịch Bản Demo 7 Phút & Bộ Câu Hỏi Kỹ Thuật (INTERVIEW_DEMO_GUIDE.md)](docs/INTERVIEW_DEMO_GUIDE.md)** để nắm bắt nhanh các giải pháp kiến trúc chịu tải, zero-oversell và offline check-in.
+
 ---
 
 ## 🌐 Trải Nghiệm Trực Tiếp Trên Cloud (Instant Live Demo & Test Accounts)
