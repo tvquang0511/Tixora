@@ -1,6 +1,7 @@
 import type {
   CurrentScanSession,
   PendingSyncScan,
+  PrefetchedTicketSet,
   RecentScanHistoryItem,
 } from '@/features/checkin/storage/checkin-storage';
 import { shortenQrValue } from '@/features/checkin/utils/checkin-formatters';
@@ -8,7 +9,7 @@ import { isPrefetchExpired } from '@/features/checkin/utils/session-validity';
 import type { LiveResultState } from '@/features/checkin/services/scanner-result.service';
 
 export type OfflineScanDependencies = {
-  getPrefetchedSet: () => Promise<{ concertId: string; gateNumber: number; hashes: string[] } | null>;
+  getPrefetchedSet: () => Promise<PrefetchedTicketSet | null>;
   hasLocalHash: (concertId: string, gateNumber: number, qrCodeHash: string) => Promise<boolean>;
   getQueuedItems: (concertId: string, gateNumber: number) => Promise<PendingSyncScan[]>;
 };
