@@ -1,0 +1,65 @@
+OBJECTIVE
+Software Engineering student at the University of Science (HCMUS) with strong passion for high-concurrency backend systems, scalable web architectures, and distributed systems. Experienced in developing enterprise-grade platforms using NestJS, Next.js, React, Expo React Native, TypeScript, PostgreSQL, Redis, RabbitMQ, and Docker. Demonstrates proven ability to solve challenging real-world problems such as zero-oversell flash sales, offline-first data synchronization, and event-driven architecture.
+
+EDUCATION
+University of Science (HCMUS)                                             2023 - 2027
+Bachelor of Software Engineering
+Focused on backend architecture, high-concurrency design, database optimization, distributed systems, and clean code principles.
+
+SKILLS
+• Languages: JavaScript (ES6+), TypeScript, SQL
+• Backend & Architecture: NestJS (Modular), Node.js (Express), RESTful APIs, Event-Driven Architecture, Microservices, JWT, RBAC
+• Frontend & Mobile: Next.js 16 (App Router), React 19, Expo (React Native), Tailwind CSS v4, Shadcn UI
+• Database & Concurrency: PostgreSQL, Prisma ORM, Redis (Lua Scripting, Caching, Rate Limiting), RabbitMQ
+• DevOps & Testing: Docker, Docker Compose, Nginx, Git, Playwright (E2E), k6 (Load Testing), Postman, Swagger/OpenAPI
+• AI & Vibe Coding: Model Context Protocol (MCP), Prompt Engineering across SDLC, Automated QA Verification
+
+CERTIFICATIONS
+TOEIC Listening & Reading: 850/990                                         01/10/2024
+
+PROFESSIONAL EXPERIENCE & PROJECTS
+
+Tixora — High-Concurrency Ticketing & Offline Gate Check-in Platform        05/2026 - Present
+A distributed event ticketing and gate verification platform built with a pnpm Monorepo comprising 4 standalone apps (Audience Web, Admin Portal, Mobile Gate Scanner, and Backend Core API) designed for 40,000+ attendee stadium concerts.
+Technologies:
+• Frontend: Next.js 16 (App Router), TypeScript, Tailwind CSS v4, Lucide Icons
+• Mobile: Expo (React Native), Expo Camera, AsyncStorage, Local Hashing Engine
+• Backend: NestJS Modular, TypeScript, Prisma ORM, PostgreSQL, Stateless JWT, 5-Level RBAC
+• High-Concurrency & Infra: Redis (Lua Atomic Engine, Token Bucket Rate Limiting), RabbitMQ (Event-Driven Broker), PayOS (VietQR), Docker
+• Testing & Tooling: k6 (Concurrency Stress Testing), Playwright (E2E Testing), MCP Server
+Responsibilities:
+• High-Concurrency Flash-Sale Engine: Engineered an atomic seat reservation engine using Redis Lua Scripting running directly in RAM with a 10-minute hold TTL countdown, achieving 100% Zero-Oversell under 1,000 simultaneous concurrent users verified by k6 benchmarks.
+• Event-Driven Traffic Leveling: Implemented RabbitMQ message queues to decouple the booking API from physical PostgreSQL writes, effectively shaving write I/O traffic spikes and preventing database connection pool starvation.
+• Offline-First Gate Check-in: Designed an offline-first scanning mechanism on Expo React Native featuring Gate Segregation, HMAC-SHA256 salted ticket prefetching, and sub-100ms local verification without Internet, syncing via bulk conflict-free timestamps when connectivity recovers.
+• Payment & Idempotency: Integrated VietQR (PayOS) with HMAC-SHA256 webhook validation and a 24-hour Redis SETNX Idempotency Key to guarantee zero duplicate charges upon double-click or network retries.
+• Quality Assurance & Monorepo: Enforced strict quality gates via pre-push script (`pnpm verify:push`) and Playwright E2E suites covering both Web and Admin portals.
+Live Web Demo: https://tixora.tvquang.id.vn
+Live Admin Demo: https://tixora-admin.tvquang.id.vn
+Github: https://github.com/tvquang0511/Tixora
+
+TeamHub — Enterprise Realtime Kanban & Async Worker Platform                01/2026 - 05/2026
+A Trello-like collaboration platform that helps teams manage workspaces, boards, and tasks, featuring realtime board chat and asynchronous background job queues.
+Technologies:
+• Frontend: React 19 (Vite), TypeScript, Tailwind CSS, shadcn/ui, TanStack Query, React DnD, Socket.IO client
+• Backend: Node.js (Express), TypeScript, PostgreSQL + Prisma, JWT, Zod, Swagger/OpenAPI
+• Infrastructure: Redis, BullMQ Standalone Worker, MinIO (S3 Presigned URLs), Nginx Reverse Proxy, Docker Compose
+Responsibilities:
+• Full-Stack Decoupled System: Delivered the complete decoupled architecture (Frontend, Backend API, BullMQ Worker) packaged with Docker Compose and Nginx reverse proxy.
+• Realtime Collaboration: Built bidirectional drag & drop kanban board and dedicated in-board chat rooms using Socket.IO with JWT handshake authentication.
+• Storage & Background Jobs: Implemented MinIO S3 presigned PUT/GET uploads (bypassing API server) and background BullMQ workers for deadline email reminders, orphan blob cleanup, and daily analytics rollups.
+Live Demo: https://teamhub.tvquang.id.vn
+Github: https://github.com/tvquang0511/TeamHub
+
+BoardGameOnline — Team Lead & Full-Stack Engineer                           12/2025 - 02/2026
+A web-based board game platform that allows users to join and play game sessions online with realtime gameplay and player interactions.
+Team size: 3
+Technologies: ReactJS, ShadcnUI, TailwindCSS, NodeJS (Express), KnexJS, Supabase
+Responsibilities:
+• Led a team of 3: defined project milestones, codebase architecture, and conducted PR code reviews.
+• Implemented core game state synchronization and structured logging for debugging WebSocket connections.
+Github: https://github.com/tvquang0511/BoardGameOnline
+
+ACTIVITIES & INTERESTS
+• Stars Academy (09/2025 - 06/2026): Robotics and Basic Coding Instructor for young learners.
+• Competitive Programming: Actively solving Data Structures & Algorithms on LeetCode (https://leetcode.com/u/ixes5).
+• Lifestyle: Enjoys music, fitness, and researching distributed systems architecture.

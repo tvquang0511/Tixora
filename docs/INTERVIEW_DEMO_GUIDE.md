@@ -42,10 +42,11 @@ chứng minh Zero-Oversell. Em rất hào hứng được demo chi tiết cho an
 
 ## 🎬 PHẦN 2: Kịch Bản Demo 7 Phút Thực Chiến (Minute-by-Minute Script)
 
-Chuẩn bị trước các tab trình duyệt và terminal sẵn sàng để chuyển cảnh mượt mà:
-- **Tab 1:** Live Web App (`https://tixora.tvquang.id.vn`)
-- **Tab 2:** Live Admin Portal (`https://tixora-admin.tvquang.id.vn`)
-- **Tab 3:** Swagger Docs (`/api/docs`) hoặc Terminal chạy kiểm thử k6.
+Chuẩn bị trước các tab trình duyệt, thiết bị di động và terminal sẵn sàng để chuyển cảnh mượt mà:
+- **Tab 1 (Live Cloud):** Web Khách Hàng (`https://tixora.tvquang.id.vn`) — Tài khoản: `audience@tixora.local` / `12345678`.
+- **Tab 2 (Live Cloud):** Admin & Organizer Portal (`https://tixora-admin.tvquang.id.vn`) — Tài khoản: `admin@tixora.local` / `12345678`.
+- **Thiết Bị 3 (Local Mobile):** Điện thoại mở **Expo Go** quét mã chạy từ `cd apps/mobile-app && pnpm start` (hoặc mở máy ảo phím `a`/`i`), đăng nhập `checker@tixora.local` / `12345678`.
+- **Terminal 4 (Engineering Proof):** Sẵn sàng chạy lệnh kiểm chứng tải cao: `pnpm test:load:oversell`.
 
 ---
 
