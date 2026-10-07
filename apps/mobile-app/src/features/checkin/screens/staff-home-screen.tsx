@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Network from 'expo-network';
-import { useIsFocused } from '@react-navigation/native';
 
 import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
@@ -19,7 +18,6 @@ import { routes } from '@/lib/routes';
 
 export function StaffHomeScreen() {
   const router = useRouter();
-  const isFocused = useIsFocused();
   const networkState = Network.useNetworkState();
   const { user } = useAuth();
   const { session } = useCurrentScanSession();
@@ -37,30 +35,36 @@ export function StaffHomeScreen() {
   const activeStartLabel = session ? formatSessionDate(session.prefetchedAt) : null;
   const isOnline = networkState.isConnected === true && networkState.isInternetReachable !== false;
 
-  useEffect(() => {
-    async function loadOperationalSnapshot() {
-      if (!isFocused) {
-        return;
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+
+      async function loadOperationalSnapshot() {
+        const queue = await pendingSyncStorage.getQueue();
+        if (!active) return;
+        setPendingSyncCount(queue.length);
+
+        if (!session) {
+          setAcceptedCount(0);
+          setDuplicateCount(0);
+          return;
+        }
+
+        const history = await recentScanHistoryStorage.getHistoryForSession(session.concertId, session.gateNumber);
+        if (!active) return;
+        setAcceptedCount(
+          history.filter((item) => item.status === 'ACCEPTED' || item.status === 'OFFLINE_ACCEPTED' || item.status === 'SYNCED').length,
+        );
+        setDuplicateCount(history.filter((item) => item.status === 'DUPLICATE').length);
       }
 
-      const queue = await pendingSyncStorage.getQueue();
-      setPendingSyncCount(queue.length);
+      void loadOperationalSnapshot();
 
-      if (!session) {
-        setAcceptedCount(0);
-        setDuplicateCount(0);
-        return;
-      }
-
-      const history = await recentScanHistoryStorage.getHistoryForSession(session.concertId, session.gateNumber);
-      setAcceptedCount(
-        history.filter((item) => item.status === 'ACCEPTED' || item.status === 'OFFLINE_ACCEPTED' || item.status === 'SYNCED').length,
-      );
-      setDuplicateCount(history.filter((item) => item.status === 'DUPLICATE').length);
-    }
-
-    void loadOperationalSnapshot();
-  }, [isFocused, session]);
+      return () => {
+        active = false;
+      };
+    }, [session])
+  );
 
   const networkBadge = useMemo(
     () => (isOnline ? { label: 'Online sync ready', tone: 'success' as const } : { label: 'Offline mode', tone: 'warning' as const }),

@@ -271,6 +271,123 @@ async function buildOrderPlan(prisma: PrismaClient): Promise<OrderPlan> {
     );
   }
 
+  // --- Seed deterministic demo orders and tickets for audience@tixora.local ---
+  const defaultAudience = await prisma.user.findUnique({
+    where: { email: "audience@tixora.local" },
+    select: { id: true },
+  });
+
+  if (defaultAudience) {
+    const pklConcertId = "2b7e14d8-2a17-4ac4-bc9c-02fa998bf293";
+    const pklCategory = categories.find(
+      (c) => c.concert_id === pklConcertId && c.name === "SWAN",
+    );
+    if (pklCategory) {
+      const orderId = faker.string.uuid();
+      const unitPrice = Number(pklCategory.price);
+      const createdAt = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+      const expiresAt = new Date(createdAt.getTime() + 10 * 60 * 1000);
+
+      // Ticket 1: Active, unscanned ticket ready to be scanned at Gate 1
+      tickets.push({
+        id: faker.string.uuid(),
+        order_id: orderId,
+        concert_id: pklConcertId,
+        category_name: pklCategory.name,
+        qr_code_hash: crypto
+          .createHash("sha256")
+          .update(`ticket-${orderId}-0-demo-unscanned`)
+          .digest("hex"),
+        is_scanned: false,
+        scanned_at: null,
+      });
+
+      // Ticket 2: Already used ticket to demonstrate duplicate scan alert
+      tickets.push({
+        id: faker.string.uuid(),
+        order_id: orderId,
+        concert_id: pklConcertId,
+        category_name: pklCategory.name,
+        qr_code_hash: crypto
+          .createHash("sha256")
+          .update(`ticket-${orderId}-1-demo-scanned`)
+          .digest("hex"),
+        is_scanned: true,
+        scanned_at: new Date(Date.now() - 30 * 60 * 1000),
+      });
+
+      orders.push({
+        id: orderId,
+        user_id: defaultAudience.id,
+        concert_id: pklConcertId,
+        total_amount: (unitPrice * 2).toString(),
+        status: "PAID",
+        created_at: createdAt,
+        expires_at: expiresAt,
+        ticket_metadata: {
+          quantity: 2,
+          unit_price: unitPrice,
+          updated_at: createdAt.toISOString(),
+          category_id: pklCategory.id,
+          category_name: pklCategory.name,
+          ticket_breakdown: [
+            {
+              quantity: 2,
+              category_id: pklCategory.id,
+            },
+          ],
+        },
+      });
+    }
+
+    const chongGaiId = "c09a6502-e081-483a-96f6-d0001c06b5d1";
+    const chongGaiCat = categories.find(
+      (c) => c.concert_id === chongGaiId && c.name === "S-VIP 1",
+    );
+    if (chongGaiCat) {
+      const orderId = faker.string.uuid();
+      const unitPrice = Number(chongGaiCat.price);
+      const createdAt = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000);
+      const expiresAt = new Date(createdAt.getTime() + 10 * 60 * 1000);
+
+      tickets.push({
+        id: faker.string.uuid(),
+        order_id: orderId,
+        concert_id: chongGaiId,
+        category_name: chongGaiCat.name,
+        qr_code_hash: crypto
+          .createHash("sha256")
+          .update(`ticket-${orderId}-0-chonggai`)
+          .digest("hex"),
+        is_scanned: true,
+        scanned_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+      });
+
+      orders.push({
+        id: orderId,
+        user_id: defaultAudience.id,
+        concert_id: chongGaiId,
+        total_amount: unitPrice.toString(),
+        status: "PAID",
+        created_at: createdAt,
+        expires_at: expiresAt,
+        ticket_metadata: {
+          quantity: 1,
+          unit_price: unitPrice,
+          updated_at: createdAt.toISOString(),
+          category_id: chongGaiCat.id,
+          category_name: chongGaiCat.name,
+          ticket_breakdown: [
+            {
+              quantity: 1,
+              category_id: chongGaiCat.id,
+            },
+          ],
+        },
+      });
+    }
+  }
+
   console.log(
     `[seed] generated ${orders.length} paid orders and ${tickets.length} tickets`,
   );

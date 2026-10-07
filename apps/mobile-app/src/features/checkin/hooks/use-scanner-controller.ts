@@ -57,6 +57,16 @@ export function useScannerController({ isOnline, session, userId }: UseScannerCo
     };
   }, []);
 
+  const refreshOfflinePanels = async (concertId: string, gateNumber: number) => {
+    const [queue, history] = await Promise.all([
+      pendingSyncStorage.getQueueForSession(concertId, gateNumber),
+      recentScanHistoryStorage.getHistoryForSession(concertId, gateNumber),
+    ]);
+
+    setPendingCount(queue.length);
+    setRecentHistory(history);
+  };
+
   useEffect(() => {
     async function loadOfflineState() {
       if (!session) {
@@ -176,16 +186,6 @@ export function useScannerController({ isOnline, session, userId }: UseScannerCo
     setAcceptedCount((count) => count + delta.accepted);
     setSyncedCount((count) => count + delta.synced);
     setDuplicateCount((count) => count + delta.duplicate);
-  };
-
-  const refreshOfflinePanels = async (concertId: string, gateNumber: number) => {
-    const [queue, history] = await Promise.all([
-      pendingSyncStorage.getQueueForSession(concertId, gateNumber),
-      recentScanHistoryStorage.getHistoryForSession(concertId, gateNumber),
-    ]);
-
-    setPendingCount(queue.length);
-    setRecentHistory(history);
   };
 
   const pushHistoryItem = async (item: RecentScanHistoryItem) => {

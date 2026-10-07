@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
-const PRIMARY_CHECKER_EMAIL = "quang.checker@tixora.local";
+const DEFAULT_CHECKER_EMAIL = "checker@tixora.local";
+const SECONDARY_CHECKER_EMAIL = "quang.checker@tixora.local";
 
 export async function seedCheckerAssignments(prisma: PrismaClient) {
   const checkers = await prisma.user.findMany({
@@ -8,13 +9,19 @@ export async function seedCheckerAssignments(prisma: PrismaClient) {
     select: { id: true, email: true },
     orderBy: { email: "asc" },
   });
-  const primaryChecker = checkers.find(
-    (checker) => checker.email === PRIMARY_CHECKER_EMAIL,
+  const defaultChecker = checkers.find(
+    (checker) => checker.email === DEFAULT_CHECKER_EMAIL,
   );
-  if (!primaryChecker) throw new Error(`Missing ${PRIMARY_CHECKER_EMAIL}`);
+  if (!defaultChecker) throw new Error(`Missing ${DEFAULT_CHECKER_EMAIL}`);
+
+  const secondaryChecker = checkers.find(
+    (checker) => checker.email === SECONDARY_CHECKER_EMAIL,
+  );
 
   const otherCheckers = checkers.filter(
-    (checker) => checker.id !== primaryChecker.id,
+    (checker) =>
+      checker.id !== defaultChecker.id &&
+      checker.id !== secondaryChecker?.id,
   );
   const concerts = await prisma.concert.findMany({
     select: {
@@ -38,17 +45,26 @@ export async function seedCheckerAssignments(prisma: PrismaClient) {
       );
     }
 
-    return gates.map((gate, index) => ({
-      concert_id: concert.id,
-      gate_number: gate,
-      checker_id:
-        index === 0
-          ? primaryChecker.id
-          : otherCheckers[(index - 1) % otherCheckers.length].id,
-      created_at: new Date(
-        concert.start_time.getTime() - 7 * 24 * 60 * 60 * 1000,
-      ),
-    }));
+    return gates.map((gate, index) => {
+      let checkerId: string;
+      if (index === 0) {
+        checkerId = defaultChecker.id;
+      } else if (index === 1 && secondaryChecker) {
+        checkerId = secondaryChecker.id;
+      } else {
+        const offset = secondaryChecker ? 2 : 1;
+        checkerId = otherCheckers[(index - offset) % otherCheckers.length].id;
+      }
+
+      return {
+        concert_id: concert.id,
+        gate_number: gate,
+        checker_id: checkerId,
+        created_at: new Date(
+          concert.start_time.getTime() - 7 * 24 * 60 * 60 * 1000,
+        ),
+      };
+    });
   });
 
   await prisma.checkerAssignment.createMany({ data: rows });

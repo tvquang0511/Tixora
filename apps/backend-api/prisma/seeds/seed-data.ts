@@ -3,6 +3,8 @@ import { relDays } from "./seed-utils";
 export const DEFAULT_PASSWORD = "12345678";
 export const BCRYPT_SALT = "$2b$10$EixZaYVK1fsbw1ZfbX3OXe";
 export const FAKER_SEED = 9;
+export const SUPABASE_STORAGE_URL =
+  "https://wizyehiohxoyjibtcnox.supabase.co/storage/v1/object/public/concert-assets/posters";
 
 export const roles = [
   { name: "SuperAdmin", description: "Root system administrator" },
@@ -143,34 +145,46 @@ export const organizerProfiles = [
   },
 ];
 
+export const DEFAULT_USER_IDS = {
+  SUPERADMIN: "00000000-0000-4000-8000-000000000001",
+  ADMIN: "00000000-0000-4000-8000-000000000002",
+  ORGANIZER: ORGANIZER_IDS.DEFAULT_ORGANIZER,
+  AUDIENCE: "00000000-0000-4000-8000-000000000004",
+  CHECKER: "00000000-0000-4000-8000-000000000005",
+};
+
 export const staticUsers = [
   // --- Default accounts from README (Password: 12345678) ---
   {
+    id: DEFAULT_USER_IDS.SUPERADMIN,
     email: "superadmin@tixora.local",
     full_name: "Super Administrator",
     status: "ACTIVE",
     roles: ["SuperAdmin"],
   },
   {
+    id: DEFAULT_USER_IDS.ADMIN,
     email: "admin@tixora.local",
     full_name: "Tixora Admin",
     status: "ACTIVE",
     roles: ["Admin"],
   },
   {
-    id: ORGANIZER_IDS.DEFAULT_ORGANIZER,
+    id: DEFAULT_USER_IDS.ORGANIZER,
     email: "organizer@tixora.local",
     full_name: "Tixora Organizer",
     status: "ACTIVE",
     roles: ["Organizer"],
   },
   {
+    id: DEFAULT_USER_IDS.AUDIENCE,
     email: "audience@tixora.local",
     full_name: "Tixora Audience",
     status: "ACTIVE",
     roles: ["Audience"],
   },
   {
+    id: DEFAULT_USER_IDS.CHECKER,
     email: "checker@tixora.local",
     full_name: "Tixora Checker",
     status: "ACTIVE",
@@ -267,10 +281,8 @@ const rawConcerts = [
     ai_bio:
       "Dàn Anh Tài thực lực với phong cách đa dạng, cống hiến hết mình vì nghệ thuật. Đêm diễn hứa hẹn mang đến những tiết mục kết hợp bùng nổ và cảm xúc thăng hoa khó quên cho người hâm mộ.",
     start_time: new Date("2025-09-07T18:30:00+07:00"),
-    svg_map_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/9a07b16a-4532-4e1a-b074-547c3bb58ede.jpg",
-    poster_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/c09a6502-e081-483a-96f6-d0001c06b5d1.png",
+    svg_map_url: "/maps/my-dinh-stadium.svg",
+    poster_url: `${SUPABASE_STORAGE_URL}/c09a6502-e081-483a-96f6-d0001c06b5d1.jpg`,
     status: "COMPLETED",
     ticket_categories: [
       {
@@ -637,10 +649,8 @@ const rawConcerts = [
     ai_bio:
       "Dàn Anh Trai năng động, cá tính với tư duy âm nhạc hiện đại, vũ đạo cực chất và khả năng tương tác tuyệt vời với khán giả. Show diễn hứa hẹn sẽ mang đến những khoảnh khắc bùng nổ tuyệt đỉnh.",
     start_time: new Date("2026-04-18T12:00:00+07:00"),
-    svg_map_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/c6c387ba-6cd8-4aa6-a5f9-9801b112a261.jpg",
-    poster_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/f3d948b0-2ca9-4cd6-8fd0-0fcf10dcaa4f.jpeg",
+    svg_map_url: "/maps/secc-hall-a.svg",
+    poster_url: `${SUPABASE_STORAGE_URL}/f3d948b0-2ca9-4cd6-8fd0-0fcf10dcaa4f.jpg`,
     status: "COMPLETED",
     ticket_categories: [
       {
@@ -841,10 +851,8 @@ const rawConcerts = [
     ai_bio:
       "Sự kết hợp của các giọng ca nữ hàng đầu V-Pop mang đậm tính nghệ thuật, tôn vinh nữ quyền và lan tỏa nguồn năng lượng tích cực thông qua âm nhạc đỉnh cao.",
     start_time: new Date("2025-04-12T19:00:00+07:00"),
-    svg_map_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/fa3719d9-a043-442d-bb74-af2af73e0f4c.png",
-    poster_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/aa1064b6-095e-4cc3-a3ad-0aa46a364f28.jpg",
+    svg_map_url: "/maps/phu-tho-arena.svg",
+    poster_url: `${SUPABASE_STORAGE_URL}/aa1064b6-095e-4cc3-a3ad-0aa46a364f28.jpg`,
     status: "COMPLETED",
     ticket_categories: [
       {
@@ -1149,10 +1157,8 @@ const rawConcerts = [
     ai_bio:
       "Phùng Khánh Linh là nghệ sĩ indie-pop/city-pop tài năng của Việt Nam với giọng ca trong trẻo đầy nội lực và phong cách sáng tác đầy chiều sâu. Live experience lần này sẽ là hành trình khám phá thế giới nội tâm đầy sắc màu của cô.",
     start_time: new Date("2026-08-08T19:00:00+07:00"),
-    svg_map_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/efa1fefb-8aff-4885-9155-901e2e59f6c9.jpg",
-    poster_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/2b7e14d8-2a17-4ac4-bc9c-02fa998bf293.png",
+    svg_map_url: "/maps/viet-xo-theatre.svg",
+    poster_url: `${SUPABASE_STORAGE_URL}/2b7e14d8-2a17-4ac4-bc9c-02fa998bf293.jpg`,
     status: "PUBLISHED",
     ticket_categories: [
       {
@@ -1245,10 +1251,8 @@ const rawConcerts = [
     ai_bio:
       "Đêm nhạc thứ hai trong chuỗi live concert của Phùng Khánh Linh tại Hà Nội, được thiết kế với kịch bản âm nhạc và hòa âm phối khí thay đổi nhằm đem lại bất ngờ trọn vẹn nhất cho khán giả tham dự cả hai đêm.",
     start_time: new Date("2026-08-09T19:00:00+07:00"),
-    svg_map_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/efa1fefb-8aff-4885-9155-901e2e59f6c9.jpg",
-    poster_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/1054bc1a-1b0e-4810-b2df-76fa27e5745e.jpeg",
+    svg_map_url: "/maps/viet-xo-theatre.svg",
+    poster_url: `${SUPABASE_STORAGE_URL}/1054bc1a-1b0e-4810-b2df-76fa27e5745e.jpg`,
     status: "PUBLISHED",
     ticket_categories: [
       {
@@ -1332,10 +1336,8 @@ const rawConcerts = [
     ai_bio:
       "Hà Nhi là nữ ca sĩ sở hữu chất giọng khàn đặc trưng, ấm áp và đầy cảm xúc, nổi tiếng với các bản tình ca buồn ngọt ngào. Đêm nhạc sẽ là nơi cô chia sẻ những câu chuyện tình yêu mộc mạc và chân thành cùng người hâm mộ.",
     start_time: new Date("2026-08-23T18:30:00+07:00"),
-    svg_map_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/bfb2bc9a-5c55-4af1-9ef6-eba3f9499140.jpg",
-    poster_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/3ac46e1d-8f5b-47a9-b9d1-cfbe7d8c92ed.jpg",
+    svg_map_url: "/maps/default.svg",
+    poster_url: `${SUPABASE_STORAGE_URL}/3ac46e1d-8f5b-47a9-b9d1-cfbe7d8c92ed.jpg`,
     status: "PUBLISHED",
     ticket_categories: [
       {
@@ -1411,10 +1413,8 @@ const rawConcerts = [
     ai_bio:
       "Sự kết hợp đầy ngẫu hứng và mới mẻ của thế hệ nghệ sĩ trẻ, mang đến trải nghiệm thưởng thức âm nhạc đa giác quan độc đáo và những ca khúc tự sự sâu lắng.",
     start_time: new Date("2026-08-01T19:00:00+07:00"),
-    svg_map_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/bf4cfc05-8dd8-46f0-ac2b-38e9bcbb0303.jpeg",
-    poster_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/6865c479-b18d-4e0a-b1e8-e9a7160d3308.jpeg",
+    svg_map_url: "/maps/phu-tho-arena.svg",
+    poster_url: `${SUPABASE_STORAGE_URL}/6865c479-b18d-4e0a-b1e8-e9a7160d3308.jpg`,
     status: "PUBLISHED",
     ticket_categories: [
       {
@@ -1579,7 +1579,7 @@ const CONCERT_CONFIG: Record<
 > = {
   // 1. Anh Trai Vượt Ngàn Chông Gai: Held 10 days ago (Completed, Ready for Settlement)
   "c09a6502-e081-483a-96f6-d0001c06b5d1": {
-    organizer_id: ORGANIZER_IDS.CT_ENTERTAINMENT,
+    organizer_id: ORGANIZER_IDS.DEFAULT_ORGANIZER,
     start_time: relDays(-10, 18),
     sales_start_at: relDays(-45, 10),
     status: "COMPLETED",
@@ -1600,14 +1600,14 @@ const CONCERT_CONFIG: Record<
   },
   // 4. Phùng Khánh Linh Chapter 3: In 8 days (Published, Sales Active, Escrow Holding)
   "2b7e14d8-2a17-4ac4-bc9c-02fa998bf293": {
-    organizer_id: ORGANIZER_IDS.VIETART,
+    organizer_id: ORGANIZER_IDS.DEFAULT_ORGANIZER,
     start_time: relDays(8, 19),
     sales_start_at: relDays(-25, 10),
     status: "PUBLISHED",
   },
   // 5. Phùng Khánh Linh Chapter 4: In 9 days (Published, Sales Active, Escrow Holding)
   "1054bc1a-1b0e-4810-b2df-76fa27e5745e": {
-    organizer_id: ORGANIZER_IDS.VIETART,
+    organizer_id: ORGANIZER_IDS.DEFAULT_ORGANIZER,
     start_time: relDays(9, 19),
     sales_start_at: relDays(-25, 10),
     status: "PUBLISHED",
@@ -1640,10 +1640,8 @@ const extraConcerts = [
     ai_bio:
       "Biểu tượng của âm nhạc Hip-hop/RnB đương đại Việt Nam với âm thanh chuẩn quốc tế và hiệu ứng thị giác đỉnh cao.",
     start_time: relDays(40, 20),
-    svg_map_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/9a07b16a-4532-4e1a-b074-547c3bb58ede.jpg",
-    poster_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/c09a6502-e081-483a-96f6-d0001c06b5d1.png",
+    svg_map_url: "/maps/quan-khu-7-stadium.svg",
+    poster_url: `${SUPABASE_STORAGE_URL}/77777777-7777-4000-8000-000000000008.jpg`,
     status: "PUBLISHED",
     ticket_categories: [
       {
@@ -1698,10 +1696,8 @@ const extraConcerts = [
     ai_bio:
       "Đêm nhạc mang âm hưởng mộc, tôn vinh nghệ thuật indie và kết nối cảm xúc người nghe.",
     start_time: relDays(-7, 18),
-    svg_map_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/bf4cfc05-8dd8-46f0-ac2b-38e9bcbb0303.jpeg",
-    poster_url:
-      "https://ovhsrgugrzbbqtlvplef.supabase.co/storage/v1/object/public/concert-assets/posters/3ac46e1d-8f5b-47a9-b9d1-cfbe7d8c92ed.jpg",
+    svg_map_url: "/maps/viet-xo-theatre.svg",
+    poster_url: `${SUPABASE_STORAGE_URL}/99999999-9999-4000-8000-000000000009.jpg`,
     status: "COMPLETED",
     ticket_categories: [
       {

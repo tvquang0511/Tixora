@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Network from 'expo-network';
-import { useIsFocused } from '@react-navigation/native';
 
 import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
@@ -24,7 +23,15 @@ const SCANNER_BOTTOM_INSET = 118;
 
 export function ScannerScreen() {
   const router = useRouter();
-  const isFocused = useIsFocused();
+  const [isFocused, setIsFocused] = useState(true);
+  useFocusEffect(
+    useCallback(() => {
+      setIsFocused(true);
+      return () => {
+        setIsFocused(false);
+      };
+    }, [])
+  );
   const networkState = Network.useNetworkState();
   const { user } = useAuth();
   const { session, isLoading } = useCurrentScanSession();
@@ -175,7 +182,7 @@ export function ScannerScreen() {
               enableTorch={isTorchEnabled}
               facing="back"
               onBarcodeScanned={isFocused ? (result) => void handleBarcodeScanned(result) : undefined}
-              style={StyleSheet.absoluteFillObject}
+              style={StyleSheet.absoluteFill}
             />
 
             <View style={styles.cameraTopStrip}>

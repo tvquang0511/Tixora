@@ -152,6 +152,9 @@ export function HeroCarousel() {
         <img
           key={`prev-glow-${previousConcert.id}`}
           src={getImageSrc(previousConcert)}
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+          }}
           className="absolute inset-0 w-full h-full object-cover filter blur-[60px] opacity-10 pointer-events-none transition-all duration-700"
           alt=""
         />
@@ -162,6 +165,9 @@ export function HeroCarousel() {
         <img
           key={`current-glow-${featuredConcert.id}`}
           src={getImageSrc(featuredConcert)}
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+          }}
           className="absolute inset-0 w-full h-full object-cover filter blur-[60px] opacity-15 pointer-events-none animate-fade-in-quick transition-all duration-700"
           alt=""
         />
@@ -282,8 +288,11 @@ export function HeroCarousel() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={getImageSrc(featuredConcert)}
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 hover:scale-105"
                   alt={featuredConcert.title}
+                  onError={(e) => {
+                    e.currentTarget.src = "/Mockimg.webp";
+                  }}
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-transparent" />
               </div>
@@ -340,6 +349,9 @@ export function ConcertCard({
               : "/Mockimg.webp"
           }
           alt={concert.title}
+          onError={(e) => {
+            e.currentTarget.src = "/Mockimg.webp";
+          }}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-linear-to-t from-bg-[#111318]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -1016,6 +1028,9 @@ export function ConcertDetailHero({ concert }: { concert: ConcertDetailItem }) {
           <img
             src={concert.posterUrl || "/Mockimg.webp"}
             alt={concert.title}
+            onError={(e) => {
+              e.currentTarget.src = "/Mockimg.webp";
+            }}
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
           />
 

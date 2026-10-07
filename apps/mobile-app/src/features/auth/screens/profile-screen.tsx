@@ -1,7 +1,7 @@
 import { Alert, StyleSheet, View } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
 
 import { AppScreen } from '@/components/ui/app-screen';
 import { AppText } from '@/components/ui/app-text';
@@ -14,23 +14,32 @@ import { pendingSyncStorage, scanSessionStorage } from '@/features/checkin/stora
 
 export function ProfileScreen() {
   const { user, logout, isSubmitting } = useAuth();
-  const isFocused = useIsFocused();
   const [pendingSyncCount, setPendingSyncCount] = useState(0);
   const [sessionLabel, setSessionLabel] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadOperationalState() {
-      const [queue, session] = await Promise.all([
-        pendingSyncStorage.getQueue(),
-        scanSessionStorage.getCurrentSession(),
-      ]);
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
 
-      setPendingSyncCount(queue.length);
-      setSessionLabel(session ? `${session.concertTitle} - ${session.gateLabel}` : null);
-    }
+      async function loadOperationalState() {
+        const [queue, session] = await Promise.all([
+          pendingSyncStorage.getQueue(),
+          scanSessionStorage.getCurrentSession(),
+        ]);
 
-    void loadOperationalState();
-  }, [isFocused]);
+        if (active) {
+          setPendingSyncCount(queue.length);
+          setSessionLabel(session ? `${session.concertTitle} - ${session.gateLabel}` : null);
+        }
+      }
+
+      void loadOperationalState();
+
+      return () => {
+        active = false;
+      };
+    }, [])
+  );
 
   const handleLogout = () => {
     if (pendingSyncCount === 0) {

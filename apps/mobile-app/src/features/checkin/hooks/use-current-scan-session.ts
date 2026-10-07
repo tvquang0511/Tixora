@@ -1,29 +1,38 @@
-import { useEffect, useState } from 'react';
-import { useIsFocused } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
 
 import { scanSessionStorage, type CurrentScanSession } from '@/features/checkin/storage/checkin-storage';
 
 export function useCurrentScanSession() {
   const [session, setSession] = useState<CurrentScanSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const isFocused = useIsFocused();
 
-  useEffect(() => {
-    async function loadSession() {
-      setIsLoading(true);
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
 
-      try {
-        const stored = await scanSessionStorage.getCurrentSession();
-        setSession(stored);
-      } finally {
-        setIsLoading(false);
+      async function loadSession() {
+        setIsLoading(true);
+
+        try {
+          const stored = await scanSessionStorage.getCurrentSession();
+          if (active) {
+            setSession(stored);
+          }
+        } finally {
+          if (active) {
+            setIsLoading(false);
+          }
+        }
       }
-    }
 
-    if (isFocused) {
       void loadSession();
-    }
-  }, [isFocused]);
+
+      return () => {
+        active = false;
+      };
+    }, [])
+  );
 
   return {
     session,

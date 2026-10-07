@@ -426,7 +426,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#132846',
   },
   concertGlow: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: 'rgba(94, 161, 255, 0.10)',
   },
   concertAccent: {
