@@ -130,6 +130,15 @@ export interface OrganizerSettlementResponse {
   items: SettlementConcertItem[];
 }
 
+export interface OrganizerRevenueAiInsightResponse {
+  peak_purchasing_hours: string;
+  tier_performance_analysis: string;
+  tactical_recommendations: string[];
+  occupancy_summary: string;
+  analyzed_at: string;
+  is_cached: boolean;
+}
+
 export const organizerRevenueService = {
   async getSummary(params?: {
     from?: string;
@@ -199,6 +208,14 @@ export const organizerRevenueService = {
     const qs = query.toString();
     return apiClient.get<OrganizerSettlementResponse>(
       `/organizer/revenue/settlement${qs ? `?${qs}` : ""}`,
+    );
+  },
+
+  async getAiInsights(
+    refresh = false,
+  ): Promise<OrganizerRevenueAiInsightResponse> {
+    return apiClient.get<OrganizerRevenueAiInsightResponse>(
+      `/organizer/revenue/ai-insights${refresh ? "?refresh=true" : ""}`,
     );
   },
 };

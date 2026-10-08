@@ -17,6 +17,7 @@ import { RevenueFilterBar } from "./_components/RevenueFilterBar";
 import { RevenueTrendChart } from "./_components/RevenueTrendChart";
 import { ConcertRevenueTable } from "./_components/ConcertRevenueTable";
 import { ConcertDetailDrawer } from "./_components/ConcertDetailDrawer";
+import { OrganizerRevenueAiCard } from "./_components/OrganizerRevenueAiCard";
 
 export default function OrganizerRevenuePage() {
   const { user } = useAuth();
@@ -186,6 +187,9 @@ export default function OrganizerRevenuePage() {
           </div>
         </div>
       )}
+
+      {/* AI Revenue & Tactical Strategy Card */}
+      <OrganizerRevenueAiCard />
 
       {/* KPI Summary Cards */}
       <RevenueSummaryCards summary={summary} isLoading={isLoading} />

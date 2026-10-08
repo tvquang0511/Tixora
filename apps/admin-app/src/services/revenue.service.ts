@@ -248,3 +248,19 @@ export async function getSettlements(params?: {
   const endpoint = `/admin/revenue/settlements${queryString ? `?${queryString}` : ""}`;
   return apiClient.get<SettlementsResponse>(endpoint);
 }
+
+export interface AdminRevenueAiInsightResponse {
+  platform_financial_health: string;
+  top_organizers_performance: string;
+  risk_alerts: string[];
+  platform_growth_strategies: string[];
+  analyzed_at: string;
+  is_cached: boolean;
+}
+
+export async function getAdminRevenueAiInsights(
+  refresh = false,
+): Promise<AdminRevenueAiInsightResponse> {
+  const endpoint = `/admin/revenue/ai-insights${refresh ? "?refresh=true" : ""}`;
+  return apiClient.get<AdminRevenueAiInsightResponse>(endpoint);
+}

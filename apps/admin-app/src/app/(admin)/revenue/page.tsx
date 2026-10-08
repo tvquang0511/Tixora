@@ -9,6 +9,7 @@ import { TopOrganizersChart } from "./_components/TopOrganizersChart";
 import { OrganizerRevenueTable } from "./_components/OrganizerRevenueTable";
 import { ConcertRevenueTable } from "./_components/ConcertRevenueTable";
 import { ConcertDetailDrawer } from "./_components/ConcertDetailDrawer";
+import { AdminRevenueAiCard } from "./_components/AdminRevenueAiCard";
 
 export default function AdminRevenuePage() {
   const {
@@ -88,6 +89,9 @@ export default function AdminRevenuePage() {
           </button>
         </div>
       </div>
+
+      {/* Executive Intelligence: AI Revenue & Growth Strategy */}
+      <AdminRevenueAiCard />
 
       {/* Layer 1: Executive KPI Cards */}
       <RevenueSummaryCards summary={summary} isLoading={isSummaryLoading} />
