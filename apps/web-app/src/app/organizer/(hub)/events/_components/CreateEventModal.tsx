@@ -17,6 +17,7 @@ import {
 import { motion } from "framer-motion";
 import { useToast } from "@/context/ToastContext";
 import { createConcert, CreateConcertDto } from "@/services/concert.service";
+import { organizerService } from "@/services/organizer.service";
 import { getVenues, type VenueItem } from "@/services/venue.service";
 import { uploadImage, uploadSvg } from "@/services/upload.service";
 
@@ -110,6 +111,11 @@ export function CreateEventModal({
   const [performers, setPerformers] = useState<string[]>([]);
   const [newPerformer, setNewPerformer] = useState("");
 
+  // AI Copilot states
+  const [isParsingPdf, setIsParsingPdf] = useState(false);
+  const [aiBio, setAiBio] = useState("");
+  const [aiDraftBadge, setAiDraftBadge] = useState<string | null>(null);
+
   // Venues list
   const [venues, setVenues] = useState<VenueItem[]>([]);
 
@@ -155,6 +161,8 @@ export function CreateEventModal({
     setSvgMapUrl("/maps/default.svg");
     setPerformers([]);
     setNewPerformer("");
+    setAiBio("");
+    setAiDraftBadge(null);
     setTicketTiers([
       {
         name: "Vé Tiêu Chuẩn (GA)",
@@ -172,6 +180,68 @@ export function CreateEventModal({
       },
     ]);
     setActiveTab("info");
+  };
+
+  const handlePdfUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+      toastError("Chỉ chấp nhận tệp có định dạng .pdf");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      toastError("Tệp PDF không được vượt quá 15MB");
+      e.target.value = "";
+      return;
+    }
+
+    setIsParsingPdf(true);
+    try {
+      const draft = await organizerService.generateEventDraftFromPdf(file);
+      if (draft.name) setName(draft.name);
+      if (draft.description) setDescription(draft.description);
+      if (draft.category) setCategory(draft.category);
+      if (draft.suggested_location && !location) {
+        setLocation(draft.suggested_location);
+      }
+      if (Array.isArray(draft.performers) && draft.performers.length > 0) {
+        setPerformers(draft.performers);
+      }
+      if (draft.ai_bio) {
+        setAiBio(draft.ai_bio);
+      }
+      if (
+        Array.isArray(draft.suggested_ticket_tiers) &&
+        draft.suggested_ticket_tiers.length > 0
+      ) {
+        setTicketTiers(
+          draft.suggested_ticket_tiers.map((t, idx) => ({
+            name: t.name,
+            price: t.estimated_price || (idx === 0 ? 950000 : 350000),
+            total_quantity: idx === 0 ? 150 : 500,
+            max_per_user: 4,
+            gate_number: idx + 1,
+          })),
+        );
+      }
+      setAiDraftBadge(`Đã tự động điền từ "${file.name}"`);
+      success(
+        "AI Copilot đã điền sẵn thông tin sự kiện! Vui lòng chọn ngày giờ và địa điểm trước khi lưu.",
+      );
+    } catch (err: unknown) {
+      console.error("PDF Copilot extraction failed:", err);
+      toastError(
+        err instanceof Error
+          ? err.message
+          : "Không thể phân tích tài liệu PDF.",
+      );
+    } finally {
+      setIsParsingPdf(false);
+      e.target.value = "";
+    }
   };
 
   const handleVenueChange = (selectedVenueId: string) => {
@@ -327,7 +397,7 @@ export function CreateEventModal({
         description: description.trim(),
         location: location.trim(),
         venue_id: venueId || null,
-        ai_bio: name.trim(),
+        ai_bio: aiBio.trim() || name.trim(),
         start_time: startDt.toISOString(),
         svg_map_url: svgMapUrl || "/maps/default.svg",
         poster_url: posterUrl.trim() || undefined,
@@ -445,6 +515,68 @@ export function CreateEventModal({
 
           {/* Body Content */}
           <div className="p-6 overflow-y-auto space-y-6 flex-1 text-slate-200">
+            {/* AI Event Copilot Quick Fill Banner */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-950/70 via-sky-950/50 to-indigo-950/70 border border-sky-500/30 p-4 shadow-lg shadow-sky-950/30">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-400 shrink-0 shadow-inner">
+                    <Sparkles className="w-5 h-5 animate-pulse" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-xs font-bold text-white tracking-tight">
+                        AI Event Copilot
+                      </h4>
+                      <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                        Thông minh
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-300 mt-0.5">
+                      Tải lên tệp PDF kế hoạch / proposal / press kit để AI tự
+                      động điền Form sự kiện
+                    </p>
+                  </div>
+                </div>
+
+                <label className="relative inline-flex items-center gap-2 px-4 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs rounded-xl cursor-pointer shadow-md shadow-sky-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 shrink-0">
+                  {isParsingPdf ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Đang phân tích PDF...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Điền nhanh từ PDF</span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    className="hidden"
+                    disabled={isParsingPdf}
+                    onChange={handlePdfUpload}
+                  />
+                </label>
+              </div>
+
+              {aiDraftBadge && (
+                <div className="mt-3 pt-3 border-t border-sky-500/20 flex items-center justify-between text-[11px] text-sky-300">
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />
+                    {aiDraftBadge}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setAiDraftBadge(null)}
+                    className="text-slate-400 hover:text-white text-[10px]"
+                  >
+                    Đóng
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* TAB 1: THÔNG TIN CHUNG */}
             {activeTab === "info" && (
               <div className="space-y-4">
@@ -588,6 +720,25 @@ export function CreateEventModal({
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Mô tả nội dung chương trình, các mốc thời gian, quy định tham gia..."
                     className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-400"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                      Điểm nhấn đêm nhạc (AI Highlight Summary)
+                    </label>
+                    <span className="text-[10px] text-slate-400">
+                      Hiển thị nổi bật cho khán giả trên trang đặt vé
+                    </span>
+                  </div>
+                  <textarea
+                    rows={2}
+                    value={aiBio}
+                    onChange={(e) => setAiBio(e.target.value)}
+                    placeholder="2-3 câu tóm tắt điểm đặc sắc của đêm nhạc và lý do khán giả không nên bỏ lỡ..."
+                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-400 resize-none"
                   />
                 </div>
               </div>

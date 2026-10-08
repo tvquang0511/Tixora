@@ -1,4 +1,5 @@
 import { apiClient } from "./api";
+import { tokenStorage } from "@/utils/token.utils";
 
 export interface ApplyOrganizerPayload {
   organization_name: string;
@@ -73,4 +74,53 @@ export const organizerService = {
       payload,
     );
   },
+
+  generateEventDraftFromPdf: async (file: File): Promise<EventDraftDto> => {
+    const token = tokenStorage.getAccessToken();
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const headers = new Headers();
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL || "/api/proxy"}/organizer/ai/draft-from-pdf`,
+      {
+        method: "POST",
+        headers,
+        body: formData,
+      },
+    );
+
+    if (!response.ok) {
+      let errorMessage = response.statusText;
+      try {
+        const errJson = await response.json();
+        if (errJson.message) errorMessage = errJson.message;
+      } catch {
+        // fallback
+      }
+      throw new Error(errorMessage || "Không thể phân tích tệp PDF.");
+    }
+
+    return response.json();
+  },
 };
+
+export interface SuggestedTicketTierDto {
+  name: string;
+  estimated_price?: number;
+}
+
+export interface EventDraftDto {
+  name: string;
+  description: string;
+  category: string;
+  suggested_location?: string;
+  performers: string[];
+  ai_bio: string;
+  house_rules?: string;
+  suggested_ticket_tiers?: SuggestedTicketTierDto[];
+}

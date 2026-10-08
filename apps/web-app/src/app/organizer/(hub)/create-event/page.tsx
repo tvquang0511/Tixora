@@ -10,6 +10,7 @@ import {
   getConcertById,
   CONCERT_CATEGORIES,
 } from "@/services/concert.service";
+import { organizerService } from "@/services/organizer.service";
 import { uploadImage, uploadSvg } from "@/services/upload.service";
 import {
   Plus,
@@ -19,6 +20,9 @@ import {
   AlertCircle,
   ArrowLeft,
   ZoomIn,
+  Sparkles,
+  Upload,
+  Loader2,
 } from "lucide-react";
 
 interface TicketTierForm {
@@ -70,6 +74,11 @@ function CreateOrEditEventForm() {
   const [startTime, setStartTime] = useState("");
   const [posterUrl, setPosterUrl] = useState("");
   const [svgMapUrl, setSvgMapUrl] = useState("");
+
+  // AI Copilot state
+  const [aiBio, setAiBio] = useState("");
+  const [isParsingPdf, setIsParsingPdf] = useState(false);
+  const [aiDraftBadge, setAiDraftBadge] = useState<string | null>(null);
 
   // Upload & Lightbox state
   const [isUploadingPoster, setIsUploadingPoster] = useState(false);
@@ -269,6 +278,66 @@ function CreateOrEditEventForm() {
     setTicketTiers(updated);
   };
 
+  const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+      setError("Chỉ chấp nhận tệp có định dạng .pdf");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      setError("Tệp PDF không được vượt quá 15MB");
+      e.target.value = "";
+      return;
+    }
+
+    setIsParsingPdf(true);
+    setError(null);
+    try {
+      const draft = await organizerService.generateEventDraftFromPdf(file);
+      if (draft.name) setName(draft.name);
+      if (draft.description) setDescription(draft.description);
+      if (draft.category) setCategory(draft.category);
+      if (draft.suggested_location && !location) {
+        setLocation(draft.suggested_location);
+      }
+      if (Array.isArray(draft.performers) && draft.performers.length > 0) {
+        setPerformers(draft.performers);
+      }
+      if (draft.ai_bio) {
+        setAiBio(draft.ai_bio);
+      }
+      if (
+        Array.isArray(draft.suggested_ticket_tiers) &&
+        draft.suggested_ticket_tiers.length > 0
+      ) {
+        setTicketTiers(
+          draft.suggested_ticket_tiers.map((t, idx) => ({
+            name: t.name,
+            price: t.estimated_price || (idx === 0 ? 1500000 : 500000),
+            total_quantity: idx === 0 ? 300 : 1000,
+            max_per_user: 4,
+            gate_number: idx + 1,
+          })),
+        );
+      }
+      setAiDraftBadge(`Đã tự động điền từ "${file.name}"`);
+    } catch (err: unknown) {
+      console.error("PDF Copilot extraction failed:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Không thể phân tích tài liệu PDF.",
+      );
+    } finally {
+      setIsParsingPdf(false);
+      e.target.value = "";
+    }
+  };
+
   const handleSave = async (targetStatus: "DRAFT" | "PENDING_REVIEW") => {
     if (!name.trim()) {
       setError("Vui lòng nhập Tên chương trình / Concert.");
@@ -291,7 +360,7 @@ function CreateOrEditEventForm() {
         name: name.trim(),
         description: description.trim() || "Chưa có mô tả chi tiết.",
         location: location.trim(),
-        ai_bio: "",
+        ai_bio: aiBio.trim() || name.trim(),
         start_time: new Date(startTime).toISOString(),
         svg_map_url:
           toApiUrl(svgMapUrl) || "https://cdn.tixora.local/maps/default.svg",
@@ -375,6 +444,70 @@ function CreateOrEditEventForm() {
         }}
         className="space-y-8"
       >
+        {/* AI Event Copilot Quick Fill Banner */}
+        {!isEdit && (
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-950/70 via-sky-950/50 to-indigo-950/70 border border-sky-500/30 p-5 shadow-xl shadow-sky-950/20">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5">
+                <div className="w-11 h-11 rounded-2xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-400 shrink-0 shadow-inner">
+                  <Sparkles className="w-6 h-6 animate-pulse" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-white tracking-tight">
+                      AI Event Copilot
+                    </h3>
+                    <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                      Tự động điền
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 mt-0.5">
+                    Tải lên tệp PDF kế hoạch / proposal / press kit để AI tự
+                    động trích xuất thông tin chương trình
+                  </p>
+                </div>
+              </div>
+
+              <label className="relative inline-flex items-center gap-2 px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs rounded-xl cursor-pointer shadow-md shadow-sky-500/25 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 shrink-0">
+                {isParsingPdf ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Đang phân tích PDF...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4" />
+                    <span>Điền nhanh từ file PDF</span>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept=".pdf"
+                  className="hidden"
+                  disabled={isParsingPdf}
+                  onChange={handlePdfUpload}
+                />
+              </label>
+            </div>
+
+            {aiDraftBadge && (
+              <div className="mt-3 pt-3 border-t border-sky-500/20 flex items-center justify-between text-xs text-sky-300">
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4 text-sky-400" />
+                  {aiDraftBadge}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setAiDraftBadge(null)}
+                  className="text-slate-400 hover:text-white text-xs cursor-pointer"
+                >
+                  Đóng
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Phần 1: Thông tin cơ bản sự kiện */}
         <div className="p-6 sm:p-8 rounded-3xl bg-slate-950/85 border border-slate-700/80 shadow-xl shadow-black/30 space-y-6">
           <h2 className="text-sm font-semibold text-teal-400 uppercase tracking-wider">
@@ -472,6 +605,25 @@ function CreateOrEditEventForm() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full p-4 bg-slate-900 border border-slate-700/80 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-400"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                  Điểm nhấn đêm nhạc (AI Highlight Summary)
+                </label>
+                <span className="text-[10px] text-slate-400">
+                  Hiển thị nổi bật cho khán giả trên trang đặt vé
+                </span>
+              </div>
+              <textarea
+                rows={2}
+                placeholder="2-3 câu tóm tắt điểm đặc sắc của đêm nhạc và lý do khán giả không nên bỏ lỡ..."
+                value={aiBio}
+                onChange={(e) => setAiBio(e.target.value)}
+                className="w-full p-3 bg-slate-900 border border-slate-700/80 rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-400 resize-none"
               />
             </div>
 
