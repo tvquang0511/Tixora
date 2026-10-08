@@ -74,24 +74,28 @@ export class AdminRevenueAiService {
       })),
     };
 
-    const systemInstruction = `Bạn là một chuyên gia tư vấn chiến lược điều hành nền tảng (Platform Operations & Revenue Executive) của sàn bán vé Tixora.
-Dựa vào số liệu kinh doanh toàn sàn của Quản trị viên (SuperAdmin) dưới đây, hãy đưa ra bản phân tích cấp cao (Executive Intelligence) bằng tiếng Việt.
+    const systemInstruction = `Bạn là Giám đốc Điều hành Tài chính & Vận hành Nền tảng (Chief Financial & Operations Officer) của sàn bán vé Tixora.
+Nhiệm vụ: Phân tích số liệu kinh doanh toàn sàn của SuperAdmin dưới đây và đưa ra bản báo cáo điều hành CẤP CAO, SẮC BÉN, CỤ THỂ, TRÍCH DẪN DỮ LIỆU THẬT. TUYỆT ĐỐI CẤM VIẾT CHUNG CHUNG HOẶC LỜI KHUYÊN SÁCH VỞ.
 
-Yêu cầu định dạng: Trả về duy nhất JSON object hợp lệ (không markdown thừa):
+QUY TẮC BẮT BUỘC:
+1. Luôn nêu chính xác số liệu: Tổng GMV (VND), Phí sàn 5% (VND), Tỷ lệ tăng trưởng % GMV, và Giá trị trung bình đơn (AOV).
+2. Nêu đích danh tên các Ban tổ chức dẫn đầu thị phần, tỷ trọng % thị phần họ nắm giữ, cảnh báo nếu thị phần bị phụ thuộc quá mức vào 1-2 đối tác.
+3. Cảnh báo rủi ro (risk_alerts): Chỉ rõ tên sự kiện hoặc đối tác có tỷ lệ bán vé thấp, show nào cần can thiệp xử lý.
+4. Chiến lược tăng trưởng (platform_growth_strategies): Đề xuất chính sách điều hành có số liệu (phí sàn, gói quảng bá, mở rộng danh mục) mang lại giá trị gia tăng thực sự cho sàn.
+
+Định dạng JSON duy nhất:
 {
-  "platform_financial_health": "Đánh giá sức khỏe tài chính toàn sàn (Tổng GMV, phí sàn thu về, biên độ tăng trưởng, dòng tiền).",
-  "top_organizers_performance": "Phân tích mức độ tập trung thị phần giữa các Ban tổ chức, đơn vị nào đang dẫn đầu và rủi ro nếu quá phụ thuộc vào top 1-2 đối tác.",
+  "platform_financial_health": "Đánh giá sức khỏe tài chính toàn sàn với các con số cụ thể về GMV, phí sàn, AOV và biến động tăng trưởng.",
+  "top_organizers_performance": "Phân tích mức độ tập trung thị phần kèm tên ban tổ chức và % thị phần cụ thể, đánh giá rủi ro phụ thuộc.",
   "risk_alerts": [
-    "Cảnh báo rủi ro 1 (ví dụ: sự kiện nào sắp đến ngày diễn nhưng tỷ lệ lấp đầy < 30% có nguy cơ lỗ show...)",
-    "Cảnh báo rủi ro 2 (nếu có sự kiện hoặc đối tác có dấu hiệu bất thường)"
+    "Cảnh báo rủi ro 1 kèm tên show hoặc đối tác cụ thể",
+    "Cảnh báo rủi ro 2 kèm hiện tượng bất thường"
   ],
   "platform_growth_strategies": [
-    "Đề xuất chiến lược phát triển sàn 1 (ví dụ: mở rộng danh mục, chiến dịch ngày hội vé...)",
-    "Đề xuất chiến lược phát triển sàn 2 (tối ưu chính sách phí hoặc hỗ trợ đối tác vừa và nhỏ)"
+    "Chiến lược tăng trưởng 1 mang tính điều hành sàn",
+    "Chiến lược tăng trưởng 2 tối ưu dòng tiền hoặc phát triển đối tác"
   ]
-}
-
-Hãy đưa ra nhận định khách quan, mang tính quản trị sàn và có giá trị chiến lược thực tế.`;
+}`;
 
     const prompt = `Dưới đây là bảng số liệu điều hành toàn sàn của SuperAdmin:
 ${JSON.stringify(metricsPayload, null, 2)}`;
@@ -114,26 +118,29 @@ ${JSON.stringify(metricsPayload, null, 2)}`;
       const parsed = this.parseJsonSafely(responseJsonText);
       const sanitized: AdminRevenueInsightDto = {
         platform_financial_health:
-          typeof parsed.platform_financial_health === "string"
+          typeof parsed.platform_financial_health === "string" &&
+          parsed.platform_financial_health.trim().length > 15
             ? parsed.platform_financial_health.trim()
-            : "Hệ thống ghi nhận dòng tiền giao dịch ổn định trên toàn sàn với doanh thu phí nền tảng duy trì tăng trưởng dương.",
+            : this.buildFallbackInsights(metricsPayload)
+                .platform_financial_health,
         top_organizers_performance:
-          typeof parsed.top_organizers_performance === "string"
+          typeof parsed.top_organizers_performance === "string" &&
+          parsed.top_organizers_performance.trim().length > 15
             ? parsed.top_organizers_performance.trim()
-            : "Các đối tác chủ lực tiếp tục duy trì tỷ trọng giao dịch tốt và đóng góp ổn định vào tổng GMV sàn.",
-        risk_alerts: Array.isArray(parsed.risk_alerts)
-          ? parsed.risk_alerts.map((r: any) => String(r).trim())
-          : [
-              "Một số sự kiện có tỷ lệ bán vé chưa đạt kỳ vọng cần được theo dõi tiến độ để kịp thời hỗ trợ truyền thông.",
-            ],
-        platform_growth_strategies: Array.isArray(
-          parsed.platform_growth_strategies,
-        )
-          ? parsed.platform_growth_strategies.map((s: any) => String(s).trim())
-          : [
-              "Tiếp tục đa dạng hóa các thể loại sự kiện (hội thảo, kịch nghệ, thể thao) bên cạnh concert ca nhạc.",
-              "Đẩy mạnh các chương trình hợp tác với các đơn vị tổ chức mới để mở rộng thị phần.",
-            ],
+            : this.buildFallbackInsights(metricsPayload)
+                .top_organizers_performance,
+        risk_alerts:
+          Array.isArray(parsed.risk_alerts) && parsed.risk_alerts.length > 0
+            ? parsed.risk_alerts.map((r: any) => String(r).trim())
+            : this.buildFallbackInsights(metricsPayload).risk_alerts,
+        platform_growth_strategies:
+          Array.isArray(parsed.platform_growth_strategies) &&
+          parsed.platform_growth_strategies.length > 0
+            ? parsed.platform_growth_strategies.map((s: any) =>
+                String(s).trim(),
+              )
+            : this.buildFallbackInsights(metricsPayload)
+                .platform_growth_strategies,
         analyzed_at: new Date().toISOString(),
         is_cached: false,
       };
@@ -176,21 +183,59 @@ ${JSON.stringify(metricsPayload, null, 2)}`;
     const totalGmv = payload?.platform_summary?.total_gmv || 0;
     const platformFee = payload?.platform_summary?.platform_fee_5_pct || 0;
     const paidOrders = payload?.platform_summary?.paid_orders || 0;
+    const aov = payload?.platform_summary?.aov || 0;
+    const growth = payload?.platform_summary?.growth?.gmv || 0;
+    const topOrgs: any[] = payload?.top_organizers || [];
+    const concerts: any[] = payload?.concerts_sample || [];
+
+    const formattedGmv = new Intl.NumberFormat("vi-VN").format(totalGmv);
+    const formattedFee = new Intl.NumberFormat("vi-VN").format(platformFee);
+    const formattedAov = new Intl.NumberFormat("vi-VN").format(aov);
+
+    let healthText = `Tổng GMV toàn sàn đạt ${formattedGmv} VND (${paidOrders} đơn hàng), doanh thu phí sàn (5%) thu về ${formattedFee} VND. Giá trị trung bình đơn (AOV) đạt ${formattedAov} VND.`;
+    if (growth !== 0) {
+      healthText += ` Tăng trưởng GMV so với kỳ trước ghi nhận ${growth > 0 ? `+${growth}%` : `${growth}%`}.`;
+    }
+
+    let orgText: string;
+    if (topOrgs.length > 0) {
+      const top1 = topOrgs[0];
+      orgText = `Thị phần doanh thu lớn nhất đang thuộc về đối tác "${top1.name}" với GMV ${new Intl.NumberFormat("vi-VN").format(top1.gmv)} VND (chiếm ${top1.market_share} toàn sàn).`;
+      if (topOrgs.length > 1) {
+        orgText += ` Đứng thứ hai là "${topOrgs[1].name}" chiếm ${topOrgs[1].market_share}.`;
+      }
+    } else {
+      orgText = "Thị phần các ban tổ chức đang duy trì cân bằng trên toàn sàn.";
+    }
+
+    const alerts: string[] = [];
+    if (topOrgs.length > 0 && parseFloat(topOrgs[0].market_share) > 60) {
+      alerts.push(
+        `Rủi ro tập trung doanh thu: Đối tác "${topOrgs[0].name}" nắm giữ tới ${topOrgs[0].market_share} GMV toàn sàn, hệ thống cần tích cực thu hút thêm các đơn vị tổ chức khác để giảm thiểu rủi ro vận hành.`,
+      );
+    }
+    const lowConcert = concerts.find((c) => (c.revenue || 0) === 0 || c.tickets_sold === 0);
+    if (lowConcert) {
+      alerts.push(
+        `Sự kiện "${lowConcert.name}" của đối tác "${lowConcert.organizer}" chưa ghi nhận doanh số vé phát sinh, cần kiểm tra cấu hình giá hoặc mở hỗ trợ truyền thông.`,
+      );
+    }
+    if (alerts.length === 0) {
+      alerts.push(
+        "Theo dõi chặt chẽ tiến độ đối soát sau sự kiện (Escrow Settlement) nhằm bảo đảm an toàn thanh toán cho người mua vé.",
+      );
+    }
+
+    const strategies: string[] = [
+      "Thực hiện chính sách ưu đãi phí sàn lũy tiến (4% thay vì 5%) cho các đối tác đạt GMV trên 500 triệu để giữ chân các đơn vị tổ chức lớn.",
+      "Tăng cường tính năng gợi ý thông minh (Recommendation) trên trang chủ vào dịp cuối tuần để tăng tỷ lệ chuyển đổi vé.",
+    ];
 
     return {
-      platform_financial_health:
-        paidOrders > 0
-          ? `Toàn sàn ghi nhận tổng GMV đạt ${new Intl.NumberFormat("vi-VN").format(totalGmv)} VND với ${paidOrders} đơn hàng hoàn tất. Doanh thu phí nền tảng 5% đạt ${new Intl.NumberFormat("vi-VN").format(platformFee)} VND.`
-          : "Hệ thống đang tích lũy thêm dữ liệu giao dịch toàn sàn để đưa ra phân tích chuyên sâu.",
-      top_organizers_performance:
-        "Thị phần phân bổ giữa các đơn vị tổ chức đang trong tầm kiểm soát an toàn, dòng tiền đối soát được đảm bảo minh bạch qua cơ chế Escrow.",
-      risk_alerts: [
-        "Khuyến nghị rà soát định kỳ các sự kiện mở bán trên 14 ngày có tỷ lệ lấp đầy dưới 30% để có phương án hỗ trợ kịp thời.",
-      ],
-      platform_growth_strategies: [
-        "Đẩy mạnh chính sách thu hút thêm các đối tác tổ chức sự kiện âm nhạc quy mô vừa và nhỏ.",
-        "Tối ưu hóa phễu thanh toán PayOS để nâng cao hơn nữa tỷ lệ hoàn tất đơn hàng.",
-      ],
+      platform_financial_health: healthText,
+      top_organizers_performance: orgText,
+      risk_alerts: alerts,
+      platform_growth_strategies: strategies,
       analyzed_at: new Date().toISOString(),
       is_cached: false,
     };

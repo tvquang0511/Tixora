@@ -73,23 +73,27 @@ export class OrganizerRevenueAiService {
       })),
     };
 
-    const systemInstruction = `Bạn là một chuyên gia tư vấn chiến lược kinh doanh và tối ưu hóa bán vé sự kiện cho nền tảng Tixora.
-Dựa vào số liệu bán vé thực tế của Ban tổ chức dưới đây, hãy đưa ra bản phân tích cô đọng, sắc bén và hữu ích bằng tiếng Việt.
+    const systemInstruction = `Bạn là Giám đốc Phân tích Doanh thu & Tối ưu Thương mại Sự kiện tại nền tảng bán vé Tixora.
+Nhiệm vụ: Phân tích sâu số liệu kinh doanh của Ban tổ chức dưới đây, đưa ra nhận định THỰC TẾ, SẮC BÉN, DỰA VÀO DỮ LIỆU CỤ THỂ (DATA-DRIVEN), TUYỆT ĐỐI KHÔNG DÙNG VĂN MẪU HAY LỜI KHUYÊN SÁCH VỞ CHUNG CHUNG.
 
-Yêu cầu định dạng: Trả về duy nhất JSON object hợp lệ (không markdown thừa):
+QUY TẮC BẮT BUỘC:
+1. Luôn nêu đích danh tên đêm nhạc, số tiền (VND), số vé đã bán và tỷ lệ lấp đầy % thực tế từ bảng dữ liệu.
+2. Nêu rõ ngày đạt đỉnh doanh thu từ chuỗi số liệu giao dịch gần đây.
+3. Chỉ rõ show nào đang là trụ cột doanh thu và show nào đang ở ngưỡng rủi ro lấp đầy thấp.
+4. Đề xuất chiến thuật (tactical_recommendations) phải gắn với sự kiện cụ thể, hành động rõ ràng (flash sale, combo vé, chính sách giá) để có thể triển khai ngay.
+
+Định dạng JSON duy nhất:
 {
-  "peak_purchasing_hours": "Nhận xét cụ thể về ngày/khung thời gian bán vé chạy nhất, thời điểm dòng tiền đổ về mạnh nhất.",
-  "tier_performance_analysis": "Phân tích tốc độ tiêu thụ vé, concert nào đang bán chạy nhất và concert nào có tỷ lệ lấp đầy thấp.",
+  "peak_purchasing_hours": "Phân tích ngày/giai đoạn bán vé bùng nổ nhất dựa vào số liệu giao dịch, dẫn chứng số tiền và đơn hàng.",
+  "tier_performance_analysis": "Chỉ rõ concert nào đạt doanh thu cao nhất (số tiền, số vé), concert nào có tỷ lệ lấp đầy thấp cần can thiệp.",
   "tactical_recommendations": [
-    "Đề xuất chiến thuật 1 (ví dụ: giờ vàng đăng bài, kênh đẩy mạnh...)",
-    "Đề xuất chiến thuật 2 (ví dụ: mở Flash Sale, tặng quà Merch cho hạng vé còn tồn...)"
+    "Hành động thực chiến 1 kèm tên show và giải pháp số liệu cụ thể",
+    "Hành động thực chiến 2 kèm giải pháp kích cầu cụ thể"
   ],
-  "occupancy_summary": "Đánh giá tổng quan tỷ lệ lấp đầy khán phòng của các sự kiện và cảnh báo show nào cần thúc đẩy."
-}
+  "occupancy_summary": "Đánh giá tỷ lệ lấp đầy khán phòng thực tế và cảnh báo rủi ro tài chính cho các show chậm tiến độ."
+}`;
 
-Hãy đưa ra nhận định thực tế, súc tích, mang tính hành động cao (Actionable).`;
-
-    const prompt = `Dưới đây là bảng số liệu kinh doanh của Ban tổ chức:
+    const prompt = `Dưới đây là bảng số liệu kinh doanh thực tế của Ban tổ chức:
 ${JSON.stringify(metricsPayload, null, 2)}`;
 
     let responseJsonText: string;
@@ -110,23 +114,27 @@ ${JSON.stringify(metricsPayload, null, 2)}`;
       const parsed = this.parseJsonSafely(responseJsonText);
       const sanitized: OrganizerRevenueInsightDto = {
         peak_purchasing_hours:
-          typeof parsed.peak_purchasing_hours === "string"
+          typeof parsed.peak_purchasing_hours === "string" &&
+          parsed.peak_purchasing_hours.trim().length > 10
             ? parsed.peak_purchasing_hours.trim()
-            : "Lượng giao dịch diễn ra sôi nổi nhất vào các ngày cuối tuần và các đợt phát hành vé đợt đầu.",
+            : this.buildFallbackInsights(metricsPayload).peak_purchasing_hours,
         tier_performance_analysis:
-          typeof parsed.tier_performance_analysis === "string"
+          typeof parsed.tier_performance_analysis === "string" &&
+          parsed.tier_performance_analysis.trim().length > 10
             ? parsed.tier_performance_analysis.trim()
-            : "Các hạng vé tiêu chuẩn và vé VIP ghi nhận nhu cầu tốt từ người hâm mộ.",
-        tactical_recommendations: Array.isArray(parsed.tactical_recommendations)
-          ? parsed.tactical_recommendations.map((r: any) => String(r).trim())
-          : [
-              "Tận dụng khung giờ cao điểm buổi tối để đẩy mạnh thông báo và chiến dịch truyền thông.",
-              "Xem xét triển khai ưu đãi combo vé nhóm để kích cầu các khu vực ghế còn trống.",
-            ],
+            : this.buildFallbackInsights(metricsPayload)
+                .tier_performance_analysis,
+        tactical_recommendations:
+          Array.isArray(parsed.tactical_recommendations) &&
+          parsed.tactical_recommendations.length > 0
+            ? parsed.tactical_recommendations.map((r: any) => String(r).trim())
+            : this.buildFallbackInsights(metricsPayload)
+                .tactical_recommendations,
         occupancy_summary:
-          typeof parsed.occupancy_summary === "string"
+          typeof parsed.occupancy_summary === "string" &&
+          parsed.occupancy_summary.trim().length > 10
             ? parsed.occupancy_summary.trim()
-            : "Tỷ lệ lấp đầy khán phòng duy trì ở mức ổn định theo lộ trình mở bán.",
+            : this.buildFallbackInsights(metricsPayload).occupancy_summary,
         analyzed_at: new Date().toISOString(),
         is_cached: false,
       };
@@ -165,20 +173,78 @@ ${JSON.stringify(metricsPayload, null, 2)}`;
   private buildFallbackInsights(payload: any): OrganizerRevenueInsightDto {
     const totalOrders = payload?.summary?.paid_orders || 0;
     const totalGmv = payload?.summary?.total_gmv || 0;
+    const netRevenue = payload?.summary?.net_revenue || 0;
+    const ticketsSold = payload?.summary?.tickets_sold || 0;
+    const aov = payload?.summary?.aov || 0;
+    const concerts: any[] = payload?.concerts || [];
+    const trends: any[] = payload?.recent_daily_trends || [];
+
+    // Tìm show có doanh thu cao nhất
+    const sortedByRev = [...concerts].sort((a, b) => (b.revenue || 0) - (a.revenue || 0));
+    const topShow = sortedByRev[0];
+
+    // Tìm show có tỷ lệ lấp đầy thấp nhất
+    const sortedByOcc = [...concerts].sort((a, b) => {
+      const occA = parseFloat(a.occupancy_rate) || 0;
+      const occB = parseFloat(b.occupancy_rate) || 0;
+      return occA - occB;
+    });
+    const lowShow = sortedByOcc[0];
+
+    // Tìm ngày bán chạy nhất
+    const topTrend = [...trends].sort((a, b) => (b.revenue || 0) - (a.revenue || 0))[0];
+
+    const formattedGmv = new Intl.NumberFormat("vi-VN").format(totalGmv);
+    const formattedNet = new Intl.NumberFormat("vi-VN").format(netRevenue);
+    const formattedAov = new Intl.NumberFormat("vi-VN").format(aov);
+
+    let peakText = `Tổng doanh thu đạt ${formattedGmv} VND (${totalOrders} đơn hàng, thực nhận ${formattedNet} VND). Giá trị trung bình mỗi đơn (AOV) đạt ${formattedAov} VND.`;
+    if (topTrend && topTrend.revenue > 0) {
+      peakText += ` Ngày ghi nhận bùng nổ doanh số cao nhất là ${topTrend.date} với ${new Intl.NumberFormat("vi-VN").format(topTrend.revenue)} VND (${topTrend.tickets_sold} vé).`;
+    }
+
+    let tierText: string;
+    if (topShow) {
+      tierText = `Đêm nhạc dẫn đầu doanh thu là "${topShow.name}" đạt ${new Intl.NumberFormat("vi-VN").format(topShow.revenue)} VND với ${topShow.tickets_sold}/${topShow.total_capacity} vé (Tỷ lệ lấp đầy: ${topShow.occupancy_rate}).`;
+      if (sortedByRev.length > 1) {
+        tierText += ` Tổng cộng ban tổ chức đang vận hành ${concerts.length} sự kiện trên sàn.`;
+      }
+    } else {
+      tierText = `Đã phân phối ${ticketsSold} vé trên toàn bộ các sự kiện đang hoạt động.`;
+    }
+
+    let occText: string;
+    if (lowShow && parseFloat(lowShow.occupancy_rate) < 40) {
+      occText = `Cảnh báo: Sự kiện "${lowShow.name}" mới đạt ${lowShow.occupancy_rate} công suất phòng (${lowShow.tickets_sold}/${lowShow.total_capacity} vé). Cần gấp rút đẩy mạnh chuyển đổi trước ngày diễn.`;
+    } else if (topShow) {
+      occText = `Tỷ lệ lấp đầy bình quân được bảo đảm tốt, tiêu biểu như "${topShow.name}" đạt ${topShow.occupancy_rate} công suất ghế.`;
+    } else {
+      occText = "Chưa ghi nhận đủ công suất vé để đánh giá tỷ lệ lấp đầy.";
+    }
+
+    const recommendations: string[] = [];
+    if (lowShow && parseFloat(lowShow.occupancy_rate) < 50) {
+      recommendations.push(
+        `Kích hoạt Flash Sale 10-15% hoặc combo vé nhóm 3-4 người cho "${lowShow.name}" để giải phóng lượng ghế trống.`,
+      );
+    }
+    if (topShow) {
+      recommendations.push(
+        `Xem xét bổ sung thêm số lượng giới hạn vé trải nghiệm đặc biệt (Soundcheck / VIP Gift) cho "${topShow.name}" để tối đa hóa doanh thu trung bình mỗi khách.`,
+      );
+    }
+    if (recommendations.length === 0) {
+      recommendations.push(
+        "Tập trung truyền thông vào khung giờ 20h00 - 22h00 các ngày mở đợt vé mới.",
+        "Xây dựng combo mua vé kèm đồ lưu niệm để gia tăng giá trị đơn hàng trung bình.",
+      );
+    }
 
     return {
-      peak_purchasing_hours:
-        totalOrders > 0
-          ? `Ghi nhận ${totalOrders} đơn hàng thành công với tổng GMV ${new Intl.NumberFormat("vi-VN").format(totalGmv)} VND. Hoạt động giao dịch tập trung nhiều nhất vào các ngày mở bán đầu tiên.`
-          : "Chưa ghi nhận đủ khối lượng giao dịch để xác định khung giờ mua vé đỉnh điểm.",
-      tier_performance_analysis:
-        "Tốc độ bán vé duy trì theo tiến độ kế hoạch. Khán giả có xu hướng đặt vé sớm cho các vị trí trải nghiệm tốt nhất.",
-      tactical_recommendations: [
-        "Đẩy mạnh quảng bá trên mạng xã hội vào các khung giờ 19:30 - 21:30 các ngày thứ Năm và thứ Sáu.",
-        "Thiết lập thêm chính sách quà tặng kèm (fanzone gift) hoặc vé nhóm để thúc đẩy chuyển đổi.",
-      ],
-      occupancy_summary:
-        "Hệ thống khuyến nghị tiếp tục theo dõi sát sao biểu đồ tăng trưởng doanh số theo ngày để có chiến lược tiếp thị kịp thời.",
+      peak_purchasing_hours: peakText,
+      tier_performance_analysis: tierText,
+      tactical_recommendations: recommendations,
+      occupancy_summary: occText,
       analyzed_at: new Date().toISOString(),
       is_cached: false,
     };
